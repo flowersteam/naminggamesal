@@ -7,7 +7,7 @@ W=10 #nombre de words
 M=10 # nombre de meanings
 N=10 # nombre d'agents
 T=10000#nb cycles
-#testtesttest
+#testtesttest3
 
 def nemenonnul(n,l):
 	temp=0
