@@ -71,6 +71,8 @@ class agent:
 					Itemp+=1.*self.memory[i,j]/tempw[i]*np.log2(1.*tempmu[j]/self.memory[i,j])
 		I=np.log2(1./self.M)-1./self.M*Itemp
 		self.I=I
+
+
 class population:
  	def __init__(self,Np,Mp,Wp): 
  		self.agent=[]
@@ -93,6 +95,7 @@ class population:
  		Ap=self.agent[j]
  		self.rmagent(j)
  		return Ap
+
 
 data=[]
 entropie=[]
