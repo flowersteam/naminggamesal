@@ -4,10 +4,10 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import copy as cp
-W=100 #nombre de words
-M=20 # nombre de meanings
-N=20 # nombre d'agents
-T=10000#nb cycles
+W=8 #nombre de words
+M=8 # nombre de meanings
+N=10 # nombre d'agents
+T=200#nb cycles
 
 class agent:
 	def __init__(self,Mp,Wp):
@@ -61,7 +61,27 @@ class agent:
 				if self.memory[i,j]!=0:
 					Itemp+=1.*self.memory[i,j]/tempw[i]*np.log2(1.*tempmu[j]/self.memory[i,j])
 		I=np.log2(1./self.M)-1./self.M*Itemp
-		self.I=I
+		self.I=I	
+	def computeHS(self):
+		tempmu=[]
+		tempw=[]
+		for i in range(0,self.M):
+			tempw.append(0)
+			for j in range(0,self.W):
+				tempw[i]+=self.memory[i,j]
+		for j in range(0,self.W):
+			tempmu.append(0)
+			for i in range(0,self.M):
+				tempmu[j]+=self.memory[i,j]
+		Itemp=0
+		for i in range(0,self.M):
+			for j in range(0,self.W):
+				if self.memory[i,j]!=0:
+					HStemp+=1.*self.memory[i,j]/tempw[i]*np.log2(1.*tempmu[j]/self.memory[i,j])
+		HS=np.log2(1./self.M)-1./self.M*HStemp
+		self.HS=HS
+
+
 class population:
  	def __init__(self,Np,Mp,Wp): 
  		self.agent=[]
@@ -84,9 +104,14 @@ class population:
  		Ap=cp.deepcopy(self.agent[j])
  		self.rmagent(j)
  		return Ap
+ 	def affiche(self):
+ 		temp=np.matrix(np.zeros((self.M,self.W)))
+ 		for i in range(0,self.size):
+ 			temp+=self.agent[i].memory
+ 		print (temp/(self.size*1.)) 
 
 data=[]
-entropie=[]
+I=[]
 pop=population(N,M,W)
 for t in range(0,T):
 	speaker=pop.pickagent()
@@ -123,8 +148,11 @@ for t in range(0,T):
 				Ndata+=pop.agent[n].memory[i,j]
 		Sdata+=pop.agent[n].I
 	data.append(Ndata/(N*1.))
-	entropie.append(Sdata)
-plt.plot(entropie)
+	I.append(Sdata)
+pop.affiche()
+plt.plot(I)
+plt.title("I")
 plt.show()
 plt.plot(data)
+plt.title("nombre total d'associations")
 plt.show()

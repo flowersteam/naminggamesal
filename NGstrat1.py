@@ -9,8 +9,8 @@ import math
 import random
 import matplotlib.pyplot as plt
 import copy as cp
-W=20 #nombre de words
-M=20 # nombre de meanings
+W=30 #nombre de words
+M=30 # nombre de meanings
 N=10 # nombre d'agents
 T=10000#nb cycles
 
@@ -142,14 +142,16 @@ for t in range(0,T):
 			for i in range(0,M):
 				Nagent+=pop.agent[n].memory[i,j]
 		if M!=Nagent:
-			Sdata+=np.log2(math.factorial(M-Nagent))
+			Sdata+=np.log2(1.*math.factorial(M-Nagent))
 		Ndata+=Nagent
 	Npop=0
 	for j in range(0,W):
 			for i in range(0,M):
 				Npop+=pop.view2[i,j]
-	print Npop
-	Spop.append(np.log2(math.factorial(M-Npop)))
+	if M!=Npop:
+		Spop.append(np.log2(1.*math.factorial(M-Npop)))
+	else:
+		Spop.append(0)
 	data.append(Ndata/(N*1.))
 	S.append(Sdata/(N*1.))
 pop.affiche()
