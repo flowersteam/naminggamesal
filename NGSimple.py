@@ -7,7 +7,7 @@ import copy as cp
 W=8 #nombre de words
 M=8 # nombre de meanings
 N=10 # nombre d'agents
-T=200#nb cycles
+T=10000#nb cycles
 
 class agent:
 	def __init__(self,Mp,Wp):

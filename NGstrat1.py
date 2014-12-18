@@ -5,23 +5,24 @@
 
 
 import numpy as np
+from scipy import sparse
 import math
 import random
 import matplotlib.pyplot as plt
 import copy as cp
-W=30 #nombre de words
-M=30 # nombre de meanings
+W=8 #nombre de words
+M=6 # nombre de meanings
 N=10 # nombre d'agents
-T=10000#nb cycles
+T=300#nb cycles
+decision=[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,0,0]
 
 class agent:
 	def __init__(self,Mp,Wp):
-		self.memory=np.matrix(np.zeros((Mp,Wp)))
+		self.memory=sparse.lil_matrix((Mp,Wp))
 		self.knownmeanings=np.zeros(Mp)
 		self.knownwords=np.zeros(Wp)
 		self.M=Mp
 		self.W=Wp
-
 	def pickneww(self):
 		temp=self.W-sum(self.knownwords)
 		if temp==0:
@@ -35,10 +36,42 @@ class agent:
 				if self.knownwords[w]==0:
 					i+=1
 		return w
-
-
-
-
+	def picknewm(self):
+		temp=self.M-sum(self.knownmeanings)
+		if temp==0:
+			m=random.randint(0,self.M-1)
+		else:
+			temp2=random.randint(1,temp)
+   			m=-1
+   			i=0
+			while i<temp2 :
+				m+=1
+				if self.knownmeanings[m]==0:
+					i+=1
+		return m
+	def pickoldm(self):
+		temp=sum(self.knownmeanings)
+		if temp==0:
+			m=random.randint(0,self.M-1)
+		else:
+			temp2=random.randint(1,temp)
+   			m=-1
+   			i=0
+			while i<temp2 :
+				m+=1
+				if self.knownmeanings[m]==1:
+					i+=1
+		return m
+	def activepickmw(self):
+		if decision[int(sum(self.knownmeanings))]==1:
+			m=self.picknewm()
+			w=self.pickneww()
+		else:
+			m=self.pickoldm()
+			for i in range(0,self.W):
+				if self.memory[m,i]==1:
+					w=i
+		return([m,w])
 	def pickmw(self): #on pick au hasard complet un m ; w s il y en a un associé, sinon random 
 		m=random.randint(0,self.M-1)
 		if self.knownmeanings[m]==0:
@@ -48,7 +81,6 @@ class agent:
 				if self.memory[m,i]==1:
 					w=i
 		return([m,w])
-
 	def update(self):
 		for i in range(0,self.M):
 			self.knownmeanings[i]=0
@@ -59,7 +91,6 @@ class agent:
 				if self.memory[i,j]!=0:
 					self.knownmeanings[i]=1
 					self.knownwords[j]=1
-
 	def insert(self,coord): #on insere un 1 en m w en virant tous les syn et hom
 		m=coord[0]
 		w=coord[1]
@@ -71,9 +102,8 @@ class agent:
 				self.memory[m,i]=0
 		self.memory[m,w]=1
 		self.update()
-
 	def affiche(self):
-		print(self.memory)
+		print(self.memory.todense())
 
 
 
@@ -87,11 +117,16 @@ class population:
  		self.W=Wp
  		self.update()
  	def update(self):
- 		temp=np.matrix(np.zeros((self.M,self.W)))
- 		temp2=np.matrix(np.ones((self.M,self.W)))
- 		for i in range(0,self.size):
+ 		temp=sparse.lil_matrix((self.M,self.W))
+ 		temp2=sparse.lil_matrix((self.M,self.W))
+ 		for i in range(0,self.M):
+ 			for j in range(0,self.W):
+ 				temp2[i,j]=1
+  		for i in range(0,self.size):
+  			print temp2.todense()
+  			#print self.agent[i].memory.todense()
  			temp+=self.agent[i].memory
- 			temp2=np.multiply(temp2,self.agent[i].memory)
+ 			temp2=temp2.multiply(self.agent[i].memory)
  		self.view1=temp/(self.size*1.)
  		self.view2=temp2
  	def addagent(self,Ap):
@@ -112,8 +147,7 @@ class population:
  		self.rmagent(j)
  		return Ap
  	def affiche(self):
- 		print self.view1 
-
+ 		print self.view1.todense()
 
 
 
@@ -131,7 +165,6 @@ for t in range(0,T):
 	hearer.insert(tempcoord)
 	pop.addagent(hearer)
 	pop.addagent(speaker)
-
 	print t
 	Ndata=0
 	Nagent=0
@@ -165,6 +198,3 @@ plt.plot(Spop)
 plt.title("S population")
 plt.show()
 
-
-############## le choix de m w devrait prendre en compte les w deja pris
-############### Pour l instant on considere uniquement M=W
