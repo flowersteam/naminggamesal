@@ -1,27 +1,33 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-import numpy as np
-from scipy import sparse
+class Strategy(object):
+	def __new__(cls,strattype):
+		if strattype=="naive":
+			return object.__new__(StratNaive)
+		if strattype=="delaunay":
+			return object.__new__(StratDelaunay)
+	def get_strattype(self):
+		return _strattype
 
-class strategy:
-	def affiche(self):
-		print(self.content)
 
+class StratNaive(Strategy):
+	_strattype="naive"
 
+	def pick_mw(self,voc,mem):
 
-class stratnaive(strategy):
-	typestrat="naive"
-	def __init__(self,):
+	def pick_new_m(self,voc,mem):
 
-	def pickmw(self,voc):
+	def guess_m(self,w,voc,mem):
 
-	def pickm(self,voc):
+	def pick_w(self,m,voc,mem):
 
-	def pickw(self,voc):
+	def update_hearer(self,ms,w,mh,voc,mem):
 
-	def updatehearer():
+	def update_speaker(self,ms,w,mh,voc,mem):
 
-	def updatespeaker():
+	def init_memory(self,voc):
+		return {}
 
-	def initmemory(self,):
+class StratDelaunay(StratNaive):
+	_strattype="delaunay"

@@ -7,11 +7,10 @@ from scipy import sparse
 class Vocabulary(object):
 	def __new__(cls,voctype,M,W):
 		if voctype=="matrix":
-			return object.__new__(Vocmatrix,M,W)
+			return object.__new__(VocMatrix,M,W)
 		if voctype=="sparse":
-			return object.__new__(Vocsparse,M,W)
+			return object.__new__(VocSparse,M,W)
 	def __init__(self,voctype,M,W):
-		print"init"
 		self._M=M
 		self._W=W
 		self._size=[M,W]
@@ -25,7 +24,7 @@ class Vocabulary(object):
 		return _voctype
 
 
-class Vocmatrix(Vocabulary):
+class VocMatrix(Vocabulary):
 	_voctype="matrix"
 	def __init__(self,voctype,M,W):
 		Vocabulary.__init__(self,voctype,M,W)
@@ -73,14 +72,14 @@ class Vocmatrix(Vocabulary):
 				self._content[i,w]=0
 
 
-class Vocsparse(Vocmatrix):
+class VocSparse(VocMatrix):
 	voctype="sparse"
 	def __init__(self,voctype,M,W):
 		Vocabulary.__init__(self,voctype,M,W)
 		self._content=sparse.lil_matrix((M,W))
 
 	def get_content(self):
-		return self._content.toarray()
+		return self._content.todense()
 
 
 if __name__ == "__main__":
