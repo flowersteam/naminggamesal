@@ -5,8 +5,13 @@ import numpy as np
 from scipy import sparse
 
 class Vocabulary(object):
-	_voctype="vocabulary"
-	def __init__(self,M,W):
+	def __new__(cls,voctype,M,W):
+		if voctype=="matrix":
+			return object.__new__(Vocmatrix,M,W)
+		if voctype=="sparse":
+			return object.__new__(Vocsparse,M,W)
+	def __init__(self,voctype,M,W):
+		print"init"
 		self._M=M
 		self._W=W
 		self._size=[M,W]
@@ -22,8 +27,8 @@ class Vocabulary(object):
 
 class Vocmatrix(Vocabulary):
 	_voctype="matrix"
-	def __init__(self,M,W):
-		Vocabulary.__init__(self,M,W)
+	def __init__(self,voctype,M,W):
+		Vocabulary.__init__(self,voctype,M,W)
 		self._content=np.matrix(np.zeros((self._M,self._W)))
 	def get_knownwords(self,*args):
 		templ=[]
@@ -70,8 +75,8 @@ class Vocmatrix(Vocabulary):
 
 class Vocsparse(Vocmatrix):
 	voctype="sparse"
-	def __init__(self,M,W):
-		Vocabulary.__init__(self,M,W)
+	def __init__(self,voctype,M,W):
+		Vocabulary.__init__(self,voctype,M,W)
 		self._content=sparse.lil_matrix((M,W))
 
 	def get_content(self):
