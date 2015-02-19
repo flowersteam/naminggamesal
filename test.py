@@ -3,20 +3,30 @@
 
 import numpy as np
 from scipy import sparse
-temp=np.matrix(np.zeros((3,3)))
-temp2=sparse.lil_matrix((3,3))
-print temp2.todense()
 
-temp2[1,1]=2
-temp2[2,1]=3
+class vocabulary:
+	def affiche(self):
+		print(self.content)
 
-print temp2.todense()
-print temp2.todense()*temp2.todense()
-print np.multiply(temp2,temp2).todense()
-print temp2.multiply(temp2).todense()
 
-import time
-import progressbar
-progress = progressbar.ProgressBar()
-for i in progress(range(80)):
-  time.sleep(0.01)
+
+class vocsparse(vocabulary):
+	typevoc="sparse"
+	def __init__(self,M,W):
+		self.M=M
+		self.W=W
+		self.size=[M,W]
+		self.content=sparse.lil_matrix((M,W))
+
+class vocmatrix(vocabulary):
+#	typevoc="matrix"
+	def __init__(self,M,W):
+		self.M=M
+		self.W=W
+		self.size=[M,W]
+		self.content=np.matrix(np.zeros((self.M,self.W)))
+		
+
+test=vocmatrix(3,4)
+print test.M
+print test.content

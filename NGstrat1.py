@@ -8,12 +8,14 @@ import numpy as np
 from scipy import sparse
 import math
 import random
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import copy as cp
-W=8 #nombre de words
-M=6 # nombre de meanings
+W=20 #nombre de words
+M=10 # nombre de meanings
 N=10 # nombre d'agents
-T=300#nb cycles
+T=200#nb cycles
 decision=[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,0,0]
 
 class agent:
@@ -123,7 +125,7 @@ class population:
  			for j in range(0,self.W):
  				temp2[i,j]=1
   		for i in range(0,self.size):
-  			print temp2.todense()
+  			#print temp2.todense()
   			#print self.agent[i].memory.todense()
  			temp+=self.agent[i].memory
  			temp2=temp2.multiply(self.agent[i].memory)
@@ -161,6 +163,7 @@ for t in range(0,T):
 	speaker=pop.pickagent()
 	hearer=pop.pickagent()
 	tempcoord=speaker.pickmw()
+	#tempcoord=speaker.activepickmw()
 	speaker.insert(tempcoord)
 	hearer.insert(tempcoord)
 	pop.addagent(hearer)
@@ -188,13 +191,14 @@ for t in range(0,T):
 	data.append(Ndata/(N*1.))
 	S.append(Sdata/(N*1.))
 pop.affiche()
-plt.plot(S)
-plt.title("S moyen par agent")
-plt.show()
+plt.plot(S, label="S moyen par agent")
+plt.plot(Spop,label="S population")
+plt.draw()
+plt.savefig('test1.png')
+#plt.show()
+
 plt.plot(data)
 plt.title("nombre d'associations moyen par agent")
-plt.show()
-plt.plot(Spop)
-plt.title("S population")
-plt.show()
-
+plt.draw()
+plt.savefig('test2.png',format='eps')
+#plt.show()
