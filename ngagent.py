@@ -1,17 +1,25 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-import random
+#import random
+#from ngvoc import *
+from ngstrat import *
 
 class Agent(object):
-	def __init__(self,strattype,voctype,agent_id):
+	def __init__(self,voctype,strattype,agent_id,M,W):
 		self._id=agent_id;
-		self._vocabulary=
+		self._vocabulary=Vocabulary(voctype,M,W)
 		self._strategy=Strategy(strattype)
 		self.init_memory()
 
+	def init_memory(self):
+		self._memory=self._strategy.init_memory(self._vocabulary)
+
+	def get_vocabulary_content(self):
+		return self._vocabulary.get_content()
+
 	def get_voctype(self):
-		self._vocabulary.get_voctype()
+		return self._vocabulary.get_voctype()
 
 	def get_id(self):
 		return self._id
@@ -20,37 +28,35 @@ class Agent(object):
 		self._vocabulary.affiche()
 
 	def pick_mw(self):
-		self._strategy.pick_mw(self._vocabulary,self._memory)
+		return self._strategy.pick_mw(self._vocabulary,self._memory)
 
 	def pick_new_m(self):
-		self._strategy.pick_new_m(self._vocabulary,self._memory)
+		return self._strategy.pick_new_m(self._vocabulary,self._memory)
 
 	def guess_m(self,w):
-		self._strategy.guess_m(w,self._vocabulary,self._memory)
+		return self._strategy.guess_m(w,self._vocabulary,self._memory)
 
 	def pick_w(self,m):
-		self._strategy.pick_w(m,self._vocabulary,self._memory)
+		return self._strategy.pick_w(m,self._vocabulary,self._memory)
 
 	def update_hearer(self,ms,w,mh):
-		self._strategy.update_hearer(self._vocabulary,self._memory)
+		self._strategy.update_hearer(ms,w,mh,self._vocabulary,self._memory)
 
 	def update_speaker(self,ms,w,mh):
-		self._strategy.update_speaker(self._vocabulary,self._memory)
+		self._strategy.update_speaker(ms,w,mh,self._vocabulary,self._memory)
 
-	def init_memory(self):
-		self._strategy.init_memory(self._vocabulary)
 
 class Population(object):
 	def __init__(self,voctype,strattype,nbagents,M,W):
-		self._size=nbagents
+		self._size=0
 		self._voctype=voctype
 		self._M=M
 		self._W=W
 		self._strattype=strattype
 		self._lastgameinfo=[]
 		self._agentlist=[]
-		for i in range (0,self._size):
-			_agentlist.append(self.add_new_agent(self._voctype,self._strattype,i))
+		for i in range (0,nbagents):
+			self.add_new_agent(self._voctype,self._strattype,i,self._M,self._W)
 
 
 	def get_size(self):
@@ -58,7 +64,7 @@ class Population(object):
 	def get_vocsize(self):
 		return [self._M,self._W]
 	def check_id(self,agent_id):
-		for i in range(0,self._agentlist.length()):
+		for i in range(0,len(self._agentlist)):
 			if self._agentlist[i].get_id()==agent_id:
 				return 1
 		return 0
@@ -69,46 +75,54 @@ class Population(object):
 
 	def idmax(self): #Suppose ID=nombre
 		tempid=0
-		for i in range(0,self._agentlist.length()):
+		for i in range(0,len(self._agentlist)):
 			tempid=max(tempid,self._agentlist[i].get_id())
 		return tempid
 
 	def add_new_agent(self,voctype,strattype,*args):
-		if args.length()!=0:
+		if len(args)!=0:
 			agent_id=args[0]
 		else:
 			agent_id=self.idmax()+1
-		self._agent_list.append(Agent(strattype,voctype,agent_id))
+		self._agentlist.append(Agent(voctype,strattype,agent_id,self._M,self._W))
+		self._size+=1
 
 	def get_index_from_id(self,agent_id):
-		for i in range (0,self._agentlist.length()):
-			if self._agentlist[i]==agent_id:
+		for i in range (0,len(self._agentlist)):
+			if self._agentlist[i].get_id()==agent_id:
 				return i
 		print "id non existante"
 
 	def rm_agent(self,agent_id):
 		self._agentlist.remove(self.get_index_from_id(agent_id))
+		self._size-=1
 
 	def pick_speaker(self):
-		j=random.randint(0,self._agentlist.length()-1)
+		j=random.randint(0,len(self._agentlist)-1)
  		return self._agentlist[j].get_id()
 
 	def pick_hearer(self,speaker_id):
-		j=random.randint(0,self._agentlist.length()-2)
-		if self.get_index_from_id(speaker_id)<=j
+		j=random.randint(0,len(self._agentlist)-2)
+		if self.get_index_from_id(speaker_id) <= j:
 			j+=1
  		return self._agentlist[j].get_id()
 
-	def play_game(self):
-		speaker_id=self.pick_speaker()
-		hearer_id=self.pick_hearer(speaker_id)
-		speaker=self._agentlist[self.get_index_from_id(speaker_id)]
-		hearer=self._agentlist[self.get_index_from_id(hearer_id)]
-		[ms,w]=speaker.pick_mw()
-		mh=hearer.guess_m(w)
-		speaker.update_speaker(ms,w,mh)
-		hearer.update_hearer(ms,w,mh)
-		self._lastgameinfo=[ms,w,mh]
+	def play_game(self,*args):
+		if len(args)==0:
+			speaker_id=self.pick_speaker()
+			hearer_id=self.pick_hearer(speaker_id)
+			speaker=self._agentlist[self.get_index_from_id(speaker_id)]
+			hearer=self._agentlist[self.get_index_from_id(hearer_id)]
+			tempmw=speaker.pick_mw()
+			ms=tempmw[0]
+			w=tempmw[1]
+			mh=hearer.guess_m(w)
+			speaker.update_speaker(ms,w,mh)
+			hearer.update_hearer(ms,w,mh)
+			self._lastgameinfo=[ms,w,mh,speaker_id,hearer_id]
+		else:
+			for i in range(0,args[0]):
+				self.play_game()
 
 	def get_lastgameinfo(self):
 		return self._lastgameinfo
@@ -118,3 +132,22 @@ class Population(object):
 			return agent.get_id()
 		self._agentlist.sort(tempfun)
 
+	def affiche(self,*args):
+		if len(args)==0:
+			print "nbagent: %i" % self._size
+			temprep=np.matrix(np.zeros((self._M,self._W)))
+			for i in range(0,self._size):
+				temprep=temprep+self._agentlist[i].get_vocabulary_content()
+			print temprep/self._size
+		elif args[0]=="all":
+			for i in range(0,self._size):
+				print "Agent ID: %s" %self._agentlist[i].get_id()
+				self._agentlist[i].affiche()
+				print "\n"
+		else:
+			i=self.get_index_from_id(args[0])
+			print "Agent ID: %s" %args
+			self._agentlist[i].affiche()
+
+if __name__ == "__main__":
+	testpop=ngagent.Population("matrix","naive",10,12,15)
