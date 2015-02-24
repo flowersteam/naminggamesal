@@ -10,7 +10,7 @@ class Strategy(object):
 		elif strattype=="delaunay":
 			return object.__new__(StratDelaunay)
 		else:
-			print "type de strategie non existante"	
+			print "type de strategie non existant"	
 	def get_strattype(self):
 		return _strattype
 

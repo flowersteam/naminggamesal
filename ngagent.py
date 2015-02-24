@@ -3,7 +3,10 @@
 
 #import random
 #from ngvoc import *
+import os
 from ngstrat import *
+from copy import deepcopy
+import pickle
 
 class Agent(object):
 	def __init__(self,voctype,strattype,agent_id,M,W):
@@ -47,6 +50,18 @@ class Agent(object):
 
 
 class Population(object):
+	def deepcopy(self):
+		filename="temppop"+str(os.getpid())+".tmp"
+		with open(filename, 'wb') as fichier:
+			mon_pickler = pickle.Pickler(fichier)
+			mon_pickler.dump(self)
+		with open(filename, 'rb') as fichier:
+			mon_depickler = pickle.Unpickler(fichier)
+			pop_recup = mon_depickler.load()
+		os.remove(filename)
+		return pop_recup
+
+
 	def __init__(self,voctype,strattype,nbagents,M,W):
 		self._size=0
 		self._voctype=voctype
@@ -107,8 +122,8 @@ class Population(object):
 			j+=1
  		return self._agentlist[j].get_id()
 
-	def play_game(self,*args):
-		if len(args)==0:
+	def play_game(self,steps,*progress_info):
+		for i in range(0,steps):
 			speaker_id=self.pick_speaker()
 			hearer_id=self.pick_hearer(speaker_id)
 			speaker=self._agentlist[self.get_index_from_id(speaker_id)]
@@ -120,9 +135,8 @@ class Population(object):
 			speaker.update_speaker(ms,w,mh)
 			hearer.update_hearer(ms,w,mh)
 			self._lastgameinfo=[ms,w,mh,speaker_id,hearer_id]
-		else:
-			for i in range(0,args[0]):
-				self.play_game()
+			if len(progress_info)!=0:
+				print progress_info[0]+" step:"+str(i)+"/"+str(steps)
 
 	def get_lastgameinfo(self):
 		return self._lastgameinfo
@@ -148,6 +162,9 @@ class Population(object):
 			i=self.get_index_from_id(args[0])
 			print "Agent ID: %s" %args
 			self._agentlist[i].affiche()
+
+
+
 
 if __name__ == "__main__":
 	testpop=ngagent.Population("matrix","naive",10,12,15)
