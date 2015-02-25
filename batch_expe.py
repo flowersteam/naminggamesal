@@ -17,11 +17,13 @@ egal=0
 
 nb_iterations=1
 stratlist=["naive"]
-Mlist=[3,5]
-Wlist=[10,12]
-Nlist=[10]
-T=200
-T_step=10
+Mlist=[3]
+Wlist=[3]
+Nlist=[3,5,7]
+
+nb_T=100
+T=2000
+T_step=T/nb_T
 
 
 for iterr in range(0,nb_iterations):
@@ -58,4 +60,3 @@ for iterr in range(0,nb_iterations):
 
 					else:	
 						print "filename déjà utilisé"
-				

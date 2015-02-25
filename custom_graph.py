@@ -3,10 +3,11 @@
 
 import matplotlib.pyplot as plt
 import time
-#from ngsimu import *
+import numpy as np
 import pickle
 
 
+plt.ion()
 
 def load_graph(filename):
 	with open(filename, 'rb') as fichier:
@@ -14,16 +15,17 @@ def load_graph(filename):
 		tempgr=mon_depickler.load()
 	return tempgr
 
-def merge_meanstd():
-	pass
 
 class CustomGraph(object):
 	def __init__(self,Y,*arg,**kwargs):
-
+		self.sort=1
 		self.filename="graph"+time.strftime("%Y%m%d%H%M%S", time.localtime())
+		if "filename" in kwargs.keys():
+			self.filename=kwargs["filename"]
 		self.title=self.filename
 		self.xlabel="X"
 		self.ylabel="Y"
+		self.alpha=0.3
 
 		self.Yoptions=[{}]
 
@@ -32,10 +34,14 @@ class CustomGraph(object):
 		self.ymin=[0,0]
 		self.ymax=[0,5]
 		
+		self.std=0
 		
 		self._Y=[Y]
+		self.stdvec=[0]*len(Y)
+
 		if len(arg)!=0:
-			self._X=[arg[0]]
+			self._X=[Y]
+			self._Y=[arg[0]]
 		else:
 			self._X=[range(0,len(Y))]
 
@@ -45,6 +51,7 @@ class CustomGraph(object):
 		for key,value in kwargs.iteritems():
 			setattr(self,key,value)
 
+		self.stdvec=[self.stdvec]
 
 		if not isinstance(self.xmin,list):
 			temp=self.xmin
@@ -61,40 +68,78 @@ class CustomGraph(object):
 
 
 	def show(self):
+		plt.figure()
 		self.draw()
-		plt.ion()
-		plt.show()
+		#plt.show()
 
-	def save(self):
-		with open(self.filename+".b", 'wb') as fichier:
+	def save(self,*path):
+		if len(path)!=0:
+			out_path=path[0]
+		else:
+			out_path=""
+		with open(out_path+self.filename+".b", 'wb') as fichier:
 			mon_pickler=pickle.Pickler(fichier)
 			mon_pickler.dump(self)
 
-	def write_files(self):
+	def write_files(self,*path):
+		if len(path)!=0:
+			out_path=path[0]
+		else:
+			out_path=""
+
 		self.draw()
-		self.save()
+		self.save(out_path)
 		for extension in self.extensions:
-			plt.savefig(self.filename+"."+extension,format=extension)
+			plt.savefig(out_path+self.filename+"."+extension,format=extension)
 
 
 	def draw(self):
-		plt.figure()
+		#plt.figure()
 		plt.cla()
 		plt.clf()
 		for i in range(0,len(self._Y)): 
-			plt.plot(self._X[i],self._Y[i],**self.Yoptions[i])
+
+			Xtemp=self._X[i]
+			Ytemp=self._Y[i]
+			if self.sort:
+				tempdic={}
+				for j in range(0,len(Xtemp)):
+					tempdic[Xtemp[j]]=Ytemp[j]
+				temptup=sorted(tempdic.items())
+				for j in range(0,len(temptup)):
+					Xtemp[j]=temptup[j][0]
+					Ytemp[j]=temptup[j][1]
+
+			Xtemp=self._X[i]
+			stdtemp=self.stdvec[i]
+			if self.sort:
+				tempdic={}
+				for j in range(0,len(Xtemp)):
+					tempdic[Xtemp[j]]=stdtemp[j]
+				temptup=sorted(tempdic.items())
+				for j in range(0,len(temptup)):
+					Xtemp[j]=temptup[j][0]
+					stdtemp[j]=temptup[j][1]
+			if self.std:
+				Ytempmin=[0]*len(Ytemp)
+				Ytempmax=[0]*len(Ytemp)
+				for j in range(0,len(Ytemp)):
+					Ytempmax[j]=Ytemp[j]+stdtemp[j]
+					Ytempmin[j]=Ytemp[j]-stdtemp[j]
+				plt.fill_between(Xtemp,Ytempmin,Ytempmax,alpha=self.alpha,**self.Yoptions[i])
+			plt.plot(Xtemp,Ytemp,**self.Yoptions[i])
 		plt.xlabel(self.xlabel)
 		plt.ylabel(self.ylabel)
 		plt.title(self.title)
 
 		if self.xmin[0]:
-			plt.xlim(xmin=self.xmin[0])
+			plt.xlim(xmin=self.xmin[1])
 		if self.xmax[0]:
-			plt.xlim(xmax=self.xmax[0])
+			plt.xlim(xmax=self.xmax[1])
 		if self.ymin[0]:
-			plt.ylim(xmin=self.ymin[0])
+			plt.ylim(ymin=self.ymin[1])
 		if self.ymax[0]:
-			plt.ylim(xmax=self.ymax[0])
+			plt.ylim(xmax=self.ymax[1])
 		plt.legend()
 		plt.draw()
 
@@ -102,7 +147,21 @@ class CustomGraph(object):
 	def add_graph(self,other_graph):
 		self._X=self._X+other_graph._X
 		self._Y=self._Y+other_graph._Y
+		self.Yoptions=self.Yoptions+other_graph.Yoptions
+		self.stdvec=self.stdvec+other_graph.stdvec
 
+	def merge(self):
+		Yarray=np.array(self._Y)
+		stdarray=np.array(self.stdvec)
+		stdtemp=[]
+		Ytemp=[]
+
+		for i in range(0,len(self._Y[0])):
+			Ytemp.append(np.mean(list(Yarray[:,i])))
+			stdtemp.append(np.std(list(Yarray[:,i])))
+		self._Y=[Ytemp]
+		self.stdvec=[stdtemp]
+		self._X=[self._X[0]]
 
 
 

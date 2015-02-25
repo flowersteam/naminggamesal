@@ -14,6 +14,10 @@ class Agent(object):
 		self._vocabulary=Vocabulary(voctype,M,W)
 		self._strategy=Strategy(strattype)
 		self.init_memory()
+		self._M=M
+		self._W=W
+		self.fail=0
+		self.success=0
 
 	def init_memory(self):
 		self._memory=self._strategy.init_memory(self._vocabulary)
@@ -132,6 +136,12 @@ class Population(object):
 			ms=tempmw[0]
 			w=tempmw[1]
 			mh=hearer.guess_m(w)
+			if ms==mh:
+				speaker.success+=1
+				hearer.success+=1
+			else:
+				speaker.fail+=1
+				hearer.fail+=1
 			speaker.update_speaker(ms,w,mh)
 			hearer.update_hearer(ms,w,mh)
 			self._lastgameinfo=[ms,w,mh,speaker_id,hearer_id]

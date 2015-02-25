@@ -59,3 +59,17 @@ def plot(simu):
 print "test"
 
 print __name__
+
+
+
+Xtemp=a
+Ytemp=b 
+
+for j in range(0,len(Xtemp)):
+	tempdic[Xtemp[j]]=Ytemp[j]
+
+temptup=sorted(tempdic.items())
+
+for j in range(0,len(temptup)):
+	Xtemp[j]=temptup[j][0]
+	Ytemp[j]=temptup[j][1]

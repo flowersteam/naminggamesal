@@ -14,14 +14,14 @@ class Strategy(object):
 	def get_strattype(self):
 		return _strattype
 
-
+##################################### STRATEGIE NAIVE########################################
 class StratNaive(Strategy):
 	_strattype="naive"
 
 
 	def guess_m(self,w,voc,mem):
 		if w in voc.get_known_words():
-			tempindexm=random.randint(0,voc.get_known_meanings(w).length()-1)
+			tempindexm=random.randint(0,len(voc.get_known_meanings(w))-1)
 			m=voc.get_known_meanings(w)[tempindexm]
 		else:
 			m=random.randint(0,voc.get_M()-1)
@@ -29,7 +29,7 @@ class StratNaive(Strategy):
 
 	def pick_w(self,m,voc,mem):
 		if m in voc.get_known_meanings():
-			tempindexw=random.randint(0,voc.get_known_words(m).length()-1)
+			tempindexw=random.randint(0,len(voc.get_known_words(m))-1)
 			w=voc.get_known_words(m)[tempindexw]
 		else:
 			w=random.randint(0,voc.get_W()-1)
@@ -54,12 +54,6 @@ class StratNaive(Strategy):
 	def init_memory(self,voc):
 		return {}
 
+##################################### STRATEGIE DELAUNAY########################################
 class StratDelaunay(StratNaive):
 	_strattype="delaunay"
-
-
-if __name__ == "__main__":
-	print "main"
-	test=ngstrat.Strategy("naive")
-	voc=ngstrat.Vocabulary("matrix",5,8)
-	test.pick_mw(voc,{})

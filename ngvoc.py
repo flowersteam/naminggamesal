@@ -155,9 +155,6 @@ class VocSparse(VocMatrix):
 		else:
 			return 0
 
-	def get_content(self):
-		return self._content
-
 	def get_size(self):
 		return self._size
 

@@ -45,7 +45,7 @@ class Experiment(object):
 		return self._poplist[tempindex].deepcopy()
 
 
-	def continue_exp(self,T,*progress_info):
+	def continue_exp(self,T,*progress_info,**kwargs):
 		temppop=self.get_pop("last")
 		temptmax=self._T[-1]
 		while temptmax <T :
@@ -54,6 +54,11 @@ class Experiment(object):
 			temppop.play_game(self._time_step,*progress_info_2)
 			self.add_pop(temppop.deepcopy(),self._T[-1]+self._time_step)
 			temptmax+=self._time_step
+		if self._T[-1]!=T:
+			if len(progress_info)!=0:
+				progress_info_2=(progress_info[0]+" T:"+str(T-1)+"/"+str(T),)
+			temppop.play_game(T-self._T[-1],*progress_info_2)
+			self.add_pop(temppop.deepcopy(),T)
 
 	def add_pop(self,pop,T):
 		self._poplist.append(pop)
