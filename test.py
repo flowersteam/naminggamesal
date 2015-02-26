@@ -25,51 +25,13 @@
 
 # print "tmat:%d"%tmat
 # print "tsp:%d"%tsp
+import sys
+from blessings import Terminal
+from time import sleep
+import multiprocessing
 
-import ngmeth
-import time
-import matplotlib.pyplot as plt
+import my_functions
 
-M=20
-N=20
-W=20
-strat="naive"
-voc="sparse"
-Treal=400
-step=10
-T=Treal/step
-iterr=1
-
-def generate():
-
-	for i in range(0,iterr):
-		tempstr="iterr:"+str(i)+"/"+str(iterr)
-		tempsimu=ngmeth.Experiment(voc,strat,M,W,N,1)
-		for j in range(0,T):
-			tempstr=tempstr+" T:"+str(j)+"/"+str(T)
-			tempsimu.continue_exp()
-		#tempsimu.save("tempsimdir/tmp"+str(int(time.time()))+".tmp")
-	return tempsimu 
-
-def plot(simu):
-	data=ngmeth.Nlinkmoyenexpe(simu)
-	plt.plot(data[0])
-	plt.show()
-
-print "test"
-
-print __name__
-
-
-
-Xtemp=a
-Ytemp=b 
-
-for j in range(0,len(Xtemp)):
-	tempdic[Xtemp[j]]=Ytemp[j]
-
-temptup=sorted(tempdic.items())
-
-for j in range(0,len(temptup)):
-	Xtemp[j]=temptup[j][0]
-	Ytemp[j]=temptup[j][1]
+for i in range(20):
+	my_functions.print_on_line("TESTTEST______TESTTESTTEST",18)
+	print str(i)*30

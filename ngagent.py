@@ -7,6 +7,7 @@ import os
 from ngstrat import *
 from copy import deepcopy
 import pickle
+import my_functions
 
 class Agent(object):
 	def __init__(self,voctype,strattype,agent_id,M,W):
@@ -126,7 +127,7 @@ class Population(object):
 			j+=1
  		return self._agentlist[j].get_id()
 
-	def play_game(self,steps,*progress_info):
+	def play_game(self,steps,**kwargs):
 		for i in range(0,steps):
 			speaker_id=self.pick_speaker()
 			hearer_id=self.pick_hearer(speaker_id)
@@ -145,8 +146,8 @@ class Population(object):
 			speaker.update_speaker(ms,w,mh)
 			hearer.update_hearer(ms,w,mh)
 			self._lastgameinfo=[ms,w,mh,speaker_id,hearer_id]
-			if len(progress_info)!=0:
-				print progress_info[0]+" step:"+str(i)+"/"+str(steps)
+			if "progress_info" in kwargs.keys():
+				my_functions.print_on_line_pid(kwargs["progress_info"]+" step:"+str(i)+"/"+str(steps))
 
 	def get_lastgameinfo(self):
 		return self._lastgameinfo

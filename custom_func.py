@@ -15,7 +15,7 @@ class CustomFunc(object):
 			self.graph_config[key]=value
 		self.graph_config_temp=copy.deepcopy(self.graph_config)
 
-	def apply(self,data,*progress_info):
+	def apply(self,data,**kwargs):
 		self.graph_config_temp=copy.deepcopy(self.graph_config)
 		if self.graph_config["xlabel"]=="":
 			try:
@@ -27,8 +27,8 @@ class CustomFunc(object):
 				self.graph_config_temp["ylabel"]=self.func.__name__+"("+data.__name__+")"
 			except AttributeError:
 				pass
-		if len(progress_info)!=0:
-			return self.func(data,progress_info[0])
+		if "progress_info" in kwargs.keys():
+			return self.func(data,progress_info=kwargs["progress_info"])
 		return self.func(data)
 
 	def modify_graph_config(self,**kwargs):

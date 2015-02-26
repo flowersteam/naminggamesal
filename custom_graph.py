@@ -18,6 +18,7 @@ def load_graph(filename):
 
 class CustomGraph(object):
 	def __init__(self,Y,*arg,**kwargs):
+		self.keepwinopen=0
 		self.sort=1
 		self.filename="graph"+time.strftime("%Y%m%d%H%M%S", time.localtime())
 		if "filename" in kwargs.keys():

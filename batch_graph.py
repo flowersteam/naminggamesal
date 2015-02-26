@@ -8,20 +8,35 @@ import custom_graph
 import glob
 import os
 import copy
+import multiprocessing
 
-SHOW_POP=1
+
+
+#tmsu repair -D ./premiertest/.tmsu/db --remove
+#tmsu mount -o allow_other -D ./premiertest/.tmsu/db /home/will/tmsufs
+#
+#
+#
+MULTI_PROCESSING=0
+NB_PROCESS=1
+
+SHOW_POP=0
 SHOW_EXPE=1
-PROGRESS_SHOW=0
+KEEP_PLOTWIN_OPEN=0
+PROGRESS_SHOW=1
+if PROGRESS_SHOW:
+	os.system("clear")
+
 GRAPH_STD=1
 GRAPH_MULTI=0
 
-TAG_BIN_EXPE="filetypeexpebinary"
+TAG_BIN_EXPE="filetype=expebinary"
 
 OUT_PATH="./premiertest/"
 SOURCE_PATH_LIST=["./premiertest/"]
 tmsu_db="./premiertest/.tmsu/db"
 tmsu_ng=tmsu.Tmsu(dbpath=tmsu_db)
-funclist=[custom_Nlinksurs]
+funclist=[custom_Nlinksurs,custom_success_rate]
 
 
 
@@ -73,7 +88,9 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 	
 	
 	###BOUCLE PRINCIPALE
-	for tempfun in funclist:
+
+	def compute_batch(tempfun_nb):
+		tempfun=funclist[tempfun_nb]
 		tempdataexpe=[]
 		for path_filename_num_ext in filelist:
 			path_filename_ext=os.popen("readlink -f "+path_filename_num_ext, "r").read()
@@ -88,7 +105,7 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 				for j in range(0,len(tempsimu._poplist)):
 					progress_info=tempfun.func.__name__+" "+filename_ext+" T:"+str(tempsimu._T[j])+"/"+str(tempsimu._T[-1])
 					if PROGRESS_SHOW:
-						tempout=tempfun.apply(tempsimu._poplist[j],progress_info)
+						tempout=tempfun.apply(tempsimu._poplist[j],progress_info=progress_info)
 					else:
 						tempout=tempfun.apply(tempsimu._poplist[j])
 					tempoutmean.append(tempout[0])
@@ -109,10 +126,10 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 					temptags.remove(TAG_BIN_EXPE)
 				else:
 					print "note: le tag_bin_expe n est pas dans les temptags"
-				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags="binarygraph")
+				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=["filetype=binarygraph"])
 				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=temptags)
 				for extension in tempgraph.extensions:
-					tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=extension)
+					tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=["filetype="+extension])
 					tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=temptags)
 	
 				tempdataexpe.append(copy.deepcopy(tempgraph))
@@ -123,7 +140,7 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 				for j in range(0,len(tempsimu._poplist)):
 					progress_info=tempfun.func.__name__+" "+filename_ext+" T:"+str(tempsimu._T[j])+"/"+str(tempsimu._T[-1])
 					if PROGRESS_SHOW:
-						tempout.append(tempfun.apply(tempsimu._poplist[j],progress_info))
+						tempout.append(tempfun.apply(tempsimu._poplist[j],progress_info=progress_info))
 					else:
 						tempout.append(tempfun.apply(tempsimu._poplist[j]))
 				configgraph=tempfun.get_graph_config()
@@ -139,10 +156,10 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 					temptags.remove(TAG_BIN_EXPE)
 				else:
 					print "note: le tag_bin_expe n est pas dans les temptags"
-				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags="binarygraph")
+				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=["filetype=binarygraph"])
 				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=temptags)
 				for extension in tempgraph.extensions:
-					tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=extension)
+					tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=["filetype="+extension])
 					tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=temptags)
 	
 				tempdataexpe.append(copy.deepcopy(tempgraph))
@@ -150,7 +167,7 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 	
 			elif tempfun.level=="experiment":
 	
-				tempout=tempfun.apply(tempsimu)[0]
+				tempout=tempfun.apply(tempsimu)
 				tempdataexpe.append(tempout)
 	
 		if tempfun.level=="agent" or "population":
@@ -170,10 +187,10 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 			tempgraph.write_files(OUT_PATH)
 			#TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGS
 			temptags=["level="+tempfun.level,"multi","diffparam="+differing_param_id,"date="+timecompact,"fonction="+tempfun.func.__name__,"strat="+filelist_parsed[0][1]]
-			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags="binarygraph")
+			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=["filetype=binarygraph"])
 			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=temptags)
 			for extension in tempgraph.extensions:
-				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=extension)
+				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=["filetype="+extension])
 				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=temptags)
 	
 			tempgraph.filename=temp1+"merged"+temp2
@@ -186,10 +203,10 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 			tempgraph.write_files(OUT_PATH)
 			#TAAAAAAAAAAAAAAAAAAAAAAAAAAAAGS
 			temptags=["level="+tempfun.level,"merged","diffparam="+differing_param_id,"date="+timecompact,"fonction="+tempfun.func.__name__,"strat="+filelist_parsed[0][1]]
-			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags="binarygraph")
+			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=["filetype=binarygraph"])
 			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=temptags)
 			for extension in tempgraph.extensions:
-				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=extension)
+				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=["filetype="+extension])
 				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=temptags)
 	
 		elif tempfun.level=="experiment":
@@ -204,9 +221,29 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 			tempgraph.write_files(OUT_PATH)
 			#TAAAAAAAAAAAAAAAAAAAAAAAAAAAAGS
 			temptags=["level="+tempfun.level,"diffparam="+differing_param_id,"date="+timecompact,"fonction="+tempfun.func.__name__,"strat="+filelist_parsed[0][1]]
-			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags="binarygraph")
+			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=["filetype=binarygraph"])
 			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=temptags)
 			for extension in tempgraph.extensions:
-				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=extension)
+				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=["filetype="+extension])
 				tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+"."+extension,tags=temptags)
+	
 
+
+###################### EXECUTION####################################
+
+if MULTI_PROCESSING and __name__=="__main__":
+	proc_pool=multiprocessing.Pool(processes=NB_PROCESS)
+	test=proc_pool.map_async(compute_batch,range(len(funclist))).get(9999999)
+else:
+	for tempfun_nb in range(len(funclist)):
+		compute_batch(tempfun_nb)
+
+
+#pausing to keep graphs opened
+if (SHOW_EXPE or SHOW_POP) and KEEP_PLOTWIN_OPEN:
+	raw_input("Press Enter to end program and close graphs")
+
+#PYTHON3
+#import msvcrt as m
+# def wait():
+#     m.getch()
