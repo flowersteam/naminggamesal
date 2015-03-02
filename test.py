@@ -25,13 +25,32 @@
 
 # print "tmat:%d"%tmat
 # print "tsp:%d"%tsp
-import sys
-from blessings import Terminal
-from time import sleep
-import multiprocessing
 
-import my_functions
+import matplotlib.pyplot as plt
+import numpy as np 
+M=1000
+W=M
+def G(m):
+	return -np.log2(W-m)
 
-for i in range(20):
-	my_functions.print_on_line("TESTTEST______TESTTESTTEST",18)
-	print str(i)*30
+def Pp(m):
+	return (M-m)*(W-m)/float(M*W)
+
+
+def Pm(m):
+	return (m*m-m)/float(M*W)
+
+def gain(m):
+	return Pp(m)*G(m)-Pm(m)*G(m-1)
+
+Y=[]
+Y2=[]
+
+for i in range(2,M-2):
+	Y.append(gain(i+1)+G(i))
+	Y2.append(gain(i))
+
+plt.ion()
+plt.plot(range(2,M-2),Y)
+plt.plot(range(2,M-2),Y2)
+plt.show()

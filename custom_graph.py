@@ -5,9 +5,7 @@ import matplotlib.pyplot as plt
 import time
 import numpy as np
 import pickle
-
-
-plt.ion()
+import copy
 
 def load_graph(filename):
 	with open(filename, 'rb') as fichier:
@@ -70,8 +68,9 @@ class CustomGraph(object):
 
 	def show(self):
 		plt.figure()
+		plt.ion()
 		self.draw()
-		#plt.show()
+		plt.show()
 
 	def save(self,*path):
 		if len(path)!=0:
@@ -95,7 +94,9 @@ class CustomGraph(object):
 
 
 	def draw(self):
+		colormap=['blue','red','green','black','yellow','cyan','magenta']
 		#plt.figure()
+		plt.ion()
 		plt.cla()
 		plt.clf()
 		for i in range(0,len(self._Y)): 
@@ -127,8 +128,8 @@ class CustomGraph(object):
 				for j in range(0,len(Ytemp)):
 					Ytempmax[j]=Ytemp[j]+stdtemp[j]
 					Ytempmin[j]=Ytemp[j]-stdtemp[j]
-				plt.fill_between(Xtemp,Ytempmin,Ytempmax,alpha=self.alpha,**self.Yoptions[i])
-			plt.plot(Xtemp,Ytemp,**self.Yoptions[i])
+				plt.fill_between(Xtemp,Ytempmin,Ytempmax,alpha=self.alpha,color=colormap[i%7],**self.Yoptions[i])
+			plt.plot(Xtemp,Ytemp,color=colormap[i%7],**self.Yoptions[i])
 		plt.xlabel(self.xlabel)
 		plt.ylabel(self.ylabel)
 		plt.title(self.title)
@@ -140,7 +141,7 @@ class CustomGraph(object):
 		if self.ymin[0]:
 			plt.ylim(ymin=self.ymin[1])
 		if self.ymax[0]:
-			plt.ylim(xmax=self.ymax[1])
+			plt.ylim(ymax=self.ymax[1])
 		plt.legend()
 		plt.draw()
 
@@ -156,6 +157,7 @@ class CustomGraph(object):
 		stdarray=np.array(self.stdvec)
 		stdtemp=[]
 		Ytemp=[]
+		self.Yoptions=[self.Yoptions[0]]
 
 		for i in range(0,len(self._Y[0])):
 			Ytemp.append(np.mean(list(Yarray[:,i])))
@@ -165,5 +167,37 @@ class CustomGraph(object):
 		self._X=[self._X[0]]
 
 
+	def wise_merge(self):
+		param_list=[]
+		for i in range(len(self.Yoptions)):
+			param_list.append(self.Yoptions[i]["label"])
+		param_values={}
+		for ind,param in enumerate(param_list):
+			if param not in param_values.keys():
+				param_values[param]=copy.deepcopy(self)
+				param_values[param]._X=[self._X[ind]]
+				param_values[param]._Y=[self._Y[ind]]
+				param_values[param].Yoptions=[self.Yoptions[ind]]
+			else:
+				tempgraph=copy.deepcopy(self)
+				tempgraph._X=[self._X[ind]]
+				tempgraph._Y=[self._Y[ind]]
+				tempgraph.Yoptions=[self.Yoptions[ind]]
+				param_values[param].add_graph(copy.deepcopy(tempgraph))
+		tempgraph=copy.deepcopy(self)
+		tempgraph._X=[]
+		tempgraph._Y=[]
+		tempgraph.Yoptions=[]
+		tempgraph.stdvec=[]
+		for key in param_values.keys():
+			param_values[key].merge()
+			tempgraph.add_graph(param_values[key])
+		return tempgraph
+
+	def empty(self):
+		self._Y=[]
+		self._X=[]
+		self.Yoptions=[]
+		self.stdvec=[]
 
 

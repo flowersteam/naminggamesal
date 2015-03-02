@@ -7,7 +7,7 @@ import os
 class Tmsu:
 
 	def __init__(self,**kwargs):
-		for key, value in kwargs.iteritems():      # styles is a regular dictionary
+		for key, value in kwargs.iteritems():    
 			setattr(self, key, value)
 
 	def tag(self,**kwargs):

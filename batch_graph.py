@@ -16,13 +16,12 @@ import multiprocessing
 #tmsu mount -o allow_other -D ./premiertest/.tmsu/db /home/will/tmsufs
 #
 #
-#
 MULTI_PROCESSING=0
-NB_PROCESS=1
+NB_PROCESS=2
 
 SHOW_POP=0
 SHOW_EXPE=1
-KEEP_PLOTWIN_OPEN=0
+KEEP_PLOTWIN_OPEN=1
 PROGRESS_SHOW=1
 if PROGRESS_SHOW:
 	os.system("clear")
@@ -32,11 +31,41 @@ GRAPH_MULTI=0
 
 TAG_BIN_EXPE="filetype=expebinary"
 
+
+date1="2015"+"03"+"02"+"02"+"29"+"00"
 OUT_PATH="./premiertest/"
-SOURCE_PATH_LIST=["./premiertest/"]
+
+
+
+
+#SOURCE_PATH_LIST=["./premiertest/"]
+
+#SOURCE_PATH_LIST=["/media/tmsufs/tags"
+#+"/nbagents/="+"40"
+#+"/Tmax/="+"30000"
+#+"/M/="+valueM
+#+"/W/="+valueW
+#+"/strategy/="+valuestrat
+#+"/"]
+
+SOURCE_PATH_LIST=["/media/tmsufs/queries/date>"+date1+"/"]
+
+
+
+
 tmsu_db="./premiertest/.tmsu/db"
 tmsu_ng=tmsu.Tmsu(dbpath=tmsu_db)
-funclist=[custom_Nlinksurs,custom_success_rate]
+
+
+funclist=[
+#custom_Nlinksurs,
+#custom_Nlink,
+#custom_success_rate,
+#custom_entropy,
+custom_entropypop,
+#custom_entropycouples,
+custom_entropydistrib
+]
 
 
 
@@ -48,7 +77,7 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 	##GET Yopt/X values niveau expe en comparant les filenames
 	filelist_parsed=[]
 	for path_filename_num_ext in filelist:
-		path_filename_ext=os.popen("readlink -f "+path_filename_num_ext, "r").read()
+		path_filename_ext=os.popen("readlink -f "+"'"+path_filename_num_ext+"'", "r").read()
 		filename_ext=os.path.basename(path_filename_ext)[:-1]
 		filename=filename_ext[:-2]
 		filename=filename.split('_')
@@ -93,10 +122,10 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 		tempfun=funclist[tempfun_nb]
 		tempdataexpe=[]
 		for path_filename_num_ext in filelist:
-			path_filename_ext=os.popen("readlink -f "+path_filename_num_ext, "r").read()
-			filename_ext=os.path.basename(path_filename_ext)[:-1]
+			path_filename_ext=os.popen("readlink -f "+"'"+path_filename_num_ext+"'", "r").read()[:-1]
+			filename_ext=os.path.basename(path_filename_ext)
 			filename=filename_ext[:-2]
-			tempsimu=load_experiment(SOURCE_PATH+filename_ext)
+			tempsimu=load_experiment(path_filename_ext)
 			tempoutmean=[]
 			tempoutstd=[]
 	
@@ -122,6 +151,7 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 				tempgraph.write_files(OUT_PATH)
 				temptags=tmsu_ng.get_tags_list(filename=path_filename_ext)
 				temptags.append("fonction="+tempfun.func.__name__)
+				temptags.append("graphdate="+time.strftime("%Y%m%d%H%M%S", time.localtime()))
 				if TAG_BIN_EXPE in temptags:
 					temptags.remove(TAG_BIN_EXPE)
 				else:
@@ -152,6 +182,7 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 				tempgraph.write_files(OUT_PATH)
 				temptags=tmsu_ng.get_tags_list(filename=path_filename_ext)
 				temptags.append("fonction="+tempfun.func.__name__)
+				temptags.append("graphdate="+time.strftime("%Y%m%d%H%M%S", time.localtime()))
 				if TAG_BIN_EXPE in temptags:
 					temptags.remove(TAG_BIN_EXPE)
 				else:
@@ -186,6 +217,7 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 				tempgraph.show()
 			tempgraph.write_files(OUT_PATH)
 			#TAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGS
+			temptags.append("graphdate="+time.strftime("%Y%m%d%H%M%S", time.localtime()))
 			temptags=["level="+tempfun.level,"multi","diffparam="+differing_param_id,"date="+timecompact,"fonction="+tempfun.func.__name__,"strat="+filelist_parsed[0][1]]
 			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=["filetype=binarygraph"])
 			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=temptags)
@@ -195,13 +227,14 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 	
 			tempgraph.filename=temp1+"merged"+temp2
 			tempgraph.title=temp1+"merged"+temp2
-			tempgraph.merge()
+			tempgraph=tempgraph.wise_merge()
 			tempgraph.std=1
-			tempgraph.Yoptions=[{}]
+			#tempgraph.Yoptions=[{}]
 			if SHOW_EXPE:
 				tempgraph.show()
 			tempgraph.write_files(OUT_PATH)
 			#TAAAAAAAAAAAAAAAAAAAAAAAAAAAAGS
+			temptags.append("graphdate="+time.strftime("%Y%m%d%H%M%S", time.localtime()))
 			temptags=["level="+tempfun.level,"merged","diffparam="+differing_param_id,"date="+timecompact,"fonction="+tempfun.func.__name__,"strat="+filelist_parsed[0][1]]
 			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=["filetype=binarygraph"])
 			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=temptags)
@@ -220,6 +253,7 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 				tempgraph.show()
 			tempgraph.write_files(OUT_PATH)
 			#TAAAAAAAAAAAAAAAAAAAAAAAAAAAAGS
+			temptags.append("graphdate="+time.strftime("%Y%m%d%H%M%S", time.localtime()))
 			temptags=["level="+tempfun.level,"diffparam="+differing_param_id,"date="+timecompact,"fonction="+tempfun.func.__name__,"strat="+filelist_parsed[0][1]]
 			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=["filetype=binarygraph"])
 			tmsu_ng.tag(filename=OUT_PATH+tempgraph.filename+".b",tags=temptags)
@@ -247,3 +281,4 @@ if (SHOW_EXPE or SHOW_POP) and KEEP_PLOTWIN_OPEN:
 #import msvcrt as m
 # def wait():
 #     m.getch()
+

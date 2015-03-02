@@ -10,10 +10,10 @@ import pickle
 import my_functions
 
 class Agent(object):
-	def __init__(self,voctype,strattype,agent_id,M,W):
+	def __init__(self,voctype,strat,agent_id,M,W):
 		self._id=agent_id;
 		self._vocabulary=Vocabulary(voctype,M,W)
-		self._strategy=Strategy(strattype)
+		self._strategy=Strategy(strat)
 		self.init_memory()
 		self._M=M
 		self._W=W
@@ -54,6 +54,14 @@ class Agent(object):
 		self._strategy.update_speaker(ms,w,mh,self._vocabulary,self._memory)
 
 
+
+
+
+
+
+
+
+
 class Population(object):
 	def deepcopy(self):
 		filename="temppop"+str(os.getpid())+".tmp"
@@ -67,16 +75,16 @@ class Population(object):
 		return pop_recup
 
 
-	def __init__(self,voctype,strattype,nbagents,M,W):
+	def __init__(self,voctype,strat,nbagents,M,W):
 		self._size=0
 		self._voctype=voctype
 		self._M=M
 		self._W=W
-		self._strattype=strattype
+		self._strat=strat
 		self._lastgameinfo=[]
 		self._agentlist=[]
 		for i in range (0,nbagents):
-			self.add_new_agent(self._voctype,self._strattype,i,self._M,self._W)
+			self.add_new_agent(self._voctype,self._strat,i,self._M,self._W)
 
 
 	def get_size(self):
@@ -99,12 +107,12 @@ class Population(object):
 			tempid=max(tempid,self._agentlist[i].get_id())
 		return tempid
 
-	def add_new_agent(self,voctype,strattype,*args):
+	def add_new_agent(self,voctype,strat,*args):
 		if len(args)!=0:
 			agent_id=args[0]
 		else:
 			agent_id=self.idmax()+1
-		self._agentlist.append(Agent(voctype,strattype,agent_id,self._M,self._W))
+		self._agentlist.append(Agent(voctype,strat,agent_id,self._M,self._W))
 		self._size+=1
 
 	def get_index_from_id(self,agent_id):

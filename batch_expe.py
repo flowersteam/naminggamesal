@@ -26,33 +26,52 @@ tmsu_ng=tmsu.Tmsu(dbpath=tmsu_db,path=PATH)
 
 egal=1
 
-nb_iterations=1
-stratlist=["naive"]
-Mlist=[3]
-Wlist=[10]
-Nlist=[30,50,70]
+nb_iterations=3
 
+
+M=50
+Mlist=[M]
+Wlist=[M]
+Nlist=[M]
+
+decision_vector=decvec2_from_MW(M,M)
+
+
+
+stratlist=[
+{"strattype":"naive"},
+#{"strattype":"naivedestructive"},
+{"strattype":"delaunay"},
+# {"strattype":"delaunaymodif0.95"},
+# {"strattype":"delaunaymodif0.5"},
+# {"strattype":"delaunaymodif0.75"},
+# {"strattype":"delaunaymodif0.25"},
+ {"strattype":"dichotomie"},
+ {"strattype":"dichotomierapport1.33"},
+{"strattype":"decisionvector","decvec":decision_vector}
+]
 nb_T=100
-T=2000
+T=4000
 T_step=max(T/nb_T,1)
 
 param_set_list=[]
 for iterr in range(0,nb_iterations):
-	for strattype in stratlist:
+	for strat in stratlist:
 		for M in Mlist:
 			for W in Wlist:
 				for N in Nlist:
-					param_set_list.append([iterr,strattype,M,W,N])
+					param_set_list.append([iterr,strat,M,W,N])
 
 def compute_batch(args_compute_batch):
 	iterr=args_compute_batch[0]
-	strattype=args_compute_batch[1]
+	strat=args_compute_batch[1]
+	strattype=strat["strattype"]
 	M=args_compute_batch[2]
 	W=args_compute_batch[3]
 	N=args_compute_batch[4]
 	time_compact=time.strftime("%Y%m%d%H%M%S", time.localtime())
 	filename="strat_"+strattype+"_M"+str(M)+"_W"+str(W)+"_"+str(N)+"agents_"+time_compact
-	tempexp=Experiment(voctype,strattype,M,W,N,T_step)
+	tempexp=Experiment(voctype,strat,N,M,W,T_step)
 	if PROGRESS_SHOW:
 		tempexp.continue_exp(T,progress_info="iteration:"+str(iterr)+"/"+str(nb_iterations)+" "+filename)
 	else:

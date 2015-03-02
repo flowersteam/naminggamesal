@@ -14,16 +14,16 @@ def load_experiment(filename):
 
 class Experiment(object):
 
-	def __init__(self,voctype,strattype,M,W,nbagent,step):
+	def __init__(self,voctype,strat,M,W,nbagent,step):
 		self._voctype=voctype
-		self._strattype=strattype
+		self._strat=strat
 		self._M=M
 		self._W=W
 		self._nbagent=nbagent
 		self._time_step=step
 		self._T=[]
 		self._poplist=[]
-		self.add_pop(Population(voctype,strattype,M,W,nbagent),0)
+		self.add_pop(Population(voctype,strat,M,W,nbagent),0)
 
 
 
