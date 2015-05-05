@@ -29,29 +29,40 @@ egal=1
 nb_iterations=3
 
 
-M=50
+M=5
 Mlist=[M]
 Wlist=[M]
 Nlist=[M]
 
 decision_vector=decvec2_from_MW(M,M)
 
+decision_vector3=decvec3_from_MW(M,M)
+
 
 
 stratlist=[
 {"strattype":"naive"},
+#{"strattype":"naivereal"},
 #{"strattype":"naivedestructive"},
-{"strattype":"delaunay"},
+#{"strattype":"delaunay"},
+#{"strattype":"delaunayreal"},
+#{"strattype":"lastresult"},
+#{"strattype":"lastresultreal"},
 # {"strattype":"delaunaymodif0.95"},
 # {"strattype":"delaunaymodif0.5"},
 # {"strattype":"delaunaymodif0.75"},
-# {"strattype":"delaunaymodif0.25"},
- {"strattype":"dichotomie"},
- {"strattype":"dichotomierapport1.33"},
-{"strattype":"decisionvector","decvec":decision_vector}
+# # {"strattype":"delaunaymodif0.25"},
+# {"strattype":"dichotomie","M":M},
+# {"strattype":"dichotomierapport1.5","M":M},
+# {"strattype":"dichotomierapport1.33","M":M},
+# {"strattype":"dichotomierapport1.7","M":M}#,
+#{"strattype":"decisionvector","decvec":decision_vector},
+# {"strattype":"decisionvector","decvec":decision_vector3},
+# {"strattype":"decisionvectorreal","decvec":decision_vector3}
 ]
+
 nb_T=100
-T=4000
+T=1000
 T_step=max(T/nb_T,1)
 
 param_set_list=[]
@@ -95,6 +106,23 @@ def compute_batch(args_compute_batch):
 		tmsu_ng.tag(filename=PATH+filename+".b",tags=temptags)
 	else:	
 		print "filename déjà utilisé"
+		time_compact=time.strftime("%Y%m%d%H%M%S", time.localtime())
+		temptags=[]
+		tempexp.save(PATH+filename+time_compact+".b")
+		if egal==1:
+			egal_or_not="="
+		else:
+			egal_or_not=""
+		temptags.append("strategy"+egal_or_not+strattype)
+		temptags.append("vocabulary"+egal_or_not+voctype)
+		temptags.append("M"+egal_or_not+str(M))
+		temptags.append("W"+egal_or_not+str(W))
+		temptags.append("nbagents"+egal_or_not+str(N))
+		temptags.append("Tmax"+egal_or_not+str(T))
+		temptags.append("T_step"+egal_or_not+str(T_step))
+		temptags.append("date"+egal_or_not+time_compact)
+		temptags.append("filetype"+egal_or_not+"expebinary")
+		tmsu_ng.tag(filename=PATH+filename+time_compact+".b",tags=temptags)
 
 if MULTI_PROCESSING and __name__=="__main__":
 	proc_pool=multiprocessing.Pool(processes=NB_PROCESS)

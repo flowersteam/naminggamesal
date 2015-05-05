@@ -182,6 +182,22 @@ class Population(object):
 			print "Agent ID: %s" %args
 			self._agentlist[i].affiche()
 
+	def get_content(self,*args):
+		if len(args)==0:
+			temprep=np.matrix(np.zeros((self._M,self._W)))
+			for i in range(0,self._size):
+				temprep=temprep+self._agentlist[i].get_vocabulary_content()
+			return temprep/self._size
+		elif args[0]=="all":
+			temprep=[]
+			for i in range(0,self._size):
+				temprep.append(self._agentlist[i].get_vocabulary_content())
+			return temprep
+		else:
+			i=self.get_index_from_id(args[0])
+			print "Agent ID: %s" %args
+			self._agentlist[i].affiche()
+
 
 
 

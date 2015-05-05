@@ -45,7 +45,7 @@ class CustomGraph(object):
 			self._X=[range(0,len(Y))]
 
 
-		self.extensions=["eps","png"]
+		self.extensions=["eps","png","pdf"]
 
 		for key,value in kwargs.iteritems():
 			setattr(self,key,value)
@@ -87,14 +87,21 @@ class CustomGraph(object):
 		else:
 			out_path=""
 
-		self.draw()
 		self.save(out_path)
+		self.draw()
 		for extension in self.extensions:
-			plt.savefig(out_path+self.filename+"."+extension,format=extension)
+			plt.savefig(out_path+self.filename+"."+extension,format=extension,bbox_inches='tight')
 
 
 	def draw(self):
-		colormap=['blue','red','green','black','yellow','cyan','magenta']
+		
+		#colormap=['blue','black','green','red','yellow','cyan','magenta']
+		#colormap=['black','green','red','blue','yellow','cyan','magenta']
+		#colormap=['blue','red','green','black','yellow','cyan','magenta']
+		#colormap=['black','green','blue','red','yellow','cyan','magenta']
+		colormap=['darkolivegreen','green','darkorange','red','yellow','cyan','magenta']
+		
+
 		#plt.figure()
 		plt.ion()
 		plt.cla()
@@ -143,6 +150,13 @@ class CustomGraph(object):
 		if self.ymax[0]:
 			plt.ylim(ymax=self.ymax[1])
 		plt.legend()
+		
+		#plt.legend(bbox_to_anchor=(0,0,0.55,0.8))
+		#plt.legend(bbox_to_anchor=(0,0,0.5,1))
+		#
+		#plt.legend(bbox_to_anchor=(0,0,1,0.7))
+		plt.legend(bbox_to_anchor=(0,0,1,0.54))
+
 		plt.draw()
 
 

@@ -5,10 +5,15 @@ from ngvoc import *
 
 class Strategy(object):
 	def __new__(cls,strat):
-		M=10
 		_strattype=strat["strattype"]
+		if "M" in strat.keys():
+			M=strat["M"]
 		if _strattype=="naive":
 			tempstrat=object.__new__(StratNaive)
+			tempstrat._strattype=_strattype
+			return tempstrat
+		if _strattype=="naivereal":
+			tempstrat=object.__new__(StratNaiveReal)
 			tempstrat._strattype=_strattype
 			return tempstrat
 		elif _strattype=="naivedestructive":
@@ -20,6 +25,11 @@ class Strategy(object):
 			tempstrat.threshold_explo=0.9
 			tempstrat._strattype=_strattype
 			return tempstrat
+		elif _strattype=="delaunayreal":
+			tempstrat=object.__new__(StratDelaunayReal)
+			tempstrat.threshold_explo=0.9
+			tempstrat._strattype=_strattype
+			return tempstrat
 		elif _strattype[:13]=="delaunaymodif":
 			tempstrat=object.__new__(StratDelaunay)
 			tempstrat.threshold_explo=float(_strattype[13:])
@@ -27,6 +37,11 @@ class Strategy(object):
 			return tempstrat
 		elif _strattype=="decisionvector":
 			tempstrat=object.__new__(StratDecisionVector)
+			tempstrat.decision_vector=strat["decvec"]
+			tempstrat._strattype=_strattype
+			return tempstrat
+		elif _strattype=="decisionvectorreal":
+			tempstrat=object.__new__(StratDecisionVectorReal)
 			tempstrat.decision_vector=strat["decvec"]
 			tempstrat._strattype=_strattype
 			return tempstrat
@@ -52,6 +67,10 @@ class Strategy(object):
 			return tempstrat
 		elif _strattype=="lastresult":
 			tempstrat=object.__new__(StratLastResult)
+			tempstrat._strattype=_strattype
+			return tempstrat
+		elif _strattype=="lastresultreal":
+			tempstrat=object.__new__(StratLastResultReal)
 			tempstrat._strattype=_strattype
 			return tempstrat
 		else:
@@ -138,6 +157,48 @@ class StratNaive(Strategy):
 	def init_memory(self,voc):
 		return {}
 
+		##################################### STRATEGIE NAIVE REELLE########################################
+class StratNaiveReal(Strategy):
+
+	def guess_m(self,w,voc,mem):
+		if w in voc.get_known_words():
+			tempindexm=random.randint(0,len(voc.get_known_meanings(w))-1)
+			m=voc.get_known_meanings(w)[tempindexm]
+		else:
+			if len(voc.get_known_meanings())<voc._M:
+				m=voc.get_new_unknown_m()
+			else:
+				m=random.randint(0,voc.get_M()-1)
+		return m
+
+	def pick_w(self,m,voc,mem):
+		if m in voc.get_known_meanings():
+			w=voc.get_random_known_w(m)
+		else:
+			w=voc.get_new_unknown_w()
+		return w
+
+
+	def pick_mw(self,voc,mem):
+		m=random.randint(0,voc.get_M()-1)
+		w=self.pick_w(m,voc,mem)
+		return([m,w])
+
+	def update_hearer(self,ms,w,mh,voc,mem):
+		voc.add(ms,w,1)
+		if ms==mh:
+			voc.rm_syn(ms,w)
+			voc.rm_hom(ms,w)
+
+	def update_speaker(self,ms,w,mh,voc,mem):
+		voc.add(ms,w,1)
+		if ms==mh:
+			voc.rm_syn(ms,w)
+			voc.rm_hom(ms,w)
+		
+	def init_memory(self,voc):
+		return {}
+
 ##################################### STRATEGIE DELAUNAY########################################
 class StratDelaunay(StratNaive):
 
@@ -192,11 +253,84 @@ class StratDelaunay(StratNaive):
 
 
 
+##################################### STRATEGIE DELAUNAY REELLE########################################
+class StratDelaunayReal(StratNaive):
+
+	def pick_mw(self,voc,mem):
+		test1=self.get_success_rate_over_known_meanings(voc,mem)>self.threshold_explo
+		test2=len(voc.get_known_meanings())==voc._M
+		test3=len(voc.get_known_meanings())==0
+		if (test1 or test3) and (not test2):
+			m=voc.get_new_unknown_m()
+			w=voc.get_new_unknown_w()
+		else:
+			m=voc.get_random_known_m()
+			w=self.pick_w(m,voc,mem)
+		return([m,w])
+
+
+	def update_hearer(self,ms,w,mh,voc,mem):
+		voc.add(ms,w,1)
+		if ms==mh:
+			mem["success_m"][mh]+=1
+			voc.rm_syn(ms,w)
+			voc.rm_hom(ms,w)
+		else:
+			mem["fail_m"][mh]+=1
+
+	def update_speaker(self,ms,w,mh,voc,mem):
+		voc.add(ms,w,1)
+		if ms==mh:
+			mem["success_m"][ms]+=1
+			voc.rm_syn(ms,w)
+			voc.rm_hom(ms,w)
+		else:
+			mem["fail_m"][ms]+=1
+		
+	def init_memory(self,voc):
+		mem={}
+		mem["success_m"]=[0]*voc._M
+		mem["fail_m"]=[0]*voc._M
+		return mem
+
+	def get_success_rate_over_known_meanings(self,voc,mem):
+		succ_sum=0
+		fail_sum=0
+		for m in voc.get_known_meanings():
+			succ_sum+=mem["success_m"][m]
+			fail_sum+=mem["fail_m"][m]
+		if succ_sum==0:
+			return 0
+		else:
+			return succ_sum/float(fail_sum+succ_sum)
+
+
+
+
 ################################### STRATEGIE DECISION VECTOR #########################################""
 
 #Ne pas oublier STRATTYPE, NAME et l'initialisation dans la classe strategy
 
 class StratDecisionVector(StratNaive):
+
+	def pick_mw(self,voc,mem):
+		Mtemp=len(voc.get_known_meanings())
+		tirage=random.random()
+		if tirage<self.decision_vector[Mtemp]:
+			m=voc.get_new_unknown_m()
+		else:
+			m=voc.get_random_known_m()
+		w=self.pick_w(m,voc,mem)
+		return([m,w])
+
+
+	def init_memory(self,voc):
+		return {}
+################################### STRATEGIE DECISION VECTOR REELLE#########################################""
+
+#Ne pas oublier STRATTYPE, NAME et l'initialisation dans la classe strategy
+
+class StratDecisionVectorReal(StratNaiveReal):
 
 	def pick_mw(self,voc,mem):
 		Mtemp=len(voc.get_known_meanings())
@@ -222,7 +356,8 @@ class StratLastResult(StratNaive):
 	def pick_mw(self,voc,mem):
 		test2=len(voc.get_known_meanings())==voc._M
 		test3=len(voc.get_known_meanings())==0
-		if (mem["result"] or test3) and (not test2):
+		#if (mem["result"] or test3) and (not test2):
+		if mem["result"]:
 			m=voc.get_new_unknown_m()
 			w=voc.get_new_unknown_w()
 		else:
@@ -248,6 +383,44 @@ class StratLastResult(StratNaive):
 		voc.add(ms,w,1)
 		voc.rm_syn(ms,w)
 		voc.rm_hom(ms,w)
+
+	def init_memory(self,voc):
+		mem={}
+		mem["result"]=1
+		return mem
+
+##################################### STRATEGIE LAST_RESULT REELLE########################################
+class StratLastResultReal(StratNaiveReal):
+
+	def pick_mw(self,voc,mem):
+		test2=len(voc.get_known_meanings())==voc._M
+		test3=len(voc.get_known_meanings())==0
+		if (mem["result"] or test3) and (not test2):
+			m=voc.get_new_unknown_m()
+			w=voc.get_new_unknown_w()
+		else:
+			m=voc.get_random_known_m()
+			w=self.pick_w(m,voc,mem)
+		return([m,w])
+
+
+	def update_hearer(self,ms,w,mh,voc,mem):
+		voc.add(ms,w,1)
+		if ms==mh:
+			mem["result"]=1
+			voc.rm_syn(ms,w)
+			voc.rm_hom(ms,w)
+		else:
+			mem["result"]=0
+
+	def update_speaker(self,ms,w,mh,voc,mem):
+		voc.add(ms,w,1)
+		if ms==mh:
+			mem["result"]=1
+			voc.rm_syn(ms,w)
+			voc.rm_hom(ms,w)
+		else:
+			mem["result"]=0
 
 	def init_memory(self,voc):
 		mem={}

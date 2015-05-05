@@ -9,18 +9,19 @@ import matplotlib.pyplot as plt
 import multiprocessing
 import custom_graph
 import copy
+import cma
 
 MULTI_PROCESSING=0
 NB_PROCESS=2
 
 voctype="sparse"
-M=5
-W=5
-nbagents=5
+M=25
+W=M
+nbagents=M
 step=1
 
 nb_iter=5
-Tmax=1000
+Tmax=4000
 
 j=0
 
@@ -33,6 +34,9 @@ def OPERATION(pop):
 def function_to_optimize(param_array,**progressinfo):
 	strat={"strattype":"decisionvector","decvec":param_array}
 	temppop=Population(voctype,strat,nbagents,M,W)
+	for i in range(len(param_array)):
+		if not 0<=param_array[i]<=1:
+			return (3+abs(param_array[i]))*Tmax
 	for i in range(Tmax/step):
 		value=OPERATION(temppop)
 		if value==1.:#################################################
@@ -80,7 +84,7 @@ def function_to_optimize(param_array,**progressinfo):
 
 #X1=np.array(range(1,10))*0.1
 
-plot(  log2(W-m-1)*(m*m-m)   +log2(W-m)*(m*(1-M-W)-2*M*W)   +log2(W-m+1)*(-(M-m-1)*(W-m-1))    ,m=1..5),M=5,W=5
+# plot(  log2(W-m-1)*(m*m-m)   +log2(W-m)*(m*(1-M-W)-2*M*W)   +log2(W-m+1)*(-(M-m-1)*(W-m-1))    ,m=1..5),M=5,W=5
 
 
 
@@ -96,6 +100,7 @@ def function_to_optimize_iteree(*args,**kwargs):
 	for i in range(len(args[0])):
 		int_ized.append(int(args[0][i]))
 	print int_ized
+	print args[0]
 	if MULTI_PROCESSING and __name__=="__main__":
 		proc_pool=multiprocessing.Pool(processes=NB_PROCESS)
 		Ytemp=proc_pool.map_async(function_to_optimize,range(0,nb_iter_fun)).get(9999999)
@@ -132,19 +137,24 @@ take_step.stepsize=M
 decv0=np.ones(M+1)
 decv0[-1]=0
 for i in range(1,len(decv0)-1):
-	decv0[i]=random.randint(0,1)
+#	decv0[i]=random.randint(0,1)
+	decv0[i]=0.5
 
-sol=[]
-for i in range(0,10):
+solution=cma.fmin(function_to_optimize_iteree,decv0,0.1,noise_handler=cma.NoiseHandler(10))
+# solution=sciopt.basinhopping(function_to_optimize_iteree, decv0, niter=10, T=Tmax, stepsize=0.5,  interval=10,disp=True)
+print solution
+print solution.x
+# sol=[]
+# for i in range(0,10):
 	
 
-	#solution=sciopt.basinhopping(function_to_optimize_iteree, decv0, niter=10, T=10000.0, stepsize=M, minimizer_kwargs=None, take_step=take_step, accept_test=accept_test, callback=None, interval=50, disp=False, niter_success=None)
-	solution=sciopt.basinhopping(function_to_optimize_iteree, decv0, niter=10, T=Tmax, stepsize=M, take_step=take_step, interval=50,disp=True)
+# 	#solution=sciopt.basinhopping(function_to_optimize_iteree, decv0, niter=10, T=10000.0, stepsize=M, minimizer_kwargs=None, take_step=take_step, accept_test=accept_test, callback=None, interval=50, disp=False, niter_success=None)
+# 	solution=sciopt.basinhopping(function_to_optimize_iteree, decv0, niter=10, T=Tmax, stepsize=0.5,  interval=10,disp=True)
 	
 	
 
 
-	print "solution:"+str(solution.x)
-	sol.append(solution)
+# 	print "solution:"+str(solution.x)
+# 	sol.append(solution)
 
-print sol
+# print sol

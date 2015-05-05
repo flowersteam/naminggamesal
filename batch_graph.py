@@ -32,21 +32,21 @@ GRAPH_MULTI=0
 TAG_BIN_EXPE="filetype=expebinary"
 
 
-date1="2015"+"03"+"02"+"02"+"29"+"00"
-OUT_PATH="./premiertest/"
-
+date1="2015"+"03"+"13"+"18"+"51"+"00"
+#OUT_PATH="./premiertest/"
+OUT_PATH="./graphs/5_homsyn/"
 
 
 
 #SOURCE_PATH_LIST=["./premiertest/"]
 
-#SOURCE_PATH_LIST=["/media/tmsufs/tags"
-#+"/nbagents/="+"40"
-#+"/Tmax/="+"30000"
-#+"/M/="+valueM
-#+"/W/="+valueW
-#+"/strategy/="+valuestrat
-#+"/"]
+# SOURCE_PATH_LIST=["/media/tmsufs/tags"
+# +"/nbagents/="+"40"
+# +"/Tmax/="+"20000"
+# +"/M/="+"20"
+# +"/W/="+"20"
+# #+"/strategy/="+"naive"
+# +"/"]
 
 SOURCE_PATH_LIST=["/media/tmsufs/queries/date>"+date1+"/"]
 
@@ -62,9 +62,13 @@ funclist=[
 #custom_Nlink,
 #custom_success_rate,
 #custom_entropy,
-custom_entropypop,
+#custom_entropypop,
 #custom_entropycouples,
-custom_entropydistrib
+#custom_entropydistrib,
+#custom_entropy_moyen_norm,
+#custom_entropypop_norm,
+custom_entropycouples_norm,
+#custom_srtheo
 ]
 
 
@@ -86,6 +90,8 @@ for SOURCE_PATH in SOURCE_PATH_LIST:
 	
 	cond=1
 	model=filelist_parsed[0]
+
+	differing_param_indice=0
 	for i in range(0,len(filelist_parsed[0])):
 			for filename in filelist_parsed:
 				if filename[i]!=model[i]:

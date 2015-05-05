@@ -9,19 +9,21 @@ import matplotlib.pyplot as plt
 import multiprocessing
 import custom_graph
 import copy
+import matplotlib
+matplotlib.use('Agg')
 
 MULTI_PROCESSING=1
 NB_PROCESS=4
 
 voctype="sparse"
-M=10
-W=10
-nbagents=10
-step=10
 
-nb_iter=10
-decoupage=10
-Tmax=[500,1000,2000,5000,8000]
+M=20
+W=M
+nbagents=M
+
+nb_iter=8
+decoupage=20
+Tmax=[500,1000,2000,5000,8000,10000]
 
 X=[0]
 for i in range(0,decoupage-1):
@@ -33,7 +35,7 @@ X.append(1)
 
 
 def MESURE(pop):
-	return 1-(entropypop(pop)/float(entropypop_max(pop)))
+	return 1-(entropycouples(pop)/float(entropycouples_max(pop)))
 
 
 
@@ -91,8 +93,9 @@ print tempgraph.Yoptions
 tempgraph=tempgraph.wise_merge()
 tempgraph.std=1
 tempgraph.title="Graph suggere par Jon, entropypop, M="+str(M)+" W="+str(W)+" N="+str(nbagents)+" iter="+str(nb_iter)
-tempgraph.show()
+
 tempgraph.write_files()
+tempgraph.show()
 
 
 

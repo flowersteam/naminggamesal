@@ -102,8 +102,28 @@ def entropy_min(pop):
 
 FUNC=entropy
 FUNC_BIS=pop_ize(FUNC)
+entropy_moyen=pop_ize(FUNC)
 graphconfig={"ymin":entropy_min,"ymax":entropy_max}
 custom_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########entropy_moyen_norm##########
+
+
+def entropy_moyen_norm(pop,**kwargs):
+	if "progress_info" in kwargs.keys():
+		my_functions.print_on_line_pid(kwargs["progress_info"])
+	return 1.-(entropy_moyen(pop)[0]/entropy_max(pop))
+
+def entropy_moyen_norm_max(pop):
+	return 1
+
+def entropy_moyen_norm_min(pop):
+	return 0
+
+FUNC=entropy_moyen_norm
+graphconfig={"ymin":entropy_moyen_norm_min,"ymax":entropy_moyen_norm_max}
+custom_entropy_moyen_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
 
 ############################	LEVEL POPULATION ############################
 
@@ -152,6 +172,24 @@ FUNC=entropypop
 graphconfig={"ymin":entropypop_min,"ymax":entropypop_max}
 custom_entropypop=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+#########entropypopnorm##########
+
+
+def entropypop_norm(pop,**kwargs):
+	if "progress_info" in kwargs.keys():
+		my_functions.print_on_line_pid(kwargs["progress_info"])
+	return 1-(entropypop(pop)/entropypop_max(pop))
+
+def entropypop_norm_max(pop):
+	return 1
+
+def entropypop_norm_min(pop):
+	return 0
+
+FUNC=entropypop_norm
+graphconfig={"ymin":entropypop_norm_min,"ymax":entropypop_norm_max}
+custom_entropypop_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
 
 #########entropycouples##########
 
@@ -164,9 +202,23 @@ def entropycouples(pop,**kwargs):
 		agent2_id=pop.pick_hearer(agent1_id)
 		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
 		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
-		tempmat=np.multiply(agent1._vocabulary.get_content(),agent2._vocabulary.get_content())
-		m=np.sum(tempmat)
-		tempvalues.append(tempentropy(pop._M-m,pop._W-m))
+		if pop._strat["strattype"]=="naivereal":
+			voc1=agent1._vocabulary.get_content()
+			voc2=agent2._vocabulary.get_content()
+			tempm=0
+			for m in range(pop._M):
+				for w in range(pop._W):
+					test1= voc1[m,w] and voc2[m,w] 
+					test1=test1 and agent1._vocabulary.get_known_meanings(w)==[m] 
+					test1=test1 and agent2._vocabulary.get_known_meanings(w)==[m]
+					test1=test1 and agent1._vocabulary.get_known_words(m)==[w]
+					test1=test1 and agent2._vocabulary.get_known_words(m)==[w]
+					if test1:
+						tempm+=1
+		else:
+			tempmat=np.multiply(agent1._vocabulary.get_content(),agent2._vocabulary.get_content())
+			tempm=np.sum(tempmat)
+		tempvalues.append(tempentropy(pop._M-tempm,pop._W-tempm))
 	return np.mean(tempvalues)
 
 def entropycouples_max(pop):
@@ -178,6 +230,56 @@ def entropycouples_min(pop):
 FUNC=entropycouples
 graphconfig={"ymin":entropycouples_min,"ymax":entropycouples_max}
 custom_entropycouples=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########entropycouplesnorm##########
+
+
+def entropycouples_norm(pop,**kwargs):
+	if "progress_info" in kwargs.keys():
+		my_functions.print_on_line_pid(kwargs["progress_info"])
+	return 1-(entropycouples(pop)/entropycouples_max(pop))
+
+def entropycouples_norm_max(pop):
+	return 1
+
+def entropycouples_norm_min(pop):
+	return 0
+
+FUNC=entropycouples_norm
+graphconfig={"ymin":entropycouples_norm_min,"ymax":entropycouples_norm_max}
+custom_entropycouples_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########srtheo##########
+
+def srtheo(pop,**kwargs):
+	if "progress_info" in kwargs.keys():
+		my_functions.print_on_line_pid(kwargs["progress_info"])
+		fail=0
+		succ=0
+	for i in range(100):
+		agent1_id=pop.pick_speaker()
+		agent2_id=pop.pick_hearer(agent1_id)
+		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
+		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
+		tempop=Population("matrix",{"strattype":"naive"},2,pop._M,pop._W)
+		tempop._agentlist[0]._vocabulary._content=agent1._vocabulary.get_content()
+		tempop._agentlist[1]._vocabulary._content=agent2._vocabulary.get_content()
+		tempop.play_game(1)
+		if tempop._lastgameinfo[0]==tempop._lastgameinfo[2]:
+			succ+=1
+		else:
+			fail+=1
+	return succ/float(succ+fail)
+
+def srtheo_max(pop):
+	return 1
+
+def srtheo_min(pop):
+	return 0
+
+FUNC=srtheo
+graphconfig={"ymin":srtheo_min,"ymax":srtheo_max}
+custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########entropydistrib##########
 
@@ -270,4 +372,19 @@ def decvec2_from_MW(M,W):
 			m0+=1
 		else:
 			decvec.append(0)
+	return decvec
+
+
+def decvec3_from_MW(M,W):
+	decvec=[]
+	for i in range(0,M):
+		pp=(M-i)/float(M)*(W-i)/float(W)
+		pm=i/float(M)*(i-1.)/float(W)
+		Gp=np.log2(W-i)
+		Gm=np.log2(W-i+1)
+		if pm*Gm<=pp*Gp:
+			decvec.append(1)
+		else:
+			decvec.append(0)
+	decvec.append(0)
 	return decvec
