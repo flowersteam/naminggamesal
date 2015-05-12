@@ -8,6 +8,7 @@ M=10 # nombre de meanings
 N=10 # nombre d'agents
 T=10000#nb cycles
 
+
 def nemenonnul(n,l):
 	temp=0
 	for i in range(0,n):
