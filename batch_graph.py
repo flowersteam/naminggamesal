@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-from ngmeth import *
-import tmsu
+from lib.ngmeth import *
+from additional import tmsu
 import pickle
-import custom_graph
+from additional import custom_graph
 import glob
 import os
 import copy
@@ -33,12 +33,12 @@ TAG_BIN_EXPE="filetype=expebinary"
 
 
 date1="2015"+"03"+"13"+"18"+"51"+"00"
-#OUT_PATH="./premiertest/"
-OUT_PATH="./graphs/5_homsyn/"
+OUT_PATH="./premiertest/"
+#OUT_PATH="./graphs/5_homsyn/"
 
 
 
-#SOURCE_PATH_LIST=["./premiertest/"]
+SOURCE_PATH_LIST=["./premiertest/"]
 
 # SOURCE_PATH_LIST=["/media/tmsufs/tags"
 # +"/nbagents/="+"40"
@@ -48,7 +48,7 @@ OUT_PATH="./graphs/5_homsyn/"
 # #+"/strategy/="+"naive"
 # +"/"]
 
-SOURCE_PATH_LIST=["/media/tmsufs/queries/date>"+date1+"/"]
+#SOURCE_PATH_LIST=["/media/tmsufs/queries/date>"+date1+"/"]
 
 
 

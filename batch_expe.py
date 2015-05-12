@@ -1,8 +1,9 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-from ngmeth import *
-import tmsu
+
+from lib.ngmeth import *
+from additional import tmsu
 import pickle
 import time
 import os

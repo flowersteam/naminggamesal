@@ -7,7 +7,7 @@ import os
 from ngstrat import *
 from copy import deepcopy
 import pickle
-import my_functions
+import additional.my_functions
 
 class Agent(object):
 	def __init__(self,voctype,strat,agent_id,M,W):
