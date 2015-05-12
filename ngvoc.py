@@ -4,7 +4,9 @@
 import numpy as np
 from scipy import sparse
 import random
+import cachetools
 
+#@cachetools.lru_cache(maxsize=4)
 class Vocabulary(object):
 
 	def __new__(cls,voctype,M,W):
@@ -45,6 +47,7 @@ class VocMatrix(Vocabulary):
 		super(VocMatrix,self).__init__(voctype,M,W)
 		self._content=np.matrix(np.zeros((self._M,self._W)))
 
+	#@cachetools.lru_cache(maxsize=4)
 	def get_known_words(self,*args):
 		templ=[]
 		if len(args)==0:
@@ -62,6 +65,7 @@ class VocMatrix(Vocabulary):
 					templ.append(w)
 		return templ
 
+	#@cachetools.lru_cache(maxsize=4)
 	def get_known_meanings(self,*args):
 		templ=[]
 		if len(args)==0:
@@ -79,6 +83,7 @@ class VocMatrix(Vocabulary):
 					templ.append(m)
 		return templ
 
+	#@cachetools.lru_cache(maxsize=400)
 	def exists(self,m,w):
 		if self._content[m,w]>0:
 			return 1
