@@ -5,6 +5,7 @@ import numpy as np
 from scipy import sparse
 import random
 import cachetools
+import matplotlib.pyplot as plt
 
 #@cachetools.lru_cache(maxsize=4)
 class Vocabulary(object):
@@ -27,8 +28,8 @@ class Vocabulary(object):
 			for j in range(0,self._W):
 				self.add(i,j,1)
 
-	def affiche(self):
-		print(self.get_content())
+	def __str__(self):
+		return str(self.get_content())
 
 	def get_voctype(self):
 		return _voctype
@@ -214,6 +215,28 @@ class VocMatrix(Vocabulary):
 		tempindexw=random.randint(0,len(self.get_known_words(*args))-1)
 		w=self.get_known_words(*args)[tempindexw]
 		return w
+
+	def visual(self,vtype=None):
+		if vtype==None:
+			print(self)
+		elif vtype=="syn":
+			tempmat=np.matrix(np.zeros((self._M,self._W)))
+			synvec=[]
+			for i in range(0,self._M):
+				synvec.append(len(self.get_known_words(i)))
+				for j in range(0,self._W):
+					tempmat[i,j]=(self._W-synvec[i]+1)*self._content[i,j]
+			plt.title("Synonymy")
+			plt.pcolor(np.array(tempmat),vmin=0,vmax=self._W)		
+		elif vtype=="hom":
+			tempmat=np.matrix(np.zeros((self._M,self._W)))
+			homvec=[]
+			for j in range(0,self._W):
+				homvec.append(len(self.get_known_meanings(j)))
+				for i in range(0,self._M):
+					tempmat[i,j]=(self._M-homvec[j]+1)*self._content[i,j]
+			plt.title("Homonymy")
+			plt.pcolor(np.array(tempmat),vmin=0,vmax=self._M)
 
 
 

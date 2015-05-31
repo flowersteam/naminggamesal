@@ -27,9 +27,8 @@ class Experiment(object):
 
 
 
-	def affiche(self):
-		print "T: %i" %self._T[-1]
-		self._poplist[-1].affiche()
+	def __str__(self):
+		return "T: "+str(self._T[-1])+"\n"+str(self._poplist[-1])
 	
 	def get_self(self):
 		return self

@@ -32,8 +32,8 @@ class Agent(object):
 	def get_id(self):
 		return self._id
 
-	def affiche(self):
-		self._vocabulary.affiche()
+	def __str__(self):
+		return str(self._vocabulary)
 
 	def pick_mw(self):
 		return self._strategy.pick_mw(self._vocabulary,self._memory)
@@ -165,22 +165,27 @@ class Population(object):
 			return agent.get_id()
 		self._agentlist.sort(tempfun)
 
-	def affiche(self,*args):
+	def __str__(self):
+		return self.repr()
+
+	def repr(self,*args):
+		tempstr = ""
 		if len(args)==0:
-			print "nbagent: %i" % self._size
+			tempstr += "nbagent: "+str(self._size)+"\n"
 			temprep=np.matrix(np.zeros((self._M,self._W)))
 			for i in range(0,self._size):
 				temprep=temprep+self._agentlist[i].get_vocabulary_content()
-			print temprep/self._size
+			tempstr += str(temprep/self._size)
 		elif args[0]=="all":
 			for i in range(0,self._size):
-				print "Agent ID: %s" %self._agentlist[i].get_id()
-				self._agentlist[i].affiche()
-				print "\n"
+				tempstr += "Agent ID: "+str(self._agentlist[i].get_id())+"\n"
+				tempstr += str(self._agentlist[i])
+				tempstr += "\n"
 		else:
 			i=self.get_index_from_id(args[0])
-			print "Agent ID: %s" %args
-			self._agentlist[i].affiche()
+			tempstr+="Agent ID: "+str(args)
+			tempstr+=str(self._agentlist[i])
+		return tempstr
 
 	def get_content(self,*args):
 		if len(args)==0:
@@ -196,7 +201,7 @@ class Population(object):
 		else:
 			i=self.get_index_from_id(args[0])
 			print "Agent ID: %s" %args
-			self._agentlist[i].affiche()
+			print str(self._agentlist[i])
 
 
 

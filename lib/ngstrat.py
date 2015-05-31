@@ -79,6 +79,18 @@ class Strategy(object):
 	def get_strattype(self):
 		return self._strattype
 
+	def visual(self,voc,mem={},vtype=None,iter=100):
+		if vtype=="pick_mw":
+			tempmat=np.matrix(np.zeros((voc._M,voc._W)))
+			for i in range(0,iter):
+				lst=self.pick_mw(voc,mem)
+				j=lst[0]
+				k=lst[1]
+				tempmat[j,k]+=1
+			plt.title("pick_mw")
+			plt.pcolor(np.array(tempmat),vmin=0)
+
+
 ##################################### STRATEGIE NAIVE DESTRUCTIVE################################
 class StratNaiveDestructive(Strategy):
 
