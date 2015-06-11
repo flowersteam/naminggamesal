@@ -79,16 +79,50 @@ class Strategy(object):
 	def get_strattype(self):
 		return self._strattype
 
-	def visual(self,voc,mem={},vtype=None,iter=100):
+	def visual(self,voc,mem={},vtype=None,iterr=100,mlist="all",wlist="all"):
+		if mlist=="all":
+			mlist=range(0,voc._M)
+		if wlist=="all":
+			wlist=range(0,voc._W)
 		if vtype=="pick_mw":
 			tempmat=np.matrix(np.zeros((voc._M,voc._W)))
-			for i in range(0,iter):
+			for i in range(0,iterr):
 				lst=self.pick_mw(voc,mem)
 				j=lst[0]
 				k=lst[1]
 				tempmat[j,k]+=1
 			plt.title("pick_mw")
+			plt.gca().invert_yaxis()
 			plt.pcolor(np.array(tempmat),vmin=0)
+		elif vtype=="pick_w":
+			tempmat=np.matrix(np.zeros((voc._M,voc._W)))
+			for m in mlist:
+				for i in range(0,iterr):
+					lst=self.pick_w(m,voc,mem)
+					j=m
+					k=lst
+					tempmat[j,k]+=1
+			plt.title("pick_w")
+			plt.gca().invert_yaxis()
+			plt.pcolor(np.array(tempmat),vmin=0)
+		elif vtype=="guess_m":
+			tempmat=np.matrix(np.zeros((voc._M,voc._W)))
+			for w in wlist:
+				for i in range(0,iterr):
+					lst=self.guess_m(w,voc,mem)
+					j=lst
+					k=w
+					tempmat[j,k]+=1
+			plt.title("guess_m")
+			plt.gca().invert_yaxis()
+			plt.pcolor(np.array(tempmat),vmin=0)
+		elif vtype==None:
+			voc.visual()
+		elif vtype=="syn":
+			voc.visual(vtype="syn")
+		elif vtype=="hom":
+			voc.visual(vtype="hom")
+
 
 
 ##################################### STRATEGIE NAIVE DESTRUCTIVE################################

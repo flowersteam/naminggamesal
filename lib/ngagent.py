@@ -53,7 +53,8 @@ class Agent(object):
 	def update_speaker(self,ms,w,mh):
 		self._strategy.update_speaker(ms,w,mh,self._vocabulary,self._memory)
 
-
+	def visual(self,vtype=None,iterr=100,mlist="all",wlist="all"):
+		self._strategy.visual(self._vocabulary,mem=self._memory,vtype=vtype,iterr=iterr,mlist=mlist,wlist=wlist)
 
 
 

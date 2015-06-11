@@ -201,7 +201,7 @@ class VocMatrix(Vocabulary):
 
 
 	def get_random_known_m(self,*args):
-		if len(self.get_known_meanings())==0:
+		if len(self.get_known_meanings(*args))==0:
 			print "tried to get known m but none are known"
 			return self.get_new_unknown_m()
 		tempindexm=random.randint(0,len(self.get_known_meanings(*args))-1)
@@ -209,7 +209,7 @@ class VocMatrix(Vocabulary):
 		return m
 
 	def get_random_known_w(self,*args):
-		if len(self.get_known_words())==0:
+		if len(self.get_known_words(*args))==0:
 			print "tried to get known w but none are known"
 			return self.get_new_unknown_w()
 		tempindexw=random.randint(0,len(self.get_known_words(*args))-1)
@@ -227,6 +227,7 @@ class VocMatrix(Vocabulary):
 				for j in range(0,self._W):
 					tempmat[i,j]=(self._W-synvec[i]+1)*self._content[i,j]
 			plt.title("Synonymy")
+			plt.gca().invert_yaxis()
 			plt.pcolor(np.array(tempmat),vmin=0,vmax=self._W)		
 		elif vtype=="hom":
 			tempmat=np.matrix(np.zeros((self._M,self._W)))
@@ -236,6 +237,7 @@ class VocMatrix(Vocabulary):
 				for i in range(0,self._M):
 					tempmat[i,j]=(self._M-homvec[j]+1)*self._content[i,j]
 			plt.title("Homonymy")
+			plt.gca().invert_yaxis()
 			plt.pcolor(np.array(tempmat),vmin=0,vmax=self._M)
 
 
