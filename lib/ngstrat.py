@@ -74,7 +74,7 @@ class Strategy(object):
 			tempstrat._strattype=_strattype
 			return tempstrat
 		else:
-			print "type de strategie non existant"	
+			print "type de strategie non existant"
 
 	def get_strattype(self):
 		return self._strattype
@@ -91,9 +91,21 @@ class Strategy(object):
 				j=lst[0]
 				k=lst[1]
 				tempmat[j,k]+=1
+			plt.figure()
 			plt.title("pick_mw")
 			plt.gca().invert_yaxis()
-			plt.pcolor(np.array(tempmat),vmin=0)
+			plt.pcolor(np.array(tempmat),vmin=0,vmax=iterr)
+		elif vtype=="pick_m":
+			tempmat=np.matrix(np.zeros((voc._M,voc._W)))
+			for i in range(0,iterr):
+				lst=self.pick_mw(voc,mem)
+				j=lst[0]
+				for k in range(0,voc._W):
+					tempmat[j,k]+=1
+			plt.figure()
+			plt.title("pick_m")
+			plt.gca().invert_yaxis()
+			plt.pcolor(np.array(tempmat),vmin=0,vmax=iterr)
 		elif vtype=="pick_w":
 			tempmat=np.matrix(np.zeros((voc._M,voc._W)))
 			for m in mlist:
@@ -102,9 +114,10 @@ class Strategy(object):
 					j=m
 					k=lst
 					tempmat[j,k]+=1
+			plt.figure()
 			plt.title("pick_w")
 			plt.gca().invert_yaxis()
-			plt.pcolor(np.array(tempmat),vmin=0)
+			plt.pcolor(np.array(tempmat),vmin=0,vmax=iterr)
 		elif vtype=="guess_m":
 			tempmat=np.matrix(np.zeros((voc._M,voc._W)))
 			for w in wlist:
@@ -113,9 +126,10 @@ class Strategy(object):
 					j=lst
 					k=w
 					tempmat[j,k]+=1
+			plt.figure()
 			plt.title("guess_m")
 			plt.gca().invert_yaxis()
-			plt.pcolor(np.array(tempmat),vmin=0)
+			plt.pcolor(np.array(tempmat),vmin=0,vmax=iterr)
 		elif vtype==None:
 			voc.visual()
 		elif vtype=="syn":
@@ -241,7 +255,7 @@ class StratNaiveReal(Strategy):
 		if ms==mh:
 			voc.rm_syn(ms,w)
 			voc.rm_hom(ms,w)
-		
+
 	def init_memory(self,voc):
 		return {}
 
@@ -296,23 +310,20 @@ class StratDelaunay(StratNaive):
 		else:
 			return succ_sum/float(fail_sum+succ_sum)
 
-
+#	def get_success_rate_over_known_meanings(self,voc,mem):
+#		succ_sum=0
+#		fail_sum=0
+#		temprate=0
+#		for m in voc.get_known_meanings():
+#			succ_sum=mem["success_m"][m]
+#			fail_sum=mem["fail_m"][m]
+#			if succ_sum!=0:
+#				temprate+=succ_sum/float(fail_sum+succ_sum)
+#		return temprate/len(voc.get_known_meanings())
 
 
 ##################################### STRATEGIE DELAUNAY REELLE########################################
-class StratDelaunayReal(StratNaive):
-
-	def pick_mw(self,voc,mem):
-		test1=self.get_success_rate_over_known_meanings(voc,mem)>self.threshold_explo
-		test2=len(voc.get_known_meanings())==voc._M
-		test3=len(voc.get_known_meanings())==0
-		if (test1 or test3) and (not test2):
-			m=voc.get_new_unknown_m()
-			w=voc.get_new_unknown_w()
-		else:
-			m=voc.get_random_known_m()
-			w=self.pick_w(m,voc,mem)
-		return([m,w])
+class StratDelaunayReal(StratDelaunay):
 
 
 	def update_hearer(self,ms,w,mh,voc,mem):
@@ -332,23 +343,13 @@ class StratDelaunayReal(StratNaive):
 			voc.rm_hom(ms,w)
 		else:
 			mem["fail_m"][ms]+=1
-		
+
 	def init_memory(self,voc):
 		mem={}
 		mem["success_m"]=[0]*voc._M
 		mem["fail_m"]=[0]*voc._M
 		return mem
 
-	def get_success_rate_over_known_meanings(self,voc,mem):
-		succ_sum=0
-		fail_sum=0
-		for m in voc.get_known_meanings():
-			succ_sum+=mem["success_m"][m]
-			fail_sum+=mem["fail_m"][m]
-		if succ_sum==0:
-			return 0
-		else:
-			return succ_sum/float(fail_sum+succ_sum)
 
 
 

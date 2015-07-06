@@ -4,8 +4,8 @@
 from ngsimu import *
 import numpy as np
 import math
-import custom_func
-import my_functions
+import additional.custom_func as custom_func
+import additional.my_functions as my_functions
 
 def pop_ize(func):
 	def out_func(pop,**kwargs):
@@ -208,8 +208,8 @@ def entropycouples(pop,**kwargs):
 			tempm=0
 			for m in range(pop._M):
 				for w in range(pop._W):
-					test1= voc1[m,w] and voc2[m,w] 
-					test1=test1 and agent1._vocabulary.get_known_meanings(w)==[m] 
+					test1= voc1[m,w] and voc2[m,w]
+					test1=test1 and agent1._vocabulary.get_known_meanings(w)==[m]
 					test1=test1 and agent2._vocabulary.get_known_meanings(w)==[m]
 					test1=test1 and agent1._vocabulary.get_known_words(m)==[w]
 					test1=test1 and agent2._vocabulary.get_known_words(m)==[w]
@@ -254,8 +254,8 @@ custom_entropycouples_norm=custom_func.CustomFunc(FUNC,"population",**graphconfi
 def srtheo(pop,**kwargs):
 	if "progress_info" in kwargs.keys():
 		my_functions.print_on_line_pid(kwargs["progress_info"])
-		fail=0
-		succ=0
+	fail=0
+	succ=0
 	for i in range(100):
 		agent1_id=pop.pick_speaker()
 		agent2_id=pop.pick_hearer(agent1_id)
@@ -311,6 +311,31 @@ graphconfig={"ymin":entropydistrib_min,"ymax":entropydistrib_max}
 custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 
+############################	LEVEL TIME ############################
+
+#### 	INPUT:		expe, **progress_info
+####	OUTPUT:		vector (size same as _T)
+
+#graphconfig={}
+#	custom_FUNC=custom_func.CustomFunc(FUNC,"experiment",**graphconfig)
+
+#########interactions_per_agent##########
+
+def interactions_per_agent(exp,**kwargs):
+	return list(np.array(exp._T)*1./exp._poplist[0]._size)
+
+def interactions_per_agent_max(exp):
+	return max(exp._T)
+
+def interactions_per_agent_min(exp):
+	return min(exp._T)
+
+
+FUNC=interactions_per_agent
+graphconfig={"ymin":interactions_per_agent_min,"ymax":interactions_per_agent_max}
+custom_interactions_per_agent =custom_func.CustomFunc(FUNC,"time",**graphconfig)
+
+
 ############################	LEVEL EXPE ############################
 
 #### 	INPUT:		expe, **progress_info
@@ -318,7 +343,6 @@ custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #graphconfig={}
 #	custom_FUNC=custom_func.CustomFunc(FUNC,"experiment",**graphconfig)
-
 
 
 

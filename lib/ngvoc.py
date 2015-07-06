@@ -46,7 +46,7 @@ class VocMatrix(Vocabulary):
 
 	def __init__(self,voctype,M,W):
 		super(VocMatrix,self).__init__(voctype,M,W)
-		self._content=np.matrix(np.zeros((self._M,self._W)))
+		self._content=np.matrix(np.zeros((self._M,self._W),dtype=np.float16))
 
 	#@cachetools.lru_cache(maxsize=4)
 	def get_known_words(self,*args):
@@ -252,7 +252,7 @@ class VocSparse(VocMatrix):
 	
 	def __init__(self,voctype,M,W):
 		super(VocMatrix,self).__init__(voctype,M,W)
-		self._content=sparse.lil_matrix((M,W))
+		self._content=sparse.lil_matrix((M,W),dtype=np.float16)
 
 	def get_content(self):
 		return self._content.todense()

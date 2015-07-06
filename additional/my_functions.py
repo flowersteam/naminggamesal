@@ -26,3 +26,15 @@ def get_worker_id():
 
 def print_on_line_pid(txt):
 	print_on_line(txt,get_worker_id()-1)
+
+def params_list(PARAMS_DESCR):#NOT FINISHED
+	tempdict={}
+	nb_params=len(PARAMS_DESCR)
+	multiplicity=[]
+	nb_sets=1
+	for i in range(0,nb_params):
+		tempmult=len(params_list[1])
+		multiplicity.append(tempmult)
+		nb_sets=nb_sets*tempmult
+
+

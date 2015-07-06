@@ -6,6 +6,10 @@ import time
 import numpy as np
 import pickle
 import copy
+import seaborn
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42  #set font type to true type, avoids possible incompatibility while submitting papers
+matplotlib.rcParams['ps.fonttype'] = 42
 
 def load_graph(filename):
 	with open(filename, 'rb') as fichier:
@@ -32,9 +36,9 @@ class CustomGraph(object):
 		self.xmax=[0,5]
 		self.ymin=[0,0]
 		self.ymax=[0,5]
-		
+
 		self.std=0
-		
+
 		self._Y=[Y]
 		self.stdvec=[0]*len(Y)
 
@@ -65,6 +69,8 @@ class CustomGraph(object):
 			temp=self.ymax
 			self.ymax=[1,temp]
 
+		self.init_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
+		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def show(self):
 		plt.figure()
@@ -73,10 +79,10 @@ class CustomGraph(object):
 		plt.show()
 
 	def save(self,*path):
-		if len(path)!=0:
+		if path:
 			out_path=path[0]
 		else:
-			out_path=""
+			out_path="graphs/"
 		with open(out_path+self.filename+".b", 'wb') as fichier:
 			mon_pickler=pickle.Pickler(fichier)
 			mon_pickler.dump(self)
@@ -94,19 +100,19 @@ class CustomGraph(object):
 
 
 	def draw(self):
-		
+
 		#colormap=['blue','black','green','red','yellow','cyan','magenta']
 		#colormap=['black','green','red','blue','yellow','cyan','magenta']
 		#colormap=['blue','red','green','black','yellow','cyan','magenta']
 		#colormap=['black','green','blue','red','yellow','cyan','magenta']
-		colormap=['darkolivegreen','green','darkorange','red','yellow','cyan','magenta']
-		
+		#colormap=['darkolivegreen','green','darkorange','red','yellow','cyan','magenta']
+
 
 		#plt.figure()
 		plt.ion()
 		plt.cla()
 		plt.clf()
-		for i in range(0,len(self._Y)): 
+		for i in range(0,len(self._Y)):
 
 			Xtemp=self._X[i]
 			Ytemp=self._Y[i]
@@ -135,8 +141,10 @@ class CustomGraph(object):
 				for j in range(0,len(Ytemp)):
 					Ytempmax[j]=Ytemp[j]+stdtemp[j]
 					Ytempmin[j]=Ytemp[j]-stdtemp[j]
-				plt.fill_between(Xtemp,Ytempmin,Ytempmax,alpha=self.alpha,color=colormap[i%7],**self.Yoptions[i])
-			plt.plot(Xtemp,Ytemp,color=colormap[i%7],**self.Yoptions[i])
+				#plt.fill_between(Xtemp,Ytempmin,Ytempmax,alpha=self.alpha,color=colormap[i%7],**self.Yoptions[i])
+				#plt.plot(Xtemp,Ytemp,color=colormap[i%7],**self.Yoptions[i])
+				plt.fill_between(Xtemp,Ytempmin,Ytempmax,alpha=self.alpha,**self.Yoptions[i])
+			plt.plot(Xtemp,Ytemp,**self.Yoptions[i])
 		plt.xlabel(self.xlabel)
 		plt.ylabel(self.ylabel)
 		plt.title(self.title)
@@ -150,12 +158,12 @@ class CustomGraph(object):
 		if self.ymax[0]:
 			plt.ylim(ymax=self.ymax[1])
 		plt.legend()
-		
+
 		#plt.legend(bbox_to_anchor=(0,0,0.55,0.8))
 		#plt.legend(bbox_to_anchor=(0,0,0.5,1))
 		#
 		#plt.legend(bbox_to_anchor=(0,0,1,0.7))
-		plt.legend(bbox_to_anchor=(0,0,1,0.54))
+		#plt.legend(bbox_to_anchor=(0,0,1,0.54))
 
 		plt.draw()
 
@@ -165,6 +173,13 @@ class CustomGraph(object):
 		self._Y=self._Y+other_graph._Y
 		self.Yoptions=self.Yoptions+other_graph.Yoptions
 		self.stdvec=self.stdvec+other_graph.stdvec
+
+	def complete_with(self,other_graph):
+		for i in range(0,len(self._X)):
+			self._X[i]=self._X[i]+other_graph._X[i]
+			self._Y[i]=self._Y[i]+other_graph._Y[i]
+			self.stdvec[i]=self.stdvec[i]+other_graph.stdvec[i]
+		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def merge(self):
 		Yarray=np.array(self._Y)
@@ -179,6 +194,7 @@ class CustomGraph(object):
 		self._Y=[Ytemp]
 		self.stdvec=[stdtemp]
 		self._X=[self._X[0]]
+		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 
 	def wise_merge(self):
@@ -206,6 +222,7 @@ class CustomGraph(object):
 		for key in param_values.keys():
 			param_values[key].merge()
 			tempgraph.add_graph(param_values[key])
+		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 		return tempgraph
 
 	def empty(self):
@@ -213,5 +230,13 @@ class CustomGraph(object):
 		self._X=[]
 		self.Yoptions=[]
 		self.stdvec=[]
+		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 
+	def func_of(self,graph2):
+		newgraph=copy.deepcopy(self)
+		for i in range(0,len(newgraph._X)):
+			newgraph._X[i]=graph2._Y[i]
+			newgraph.xlabel=graph2.title[6:]
+			newgraph.title=self.title+"_func_of_"+newgraph.xlabel
+		return newgraph

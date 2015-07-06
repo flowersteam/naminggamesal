@@ -76,7 +76,7 @@ class Population(object):
 		return pop_recup
 
 
-	def __init__(self,voctype,strat,nbagents,M,W):
+	def __init__(self,voctype,strat,nbagent,M,W):
 		self._size=0
 		self._voctype=voctype
 		self._M=M
@@ -84,7 +84,7 @@ class Population(object):
 		self._strat=strat
 		self._lastgameinfo=[]
 		self._agentlist=[]
-		for i in range (0,nbagents):
+		for i in range (0,nbagent):
 			self.add_new_agent(self._voctype,self._strat,i,self._M,self._W)
 
 
@@ -161,6 +161,25 @@ class Population(object):
 	def get_lastgameinfo(self):
 		return self._lastgameinfo
 
+	def reconstruct_from_info(self,game_info):
+		ms=game_info[0]
+		w=game_info[1]
+		mh=game_info[2]
+		sp_id=game_info[3]
+		hr_id=game_info[4]
+		speaker=self._agentlist[self.get_index_from_id(sp_id)]
+		hearer=self._agentlist[self.get_index_from_id(hr_id)]
+		if ms==mh:
+			speaker.success+=1
+			hearer.success+=1
+		else:
+			speaker.fail+=1
+			hearer.fail+=1
+		speaker.update_speaker(ms,w,mh)
+		hearer.update_hearer(ms,w,mh)
+		self._lastgameinfo=[ms,w,mh,sp_id,hr_id]
+
+
 	def sort_agentlist(self):
 		def tempfun(agent):
 			return agent.get_id()
@@ -187,6 +206,27 @@ class Population(object):
 			tempstr+="Agent ID: "+str(args)
 			tempstr+=str(self._agentlist[i])
 		return tempstr
+
+	def visual(self,vtype=None,ag_list=None):
+		tempstr = ""
+		if ag_list==None or ag_list=="all":
+			ag_list=range(0,len(self._agentlist))
+		if vtype==None:
+			tempstr += "nbagent: "+str(self._size)+"\n"
+			temprep=np.matrix(np.zeros((self._M,self._W)))
+			for i in ag_list:
+				temprep=temprep+self._agentlist[i].get_vocabulary_content()
+			plt.figure()
+			plt.title("Average on Population")
+			plt.gca().invert_yaxis()
+			plt.pcolor(np.array(temprep/self._size),vmin=0,vmax=1)
+		else:
+			if vtype=="agents":
+				vtype=None
+			for i in ag_list:
+				print("Agent ID: "+str(self._agentlist[i].get_id())+"\n")
+				self._agentlist[i].visual(vtype=vtype)
+				print("\n")
 
 	def get_content(self,*args):
 		if len(args)==0:
