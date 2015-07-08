@@ -1,4 +1,4 @@
-#Naming Games library in Python, for testing Active Learning strategies.
+##Naming Games library in Python, for testing Active Learning strategies.
 
 To test this, especially the provided explanatory notebooks, you can use SageMathCloud, as described here:
 
