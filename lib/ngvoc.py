@@ -4,10 +4,9 @@
 import numpy as np
 from scipy import sparse
 import random
-import cachetools
 import matplotlib.pyplot as plt
 
-#@cachetools.lru_cache(maxsize=4)
+
 class Vocabulary(object):
 
 	def __new__(cls,voctype,M,W):
@@ -59,7 +58,6 @@ class VocMatrix(Vocabulary):
 		super(VocMatrix,self).__init__(voctype,M,W)
 		self._content=np.matrix(np.zeros((self._M,self._W),dtype=np.float16))
 
-	#@cachetools.lru_cache(maxsize=4)
 	def get_known_words(self,*args):
 		templ=[]
 		if len(args)==0:
@@ -77,7 +75,6 @@ class VocMatrix(Vocabulary):
 					templ.append(w)
 		return templ
 
-	#@cachetools.lru_cache(maxsize=4)
 	def get_known_meanings(self,*args):
 		templ=[]
 		if len(args)==0:
@@ -95,7 +92,6 @@ class VocMatrix(Vocabulary):
 					templ.append(m)
 		return templ
 
-	#@cachetools.lru_cache(maxsize=400)
 	def exists(self,m,w):
 		if self._content[m,w]>0:
 			return 1
@@ -238,6 +234,8 @@ class VocMatrix(Vocabulary):
 				for j in range(0,self._W):
 					tempmat[i,j]=(self._W-synvec[i]+1)*self._content[i,j]
 			plt.title("Synonymy")
+			plt.xlabel("Words")
+			plt.ylabel("Meanings")
 			plt.gca().invert_yaxis()
 			plt.pcolor(np.array(tempmat),vmin=0,vmax=self._W)		
 		elif vtype=="hom":
@@ -248,6 +246,8 @@ class VocMatrix(Vocabulary):
 				for i in range(0,self._M):
 					tempmat[i,j]=(self._M-homvec[j]+1)*self._content[i,j]
 			plt.title("Homonymy")
+			plt.xlabel("Words")
+			plt.ylabel("Meanings")
 			plt.gca().invert_yaxis()
 			plt.pcolor(np.array(tempmat),vmin=0,vmax=self._M)
 
