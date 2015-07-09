@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 import random
-from ngvoc import *
+import numpy as np
+import matplotlib.pyplot as plt
 
 class Strategy(object):
 	def __new__(cls,strat):

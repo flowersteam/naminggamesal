@@ -5,15 +5,18 @@
 #from ngvoc import *
 import os
 from ngstrat import *
+from . import ngvoc
+from . import ngstrat
 from copy import deepcopy
 import pickle
 import additional.my_functions
+import random
 
 class Agent(object):
 	def __init__(self,voctype,strat,agent_id,M,W):
 		self._id=agent_id;
-		self._vocabulary=Vocabulary(voctype,M,W)
-		self._strategy=Strategy(strat)
+		self._vocabulary=ngvoc.voc_class[voctype](M=M,W=W)
+		self._strategy=ngstrat.Strategy(strat)
 		self.init_memory()
 		self._M=M
 		self._W=W

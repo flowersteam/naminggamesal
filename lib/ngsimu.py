@@ -55,7 +55,7 @@ class Experiment(object):
 	def continue_exp_until(self,T,**kwargs):
 		temppop=self.get_pop("last")
 		temptmax=self._T[-1]
-		while temptmax <T :
+		while (temptmax < T) :
 			if "progress_info" in kwargs.keys():
 				progress_info_2=kwargs["progress_info"]+" T:"+str(temptmax)+"/"+str(T)
 				for tt in range(0,self._time_step):
@@ -63,7 +63,7 @@ class Experiment(object):
 					self.reconstruct_info.append(temppop._lastgameinfo)
 			else:
 				for tt in range(0,self._time_step):
-					temppop.play_game(self._time_step)
+					temppop.play_game(1)
 					self.reconstruct_info.append(temppop._lastgameinfo)
 			self.add_pop(temppop.deepcopy(),self._T[-1]+self._time_step)
 			temptmax+=self._time_step
@@ -75,7 +75,7 @@ class Experiment(object):
 #			self.add_pop(temppop.deepcopy(),T)
 
 	def continue_exp(self,dT,**kwargs):
-		self.continue_exp_until(self._T[-1]+dT,**kwargs)
+		self.continue_exp_until((self._T[-1]+dT),**kwargs)
 
 	def add_pop(self,pop,T):
 		self._poplist.append(pop)
@@ -131,6 +131,8 @@ class Experiment(object):
 			tempY=tempoutmean
 			tempX=self._T[indmin:(len(self._T)+indmax+1)]
 			stdvec=tempoutstd
+			#configgraph["xmin"]=min(tempX)
+			#configgraph["xmax"]=max(tempX)
 			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=1,sort=0,stdvec=stdvec,filename="graph_"+tempfun.func.__name__,**configgraph)
 		elif tempfun.level=="population":
 			tempout=[]
@@ -140,6 +142,8 @@ class Experiment(object):
 			configgraph["xlabel"]="T"
 			tempY=tempout
 			tempX=self._T[indmin:(len(self._T)+indmax+1)]
+			#configgraph["xmin"]=min(tempX)
+			#configgraph["xmax"]=max(tempX)
 			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
 		elif tempfun.level=="time":
 			tempout=tempfun.apply(self)
@@ -148,6 +152,8 @@ class Experiment(object):
 			configgraph["xlabel"]="T"
 			tempY=tempout
 			tempX=self._T[indmin:(len(self._T)+indmax+1)]
+			#configgraph["xmin"]=min(tempX)
+			#configgraph["xmax"]=max(tempX)
 			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
 		else:
 			print("Custom_func level doesn't exist or has an unknown value:")

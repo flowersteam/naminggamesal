@@ -6,7 +6,7 @@ import time
 import numpy as np
 import pickle
 import copy
-import seaborn
+#import seaborn
 import matplotlib
 matplotlib.rcParams['pdf.fonttype'] = 42  #set font type to true type, avoids possible incompatibility while submitting papers
 matplotlib.rcParams['ps.fonttype'] = 42
@@ -164,7 +164,6 @@ class CustomGraph(object):
 		#
 		#plt.legend(bbox_to_anchor=(0,0,1,0.7))
 		#plt.legend(bbox_to_anchor=(0,0,1,0.54))
-
 		plt.draw()
 
 
