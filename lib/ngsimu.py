@@ -21,14 +21,15 @@ def load_experiment(filename):
 class Experiment(object):
 
 	def __init__(self, pop_cfg, step=1):
-		self._time_step=step
-		self._T=[]
-		self._poplist=[]
+		self._time_step = step
+		self._T = []
+		self._poplist = []
+		self._pop_cfg = pop_cfg
 		self.add_pop(Population(**pop_cfg),0)
-		self.uuid=str(uuid.uuid1())
-		self.init_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
-		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
-		self.reconstruct_info=[]
+		self.uuid = str(uuid.uuid1())
+		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
+		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
+		self.reconstruct_info = []
 
 
 

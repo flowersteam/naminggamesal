@@ -26,11 +26,7 @@ class NamingGamesDB(object):
 				+"Id TEXT, "\
 				+"Creation_Time INT, "\
 				+"Modif_Time INT, "\
-				+"Voctype TEXT, "\
-				+"Strat TEXT, "\
-				+"M INT, "\
-				+"W INT, "\
-				+"Nb_agent INT, "\
+				+"PopConfig TEXT, "\
 				+"Tmax INT, "\
 				+"step INT, "\
 				+"Experiment_object BLOB)")
@@ -91,6 +87,8 @@ class NamingGamesDB(object):
 				return False
 
 	def get_experiment(self,nb_id=None,force_new=False,blacklist=[],**params):
+		if force_new:
+			return Experiment(database=self,**params)
 		if nb_id:
 			if self.id_in_db(nb_id):
 				conn=sql.connect(self.dbpath)
@@ -108,7 +106,7 @@ class NamingGamesDB(object):
 					templist.remove(elt)
 				except ValueError:
 					pass
-			if (not force_new) and templist:
+			if templist:
 				i=random.randint(0,len(templist)-1)
 				return self.get_experiment(nb_id=templist[i])
 			else:
@@ -173,15 +171,16 @@ class NamingGamesDB(object):
 			cursor.execute("SELECT Modif_Time FROM main_table WHERE Id=\'"+exp.uuid+"\'")
 			tempmodif=cursor.fetchone()
 			if not tempmodif:
-				cursor.execute("INSERT INTO main_table VALUES(?,?,?,?,?,?,?,?,?,?,?)", (\
+				cursor.execute("INSERT INTO main_table VALUES(?,?,?,?,?,?,?)", (\
 					exp.uuid, \
 					exp.init_time, \
 					exp.modif_time, \
-					exp._voctype, \
-					exp._strat["strattype"], \
-					exp._M, \
-					exp._W, \
-					exp._nbagent, \
+					str(exp._pop_cfg), \
+#					exp._voctype, \
+#					exp._strat["strattype"], \
+#					exp._M, \
+#					exp._W, \
+#					exp._nbagent, \
 					exp._T[-1], \
 					exp._time_step, \
 					binary,))
