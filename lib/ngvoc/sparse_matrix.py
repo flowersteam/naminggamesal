@@ -2,15 +2,16 @@
 # -*- coding: latin-1 -*-
 #####################################"" MATRICES CREUSES #############################################
 
-from . import *
+from .matrix import VocMatrix
 from scipy import sparse
+import numpy as np
 
 class VocSparseMatrix(VocMatrix):
 	voctype="sparse_matrix"
-	
-	def __init__(self,M,W):
-		super(VocMatrix,self).__init__(M,W)
-		self._content=sparse.lil_matrix((M,W),dtype=np.float16)
+
+	def __init__(self,**voc_cfg2):
+		super(VocMatrix,self).__init__(**voc_cfg2)
+		self._content=sparse.lil_matrix((self._M,self._W),dtype=np.float16)
 
 	def get_content(self):
 		return self._content.todense()

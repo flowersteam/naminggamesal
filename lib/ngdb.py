@@ -3,15 +3,16 @@
 
 import os
 import sqlite3 as sql
-import ngsimu
 import time
 import bz2
 import cPickle
-from ngagent import *
 from copy import deepcopy
-import ngmeth
+
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
+
+from . import ngmeth
+from . import ngsimu
 
 class NamingGamesDB(object):
 	def __init__(self,path=None):
@@ -223,12 +224,12 @@ class NamingGamesDB(object):
 
 class Experiment(ngsimu.Experiment):
 
-	def __init__(self,voctype="sparse",strat={"strattype":"naive"},M=5,W=10,nbagent=10,step=1,database=None):
+	def __init__(self,pop_cfg,step=1,database=None):
 		if not database:
 			self.db=NamingGamesDB()
 		else:
 			self.db=database
-		super(self.__class__,self).__init__(voctype,strat,M,W,nbagent,step)
+		super(self.__class__,self).__init__(pop_cfg,step)
 
 	def commit_to_db(self):
 		self.db.commit(self)

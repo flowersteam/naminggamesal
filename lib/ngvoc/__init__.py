@@ -5,17 +5,35 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import seaborn as sns
+from importlib import import_module
 
 sns.set(rc={'image.cmap': 'Purples_r'})
 
 #####Classe de base
 
-class Vocabulary(object):
+voc_class={
+	"matrix":"matrix.VocMatrix",
+	"sparse_matrix":"sparse_matrix.VocSparseMatrix"
+}
 
-	def __init__(self,M,W):
-		self._M=M
-		self._W=W
-		self._size=[M,W]
+def Vocabulary(voc_type='matrix', **voc_cfg2):
+	tempstr = voc_type
+	if tempstr in voc_class.keys():
+		tempstr = voc_class[tempstr]
+	templist = tempstr.split('.')
+	temppath = '.'.join(templist[:-1])
+	tempclass = templist[-1]
+	_tempmod = import_module('.'+temppath,package=__name__)
+	tempvoc = getattr(_tempmod,tempclass)(**voc_cfg2)
+	return tempvoc
+
+
+class BaseVocabulary(object):
+
+	def __init__(self,**voc_cfg2):
+		self._M=voc_cfg2['M']
+		self._W=voc_cfg2['W']
+		self._size=[self._M,self._W]
 
 	def fill(self):
 		for i in range(0,self._M):
@@ -46,12 +64,7 @@ class Vocabulary(object):
 		return self._W
 
 
-###### Classe supplémentaires
+###### Classes supplémentaires
 
-from .matrix import *
-from .sparse_matrix import *
-
-voc_class={
-	"matrix":VocMatrix,
-	"sparse_matrix":VocSparseMatrix
-}
+#from .matrix import *
+#from .sparse_matrix import *

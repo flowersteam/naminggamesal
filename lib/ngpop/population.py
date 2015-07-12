@@ -4,65 +4,13 @@
 #import random
 #from ngvoc import *
 import os
-from ngstrat import *
-from . import ngvoc
-from . import ngstrat
 from copy import deepcopy
 import pickle
-import additional.my_functions
 import random
+import numpy as np
+import matplotlib.pyplot as plt
 
-class Agent(object):
-	def __init__(self,voctype,strat,agent_id,M,W):
-		self._id=agent_id;
-		self._vocabulary=ngvoc.voc_class[voctype](M=M,W=W)
-		self._strategy=ngstrat.Strategy(strat)
-		self.init_memory()
-		self._M=M
-		self._W=W
-		self.fail=0
-		self.success=0
-
-	def init_memory(self):
-		self._memory=self._strategy.init_memory(self._vocabulary)
-
-	def get_vocabulary_content(self):
-		return self._vocabulary.get_content()
-
-	def get_voctype(self):
-		return self._vocabulary.get_voctype()
-
-	def get_id(self):
-		return self._id
-
-	def __str__(self):
-		return str(self._vocabulary)
-
-	def pick_mw(self):
-		return self._strategy.pick_mw(self._vocabulary,self._memory)
-
-	def pick_new_m(self):
-		return self._strategy.pick_new_m(self._vocabulary,self._memory)
-
-	def guess_m(self,w):
-		return self._strategy.guess_m(w,self._vocabulary,self._memory)
-
-	def pick_w(self,m):
-		return self._strategy.pick_w(m,self._vocabulary,self._memory)
-
-	def update_hearer(self,ms,w,mh):
-		self._strategy.update_hearer(ms,w,mh,self._vocabulary,self._memory)
-
-	def update_speaker(self,ms,w,mh):
-		self._strategy.update_speaker(ms,w,mh,self._vocabulary,self._memory)
-
-	def visual(self,vtype=None,iterr=100,mlist="all",wlist="all"):
-		self._strategy.visual(self._vocabulary,mem=self._memory,vtype=vtype,iterr=iterr,mlist=mlist,wlist=wlist)
-
-
-
-
-
+from ..ngagent_2 import Agent
 
 
 
@@ -79,16 +27,16 @@ class Population(object):
 #		return pop_recup
 
 
-	def __init__(self,voctype,strat,nbagent,M,W):
-		self._size=0
-		self._voctype=voctype
-		self._M=M
-		self._W=W
-		self._strat=strat
+	def __init__(self, voc_cfg, strat_cfg, nbagent):
+		self._size = 0
+		self._voc_cfg = voc_cfg
+		self._M=voc_cfg['M']
+		self._W=voc_cfg['W']
+		self._strat_cfg=strat_cfg
 		self._lastgameinfo=[]
 		self._agentlist=[]
 		for i in range (0,nbagent):
-			self.add_new_agent(self._voctype,self._strat,i,self._M,self._W)
+			self.add_new_agent(agent_id=i, strat_cfg=strat_cfg, voc_cfg=voc_cfg)
 
 
 	def get_size(self):
@@ -111,12 +59,10 @@ class Population(object):
 			tempid=max(tempid,self._agentlist[i].get_id())
 		return tempid
 
-	def add_new_agent(self,voctype,strat,*args):
-		if len(args)!=0:
-			agent_id=args[0]
-		else:
+	def add_new_agent(self, voc_cfg, strat_cfg, agent_id=None):
+		if agent_id is not None:
 			agent_id=self.idmax()+1
-		self._agentlist.append(Agent(voctype,strat,agent_id,self._M,self._W))
+		self._agentlist.append(Agent(agent_id=agent_id, voc_cfg=self._voc_cfg, strat_cfg=self._strat_cfg))
 		self._size+=1
 
 	def get_index_from_id(self,agent_id):
@@ -158,8 +104,6 @@ class Population(object):
 			speaker.update_speaker(ms,w,mh)
 			hearer.update_hearer(ms,w,mh)
 			self._lastgameinfo=[ms,w,mh,speaker_id,hearer_id]
-			if "progress_info" in kwargs.keys():
-				my_functions.print_on_line_pid(kwargs["progress_info"]+" step:"+str(i)+"/"+str(steps))
 
 	def get_lastgameinfo(self):
 		return self._lastgameinfo

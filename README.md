@@ -6,10 +6,10 @@ To test this, especially the provided explanatory notebooks, you can use SageMat
 * Sign in, or create an account (<1min)
 * Create a new project
 * Enter the project
-* in the *Terminal command* in the upper right corner, type 
+* In the *Terminal command* in the upper right corner, type 
 "*git clone https://github.com/flowersteam/naminggamesal.git*"
-* When the clone is finished (few seconds), enter the directory *naminggamesal*, and then the *notebooks* one
-* Launch the notebooks (normal order is indicated by the numbers at the beginning of the .ipynb filename)
+* When the clone is finished (few seconds), enter the directory *naminggamesal/notebooks*.
+* Open the Jupyter notebooks (normal order is indicated by the numbers at the beginning of the .ipynb filename)
 
 Note: If a module is missing (and you're notified by Jupyter), you can add it via the terminal command "*pip install --user* MODULE"
 

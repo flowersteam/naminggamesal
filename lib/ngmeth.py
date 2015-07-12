@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-from ngsimu import *
+#from ngsimu import *
 import numpy as np
 import math
+
 import additional.custom_func as custom_func
-import additional.my_functions as my_functions
+from .ngpop import Population
 
 def pop_ize(func):
 	def out_func(pop,**kwargs):
@@ -40,9 +41,6 @@ def Nlink(agent,**kwargs):
 	tempN=0
 	for m in range(0,agent._M):
 		for w in range(0,agent._W):
-			if "progress_info" in kwargs.keys():
-				progr_info=kwargs["progress_info"]+" m:"+str(m)+"/"+str(agent._M)+" w:"+str(w)+"/"+str(agent._W)
-				my_functions.print_on_line_pid(progr_info)
 			tempN+=agent._vocabulary.exists(m,w)
 	return tempN
 
@@ -61,8 +59,6 @@ custom_Nlink =custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 #########success_rate##########
 
 def success_rate(agent,**kwargs):
-	if "progress_info" in kwargs.keys():
-		my_functions.print_on_line_pid(kwargs["progress_info"])
 	if agent.success+agent.fail!=0:
 		return agent.success/float(agent.success+agent.fail)
 	else:
@@ -89,8 +85,6 @@ def tempentropy(MM,WW):
 	return a
 
 def entropy(agent,**kwargs):
-	if "progress_info" in kwargs.keys():
-		my_functions.print_on_line_pid(kwargs["progress_info"])
 	m=len(agent._vocabulary.get_known_meanings())
 	return tempentropy(agent._M-m,agent._W-m)
 
@@ -110,8 +104,6 @@ custom_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
 def entropy_moyen_norm(pop,**kwargs):
-	if "progress_info" in kwargs.keys():
-		my_functions.print_on_line_pid(kwargs["progress_info"])
 	return 1.-(entropy_moyen(pop)[0]/entropy_max(pop))
 
 def entropy_moyen_norm_max(pop):
@@ -136,8 +128,6 @@ custom_entropy_moyen_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig
 #########Nlinksurs##########
 
 def Nlinksurs(pop,**kwargs):
-	if "progress_info" in kwargs.keys():
-		my_functions.print_on_line_pid(kwargs["progress_info"])
 	tempmat=np.matrix(np.ones((pop._M,pop._W)))
 	for agent in pop._agentlist:
 		tempmat=np.multiply(tempmat,agent._vocabulary.get_content())
@@ -157,8 +147,6 @@ custom_Nlinksurs=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########entropypop##########
 
 def entropypop(pop,**kwargs):
-	if "progress_info" in kwargs.keys():
-		my_functions.print_on_line_pid(kwargs["progress_info"])
 	m=Nlinksurs(pop)
 	return tempentropy(pop._M-m,pop._W-m)
 
@@ -176,8 +164,6 @@ custom_entropypop=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 
 def entropypop_norm(pop,**kwargs):
-	if "progress_info" in kwargs.keys():
-		my_functions.print_on_line_pid(kwargs["progress_info"])
 	return 1-(entropypop(pop)/entropypop_max(pop))
 
 def entropypop_norm_max(pop):
@@ -194,15 +180,13 @@ custom_entropypop_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########entropycouples##########
 
 def entropycouples(pop,**kwargs):
-	if "progress_info" in kwargs.keys():
-		my_functions.print_on_line_pid(kwargs["progress_info"])
 	tempvalues=[]
 	for j in range(100):
 		agent1_id=pop.pick_speaker()
 		agent2_id=pop.pick_hearer(agent1_id)
 		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
 		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
-		if pop._strat["strattype"]=="naivereal":
+		if pop._strat_cfg["strat_type"]=="naive_real":
 			voc1=agent1._vocabulary.get_content()
 			voc2=agent2._vocabulary.get_content()
 			tempm=0
@@ -235,8 +219,6 @@ custom_entropycouples=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 
 def entropycouples_norm(pop,**kwargs):
-	if "progress_info" in kwargs.keys():
-		my_functions.print_on_line_pid(kwargs["progress_info"])
 	return 1-(entropycouples(pop)/entropycouples_max(pop))
 
 def entropycouples_norm_max(pop):
@@ -252,8 +234,6 @@ custom_entropycouples_norm=custom_func.CustomFunc(FUNC,"population",**graphconfi
 #########srtheo##########
 
 def srtheo(pop,**kwargs):
-	if "progress_info" in kwargs.keys():
-		my_functions.print_on_line_pid(kwargs["progress_info"])
 	fail=0
 	succ=0
 	for i in range(100):
@@ -261,7 +241,18 @@ def srtheo(pop,**kwargs):
 		agent2_id=pop.pick_hearer(agent1_id)
 		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
 		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
-		tempop=Population("matrix",{"strattype":"naive"},2,pop._M,pop._W)
+		pop_cfg={
+        	'voc_cfg':{
+            	'voc_type':'sparse_matrix',
+        	    'M':pop._M,
+        	    'W':pop._W
+        	    },
+        	'strat_cfg':{
+        	    'strat_type':'naive'
+        	    },
+        	'nbagent':2
+        	}
+		tempop=Population(**pop_cfg)
 		tempop._agentlist[0]._vocabulary._content=agent1._vocabulary.get_content()
 		tempop._agentlist[1]._vocabulary._content=agent2._vocabulary.get_content()
 		tempop.play_game(1)
@@ -284,8 +275,6 @@ custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########entropydistrib##########
 
 def entropydistrib(pop,**kwargs):
-	if "progress_info" in kwargs.keys():
-		my_functions.print_on_line_pid(kwargs["progress_info"])
 	tempmat=np.matrix(np.zeros((pop._M,pop._W)))
 	for ag in pop._agentlist:
 		tempmat=tempmat+ag._vocabulary.get_content()

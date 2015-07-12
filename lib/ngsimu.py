@@ -3,12 +3,14 @@
 
 import time
 import pickle
-from ngagent import *
+import uuid
+
 from copy import deepcopy
-import ngmeth
+
+from .ngpop import Population
+from . import ngmeth
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
-import uuid
 
 def load_experiment(filename):
 	with open(filename, 'rb') as fichier:
@@ -18,16 +20,11 @@ def load_experiment(filename):
 
 class Experiment(object):
 
-	def __init__(self,voctype="sparse",strat={"strattype":"naive"},M=5,W=5,nbagent=10,step=1):
-		self._voctype=voctype
-		self._strat=strat
-		self._M=M
-		self._W=W
-		self._nbagent=nbagent
+	def __init__(self, pop_cfg, step=1):
 		self._time_step=step
 		self._T=[]
 		self._poplist=[]
-		self.add_pop(Population(voctype=voctype,strat=strat,nbagent=nbagent,M=M,W=W),0)
+		self.add_pop(Population(**pop_cfg),0)
 		self.uuid=str(uuid.uuid1())
 		self.init_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
@@ -48,8 +45,8 @@ class Experiment(object):
 
 	def get_pop(self,tempindex):
 		if tempindex=="last":
-			return self._poplist[-1].deepcopy()
-		return self._poplist[tempindex].deepcopy()
+			return deepcopy(self._poplist[-1])
+		return deepcopy(self._poplist[tempindex])
 
 
 	def continue_exp_until(self,T,**kwargs):
@@ -65,7 +62,7 @@ class Experiment(object):
 				for tt in range(0,self._time_step):
 					temppop.play_game(1)
 					self.reconstruct_info.append(temppop._lastgameinfo)
-			self.add_pop(temppop.deepcopy(),self._T[-1]+self._time_step)
+			self.add_pop(deepcopy(temppop),self._T[-1]+self._time_step)
 			temptmax+=self._time_step
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 #		if self._T[-1]!=T:

@@ -1,14 +1,18 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-from . import *
+import random
 import numpy as np
+import matplotlib.pyplot as plt
 
-class VocMatrix(Vocabulary):
+from . import BaseVocabulary
+
+
+class VocMatrix(BaseVocabulary):
 	voctype="matrix"
 
-	def __init__(self,M,W):
-		super(VocMatrix,self).__init__(M=M,W=W)
+	def __init__(self,**voc_cfg2):
+		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._content=np.matrix(np.zeros((self._M,self._W),dtype=np.float16))
 
 	def get_known_words(self,*args):
@@ -190,7 +194,7 @@ class VocMatrix(Vocabulary):
 			plt.xlabel("Words")
 			plt.ylabel("Meanings")
 			plt.gca().invert_yaxis()
-			plt.pcolor(np.array(tempmat),vmin=0,vmax=self._W)		
+			plt.pcolor(np.array(tempmat),vmin=0,vmax=self._W)
 		elif vtype=="hom":
 			tempmat=np.matrix(np.zeros((self._M,self._W)))
 			homvec=[]
