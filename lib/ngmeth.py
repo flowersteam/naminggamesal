@@ -310,10 +310,10 @@ def interactions_per_agent(exp,**kwargs):
 	return list(np.array(exp._T)*2./exp._poplist[0]._size)
 
 def interactions_per_agent_max(exp):
-	return max(exp._T)
+	return max(exp._T)*2./exp._poplist[0]._size
 
 def interactions_per_agent_min(exp):
-	return min(exp._T)
+	return min(exp._T)*2./exp._poplist[0]._size
 
 
 FUNC=interactions_per_agent

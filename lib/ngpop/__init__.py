@@ -1,4 +1,4 @@
 #!/usr/bin/python
 
-from .. import ngagent_2 as ngagent
+from .. import ngagent
 from .population import Population

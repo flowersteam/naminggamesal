@@ -10,7 +10,7 @@ import random
 import matplotlib.pyplot as plt
 
 from .. import ngvoc
-from .. import ngstrat_2 as ngstrat
+from .. import ngstrat
 
 class Agent(object):
 	def __init__(self, agent_id, voc_cfg, strat_cfg):
