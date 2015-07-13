@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from . import BaseVocabulary
+from . import voc_cache, del_cache
 
 
 class VocMatrix(BaseVocabulary):
@@ -15,6 +16,7 @@ class VocMatrix(BaseVocabulary):
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._content=np.matrix(np.zeros((self._M,self._W),dtype=np.float16))
 
+	@voc_cache
 	def get_known_words(self,*args):
 		templ=[]
 		if len(args)==0:
@@ -32,6 +34,7 @@ class VocMatrix(BaseVocabulary):
 					templ.append(w)
 		return templ
 
+	@voc_cache
 	def get_known_meanings(self,*args):
 		templ=[]
 		if len(args)==0:
@@ -49,6 +52,7 @@ class VocMatrix(BaseVocabulary):
 					templ.append(m)
 		return templ
 
+	@voc_cache
 	def exists(self,m,w):
 		if self._content[m,w]>0:
 			return 1
@@ -61,23 +65,27 @@ class VocMatrix(BaseVocabulary):
 	def get_size(self):
 		return self._size
 
+	@del_cache
 	def add(self,m,w,val):
 		self._content[m,w]=val
 
+	@del_cache
 	def rm(self,m,w):
 		self._content[m,w]=0
 
+	@del_cache
 	def rm_syn(self,m,w):
 		for i in range(0,self._W):
 			if i!=w:
 				self._content[m,i]=0
 
+	@del_cache
 	def rm_hom(self,m,w):
 		for i in range(0,self._M):
 			if i!=m:
 				self._content[i,w]=0
 
-
+	@voc_cache
 	def get_known_words(self,*args):
 		templ=[]
 		if len(args)==0:
@@ -95,6 +103,7 @@ class VocMatrix(BaseVocabulary):
 					templ.append(w)
 		return templ
 
+	@voc_cache
 	def get_known_meanings(self,*args):
 		templ=[]
 		if len(args)==0:
@@ -112,7 +121,7 @@ class VocMatrix(BaseVocabulary):
 					templ.append(m)
 		return templ
 
-
+	@voc_cache
 	def get_unknown_words(self,*args):
 		templ=[]
 		if len(args)==0:
@@ -130,6 +139,7 @@ class VocMatrix(BaseVocabulary):
 					templ.append(w)
 		return templ
 
+	@voc_cache
 	def get_unknown_meanings(self,*args):
 		templ=[]
 		if len(args)==0:
@@ -147,6 +157,7 @@ class VocMatrix(BaseVocabulary):
 					templ.append(m)
 		return templ
 
+	@voc_cache
 	def get_new_unknown_m(self):
 		if len(self.get_unknown_meanings())==0:
 			print "tried to get new m but all are known"
@@ -155,6 +166,7 @@ class VocMatrix(BaseVocabulary):
 		m=self.get_unknown_meanings()[tempindexm]
 		return m
 
+	@voc_cache
 	def get_new_unknown_w(self):
 		if len(self.get_unknown_words())==0:
 			print "tried to get new w but all are known"
@@ -163,7 +175,7 @@ class VocMatrix(BaseVocabulary):
 		w=self.get_unknown_words()[tempindexw]
 		return w
 
-
+	@voc_cache
 	def get_random_known_m(self,*args):
 		if len(self.get_known_meanings(*args))==0:
 			print "tried to get known m but none are known"
@@ -172,6 +184,7 @@ class VocMatrix(BaseVocabulary):
 		m=self.get_known_meanings(*args)[tempindexm]
 		return m
 
+	@voc_cache
 	def get_random_known_w(self,*args):
 		if len(self.get_known_words(*args))==0:
 			print "tried to get known w but none are known"

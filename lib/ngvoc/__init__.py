@@ -16,6 +16,24 @@ voc_class={
 	"sparse_matrix":"sparse_matrix.VocSparseMatrix"
 }
 
+
+
+def voc_cache(tempfun):
+	def mod_fun(self, *args):
+		try:
+			return self._cache[tempfun.__name__+str(args)]
+		except KeyError:
+			self._cache[tempfun.__name__+str(args)] = tempfun(self, *args)
+			return self._cache[tempfun.__name__+str(args)]
+	return mod_fun
+
+def del_cache(tempfun):
+	def mod_fun(self, *args):
+		ans = tempfun(self, *args)
+		self._cache={}
+		return ans
+	return mod_fun
+
 def Vocabulary(voc_type='matrix', **voc_cfg2):
 	tempstr = voc_type
 	if tempstr in voc_class.keys():
@@ -31,10 +49,12 @@ def Vocabulary(voc_type='matrix', **voc_cfg2):
 class BaseVocabulary(object):
 
 	def __init__(self,**voc_cfg2):
-		self._M=voc_cfg2['M']
-		self._W=voc_cfg2['W']
-		self._size=[self._M,self._W]
+		self._M = voc_cfg2['M']
+		self._W = voc_cfg2['W']
+		self._size = [self._M,self._W]
+		self._cache = {}
 
+	@del_cache
 	def fill(self):
 		for i in range(0,self._M):
 			for j in range(0,self._W):
