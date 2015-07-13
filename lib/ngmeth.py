@@ -13,11 +13,7 @@ def pop_ize(func):
 		tempNlist=[]
 		agentlist=pop._agentlist
 		for i in range(0,len(agentlist)):
-			if "progress_info" in kwargs.keys():
-				progress_info=kwargs["progress_info"]+" numagent:"+str(i)+"/"+str(pop._size)
-				tempNlist.append(func(agentlist[i],progress_info=progress_info))
-			else:
-				tempNlist.append(func(agentlist[i]))
+			tempNlist.append(func(agentlist[i]))
 			mean=np.mean(tempNlist)
 			std=np.std(tempNlist)
 		return [mean,std,tempNlist]
@@ -311,7 +307,7 @@ custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########interactions_per_agent##########
 
 def interactions_per_agent(exp,**kwargs):
-	return list(np.array(exp._T)*1./exp._poplist[0]._size)
+	return list(np.array(exp._T)*2./exp._poplist[0]._size)
 
 def interactions_per_agent_max(exp):
 	return max(exp._T)

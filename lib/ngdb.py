@@ -6,7 +6,9 @@ import sqlite3 as sql
 import time
 import bz2
 import cPickle
+import json
 from copy import deepcopy
+import random
 
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
@@ -26,7 +28,7 @@ class NamingGamesDB(object):
 				+"Id TEXT, "\
 				+"Creation_Time INT, "\
 				+"Modif_Time INT, "\
-				+"PopConfig TEXT, "\
+				+"Config TEXT, "\
 				+"Tmax INT, "\
 				+"step INT, "\
 				+"Experiment_object BLOB)")
@@ -86,9 +88,9 @@ class NamingGamesDB(object):
 			else:
 				return False
 
-	def get_experiment(self,nb_id=None,force_new=False,blacklist=[],**params):
+	def get_experiment(self, nb_id=None, force_new=False, blacklist=[], pattern=None, **xp_cfg):
 		if force_new:
-			return Experiment(database=self,**params)
+			return Experiment(database=self,**xp_cfg)
 		if nb_id:
 			if self.id_in_db(nb_id):
 				conn=sql.connect(self.dbpath)
@@ -100,7 +102,7 @@ class NamingGamesDB(object):
 			else:
 				print("ID doesn't exist in DB")
 		else:
-			templist=self.get_id_list(**params)
+			templist=self.get_id_list(pattern=pattern, **xp_cfg)
 			for elt in blacklist:
 				try:
 					templist.remove(elt)
@@ -121,37 +123,16 @@ class NamingGamesDB(object):
 			tempblob=cursor.fetchone()
 			return cPickle.loads(bz2.decompress(str(tempblob[0])))
 
-	def get_condition_sql_format(self,**params):
-		changedic={\
-			"voctype":"Voctype",\
-			"strat":"Strat",\
-			"M":"M",\
-			"W":"W",\
-			"step":"step",\
-			"nbagent":"Nb_agent",\
-			}
-		tempstr=""
-		if "sql_condition" in params.keys():
-			return params["sql_condition"]
-		else:
-			put_and=False
-			for name, value in params.items():
-				if put_and:
-					tempstr+=" AND"
-				if name=="strat":
-					tempstr+=" "+changedic[name]+"=\'"+str(value["strattype"])+"\'"
-				else:
-					tempstr+=" "+changedic[name]+"=\'"+str(value)+"\'"
-				put_and=True
-			return tempstr
 
-
-	def get_id_list(self, all_id=False, **params):
+	def get_id_list(self, all_id=False, pattern=None, **xp_cfg):
 		conn=sql.connect(self.dbpath)
 		with conn:
 			cursor=conn.cursor()
 			if not all_id:
-				cursor.execute("SELECT Id FROM main_table WHERE"+self.get_condition_sql_format(**params))
+				if xp_cfg:
+					cursor.execute("SELECT Id FROM main_table WHERE Config=\'{}\'".format(json.dumps(xp_cfg)))
+				else:
+					cursor.execute("SELECT Id FROM main_table WHERE Config LIKE \'{}\'".format(pattern))
 			else:
 				cursor.execute("SELECT Id FROM main_table")
 			templist=list(cursor)
@@ -160,8 +141,8 @@ class NamingGamesDB(object):
 			return templist
 
 
-	def create_experiment(self,**params):
-		return Experiment(database=self,**params)
+	def create_experiment(self,**xp_cfg):
+		return Experiment(database=self,**xp_cfg)
 
 	def commit(self,exp):
 		conn=sql.connect(self.dbpath)
@@ -175,7 +156,7 @@ class NamingGamesDB(object):
 					exp.uuid, \
 					exp.init_time, \
 					exp.modif_time, \
-					str(exp._pop_cfg), \
+					json.dumps({'pop_cfg':exp._pop_cfg, 'step':exp._time_step}), \
 #					exp._voctype, \
 #					exp._strat["strattype"], \
 #					exp._M, \
