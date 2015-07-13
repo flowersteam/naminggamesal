@@ -5,7 +5,6 @@
 #from ngvoc import *
 import os
 from copy import deepcopy
-import pickle
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,17 +14,6 @@ from ..ngagent import Agent
 
 
 class Population(object):
-#	def deepcopy(self):
-#		filename="temppop"+str(os.getpid())+".tmp"
-#		with open(filename, 'wb') as fichier:
-#			mon_pickler = pickle.Pickler(fichier)
-#			mon_pickler.dump(self)
-#		with open(filename, 'rb') as fichier:
-#			mon_depickler = pickle.Unpickler(fichier)
-#			pop_recup = mon_depickler.load()
-#		os.remove(filename)
-#		return pop_recup
-
 
 	def __init__(self, voc_cfg, strat_cfg, nbagent):
 		self._size = 0

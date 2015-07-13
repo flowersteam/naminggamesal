@@ -18,7 +18,7 @@ from . import ngsimu
 
 class NamingGamesDB(object):
 	def __init__(self,path=None):
-		self.pickle_protocol=1
+		#self.pickle_protocol=cPickle.HIGHEST_PROTOCOL
 		if not path:
 			path='naminggames.db'
 		self.dbpath=path
@@ -112,7 +112,7 @@ class NamingGamesDB(object):
 				i=random.randint(0,len(templist)-1)
 				return self.get_experiment(nb_id=templist[i])
 			else:
-				return Experiment(database=self,**params)
+				return Experiment(database=self,**xp_cfg)
 
 
 	def get_graph(self,nb_id,method="srtheo"):
@@ -148,7 +148,7 @@ class NamingGamesDB(object):
 		conn=sql.connect(self.dbpath)
 		with conn:
 			cursor=conn.cursor()
-			binary=sql.Binary(bz2.compress(cPickle.dumps(exp,self.pickle_protocol)))
+			binary=sql.Binary(bz2.compress(cPickle.dumps(exp,cPickle.HIGHEST_PROTOCOL)))
 			cursor.execute("SELECT Modif_Time FROM main_table WHERE Id=\'"+exp.uuid+"\'")
 			tempmodif=cursor.fetchone()
 			if not tempmodif:
@@ -179,7 +179,7 @@ class NamingGamesDB(object):
 			cursor.execute("SELECT Modif_Time FROM computed_data_table WHERE Id=\'"+exp.uuid+"\' AND Function=\'"+method+"\'")
 			tempmodif=cursor.fetchall()
 			if not tempmodif:
-				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,self.pickle_protocol)))
+				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 				cursor.execute("INSERT INTO computed_data_table VALUES(?,?,?,?,?)", (\
 					exp.uuid, \
 					graph.init_time, \
@@ -187,7 +187,7 @@ class NamingGamesDB(object):
 					method, \
 					binary,))
 			elif tempmodif!=graph.modif_time:
-				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,self.pickle_protocol)))
+				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 				cursor.execute("UPDATE computed_data_table SET "\
 					+"Modif_Time=\'"+graph.modif_time+"\', "\
 					+"Custom_Graph=? WHERE Id=\'"+exp.uuid+"\' AND Function=\'"+method+"\'",(binary,))\

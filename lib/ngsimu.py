@@ -2,7 +2,6 @@
 # -*- coding: latin-1 -*-
 
 import time
-import pickle
 import uuid
 
 from copy import deepcopy
@@ -12,11 +11,11 @@ from . import ngmeth
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
 
-def load_experiment(filename):
-	with open(filename, 'rb') as fichier:
-		mon_depickler=pickle.Unpickler(fichier)
-		tempexp=mon_depickler.load()
-	return tempexp
+#def load_experiment(filename):
+#	with open(filename, 'rb') as fichier:
+#		mon_depickler=pickle.Unpickler(fichier)
+#		tempexp=mon_depickler.load()
+#	return tempexp
 
 class Experiment(object):
 
@@ -39,10 +38,10 @@ class Experiment(object):
 	def get_self(self):
 		return self
 
-	def save(self,filename):
-		with open(filename,'wb') as fichier:
-			testpickler=pickle.Pickler(fichier)
-			testpickler.dump(self.get_self())
+#	def save(self,filename):
+#		with open(filename,'wb') as fichier:
+#			testpickler=pickle.Pickler(fichier)
+#			testpickler.dump(self.get_self())
 
 	def get_pop(self,tempindex):
 		if tempindex=="last":

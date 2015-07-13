@@ -6,8 +6,12 @@ import time
 import numpy as np
 import pickle
 import copy
-#import seaborn
+
 import matplotlib
+import seaborn as sns
+#sns.set(rc={'image.cmap': 'Purples_r'})
+
+sns.set_style('darkgrid')
 matplotlib.rcParams['pdf.fonttype'] = 42  #set font type to true type, avoids possible incompatibility while submitting papers
 matplotlib.rcParams['ps.fonttype'] = 42
 
@@ -31,6 +35,7 @@ class CustomGraph(object):
 		self.alpha=0.3
 
 		self.Yoptions=[{}]
+		self.legendoptions = {}
 
 		self.xmin=[0,0]
 		self.xmax=[0,5]
@@ -157,7 +162,7 @@ class CustomGraph(object):
 			plt.ylim(ymin=self.ymin[1])
 		if self.ymax[0]:
 			plt.ylim(ymax=self.ymax[1])
-		plt.legend()
+		plt.legend(**self.legendoptions)
 
 		#plt.legend(bbox_to_anchor=(0,0,0.55,0.8))
 		#plt.legend(bbox_to_anchor=(0,0,0.5,1))
