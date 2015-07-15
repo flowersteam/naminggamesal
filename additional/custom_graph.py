@@ -117,6 +117,7 @@ class CustomGraph(object):
 		plt.ion()
 		plt.cla()
 		plt.clf()
+		current_palette=sns.color_palette()
 		for i in range(0,len(self._Y)):
 
 			Xtemp=self._X[i]
@@ -140,16 +141,18 @@ class CustomGraph(object):
 				for j in range(0,len(temptup)):
 					Xtemp[j]=temptup[j][0]
 					stdtemp[j]=temptup[j][1]
+			base_line=plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
 			if self.std:
 				Ytempmin=[0]*len(Ytemp)
 				Ytempmax=[0]*len(Ytemp)
 				for j in range(0,len(Ytemp)):
 					Ytempmax[j]=Ytemp[j]+stdtemp[j]
 					Ytempmin[j]=Ytemp[j]-stdtemp[j]
-				#plt.fill_between(Xtemp,Ytempmin,Ytempmax,alpha=self.alpha,color=colormap[i%7],**self.Yoptions[i])
-				#plt.plot(Xtemp,Ytemp,color=colormap[i%7],**self.Yoptions[i])
-				plt.fill_between(Xtemp,Ytempmin,Ytempmax,alpha=self.alpha,**self.Yoptions[i])
-			plt.plot(Xtemp,Ytemp,**self.Yoptions[i])
+				if 'color' in self.Yoptions[i].keys():
+					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha,**self.Yoptions[i])
+				else:
+					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha, facecolor=base_line.get_color(), **self.Yoptions[i])
+			
 		plt.xlabel(self.xlabel)
 		plt.ylabel(self.ylabel)
 		plt.title(self.title)
@@ -191,6 +194,7 @@ class CustomGraph(object):
 		stdtemp=[]
 		Ytemp=[]
 		self.Yoptions=[self.Yoptions[0]]
+		self.std=1
 
 		for i in range(0,len(self._Y[0])):
 			Ytemp.append(np.mean(list(Yarray[:,i])))
@@ -199,6 +203,7 @@ class CustomGraph(object):
 		self.stdvec=[stdtemp]
 		self._X=[self._X[0]]
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
+
 
 
 	def wise_merge(self):

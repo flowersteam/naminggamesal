@@ -70,14 +70,13 @@ class NamingGamesDB(object):
 			cursor=sql.connect(self.dbpath).cursor()
 			if met:
 				met = ' AND Function=\'{}\''.format(met)
-
 			if graph_only:
 				for nb_id in id_list:
-					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(nb_id)+met)
+					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(nb_id)+met))
 			else:
 				for nb_id in id_list:
-					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(nb_id)+met)
-					cursor.execute("DELETE FROM main_table WHERE Id=\'{}\'".format(str(nb_id))
+					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(nb_id)+met))
+					cursor.execute("DELETE FROM main_table WHERE Id=\'{}\'".format(str(nb_id)))
 
 
 	def get_method_list(self,nb_id):
