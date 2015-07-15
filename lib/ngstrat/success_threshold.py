@@ -9,8 +9,6 @@ import numpy as np
 
 ##################################### STRATEGIE SUCCESS THRESHOLD########################################
 class StratSuccessThreshold(StratNaive):
-	_strattype="success_threshold"
-	threshold_explo=0.9
 
 	def pick_mw(self,voc,mem):
 		test1=self.get_success_rate_over_known_meanings(voc,mem)>self.threshold_explo
@@ -62,7 +60,7 @@ class StratSuccessThreshold(StratNaive):
 
 ##################################### STRATEGIE SUCCESS THRESHOLD CORRECTED########################################
 class StratSuccessThresholdCorrected(StratSuccessThreshold):
-	_strattype="success_threshold_corrected"
+
 	def get_success_rate_over_known_meanings(self,voc,mem):
 		succ_sum=0
 		fail_sum=0
@@ -80,7 +78,6 @@ class StratSuccessThresholdCorrected(StratSuccessThreshold):
 
 ##################################### STRATEGIE SUCCESS THRESHOLD REELLE########################################
 class StratSuccessThresholdReal(StratSuccessThreshold):
-
 
 	def update_hearer(self,ms,w,mh,voc,mem):
 		voc.add(ms,w,1)

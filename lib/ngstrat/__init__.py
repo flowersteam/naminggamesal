@@ -33,6 +33,7 @@ def Strategy(strat_type='naive', **strat_cfg2):
 	temppath = '.'.join(templist[:-1])
 	tempclass = templist[-1]
 	_tempmod = import_module('.'+temppath,package=__name__)
+	print _tempmod
 	tempstrat = getattr(_tempmod,tempclass)(**strat_cfg2)
 	return tempstrat
 

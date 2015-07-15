@@ -39,9 +39,10 @@ class NamingGamesDB(object):
 				+"Function TEXT, "\
 				+"Custom_Graph BLOB)")
 
-	def merge(self,other_dbpath,remove=False,main_only=False):
+	def merge(self, other_dbpath, id_list=None, remove=False, main_only=False):
 		other_db=NamingGamesDB(other_dbpath)
-		id_list=other_db.get_id_list(all_id=True)
+		if id_list is None:
+			id_list=other_db.get_id_list(all_id=True)
 		for nb_id in id_list:
 			if self.id_in_db(nb_id) and (self.get_modif_time(nb_id)<other_db.get_modif_time(nb_id)):
 				self.commit(other_db.get_experiment(nb_id=nb_id))
@@ -60,6 +61,25 @@ class NamingGamesDB(object):
 		if remove:
 			os.remove(other_dbpath)
 
+	def export(self, other_dbpath, id_list=None, remove=False, main_only=False):
+		other_db=NamingGamesDB(other_dbpath)
+		other_db.merge(other_dbpath=self.dbpath, id_list=id_list, remove=remove, main_only=main_only)
+
+	def delete(self, id_list, graph_only=False, met=''):
+		with sql.connect(self.dbpath):
+			cursor=sql.connect(self.dbpath).cursor()
+			if met:
+				met = ' AND Function=\'{}\''.format(met)
+
+			if graph_only:
+				for nb_id in id_list:
+					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(nb_id)+met)
+			else:
+				for nb_id in id_list:
+					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(nb_id)+met)
+					cursor.execute("DELETE FROM main_table WHERE Id=\'{}\'".format(str(nb_id))
+
+
 	def get_method_list(self,nb_id):
 		with sql.connect(self.dbpath):
 			cursor=sql.connect(self.dbpath).cursor()
@@ -76,7 +96,7 @@ class NamingGamesDB(object):
 				cursor.execute("SELECT Modif_Time FROM main_table WHERE Id=\'"+str(nb_id)+"\'")
 				return cursor.fetchone()[0]
 			else:
-				cursor.execute("SELECT Modif_Time FROM computed_data_table WHERE Id=\'"+str(nb_id)+"\' AND Function==\'"+graph+"\'")
+				cursor.execute("SELECT Modif_Time FROM computed_data_table WHERE Id=\'"+str(nb_id)+"\' AND Function=\'"+graph+"\'")
 				return cursor.fetchone()[0]
 
 	def id_in_db(self,nb_id):
@@ -243,5 +263,7 @@ class Experiment(ngsimu.Experiment):
 			tempgraph2=self.graph(method=X,tmin=tmin,tmax=tmax)
 			tempgraph=tempgraph.func_of(tempgraph2)
 		return tempgraph
+
+
 
 

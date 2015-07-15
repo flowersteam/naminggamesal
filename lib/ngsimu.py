@@ -22,6 +22,7 @@ class Experiment(object):
 	def __init__(self, pop_cfg, step=1):
 		self._time_step = step
 		self._T = []
+		self._exec_time=[]
 		self._poplist = []
 		self._pop_cfg = pop_cfg
 		self.add_pop(Population(**pop_cfg),0)
@@ -49,20 +50,16 @@ class Experiment(object):
 		return deepcopy(self._poplist[tempindex])
 
 
-	def continue_exp_until(self,T,**kwargs):
+	def continue_exp_until(self,T):
 		temppop=self.get_pop("last")
 		temptmax=self._T[-1]
+		start_time = time.clock()
 		while (temptmax < T) :
-			if "progress_info" in kwargs.keys():
-				progress_info_2=kwargs["progress_info"]+" T:"+str(temptmax)+"/"+str(T)
-				for tt in range(0,self._time_step):
-					temppop.play_game(1,progress_info=progress_info_2)
-					self.reconstruct_info.append(temppop._lastgameinfo)
-			else:
-				for tt in range(0,self._time_step):
-					temppop.play_game(1)
-					self.reconstruct_info.append(temppop._lastgameinfo)
-			self.add_pop(deepcopy(temppop),self._T[-1]+self._time_step)
+			for tt in range(0,self._time_step):
+				temppop.play_game(1)
+				self.reconstruct_info.append(temppop._lastgameinfo)
+			end_time = time.clock()
+			self.add_pop(deepcopy(temppop),self._T[-1]+self._time_step,exec_time=end_time-start_time)
 			temptmax+=self._time_step
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 #		if self._T[-1]!=T:
@@ -74,9 +71,10 @@ class Experiment(object):
 	def continue_exp(self,dT,**kwargs):
 		self.continue_exp_until((self._T[-1]+dT),**kwargs)
 
-	def add_pop(self,pop,T):
+	def add_pop(self,pop,T,exec_time=0):
 		self._poplist.append(pop)
 		self._T.append(T)
+		self._exec_time.append(exec_time)
 
 	def extend_step(self,bigstep):
 		tempt=self._T[0]
