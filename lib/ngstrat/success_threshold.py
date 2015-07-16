@@ -10,6 +10,11 @@ import numpy as np
 ##################################### STRATEGIE SUCCESS THRESHOLD########################################
 class StratSuccessThreshold(StratNaive):
 
+	def __init__(self, threshold_explo=0.9, **strat_cfg2):
+		super(StratSuccessThreshold, self).__init__(**strat_cfg2)
+		if 'threshold_explo' not in strat_cfg2.keys():
+			self.threshold_explo=threshold_explo
+
 	def pick_mw(self,voc,mem):
 		test1=self.get_success_rate_over_known_meanings(voc,mem)>self.threshold_explo
 		test2=len(voc.get_known_meanings())==voc._M

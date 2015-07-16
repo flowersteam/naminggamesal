@@ -20,6 +20,7 @@ strat_class={
 
 	'decision_vector':'decision_vector.StratDecisionVector',
 	'decision_vector_real':'decision_vector.StratDecisionVectorReal',
+	'decision_vector_gainmax':'decision_vector.StratDecisionVectorGainmax',
 
 	'last_result':'last_result.StratLastResult',
 	'last_result_real':'last_result.StratLastResultReal'
@@ -39,8 +40,8 @@ def Strategy(strat_type='naive', **strat_cfg2):
 
 class BaseStrategy(object):
 
-	def __init(self, **strat_cfg2):
-		for key, value in kwargs.iteritems():
+	def __init__(self, **strat_cfg2):
+		for key, value in strat_cfg2.iteritems():
 			setattr(self, key, value)
 
 

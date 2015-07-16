@@ -182,7 +182,7 @@ def entropycouples(pop,**kwargs):
 		agent2_id=pop.pick_hearer(agent1_id)
 		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
 		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
-		if pop._strat_cfg["strat_type"]=="naive_real":
+		if pop._strat_cfg["strat_type"][-5:]=="_real":
 			voc1=agent1._vocabulary.get_content()
 			voc2=agent2._vocabulary.get_content()
 			tempm=0

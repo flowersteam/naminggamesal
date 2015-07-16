@@ -5,6 +5,7 @@ from .naive import StratNaive
 from .naive import StratNaiveReal
 import random
 import numpy as np
+from .. import ngmeth
 
 
 ################################### STRATEGIE DECISION VECTOR #########################################""
@@ -28,7 +29,6 @@ class StratDecisionVector(StratNaive):
 		return {}
 ################################### STRATEGIE DECISION VECTOR REELLE#########################################""
 
-#Ne pas oublier STRATTYPE, NAME et l'initialisation dans la classe strategy
 
 class StratDecisionVectorReal(StratNaiveReal):
 
@@ -47,4 +47,12 @@ class StratDecisionVectorReal(StratNaiveReal):
 		return {}
 
 
+################################### STRATEGIE DECISION VECTOR GAIN MAXIMIZATION #########################################""
 
+
+class StratDecisionVectorGainmax(StratDecisionVector):
+	def __init__(self, **strat_cfg2):
+		M = strat_cfg2['M']
+		W = strat_cfg2['W']
+		self.decision_vector = ngmeth.decvec3_from_MW(M, W)
+##############################
