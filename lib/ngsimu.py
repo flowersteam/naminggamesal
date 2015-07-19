@@ -53,7 +53,7 @@ class Experiment(object):
 	def continue_exp_until(self,T):
 		temppop=self.get_pop("last")
 		temptmax=self._T[-1]
-		start_time = time.clock()
+		start_time = time.clock() - self._exec_time[-1]
 		while (temptmax < T) :
 			for tt in range(0,self._time_step):
 				temppop.play_game(1)
@@ -106,8 +106,11 @@ class Experiment(object):
 
 	def graph(self,method="srtheo",X=None,tmin=0,tmax=None):
 		if not tmax:
-			tmax=self._T[-1]
+			tmax = self._T[-1]
 		indmax=-1
+		if tmax > self._T[-1]:
+			self.continue_exp_until(tmax)
+			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax)
 		while self._T[indmax]>tmax:
 			indmax-=1
 		indmin=0

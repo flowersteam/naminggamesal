@@ -120,27 +120,19 @@ class CustomGraph(object):
 		current_palette=sns.color_palette()
 		for i in range(0,len(self._Y)):
 
-			Xtemp=self._X[i]
-			Ytemp=self._Y[i]
-			if self.sort:
+			Xtemp=copy.deepcopy(self._X[i])
+			Ytemp=copy.deepcopy(self._Y[i])
+			stdtemp=copy.deepcopy(self.stdvec[i])
+			if self.sort: # WARNING!!!!! No X value should appear 2 times -> bug to solve
 				tempdic={}
 				for j in range(0,len(Xtemp)):
-					tempdic[Xtemp[j]]=Ytemp[j]
+					tempdic[Xtemp[j]]=[Ytemp[j],stdtemp[j]]
 				temptup=sorted(tempdic.items())
 				for j in range(0,len(temptup)):
 					Xtemp[j]=temptup[j][0]
-					Ytemp[j]=temptup[j][1]
+					Ytemp[j]=temptup[j][1][0]
+					stdtemp[j]=temptup[j][1][1]
 
-			Xtemp=self._X[i]
-			stdtemp=self.stdvec[i]
-			if self.sort:
-				tempdic={}
-				for j in range(0,len(Xtemp)):
-					tempdic[Xtemp[j]]=stdtemp[j]
-				temptup=sorted(tempdic.items())
-				for j in range(0,len(temptup)):
-					Xtemp[j]=temptup[j][0]
-					stdtemp[j]=temptup[j][1]
 			base_line=plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
 			if self.std:
 				Ytempmin=[0]*len(Ytemp)
@@ -183,9 +175,9 @@ class CustomGraph(object):
 
 	def complete_with(self,other_graph):
 		for i in range(0,len(self._X)):
-			self._X[i]=self._X[i]+other_graph._X[i]
-			self._Y[i]=self._Y[i]+other_graph._Y[i]
-			self.stdvec[i]=self.stdvec[i]+other_graph.stdvec[i]
+			self._X[i]=list(copy.deepcopy(self._X[i]))+list(copy.deepcopy(other_graph._X[i]))
+			self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
+			self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def merge(self):

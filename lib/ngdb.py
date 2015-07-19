@@ -107,7 +107,7 @@ class NamingGamesDB(object):
 			else:
 				return False
 
-	def get_experiment(self, nb_id=None, force_new=False, blacklist=[], pattern=None, **xp_cfg):
+	def get_experiment(self, nb_id=None, force_new=False, blacklist=[], pattern=None, tmax=0, **xp_cfg):
 		if force_new:
 			return Experiment(database=self,**xp_cfg)
 		if nb_id:
@@ -117,21 +117,34 @@ class NamingGamesDB(object):
 					cursor=conn.cursor()
 					cursor.execute("SELECT Experiment_object FROM main_table WHERE Id=\'"+str(nb_id)+"\'")
 					tempblob=cursor.fetchone()
-					return cPickle.loads(bz2.decompress(str(tempblob[0])))
+					tempexp = cPickle.loads(bz2.decompress(str(tempblob[0])))
+					tempexp.db=self
+					return tempexp
 			else:
 				print("ID doesn't exist in DB")
 		else:
-			templist=self.get_id_list(pattern=pattern, **xp_cfg)
+			templist=self.get_id_list(pattern=pattern, tmax=tmax, **xp_cfg)
 			for elt in blacklist:
 				try:
 					templist.remove(elt)
 				except ValueError:
 					pass
+			temptmax = -1
+			for uuid in templist:
+				t = int(self.get_param(param='Tmax', nb_id=uuid))
+				temptmax = max(temptmax, min(t ,tmax))
+			for uuid in templist:
+				t = int(self.get_param(param='Tmax', nb_id=uuid))
+				if t < temptmax:
+					templist.remove(uuid)
 			if templist:
 				i=random.randint(0,len(templist)-1)
-				return self.get_experiment(nb_id=templist[i])
+				tempexp = self.get_experiment(nb_id=templist[i])
+				tempexp.db=self
+				return tempexp
 			else:
-				return Experiment(database=self,**xp_cfg)
+				tempexp = Experiment(database=self,**xp_cfg)
+			return tempexp
 
 
 	def get_graph(self,nb_id,method="srtheo"):
@@ -143,7 +156,7 @@ class NamingGamesDB(object):
 			return cPickle.loads(bz2.decompress(str(tempblob[0])))
 
 
-	def get_id_list(self, all_id=False, pattern=None, **xp_cfg):
+	def get_id_list(self, all_id=False, pattern=None, tmax=0, **xp_cfg):
 		conn=sql.connect(self.dbpath)
 		with conn:
 			cursor=conn.cursor()
@@ -159,6 +172,13 @@ class NamingGamesDB(object):
 				templist[i]=templist[i][0]
 			return templist
 
+	def get_param(self, nb_id, param, table='main_table'):
+		conn=sql.connect(self.dbpath)
+		with conn:
+			cursor=conn.cursor()
+			cursor.execute("SELECT {} FROM {} WHERE Id=\'{}\'".format(param, table, nb_id))
+			temp = cursor.fetchone()
+			return temp[0]
 
 	def create_experiment(self,**xp_cfg):
 		return Experiment(database=self,**xp_cfg)
@@ -169,8 +189,8 @@ class NamingGamesDB(object):
 			cursor=conn.cursor()
 			binary=sql.Binary(bz2.compress(cPickle.dumps(exp,cPickle.HIGHEST_PROTOCOL)))
 			cursor.execute("SELECT Modif_Time FROM main_table WHERE Id=\'"+exp.uuid+"\'")
-			tempmodif=cursor.fetchone()
-			if not tempmodif:
+			tempmodiftup=cursor.fetchone()
+			if not tempmodiftup:
 				cursor.execute("INSERT INTO main_table VALUES(?,?,?,?,?,?,?)", (\
 					exp.uuid, \
 					exp.init_time, \
@@ -184,7 +204,7 @@ class NamingGamesDB(object):
 					exp._T[-1], \
 					exp._time_step, \
 					binary,))
-			elif tempmodif<exp.modif_time:
+			elif tempmodiftup[0]<exp.modif_time:
 				cursor.execute("UPDATE main_table SET "\
 					+"Modif_Time=\'"+str(exp.modif_time)+"\', "\
 					+"Tmax=\'"+str(exp._T[-1])+"\', "\
@@ -196,8 +216,8 @@ class NamingGamesDB(object):
 		with conn:
 			cursor=conn.cursor()
 			cursor.execute("SELECT Modif_Time FROM computed_data_table WHERE Id=\'"+exp.uuid+"\' AND Function=\'"+method+"\'")
-			tempmodif=cursor.fetchall()
-			if not tempmodif:
+			tempmodiftup=cursor.fetchone()
+			if not tempmodiftup:
 				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 				cursor.execute("INSERT INTO computed_data_table VALUES(?,?,?,?,?)", (\
 					exp.uuid, \
@@ -205,7 +225,7 @@ class NamingGamesDB(object):
 					graph.modif_time, \
 					method, \
 					binary,))
-			elif tempmodif!=graph.modif_time:
+			elif tempmodiftup[0]!=graph.modif_time:
 				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 				cursor.execute("UPDATE computed_data_table SET "\
 					+"Modif_Time=\'"+graph.modif_time+"\', "\
@@ -228,7 +248,7 @@ class Experiment(ngsimu.Experiment):
 			self.db=NamingGamesDB()
 		else:
 			self.db=database
-		super(self.__class__,self).__init__(pop_cfg,step)
+		super(Experiment,self).__init__(pop_cfg,step)
 
 	def commit_to_db(self):
 		self.db.commit(self)
@@ -247,16 +267,19 @@ class Experiment(ngsimu.Experiment):
 		if not tmax:
 			tmax=self._T[-1]
 		ind=-1
+		if tmax > self._T[-1]:
+			self.continue_exp_until(tmax)
+			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax)
 		while self._T[ind]>tmax:
 			ind-=1
 		if self.db.data_exists(nb_id=self.uuid,method=method):
 			tempgraph=self.db.get_graph(self.uuid,method=method)
 			if tempgraph._X[0][-1]<tmax:
 				temptmin=self._T[len(tempgraph._X[0])]
-				tempgraph2=super(self.__class__,self).graph(method=method,tmin=temptmin,tmax=tmax)
+				tempgraph2=super(Experiment,self).graph(method=method,tmin=temptmin,tmax=tmax)
 				tempgraph.complete_with(tempgraph2)
 		else:
-			tempgraph=super(self.__class__,self).graph(method=method,tmax=tmax)
+			tempgraph=super(Experiment, self).graph(method=method,tmax=tmax)
 		self.commit_data_to_db(tempgraph,method)
 		if X:
 			tempgraph2=self.graph(method=X,tmin=tmin,tmax=tmax)

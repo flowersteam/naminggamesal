@@ -12,7 +12,12 @@ from . import voc_cache, del_cache
 class VocMatrix(BaseVocabulary):
 	voctype="matrix"
 
-	def __init__(self,**voc_cfg2):
+	def __init__(self, M, W, **voc_cfg2):
+		self._M = M
+		self._W = W
+		self._size = [self._M,self._W]
+		#M = voc_cfg2['M']
+		#W = voc_cfg2['W']
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._content=np.matrix(np.zeros((self._M,self._W),dtype=np.float16))
 

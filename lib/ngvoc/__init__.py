@@ -49,9 +49,6 @@ def Vocabulary(voc_type='matrix', **voc_cfg2):
 class BaseVocabulary(object):
 
 	def __init__(self,**voc_cfg2):
-		self._M = voc_cfg2['M']
-		self._W = voc_cfg2['W']
-		self._size = [self._M,self._W]
 		self._cache = {}
 
 	@del_cache
