@@ -43,5 +43,5 @@ class StratDecisionVectorGainSoftmax(StratDecisionVector):
 		M = strat_cfg2['M']
 		W = strat_cfg2['W']
 		Temp = strat_cfg2['Temp']
-		self.decision_vector = ngmeth.decvec3_softmax_from_MW(M, W, Temp)
+		self.decision_vector = ngmeth.decvec4_softmax_from_MW(M, W, Temp)
 ##############################

@@ -1,7 +1,4 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
-
-#from ngsimu import *
 import numpy as np
 import math
 
@@ -413,4 +410,24 @@ def decvec3_softmax_from_MW(M,W,Temp):
 		P2 = np.exp(-pm*Gm/Temp)
 		decvec.append(P1/(P1+P2))
 	decvec.append(0)
+	return decvec
+
+
+def decvec4_softmax_from_MW(M,W,Temp):
+	decvec=[1.]
+	for i in range(1,M):
+		pp=(M-i)/float(M)*(W-i)/float(W)
+		pm=i/float(M)*(i-1.)/float(W)
+		Gp=np.log2(W-i)
+		Gm=np.log2(W-i+1)
+		P1 = np.exp(pp*Gp/Temp)
+		P2 = np.exp(pm*Gm/Temp)
+		p=P1/(P1+P2)
+		if np.isnan(p):
+			if pm*Gm<=pp*Gp:
+				p=1.
+			else:
+				p=0.
+		decvec.append(p)
+	decvec.append(0.)
 	return decvec
