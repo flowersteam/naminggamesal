@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,22 +10,22 @@ sns.set(rc={'image.cmap': 'Purples_r'})
 #####Classe de base
 strat_class={
 	'naive':'naive.StratNaive',
-	'naive_real':'naive.StratNaiveReal',
 	'naive_destructive':'naive.StratNaiveDestructive',
 
 	'success_threshold':'success_threshold.StratSuccessThreshold',
 	'success_threshold_corrected':'success_threshold.StratSuccessThresholdCorrected',
-	'success_threshold_real':'success_threshold.StratSuccessThresholdReal',
+	'success_threshold_wise':'success_threshold.StratSuccessThresholdWise',
+
+	'mincounts':'mincounts.StratMinCounts',
 
 	'decision_vector':'decision_vector.StratDecisionVector',
-	'decision_vector_real':'decision_vector.StratDecisionVectorReal',
 	'decision_vector_gainmax':'decision_vector.StratDecisionVectorGainmax',
+	'decision_vector_gainsoftmax':'decision_vector.StratDecisionVectorGainSoftmax',
 
-	'last_result':'last_result.StratLastResult',
-	'last_result_real':'last_result.StratLastResultReal'
+	'last_result':'last_result.StratLastResult'
 }
 
-def Strategy(strat_type='naive', **strat_cfg2):
+def Strategy(strat_type='naive', voc_update='Adaptive', **strat_cfg2):
 	tempstr = strat_type
 	if tempstr in strat_class.keys():
 		tempstr = strat_class[tempstr]
@@ -34,8 +33,9 @@ def Strategy(strat_type='naive', **strat_cfg2):
 	temppath = '.'.join(templist[:-1])
 	tempclass = templist[-1]
 	_tempmod = import_module('.'+temppath,package=__name__)
+	_tempmod2 = import_module('.voc_update_decorators',package=__name__)
 	tempstrat = getattr(_tempmod,tempclass)(**strat_cfg2)
-	return tempstrat
+	return getattr(_tempmod2,voc_update)(tempstrat)
 
 
 class BaseStrategy(object):
@@ -43,7 +43,6 @@ class BaseStrategy(object):
 	def __init__(self, **strat_cfg2):
 		for key, value in strat_cfg2.iteritems():
 			setattr(self, key, value)
-
 
 	def get_strattype(self):
 		return self._strattype
@@ -105,37 +104,3 @@ class BaseStrategy(object):
 			voc.visual(vtype="syn")
 		elif vtype=="hom":
 			voc.visual(vtype="hom")
-
-
-
-
-#
-#		elif _strattype[:13]=="delaunaymodif":
-#			tempstrat=object.__new__(StratDelaunay)
-#			tempstrat.threshold_explo=float(_strattype[13:])
-#			tempstrat._strattype=_strattype
-#			return tempstrat
-#		elif _strattype=="dichotomie":
-#			tempstrat=object.__new__(StratDecisionVector)
-#			tempdecvec=np.zeros(M+1)
-#			tempdecvec[0]=1
-#			temp_param=2
-#			for i in range(1,int(np.log(M)/np.log(temp_param))+1):
-#				tempdecvec[-1-M/(temp_param**i)]=1
-#			tempstrat.decision_vector=tempdecvec
-#			tempstrat._strattype=_strattype
-#			return tempstrat
-#		elif _strattype[:17]=="dichotomierapport":
-#			tempstrat=object.__new__(StratDecisionVector)
-#			tempdecvec=np.zeros(M+1)
-#			tempdecvec[0]=1
-#			temp_param=float(_strattype[17:])
-#			for i in range(1,int(np.log(M)/np.log(temp_param))+1):
-#				tempdecvec[-1-int(M/(temp_param**i))]=1
-#			tempstrat.decision_vector=tempdecvec
-#			tempstrat._strattype=_strattype
-#			return tempstrat
-#
-
-
-

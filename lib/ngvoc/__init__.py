@@ -13,7 +13,7 @@ sns.set(rc={'image.cmap': 'Purples_r'})
 
 voc_class={
 	"matrix":"matrix.VocMatrix",
-	"sparse_matrix":"sparse_matrix.VocSparseMatrix"
+	"sparse_matrix":"matrix.VocSparseMatrix"
 }
 
 
@@ -28,9 +28,9 @@ def voc_cache(tempfun):
 	return mod_fun
 
 def del_cache(tempfun):
-	def mod_fun(self, *args):
-		ans = tempfun(self, *args)
-		self._cache={}
+	def mod_fun(obj_self, *args):
+		ans = tempfun(obj_self, *args)
+		obj_self._cache={}
 		return ans
 	return mod_fun
 

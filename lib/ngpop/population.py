@@ -10,19 +10,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from ..ngagent import Agent
+from ..nginter import Interaction
 
 
 
 class Population(object):
 
-	def __init__(self, voc_cfg, strat_cfg, nbagent):
+	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent):
 		self._size = 0
 		self._voc_cfg = voc_cfg
-		self._M=voc_cfg['M']
-		self._W=voc_cfg['W']
-		self._strat_cfg=strat_cfg
-		self._lastgameinfo=[]
-		self._agentlist=[]
+		self._M = voc_cfg['M']
+		self._W = voc_cfg['W']
+		self._strat_cfg = strat_cfg
+		self._interaction = Interaction(**interact_cfg)
+		self._lastgameinfo = []
+		self._agentlist = []
 		for i in range (0,nbagent):
 			self.add_new_agent(agent_id=i, strat_cfg=strat_cfg, voc_cfg=voc_cfg)
 
@@ -79,40 +81,41 @@ class Population(object):
 			hearer_id=self.pick_hearer(speaker_id)
 			speaker=self._agentlist[self.get_index_from_id(speaker_id)]
 			hearer=self._agentlist[self.get_index_from_id(hearer_id)]
-			tempmw=speaker.pick_mw()
-			ms=tempmw[0]
-			w=tempmw[1]
-			mh=hearer.guess_m(w)
-			if ms==mh:
-				speaker.success+=1
-				hearer.success+=1
-			else:
-				speaker.fail+=1
-				hearer.fail+=1
-			speaker.update_speaker(ms,w,mh)
-			hearer.update_hearer(ms,w,mh)
-			self._lastgameinfo=[ms,w,mh,speaker_id,hearer_id]
+			self._interaction.interact(speaker=speaker, hearer=hearer)
+#			tempmw=speaker.pick_mw()
+#			ms=tempmw[0]
+#			w=tempmw[1]
+#			mh=hearer.guess_m(w)
+#			if ms==mh:
+#				speaker.success+=1
+#				hearer.success+=1
+#			else:
+#				speaker.fail+=1
+#				hearer.fail+=1
+#			speaker.update_speaker(ms,w,mh)
+#			hearer.update_hearer(ms,w,mh)
+			self._lastgameinfo = self._interaction._last_info
 
 	def get_lastgameinfo(self):
 		return self._lastgameinfo
 
-	def reconstruct_from_info(self,game_info):
-		ms=game_info[0]
-		w=game_info[1]
-		mh=game_info[2]
-		sp_id=game_info[3]
-		hr_id=game_info[4]
-		speaker=self._agentlist[self.get_index_from_id(sp_id)]
-		hearer=self._agentlist[self.get_index_from_id(hr_id)]
-		if ms==mh:
-			speaker.success+=1
-			hearer.success+=1
-		else:
-			speaker.fail+=1
-			hearer.fail+=1
-		speaker.update_speaker(ms,w,mh)
-		hearer.update_hearer(ms,w,mh)
-		self._lastgameinfo=[ms,w,mh,sp_id,hr_id]
+#	def reconstruct_from_info(self,game_info):
+#		ms=game_info[0]
+#		w=game_info[1]
+#		mh=game_info[2]
+#		sp_id=game_info[3]
+#		hr_id=game_info[4]
+#		speaker=self._agentlist[self.get_index_from_id(sp_id)]
+#		hearer=self._agentlist[self.get_index_from_id(hr_id)]
+#		if ms==mh:
+#			speaker.success+=1
+#			hearer.success+=1
+#		else:
+#			speaker.fail+=1
+#			hearer.fail+=1
+#		speaker.update_speaker(ms,w,mh)
+#		hearer.update_hearer(ms,w,mh)
+#		self._lastgameinfo = self._interaction
 
 
 	def sort_agentlist(self):
@@ -181,6 +184,3 @@ class Population(object):
 
 
 
-
-if __name__ == "__main__":
-	testpop=ngagent.Population("matrix","naive",10,12,15)

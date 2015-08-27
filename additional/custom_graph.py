@@ -36,6 +36,7 @@ class CustomGraph(object):
 
 		self.Yoptions=[{}]
 		self.legendoptions = {}
+		self.legend_permut = []
 
 		self.xmin=[0,0]
 		self.xmax=[0,5]
@@ -157,7 +158,18 @@ class CustomGraph(object):
 			plt.ylim(ymin=self.ymin[1])
 		if self.ymax[0]:
 			plt.ylim(ymax=self.ymax[1])
-		plt.legend(**self.legendoptions)
+
+		handles, labels = plt.axes().get_legend_handles_labels()
+		handles2, labels2 = [], []
+		for tr in range(len(self.legend_permut)):
+			handles2.append(handles[self.legend_permut[tr]])
+			#handles2[self.legend_permut[tr]] = handles[tr]
+			labels2.append(labels[self.legend_permut[tr]])
+			#labels2[self.legend_permut[tr]] = labels[tr]
+
+
+
+		plt.legend(handles2, labels2, **self.legendoptions)
 
 		#plt.legend(bbox_to_anchor=(0,0,0.55,0.8))
 		#plt.legend(bbox_to_anchor=(0,0,0.5,1))

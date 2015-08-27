@@ -4,13 +4,15 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import sparse
 
 from . import BaseVocabulary
 from . import voc_cache, del_cache
 
 
+
+
 class VocMatrix(BaseVocabulary):
-	voctype="matrix"
 
 	def __init__(self, M, W, **voc_cfg2):
 		self._M = M
@@ -72,7 +74,7 @@ class VocMatrix(BaseVocabulary):
 
 	@del_cache
 	def add(self,m,w,val):
-		self._content[m,w]=val
+		self._content[m,w] = val
 
 	@del_cache
 	def rm(self,m,w):
@@ -225,3 +227,21 @@ class VocMatrix(BaseVocabulary):
 			plt.ylabel("Meanings")
 			plt.gca().invert_yaxis()
 			plt.pcolor(np.array(tempmat),vmin=0,vmax=self._M)
+
+
+
+
+
+
+class VocSparseMatrix(VocMatrix):
+	voctype="sparse_matrix"
+
+	def __init__(self,M,W,**voc_cfg2):
+		super(VocMatrix,self).__init__(**voc_cfg2)
+		self._M = M
+		self._W = W
+		self._content=sparse.lil_matrix((self._M,self._W),dtype=np.float16)
+
+	def get_content(self):
+		return self._content.todense()
+

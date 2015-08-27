@@ -1,8 +1,6 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
 
 from .naive import StratNaive
-from .naive import StratNaiveReal
 import random
 import numpy as np
 from .. import ngmeth
@@ -14,38 +12,20 @@ from .. import ngmeth
 
 class StratDecisionVector(StratNaive):
 
-	def pick_mw(self,voc,mem):
+	def init_memory(self,voc):
+		return {}
+
+	def update_memory(self,*args,**kwargs):
+		pass
+
+	def pick_m(self,voc,mem):
 		Mtemp=len(voc.get_known_meanings())
 		tirage=random.random()
 		if tirage<self.decision_vector[Mtemp]:
 			m=voc.get_new_unknown_m()
 		else:
 			m=voc.get_random_known_m()
-		w=self.pick_w(m,voc,mem)
-		return([m,w])
-
-
-	def init_memory(self,voc):
-		return {}
-################################### STRATEGIE DECISION VECTOR REELLE#########################################""
-
-
-class StratDecisionVectorReal(StratNaiveReal):
-
-	def pick_mw(self,voc,mem):
-		Mtemp=len(voc.get_known_meanings())
-		tirage=random.random()
-		if tirage<self.decision_vector[Mtemp]:
-			m=voc.get_new_unknown_m()
-		else:
-			m=voc.get_random_known_m()
-		w=self.pick_w(m,voc,mem)
-		return([m,w])
-
-
-	def init_memory(self,voc):
-		return {}
-
+		return m
 
 ################################### STRATEGIE DECISION VECTOR GAIN MAXIMIZATION #########################################""
 
@@ -55,4 +35,13 @@ class StratDecisionVectorGainmax(StratDecisionVector):
 		M = strat_cfg2['M']
 		W = strat_cfg2['W']
 		self.decision_vector = ngmeth.decvec3_from_MW(M, W)
+##############################
+
+
+class StratDecisionVectorGainSoftmax(StratDecisionVector):
+	def __init__(self, **strat_cfg2):
+		M = strat_cfg2['M']
+		W = strat_cfg2['W']
+		Temp = strat_cfg2['Temp']
+		self.decision_vector = ngmeth.decvec3_softmax_from_MW(M, W, Temp)
 ##############################

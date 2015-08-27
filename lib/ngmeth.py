@@ -238,16 +238,19 @@ def srtheo(pop,**kwargs):
 		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
 		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
 		pop_cfg={
-        	'voc_cfg':{
-            	'voc_type':'sparse_matrix',
-        	    'M':pop._M,
-        	    'W':pop._W
-        	    },
-        	'strat_cfg':{
-        	    'strat_type':'naive'
-        	    },
-        	'nbagent':2
-        	}
+			'voc_cfg':{
+			'voc_type':'sparse_matrix',
+			    'M':pop._M,
+			    'W':pop._W
+			    },
+			'strat_cfg':{
+			    'strat_type':'naive'
+			    },
+			'interact_cfg':{
+			    'interact_type':'speakerschoice'
+			    },
+			'nbagent':2
+			}
 		tempop=Population(**pop_cfg)
 		tempop._agentlist[0]._vocabulary._content=agent1._vocabulary.get_content()
 		tempop._agentlist[1]._vocabulary._content=agent2._vocabulary.get_content()
@@ -395,5 +398,19 @@ def decvec3_from_MW(M,W):
 			decvec.append(1)
 		else:
 			decvec.append(0)
+	decvec.append(0)
+	return decvec
+
+
+def decvec3_softmax_from_MW(M,W,Temp):
+	decvec=[]
+	for i in range(0,M):
+		pp=(M-i)/float(M)*(W-i)/float(W)
+		pm=i/float(M)*(i-1.)/float(W)
+		Gp=np.log2(W-i)
+		Gm=np.log2(W-i+1)
+		P1 = np.exp(pp*Gp/Temp)
+		P2 = np.exp(-pm*Gm/Temp)
+		decvec.append(P1/(P1+P2))
 	decvec.append(0)
 	return decvec

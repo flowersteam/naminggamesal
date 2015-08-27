@@ -40,8 +40,11 @@ class Agent(object):
 	def __str__(self):
 		return str(self._vocabulary)
 
-	def pick_mw(self):
-		return self._strategy.pick_mw(self._vocabulary,self._memory)
+	def pick_m(self):
+		return self._strategy.pick_m(self._vocabulary,self._memory)
+
+	def hearer_pick_m(self):
+		return self._strategy.hearer_pick_m(self._vocabulary,self._memory)
 
 	def pick_new_m(self):
 		return self._strategy.pick_new_m(self._vocabulary,self._memory)
@@ -54,9 +57,11 @@ class Agent(object):
 
 	def update_hearer(self,ms,w,mh):
 		self._strategy.update_hearer(ms,w,mh,self._vocabulary,self._memory)
+		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='hearer')
 
 	def update_speaker(self,ms,w,mh):
 		self._strategy.update_speaker(ms,w,mh,self._vocabulary,self._memory)
+		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='speaker')
 
 	def visual(self,vtype=None,iterr=100,mlist="all",wlist="all"):
 		self._strategy.visual(self._vocabulary,mem=self._memory,vtype=vtype,iterr=iterr,mlist=mlist,wlist=wlist)
