@@ -21,12 +21,22 @@ strat_class={
 	'decision_vector':'decision_vector.StratDecisionVector',
 	'decision_vector_gainmax':'decision_vector.StratDecisionVectorGainmax',
 	'decision_vector_gainsoftmax':'decision_vector.StratDecisionVectorGainSoftmax',
+	'decision_vector_gainsoftmax_hearer':'decision_vector.StratDecisionVectorGainSoftmaxHearer',
 
 	'last_result':'last_result.StratLastResult'
 }
 
 def Strategy(strat_type='naive', voc_update='Adaptive', **strat_cfg2):
 	tempstr = strat_type
+	if tempstr == 'mixed':
+		tot = sum(strat_cfg2['proba'])
+		r = random.random()*tot
+		p=strat_cfg2['proba'][0]
+		i=0
+		while r>p:
+			p += strat_cfg2['proba'][i+1]
+			i += 1
+		return Strategy(**strat_cfg2['cfg_list'][i])
 	if tempstr in strat_class.keys():
 		tempstr = strat_class[tempstr]
 	templist = tempstr.split('.')

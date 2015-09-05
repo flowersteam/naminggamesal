@@ -12,12 +12,6 @@ from .. import ngmeth
 
 class StratDecisionVector(StratNaive):
 
-	def init_memory(self,voc):
-		return {}
-
-	def update_memory(self,*args,**kwargs):
-		pass
-
 	def pick_m(self,voc,mem):
 		Mtemp=len(voc.get_known_meanings())
 		tirage=random.random()
@@ -44,4 +38,12 @@ class StratDecisionVectorGainSoftmax(StratDecisionVector):
 		W = strat_cfg2['W']
 		Temp = strat_cfg2['Temp']
 		self.decision_vector = ngmeth.decvec4_softmax_from_MW(M, W, Temp)
+##############################
+
+class StratDecisionVectorGainSoftmaxHearer(StratDecisionVector):
+	def __init__(self, **strat_cfg2):
+		M = strat_cfg2['M']
+		W = strat_cfg2['W']
+		Temp = strat_cfg2['Temp']
+		self.decision_vector = ngmeth.decvec5_softmax_from_MW(M, W, Temp)
 ##############################

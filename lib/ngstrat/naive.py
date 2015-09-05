@@ -7,6 +7,12 @@ import numpy as np
 		##################################### STRATEGIE NAIVE########################################
 class StratNaive(BaseStrategy):
 
+	def init_memory(self,voc):
+		return {}
+
+	def update_memory(self,*args,**kwargs):
+		pass
+
 	def guess_m(self,w,voc,mem):
 		if w in voc.get_known_words():
 			tempindexm=random.randint(0,len(voc.get_known_meanings(w))-1)
@@ -31,5 +37,5 @@ class StratNaive(BaseStrategy):
 		return m
 
 	def hearer_pick_m(self,voc,mem):
-		m = random.randint(0,voc.get_M()-1)
+		m = self.pick_m(voc,mem)
 		return m

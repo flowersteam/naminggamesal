@@ -431,3 +431,35 @@ def decvec4_softmax_from_MW(M,W,Temp):
 		decvec.append(p)
 	decvec.append(0.)
 	return decvec
+
+def decvec5_softmax_from_MW(M,W,Temp):
+	decvec=[1.]
+	for i in range(1,M):
+		pp=(W-i)/float(W)
+		pm=(i*(i-1)+(M-i)*(i-1))/float(M*W)
+		Gp=np.log2(W-i)
+		Gm=np.log2(W-i+1)
+		P1 = np.exp(pp*Gp/Temp)
+		P2 = np.exp(pm*Gm/Temp)
+		p=P2/(P1+P2)
+		if np.isnan(p):
+			if pm*Gm>=pp*Gp:
+				p=1.
+			else:
+				p=0.
+		decvec.append(p)
+	decvec.append(0.)
+	return decvec
+
+def decvec_full_explo(M,W):
+	decvec = [1.]
+	for i in range(1,M):
+		decvec.append(1.)
+	decvec.append(0.)
+
+
+def decvec_full_teach(M,W):
+	decvec = [1.]
+	for i in range(1,M):
+		decvec.append(0.)
+	decvec.append(0.)

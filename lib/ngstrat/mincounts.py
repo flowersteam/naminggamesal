@@ -14,15 +14,6 @@ class StratMinCounts(StratNaive):
 		if 'mincounts' not in strat_cfg2.keys():
 			self.mincounts=mincounts
 
-	def pick_m(self,voc,mem):
-		test1=self.get_success_rate_over_known_meanings(voc,mem)>self.mincounts
-		test2=len(voc.get_known_meanings())==voc._M
-		test3=len(voc.get_known_meanings())==0
-		if (test1 or test3) and (not test2):
-			m=voc.get_new_unknown_m()
-		else:
-			m=voc.get_random_known_m()
-		return m
 
 	def hearer_pick_m(self,voc,mem):
 		return self.pick_m(voc, mem)
