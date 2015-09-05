@@ -10,7 +10,7 @@ sns.set(rc={'image.cmap': 'Purples_r'})
 #####Classe de base
 interaction_class={
 	'hearerschoice':'hearerschoice.HearersChoice',
-	'speakerschoice':'speakerschoice.SpeakersChoice'
+	'speakerschoice':'speakerschoice.SpeakersChoice',
 	'fabien':'fabien.FabienInteraction'
 }
 

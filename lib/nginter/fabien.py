@@ -23,8 +23,8 @@ def FUNC3(agent1, agent2):         #random (equivalent to 0.5?)
 class FabienInteraction(BaseInteraction):
 
 	def __init__(self, proba_func='proba_info', **interact_cfg2):
-		super(FabienInteraction,self).__init__(self, **interact_cfg2)
-		self.proba_func = locals()[proba_func]  #Use globals or locals?
+		super(FabienInteraction,self).__init__(**interact_cfg2)
+		self.proba_func = globals()[proba_func]  #Use globals or locals?
 
 
 	def interact(self, speaker, hearer):
