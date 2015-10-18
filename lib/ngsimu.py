@@ -11,11 +11,7 @@ from . import ngmeth
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
 
-#def load_experiment(filename):
-#	with open(filename, 'rb') as fichier:
-#		mon_depickler=pickle.Unpickler(fichier)
-#		tempexp=mon_depickler.load()
-#	return tempexp
+
 
 class Experiment(object):
 

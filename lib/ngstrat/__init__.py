@@ -23,6 +23,8 @@ strat_class={
 	'decision_vector_gainsoftmax':'decision_vector.StratDecisionVectorGainSoftmax',
 	'decision_vector_gainsoftmax_hearer':'decision_vector.StratDecisionVectorGainSoftmaxHearer',
 
+	'decision_vector_gainsoftmax_hearer_test':'decision_vector.StratDecisionVectorGainSoftmaxHearerTest',
+
 	'last_result':'last_result.StratLastResult'
 }
 

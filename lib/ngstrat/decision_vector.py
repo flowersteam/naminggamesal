@@ -47,3 +47,11 @@ class StratDecisionVectorGainSoftmaxHearer(StratDecisionVector):
 		Temp = strat_cfg2['Temp']
 		self.decision_vector = ngmeth.decvec5_softmax_from_MW(M, W, Temp)
 ##############################
+
+class StratDecisionVectorGainSoftmaxHearerTest(StratDecisionVector):
+	def __init__(self, **strat_cfg2):
+		M = strat_cfg2['M']
+		W = strat_cfg2['W']
+		Temp = strat_cfg2['Temp']
+		self.decision_vector = ngmeth.decvectest_softmax_from_MW(M, W, Temp)
+##############################

@@ -1,8 +1,10 @@
 #!/usr/bin/python
 import numpy as np
 import math
+import networkx as nx
 
 import additional.custom_func as custom_func
+import additional.custom_graph as custom_graph
 from .ngpop import Population
 
 def pop_ize(func):
@@ -48,6 +50,7 @@ FUNC=Nlink
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":Nlink_min,"ymax":Nlink_max}
 custom_Nlink =custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
 
 #########success_rate##########
 
@@ -295,6 +298,31 @@ FUNC=entropydistrib
 graphconfig={"ymin":entropydistrib_min,"ymax":entropydistrib_max}
 custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+#########weight_over_degree##########
+
+def weight_over_degree(pop,**kwargs):
+	G = build_nx_graph(pop._agentlist)
+	values = []
+	for ag in pop._agentlist:
+		weight = 0
+		for ed in G.edges(ag._id):
+			weight += ed['weight']
+		if weight != 0 :
+			values.append(weight/G.degree(ag._id))
+		else:
+			values.append(0)
+	return mean(values)
+
+def weight_over_degree_max(pop):
+	return 1
+
+def weight_over_degree_min(pop):
+	return 0
+
+
+FUNC=weight_over_degree
+graphconfig={"ymin":weight_over_degree_min,"ymax":weight_over_degree_max}
+custom_weight_over_degree =custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 ############################	LEVEL TIME ############################
 
@@ -451,6 +479,25 @@ def decvec5_softmax_from_MW(M,W,Temp):
 	decvec.append(0.)
 	return decvec
 
+def decvectest_softmax_from_MW(M,W,Temp):
+	decvec=[1.]
+	for i in range(1,M):
+		pp=(W-i)/float(W)
+		pm=(i*(i-1)+(M-i)*(i-1))/float(M*W)
+		Gp=np.log2(W-i)
+		Gm=-np.log2(W-i+1)
+		P1 = np.exp(pp*Gp/Temp)
+		P2 = np.exp(pm*Gm/Temp)
+		p=P2/(P1+P2)
+		if np.isnan(p):
+			if pm*Gm>=pp*Gp:
+				p=1.
+			else:
+				p=0.
+		decvec.append(p)
+	decvec.append(0.)
+	return decvec
+
 def decvec_full_explo(M,W):
 	decvec = [1.]
 	for i in range(1,M):
@@ -463,3 +510,45 @@ def decvec_full_teach(M,W):
 	for i in range(1,M):
 		decvec.append(0.)
 	decvec.append(0.)
+
+############################################################################
+#NETWORKX TOOLS
+
+def build_nx_graph(agent_list):
+	G = nx.Graph()
+	for ag in agent_list:
+		tempm = np.sum(ag._vocabulary.get_content())
+		G.add_node(ag._id,size=1.-(tempentropy(ag._M-tempm, ag._W-tempm)/tempentropy(ag._M, ag._W)))
+	list_length = len(agent_list)
+	for i in range(list_length):
+		agent1 = agent_list[i]
+		for j in range(i+1,list_length):
+			agent2 = agent_list[j]
+			tempmat = np.multiply(agent1._vocabulary.get_content(), agent2._vocabulary.get_content())
+			tempm = np.sum(tempmat)
+			weight = 1.-(tempentropy(agent1._M-tempm, agent1._W-tempm)/tempentropy(agent1._M, agent1._W))
+			if weight != 0:
+				G.add_edge(agent1._id,agent2._id,weight=weight)
+	return G
+
+def degree_distrib(pop,**kwargs):
+	G = build_nx_graph(pop._agentlist)
+	return custom_graph.CustomGraph(nx.degree_histogram(G))
+
+def edgevalue_distrib(pop,**kwargs):
+	G = build_nx_graph(pop._agentlist)
+	dict_XY = {}
+	for ed in G.edges:
+		weight = ed['weight']
+		if weight in dict_XY.keys():
+			dict_XY[weight] += 1
+		else:
+			dict_XY[weight] = 1
+	for key, value in dict_XY.items():
+		X.append(key)
+		Y.append(value)
+	return custom_graph.CustomGraph(X=X,Y=Y)
+
+
+
+

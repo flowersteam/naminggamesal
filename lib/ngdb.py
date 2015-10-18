@@ -18,7 +18,6 @@ from . import ngsimu
 
 class NamingGamesDB(object):
 	def __init__(self,path=None):
-		#self.pickle_protocol=cPickle.HIGHEST_PROTOCOL
 		if not path:
 			path='naminggames.db'
 		self.dbpath=path
@@ -256,33 +255,35 @@ class Experiment(ngsimu.Experiment):
 	def commit_data_to_db(self,graph,method):
 		self.db.commit_data(self,graph,method)
 
-	def continue_exp_until(self,T,**kwargs):
-		super(self.__class__,self).continue_exp_until(T,**kwargs)
-		self.commit_to_db()
+	def continue_exp_until(self,T, autocommit=True, **kwargs):
+		super(Experiment,self).continue_exp_until(T,**kwargs)
+		if autocommit:
+			self.commit_to_db()
 
-	def continue_exp(self,dT,**kwargs):
-		self.continue_exp_until(self._T[-1]+dT,**kwargs)
+	def continue_exp(self,dT, autocommit=True, **kwargs):
+		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit, **kwargs)
 
-	def graph(self,method="srtheo",X=None,tmin=0,tmax=None):
+	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True):
 		if not tmax:
 			tmax=self._T[-1]
 		ind=-1
 		if tmax > self._T[-1]:
 			self.continue_exp_until(tmax)
-			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax)
+			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax, autocommit=autocommit)
 		while self._T[ind]>tmax:
 			ind-=1
-		if self.db.data_exists(nb_id=self.uuid,method=method):
-			tempgraph=self.db.get_graph(self.uuid,method=method)
+		if self.db.data_exists(nb_id=self.uuid, method=method):
+			tempgraph=self.db.get_graph(self.uuid, method=method)
 			if tempgraph._X[0][-1]<tmax:
 				temptmin=self._T[len(tempgraph._X[0])]
-				tempgraph2=super(Experiment,self).graph(method=method,tmin=temptmin,tmax=tmax)
+				tempgraph2=super(Experiment,self).graph(method=method, tmin=temptmin, tmax=tmax)
 				tempgraph.complete_with(tempgraph2)
 		else:
-			tempgraph=super(Experiment, self).graph(method=method,tmax=tmax)
-		self.commit_data_to_db(tempgraph,method)
+			tempgraph=super(Experiment, self).graph(method=method, tmax=tmax)
+		if autocommit:
+			self.commit_data_to_db(tempgraph,method)
 		if X:
-			tempgraph2=self.graph(method=X,tmin=tmin,tmax=tmax)
+			tempgraph2=self.graph(method=X, tmin=tmin, tmax=tmax, autocommit=autocommit)
 			tempgraph=tempgraph.func_of(tempgraph2)
 		return tempgraph
 

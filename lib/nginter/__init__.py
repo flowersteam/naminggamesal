@@ -35,9 +35,3 @@ class BaseInteraction(object):
 
 	def get_interacttype(self):
 		return self._interacttype
-
-
-
-
-
-

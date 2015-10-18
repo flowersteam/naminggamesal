@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
 
 import matplotlib.pyplot as plt
 import time
@@ -145,7 +144,7 @@ class CustomGraph(object):
 					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha,**self.Yoptions[i])
 				else:
 					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha, facecolor=base_line.get_color(), **self.Yoptions[i])
-			
+
 		plt.xlabel(self.xlabel)
 		plt.ylabel(self.ylabel)
 		plt.title(self.title)
@@ -176,6 +175,16 @@ class CustomGraph(object):
 		#
 		#plt.legend(bbox_to_anchor=(0,0,1,0.7))
 		#plt.legend(bbox_to_anchor=(0,0,1,0.54))
+		if hasattr(self, 'fontsize'):
+			matplotlib.rcParams['font.size'] = self.fontsize
+			matplotlib.rcParams['xtick.labelsize'] = self.fontsize
+			matplotlib.rcParams['ytick.labelsize'] = self.fontsize
+			matplotlib.rcParams['axes.titlesize'] = self.fontsize
+			matplotlib.rcParams['axes.labelsize'] = self.fontsize
+			matplotlib.rcParams['legend.fontsize'] = self.fontsize
+		if hasattr(self, 'rcparams'):
+			for key,value in self.rcparams:
+				matplotlib.rcParams[key] = value
 		plt.draw()
 
 
