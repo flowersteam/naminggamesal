@@ -6,7 +6,7 @@ import sys
 from setuptools import setup, find_packages
 
 def version():
-    with open('experiment_manager/_version.py') as f:
+    with open('naminggamesal/_version.py') as f:
         return re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", f.read()).group(1)
 
 def requirements():
