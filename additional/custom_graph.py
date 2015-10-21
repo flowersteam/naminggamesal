@@ -93,6 +93,8 @@ class CustomGraph(object):
 			mon_pickler.dump(self)
 
 	def write_files(self,*path):
+		backend = plt.get_backend()
+		plt.switch_backend('Agg')
 		if len(path)!=0:
 			out_path=path[0]
 		else:
@@ -102,7 +104,7 @@ class CustomGraph(object):
 		self.draw()
 		for extension in self.extensions:
 			plt.savefig(out_path+self.filename+"."+extension,format=extension,bbox_inches='tight')
-
+		plt.switch_backend(backend)
 
 	def draw(self):
 
