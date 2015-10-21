@@ -64,7 +64,9 @@ class Experiment(object):
 #			temppop.play_game(T-self._T[-1],*progress_info_2)
 #			self.add_pop(temppop.deepcopy(),T)
 
-	def continue_exp(self,dT,**kwargs):
+	def continue_exp(self,dT=None,**kwargs):
+		if dT is None:
+			dT = self._time_step
 		self.continue_exp_until((self._T[-1]+dT),**kwargs)
 
 	def add_pop(self,pop,T,exec_time=0):
