@@ -196,12 +196,45 @@ class CustomGraph(object):
 		self.Yoptions=self.Yoptions+other_graph.Yoptions
 		self.stdvec=self.stdvec+other_graph.stdvec
 
-	def complete_with(self,other_graph):
+	def complete_with(self,other_graph, mix=True):
 		for i in range(0,len(self._X)):
-			self._X[i]=list(copy.deepcopy(self._X[i]))+list(copy.deepcopy(other_graph._X[i]))
-			self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
-			self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
+			if mix and not self._X[-1]<other_graph._X[0]:
+				X = copy.deepcopy(self._X[i])
+				Y = copy.deepcopy(self._Y[i])
+				stdvec = copy.deepcopy(self.stdvec[i])
+				Xind = 0
+				oXind = 0
+				self._X[i] = []
+				self._Y[i] = []
+				while Xind < len(X) and oXind < len(other_graph._X[i]):
+					if X[Xind] < other_graph._X[i][oXind]:
+						self._X[i].append(X[Xind])
+						self._Y[i].append(Y[Xind])
+						self.stdvec[i].append(stdvec[Xind])
+						Xind += 1
+					elif X[Xind] > other_graph._X[i][oXind]:
+						self._X[i].append(other_graph._X[i][oXind])
+						self._Y[i].append(other_graph._Y[i][oXind])
+						self.stdvec[i].append(other_graph.stdvec[i][oXind])
+						oXind += 1
+					else:
+						self._X[i].append(X[Xind])
+						self._Y[i].append(Y[Xind])
+						self.stdvec[i].append(stdvec[Xind])
+						Xind += 1
+						oXind += 1
+			else:
+				self._X[i]=list(copy.deepcopy(self._X[i]))+list(copy.deepcopy(other_graph._X[i]))
+				self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
+				self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
+
+#	def complete_with(self,other_graph):
+#		for i in range(0,len(self._X)):
+#			self._X[i]=range(0, len(self._X[i])+len(other_graph._X[i]))
+#			self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
+#			self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
+#		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def merge(self):
 		Yarray=np.array(self._Y)
