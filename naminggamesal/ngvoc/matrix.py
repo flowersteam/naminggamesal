@@ -68,10 +68,23 @@ class VocMatrix(BaseVocabulary):
 			ans = nz[1]
 		elif option == 'max':
 			coords = np.argwhere(mat == np.amax(mat))
-			ans = [j for (i,j) in [tuple(k) for [k] in coords]]
+			try:
+				ans = [j for (i,j) in [tuple(k) for [k] in coords]]
+			except ValueError:
+				print mat
+				print coords
+				print [tuple(k) for [k] in coords]
+				print [j for (i,j) in [tuple(k) for [k] in coords]]
 		elif option == 'min':
 			coords = np.argwhere(mat == np.amin(mat))
-			ans = [j for (i,j) in [tuple(k) for [k] in coords]]
+			try:
+				ans = [j for (i,j) in [tuple(k) for [k] in coords]]
+			except ValueError:
+				print 'min'
+				print mat
+				print coords
+				print [tuple(k) for [k] in coords]
+				print [j for (i,j) in [tuple(k) for [k] in coords]]
 		else:
 			raise ValueError('Unknown option')
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))

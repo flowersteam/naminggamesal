@@ -107,7 +107,8 @@ class NamingGamesDB(object):
 
 	def get_experiment(self, uuid=None, force_new=False, blacklist=[], pattern=None, tmax=0, **xp_cfg):
 		if force_new:
-			return Experiment(database=self,**xp_cfg)
+			tempexp = Experiment(database=self,**xp_cfg)
+			return tempexp
 		if uuid:
 			if self.id_in_db(uuid):
 				conn=sql.connect(self.dbpath)
@@ -139,7 +140,6 @@ class NamingGamesDB(object):
 				i=random.randint(0,len(templist)-1)
 				tempexp = self.get_experiment(uuid=templist[i])
 				tempexp.db=self
-				return tempexp
 			else:
 				tempexp = Experiment(database=self,**xp_cfg)
 			return tempexp
@@ -283,6 +283,7 @@ class Experiment(ngsimu.Experiment):
 		else:
 			self.db=database
 		super(Experiment,self).__init__(pop_cfg,step)
+		self.commit_to_db()
 
 	def commit_to_db(self):
 		self.db.commit(self)
