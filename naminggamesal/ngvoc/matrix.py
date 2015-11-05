@@ -72,9 +72,9 @@ class VocMatrix(BaseVocabulary):
 				ans = [j for (i,j) in [tuple(k) for [k] in coords]]
 			except ValueError:
 				print mat
-				print coords
-				print [tuple(k) for [k] in coords]
-				print [j for (i,j) in [tuple(k) for [k] in coords]]
+			print coords
+			print [tuple(k) for [k] in coords]
+			print [j for (i,j) in [tuple(k) for [k] in coords]]
 		elif option == 'min':
 			coords = np.argwhere(mat == np.amin(mat))
 			try:
@@ -83,7 +83,7 @@ class VocMatrix(BaseVocabulary):
 				print 'min'
 				print mat
 				print coords
-				print [tuple(k) for [k] in coords]
+				print [tuple(k) for k in coords]
 				print [j for (i,j) in [tuple(k) for [k] in coords]]
 		else:
 			raise ValueError('Unknown option')
