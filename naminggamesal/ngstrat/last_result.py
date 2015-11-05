@@ -28,7 +28,7 @@ class StratLastResult(StratNaive):
 			m=voc.get_new_unknown_m()
 		else:
 			m=voc.get_random_known_m()
-		return m,w
+		return m
 
 	def update_memory(self,ms,w,mh,voc,mem,role='speaker'):
 		if ms==mh:

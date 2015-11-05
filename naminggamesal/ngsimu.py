@@ -29,6 +29,7 @@ class Experiment(object):
 
 
 
+
 	def __str__(self):
 		return "T: "+str(self._T[-1])+"\n"+str(self._poplist[-1])
 

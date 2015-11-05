@@ -7,6 +7,9 @@ import numpy as np
 		##################################### STRATEGIE NAIVE########################################
 class StratNaive(BaseStrategy):
 
+	def __init__(self, vu_cfg, **strat_cfg2):
+		super(StratNaive, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
+
 	def init_memory(self,voc):
 		return {}
 
@@ -15,20 +18,19 @@ class StratNaive(BaseStrategy):
 
 	def guess_m(self,w,voc,mem):
 		if w in voc.get_known_words():
-			tempindexm=random.randint(0,len(voc.get_known_meanings(w))-1)
-			m=voc.get_known_meanings(w)[tempindexm]
+			m = random.choice(voc.get_known_meanings(w))
 		else:
 			if len(voc.get_known_meanings())<voc._M:
-				m=voc.get_new_unknown_m()
+				m = voc.get_new_unknown_m()
 			else:
-				m=random.randint(0,voc.get_M()-1)
+				m = random.randint(0,voc.get_M()-1)
 		return m
 
 	def pick_w(self,m,voc,mem):
 		if m in voc.get_known_meanings():
-			w=voc.get_random_known_w(m)
+			w = voc.get_random_known_w(m)
 		else:
-			w=voc.get_new_unknown_w()
+			w = voc.get_new_unknown_w()
 		return w
 
 

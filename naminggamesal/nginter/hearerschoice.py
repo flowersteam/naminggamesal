@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-from . import BaseInteraction
+from . import Interaction
 import random
 import numpy as np
 
 ##########
-class HearersChoice(BaseInteraction):
-	def interact(self, speaker, hearer):
+class HearersChoice(Interaction):
+	def interact(self, speaker, hearer, pop):
 		ms = hearer.hearer_pick_m()
 		w =  speaker.pick_w(ms)
 		if hearer._vocabulary.get_known_words(ms) == []:

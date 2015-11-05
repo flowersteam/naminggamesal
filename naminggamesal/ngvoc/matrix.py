@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
 
 import random
 import numpy as np
@@ -21,47 +20,11 @@ class VocMatrix(BaseVocabulary):
 		#M = voc_cfg2['M']
 		#W = voc_cfg2['W']
 		super(VocMatrix,self).__init__(**voc_cfg2)
-		self._content=np.matrix(np.zeros((self._M,self._W),dtype=np.float16))
-
-	@voc_cache
-	def get_known_words(self,*args):
-		templ=[]
-		if len(args)==0:
-			for w in range(0,self._W):
-				tempbool=1
-				for m in range(0,self._M):
-					tempbool=tempbool*self.exists(m,w)
-				if tempbool==1:
-					templ.append(w)
-		else:
-			for w in range(0,self._W):
-				tempbool=1
-				tempbool=tempbool*self.exists(args[0],w)
-				if tempbool==1:
-					templ.append(w)
-		return templ
-
-	@voc_cache
-	def get_known_meanings(self,*args):
-		templ=[]
-		if len(args)==0:
-			for m in range(0,self._M):
-				tempbool=1
-				for w in range(0,self._W):
-					tempbool=tempbool*self.exists(m,w)
-				if tempbool==1:
-					templ.append(m)
-		else:
-			for m in range(0,self._M):
-				tempbool=1
-				tempbool=tempbool*self.exists(m,args[0])
-				if tempbool==1:
-					templ.append(m)
-		return templ
+		self._content=np.matrix(np.zeros((self._M,self._W)))
 
 	@voc_cache
 	def exists(self,m,w):
-		if self._content[m,w]>0:
+		if self._content[m,w] > 0:
 			return 1
 		else:
 			return 0
@@ -78,126 +41,150 @@ class VocMatrix(BaseVocabulary):
 
 	@del_cache
 	def rm(self,m,w):
-		self._content[m,w]=0
+		self._content[m,w] = 0
 
 	@del_cache
 	def rm_syn(self,m,w):
 		for i in range(0,self._W):
 			if i!=w:
-				self._content[m,i]=0
+				self._content[m,i] = 0
 
 	@del_cache
 	def rm_hom(self,m,w):
 		for i in range(0,self._M):
 			if i!=m:
-				self._content[i,w]=0
+				self._content[i,w] = 0
 
 	@voc_cache
-	def get_known_words(self,*args):
-		templ=[]
-		if len(args)==0:
-			for w in range(0,self._W):
-				tempbool=1
-				for m in range(0,self._M):
-					tempbool=tempbool*(1-self.exists(m,w))
-				if tempbool==0:
-					templ.append(w)
+	def get_known_words(self,m=None,option=None):
+		if m is None:
+			mat = self.get_content()
 		else:
-			for w in range(0,self._W):
-				tempbool=1
-				tempbool=tempbool*(1-self.exists(args[0],w))
-				if tempbool==0:
-					templ.append(w)
-		return templ
-
-	@voc_cache
-	def get_known_meanings(self,*args):
-		templ=[]
-		if len(args)==0:
-			for m in range(0,self._M):
-				tempbool=1
-				for w in range(0,self._W):
-					tempbool=tempbool*(1-self.exists(m,w))
-				if tempbool==0:
-					templ.append(m)
+			mat = self.get_content()[m,:]
+		nz = mat.nonzero()
+		if not list(nz[0]):
+			ans = []
+		elif option is None:
+			ans = nz[1]
+		elif option == 'max':
+			coords = np.argwhere(mat == np.amax(mat))
+			ans = [j for (i,j) in [tuple(k) for [k] in coords]]
+		elif option == 'min':
+			coords = np.argwhere(mat == np.amin(mat))
+			ans = [j for (i,j) in [tuple(k) for [k] in coords]]
 		else:
-			for m in range(0,self._M):
-				tempbool=1
-				tempbool=tempbool*(1-self.exists(m,args[0]))
-				if tempbool==0:
-					templ.append(m)
-		return templ
+			raise ValueError('Unknown option')
+		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
+		#templ=[]
+		#if len(args)==0:
+		#	for w in range(0,self._W):
+		#		tempbool=1
+		#		for m in range(0,self._M):
+		#			tempbool=tempbool*self.exists(m,w)
+		#		if tempbool==1:
+		#			templ.append(w)
+		#else:
+		#	for w in range(0,self._W):
+		#		tempbool=1
+		#		tempbool=tempbool*self.exists(args[0],w)
+		#		if tempbool==1:
+		#			templ.append(w)
+		#return templ
 
 	@voc_cache
-	def get_unknown_words(self,*args):
-		templ=[]
-		if len(args)==0:
-			for w in range(0,self._W):
-				tempbool=1
-				for m in range(0,self._M):
-					tempbool=tempbool*(1-self.exists(m,w))
-				if tempbool==1:
-					templ.append(w)
+	def get_known_meanings(self,w=None,option=None):
+		if w is None:
+			mat = self.get_content()
 		else:
-			for w in range(0,self._W):
-				tempbool=1
-				tempbool=tempbool*(1-self.exists(args[0],w))
-				if tempbool==1:
-					templ.append(w)
-		return templ
-
-	@voc_cache
-	def get_unknown_meanings(self,*args):
-		templ=[]
-		if len(args)==0:
-			for m in range(0,self._M):
-				tempbool=1
-				for w in range(0,self._W):
-					tempbool=tempbool*(1-self.exists(m,w))
-				if tempbool==1:
-					templ.append(m)
+			mat = self.get_content()[:,w]
+		nz = mat.nonzero()
+		if not list(nz[0]):
+			ans = []
+		elif option is None:
+			ans = nz[0]
+		elif option == 'max':
+			coords = np.argwhere(mat == np.amax(mat))
+			ans = [i for (i,j) in [tuple(k) for [k] in coords]]
+		elif option == 'min':
+			coords = np.argwhere(mat == np.amin(mat))
+			ans = [i for (i,j) in [tuple(k) for [k] in coords]]
 		else:
-			for m in range(0,self._M):
-				tempbool=1
-				tempbool=tempbool*(1-self.exists(m,args[0]))
-				if tempbool==1:
-					templ.append(m)
-		return templ
+			raise ValueError("Unknown option")
+		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
+
+		#templ=[]
+		#if len(args)==0:
+		#	for m in range(0,self._M):
+		#		tempbool=1
+		#		for w in range(0,self._W):
+		#			tempbool=tempbool*self.exists(m,w)
+		#		if tempbool==1:
+		#			templ.append(m)
+		#else:
+		#	for m in range(0,self._M):
+		#		tempbool=1
+		#		tempbool=tempbool*self.exists(m,args[0])
+		#		if tempbool==1:
+		#			templ.append(m)
+		#return templ
 
 	@voc_cache
-	def get_new_unknown_m(self):
-		if len(self.get_unknown_meanings())==0:
+	def get_unknown_words(self, m=None, option=None):
+		return sorted(list(set(range(self._W)) - set(self.get_known_words(m=m, option=option))))
+
+	@voc_cache
+	def get_unknown_meanings(self, w=None, option=None):
+		return sorted(list(set(range(self._M)) - set(self.get_known_meanings(w=w, option=option))))
+		#templ=[]
+		#if len(args)==0:
+		#	for m in range(0,self._M):
+		#		tempbool=1
+		#		for w in range(0,self._W):
+		#			tempbool=tempbool*(1-self.exists(m,w))
+		#		if tempbool==1:
+		#			templ.append(m)
+		#else:
+		#	for m in range(0,self._M):
+		#		tempbool=1
+		#		tempbool=tempbool*(1-self.exists(m,args[0]))
+		#		if tempbool==1:
+		#			templ.append(m)
+		#return templ
+
+	@voc_cache
+	def get_new_unknown_m(self, option='min'):
+		try:
+			m = random.choice(self.get_unknown_meanings())
+		except IndexError:
 			print "tried to get new m but all are known"
-			return self.get_random_known_m()
-		tempindexm=random.randint(0,len(self.get_unknown_meanings())-1)
-		m=self.get_unknown_meanings()[tempindexm]
+			m = self.get_random_known_m(option=option)
 		return m
 
 	@voc_cache
-	def get_new_unknown_w(self):
-		if len(self.get_unknown_words())==0:
+	def get_new_unknown_w(self, option='min'):
+		try:
+			w = random.choice(self.get_unknown_words())
+		except IndexError:
 			print "tried to get new w but all are known"
-			return self.get_random_known_w()
-		tempindexw=random.randint(0,len(self.get_unknown_words())-1)
-		w=self.get_unknown_words()[tempindexw]
+			w = self.get_random_known_w(option=option)
 		return w
 
 	@voc_cache
-	def get_random_known_m(self,*args):
-		if len(self.get_known_meanings(*args))==0:
+	def get_random_known_m(self,w=None, option='max'):
+		try:
+			m = random.choice(self.get_known_meanings(w=w, option=option))
+		except IndexError:
 			print "tried to get known m but none are known"
-			return self.get_new_unknown_m()
-		tempindexm=random.randint(0,len(self.get_known_meanings(*args))-1)
-		m=self.get_known_meanings(*args)[tempindexm]
+			m = self.get_new_unknown_m()
 		return m
 
 	@voc_cache
-	def get_random_known_w(self,*args):
-		if len(self.get_known_words(*args))==0:
+	def get_random_known_w(self,m=None, option='max'):
+		try:
+			w = random.choice(self.get_known_words(m=m, option=option))
+		except IndexError:
 			print "tried to get known w but none are known"
-			return self.get_new_unknown_w()
-		tempindexw=random.randint(0,len(self.get_known_words(*args))-1)
-		w=self.get_known_words(*args)[tempindexw]
+			w = self.get_new_unknown_w()
 		return w
 
 	def visual(self,vtype=None):
@@ -240,7 +227,7 @@ class VocSparseMatrix(VocMatrix):
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._M = M
 		self._W = W
-		self._content=sparse.lil_matrix((self._M,self._W),dtype=np.float16)
+		self._content=sparse.lil_matrix((self._M,self._W))
 
 	def get_content(self):
 		return self._content.todense()

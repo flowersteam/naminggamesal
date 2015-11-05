@@ -12,6 +12,9 @@ from .. import ngmeth
 
 class StratDecisionVector(StratNaive):
 
+	def __init__(self, vu_cfg, **strat_cfg2):
+		super(StratDecisionVector, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
+
 	def pick_m(self,voc,mem):
 		Mtemp=len(voc.get_known_meanings())
 		tirage=random.random()
@@ -25,7 +28,8 @@ class StratDecisionVector(StratNaive):
 
 
 class StratDecisionVectorGainmax(StratDecisionVector):
-	def __init__(self, **strat_cfg2):
+	def __init__(self, vu_cfg, **strat_cfg2):
+		super(StratDecisionVectorGainmax, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		M = strat_cfg2['M']
 		W = strat_cfg2['W']
 		self.decision_vector = ngmeth.decvec3_from_MW(M, W)
@@ -34,6 +38,7 @@ class StratDecisionVectorGainmax(StratDecisionVector):
 
 class StratDecisionVectorGainSoftmax(StratDecisionVector):
 	def __init__(self, **strat_cfg2):
+		super(StratDecisionVectorGainSoftmax, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		M = strat_cfg2['M']
 		W = strat_cfg2['W']
 		Temp = strat_cfg2['Temp']
@@ -42,6 +47,7 @@ class StratDecisionVectorGainSoftmax(StratDecisionVector):
 
 class StratDecisionVectorGainSoftmaxHearer(StratDecisionVector):
 	def __init__(self, **strat_cfg2):
+		super(StratDecisionVectorGainSoftmaxHearer, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		M = strat_cfg2['M']
 		W = strat_cfg2['W']
 		Temp = strat_cfg2['Temp']
@@ -50,6 +56,7 @@ class StratDecisionVectorGainSoftmaxHearer(StratDecisionVector):
 
 class StratDecisionVectorGainSoftmaxHearerTest(StratDecisionVector):
 	def __init__(self, **strat_cfg2):
+		super(StratDecisionVectorGainSoftmaxHearerTest, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		M = strat_cfg2['M']
 		W = strat_cfg2['W']
 		Temp = strat_cfg2['Temp']

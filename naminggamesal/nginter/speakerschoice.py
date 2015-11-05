@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
-from . import BaseInteraction
+from . import Interaction
 import random
 import numpy as np
 
 ##########
-class SpeakersChoice(BaseInteraction):
-	def interact(self, speaker, hearer):
+class SpeakersChoice(Interaction):
+	def interact(self, speaker, hearer, pop):
 		ms = speaker.pick_m()
 		w = speaker.pick_w(ms)
 		mh = hearer.guess_m(w)

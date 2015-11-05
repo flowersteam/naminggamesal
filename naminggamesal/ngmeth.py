@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import copy
 import numpy as np
 import math
 import networkx as nx
@@ -33,14 +34,10 @@ def pop_ize(func):
 #########Nlink##########
 
 def Nlink(agent,**kwargs):
-	tempN=0
-	for m in range(0,agent._M):
-		for w in range(0,agent._W):
-			tempN+=agent._vocabulary.exists(m,w)
-	return tempN
+	return np.sum(agent.get_vocabulary_content())
 
 def Nlink_max(pop):
-	return pop._M
+	return pop._M * pop._W
 
 def Nlink_min(pop):
 	return 0
@@ -48,7 +45,7 @@ def Nlink_min(pop):
 
 FUNC=Nlink
 FUNC_BIS=pop_ize(FUNC)
-graphconfig={"ymin":Nlink_min,"ymax":Nlink_max}
+graphconfig={"ymin":Nlink_min}#,"ymax":Nlink_max}
 custom_Nlink =custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
@@ -139,6 +136,28 @@ FUNC=Nlinksurs
 graphconfig={"ymin":Nlinksurs_min,"ymax":Nlinksurs_max}
 custom_Nlinksurs=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+#########Nlinksurs_couples##########
+
+def Nlinksurs_couples(pop,**kwargs):
+	tempvalues = []
+	for j in range(100):
+		agent1_id=pop.pick_speaker()
+		agent2_id=pop.pick_hearer(agent1_id)
+		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
+		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
+		tempm = np.linalg.matrix_rank(np.multiply(agent1.get_vocabulary_content(),agent2.get_vocabulary_content()))
+		tempvalues.append(tempm)
+	return np.mean(tempvalues)
+
+def Nlinksurs_couples_max(pop):
+	return pop._M
+
+def Nlinksurs_couples_min(pop):
+	return 0
+
+FUNC=Nlinksurs_couples
+graphconfig={"ymin":Nlinksurs_couples_min,"ymax":Nlinksurs_couples_max}
+custom_Nlinksurs_couples=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########entropypop##########
 
@@ -173,9 +192,9 @@ graphconfig={"ymin":entropypop_norm_min,"ymax":entropypop_norm_max}
 custom_entropypop_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 
-#########entropycouples##########
+#########entropycouplesold##########
 
-def entropycouples(pop,**kwargs):
+def entropycouples_old(pop,**kwargs):
 	tempvalues=[]
 	for j in range(100):
 		agent1_id=pop.pick_speaker()
@@ -198,6 +217,45 @@ def entropycouples(pop,**kwargs):
 		else:
 			tempmat=np.multiply(agent1._vocabulary.get_content(),agent2._vocabulary.get_content())
 			tempm=np.sum(tempmat)
+		tempvalues.append(tempentropy(pop._M-tempm,pop._W-tempm))
+	return np.mean(tempvalues)
+
+def entropycouples_old_max(pop):
+	return tempentropy(pop._M,pop._W)
+
+def entropycouples_old_min(pop):
+	return 0
+
+FUNC=entropycouples_old
+graphconfig={"ymin":entropycouples_old_min,"ymax":entropycouples_old_max}
+custom_entropycouples_old=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########entropycouplesoldnorm##########
+
+
+def entropycouples_old_norm(pop,**kwargs):
+	return 1-(entropycouples(pop)/entropycouples_max(pop))
+
+def entropycouples_old_norm_max(pop):
+	return 1
+
+def entropycouples_old_norm_min(pop):
+	return 0
+
+FUNC=entropycouples_old_norm
+graphconfig={"ymin":entropycouples_old_norm_min,"ymax":entropycouples_old_norm_max}
+custom_entropycouples_old_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########entropycouples##########
+
+def entropycouples(pop,**kwargs):
+	tempvalues=[]
+	for j in range(100):
+		agent1_id=pop.pick_speaker()
+		agent2_id=pop.pick_hearer(agent1_id)
+		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
+		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
+		tempm = np.linalg.matrix_rank(np.multiply(agent1.get_vocabulary_content(),agent2.get_vocabulary_content()))
 		tempvalues.append(tempentropy(pop._M-tempm,pop._W-tempm))
 	return np.mean(tempvalues)
 
@@ -228,16 +286,17 @@ graphconfig={"ymin":entropycouples_norm_min,"ymax":entropycouples_norm_max}
 custom_entropycouples_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########srtheo##########
+#########srtheo##########
 
 def srtheo(pop,**kwargs):
 	fail=0
 	succ=0
 	for i in range(100):
-		agent1_id=pop.pick_speaker()
-		agent2_id=pop.pick_hearer(agent1_id)
-		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
-		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
-		pop_cfg={
+		agent1_id = pop.pick_speaker()
+		agent2_id = pop.pick_hearer(agent1_id)
+		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
+		pop_cfg = {
 			'voc_cfg':{
 			'voc_type':'sparse_matrix',
 			    'M':pop._M,
@@ -251,11 +310,11 @@ def srtheo(pop,**kwargs):
 			    },
 			'nbagent':2
 			}
-		tempop=Population(**pop_cfg)
-		tempop._agentlist[0]._vocabulary._content=agent1._vocabulary.get_content()
-		tempop._agentlist[1]._vocabulary._content=agent2._vocabulary.get_content()
+		tempop = Population(**pop_cfg)
+		tempop._agentlist[0]._vocabulary._content = copy.deepcopy(agent1._vocabulary._content)
+		tempop._agentlist[1]._vocabulary._content = copy.deepcopy(agent2._vocabulary._content)
 		tempop.play_game(1)
-		if tempop._lastgameinfo[0]==tempop._lastgameinfo[2]:
+		if tempop._lastgameinfo[0] == tempop._lastgameinfo[2]:
 			succ+=1
 		else:
 			fail+=1

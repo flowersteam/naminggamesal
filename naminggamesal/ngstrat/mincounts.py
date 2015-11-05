@@ -9,8 +9,8 @@ import numpy as np
 ##################################### STRATEGIE SUCCESS THRESHOLD########################################
 class StratMinCounts(StratNaive):
 
-	def __init__(self, mincounts=5 , **strat_cfg2):
-		super(StratMinCounts, self).__init__(**strat_cfg2)
+	def __init__(self, vu_cfg, mincounts=5 , **strat_cfg2):
+		super(StratMinCounts, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		if 'mincounts' not in strat_cfg2.keys():
 			self.mincounts=mincounts
 

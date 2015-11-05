@@ -19,18 +19,20 @@ voc_class={
 
 
 def voc_cache(tempfun):
-	def mod_fun(self, *args):
+	def mod_fun(self, *args, **kwargs):
+		args_list = sorted([str(val) for val in list(args) + kwargs.values()])
+		args_str = ''.join(args_list)
 		try:
-			return self._cache[tempfun.__name__+str(args)]
+			return self._cache[tempfun.__name__+args_str]
 		except KeyError:
-			self._cache[tempfun.__name__+str(args)] = tempfun(self, *args)
-			return self._cache[tempfun.__name__+str(args)]
+			self._cache[tempfun.__name__+args_str] = tempfun(self, *args, **kwargs)
+			return self._cache[tempfun.__name__+args_str]
 	return mod_fun
 
 def del_cache(tempfun):
-	def mod_fun(obj_self, *args):
-		ans = tempfun(obj_self, *args)
-		obj_self._cache={}
+	def mod_fun(obj_self, *args, **kwargs):
+		ans = tempfun(obj_self, *args, **kwargs)
+		obj_self._cache = {}
 		return ans
 	return mod_fun
 
@@ -61,11 +63,11 @@ class BaseVocabulary(object):
 		str1 = 'Words\n'
 		str2 = 'Meanings'
 		content = str(self.get_content()).split('\n')
-		x=len(content[0])
-		y=len(content)
-		str1= (len(str2)+max(0,(x-len(str1))/2))*" "+str1
-		indice=y/2
-		str2_list=[" "*len(str2)]*indice+[str2]+[" "*len(str2)]*(y-indice-1)
+		x = len(content[0])
+		y = len(content)
+		str1 = (len(str2)+max(0,(x-len(str1))/2))*" "+str1
+		indice = y/2
+		str2_list = [" "*len(str2)]*indice+[str2]+[" "*len(str2)]*(y-indice-1)
 		for i in range(y):
 			str1 += str2_list[i]
 			str1 += content[i]+"\n"

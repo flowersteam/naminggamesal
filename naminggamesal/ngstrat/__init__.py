@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from importlib import import_module
 
+from .voc_update import get_voc_update
+
 sns.set(rc={'image.cmap': 'Purples_r'})
 
 #####Classe de base
@@ -15,6 +17,8 @@ strat_class={
 	'success_threshold':'success_threshold.StratSuccessThreshold',
 	'success_threshold_corrected':'success_threshold.StratSuccessThresholdCorrected',
 	'success_threshold_wise':'success_threshold.StratSuccessThresholdWise',
+	'success_threshold_wise_max':'success_threshold.StratSuccessThresholdWiseMax',
+	'success_threshold_scores':'success_threshold.StratSuccessThresholdScores',
 
 	'mincounts':'mincounts.StratMinCounts',
 
@@ -25,10 +29,11 @@ strat_class={
 
 	'decision_vector_gainsoftmax_hearer_test':'decision_vector.StratDecisionVectorGainSoftmaxHearerTest',
 
-	'last_result':'last_result.StratLastResult'
+	'last_result':'last_result.StratLastResult',
+	'omniscient':'omniscient.StratOmniscient'
 }
 
-def Strategy(strat_type='naive', voc_update='Adaptive', **strat_cfg2):
+def Strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, **strat_cfg2):
 	tempstr = strat_type
 	if tempstr == 'mixed':
 		tot = sum(strat_cfg2['proba'])
@@ -45,16 +50,21 @@ def Strategy(strat_type='naive', voc_update='Adaptive', **strat_cfg2):
 	temppath = '.'.join(templist[:-1])
 	tempclass = templist[-1]
 	_tempmod = import_module('.'+temppath,package=__name__)
-	_tempmod2 = import_module('.voc_update_decorators',package=__name__)
-	tempstrat = getattr(_tempmod,tempclass)(**strat_cfg2)
-	return getattr(_tempmod2,voc_update)(tempstrat)
+	return getattr(_tempmod,tempclass)(vu_cfg=vu_cfg, **strat_cfg2)
 
 
 class BaseStrategy(object):
 
-	def __init__(self, **strat_cfg2):
-		for key, value in strat_cfg2.iteritems():
-			setattr(self, key, value)
+	def __init__(self, vu_cfg, **strat_cfg2):
+		#for key, value in strat_cfg2.iteritems():
+		#	setattr(self, key, value)
+		self.voc_update = get_voc_update(**vu_cfg)
+
+	def update_speaker(self, *args, **kwargs):
+		return self.voc_update.update_speaker(*args, **kwargs)
+
+	def update_hearer(self, *args, **kwargs):
+		return self.voc_update.update_hearer(*args, **kwargs)
 
 	def get_strattype(self):
 		return self._strattype
@@ -116,3 +126,15 @@ class BaseStrategy(object):
 			voc.visual(vtype="syn")
 		elif vtype=="hom":
 			voc.visual(vtype="hom")
+
+	def pick_mw(self):
+		pass
+
+	def pick_m(self):
+		pass
+
+	def pick_w(self):
+		pass
+
+	def guess_m(self):
+		pass

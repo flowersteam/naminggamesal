@@ -34,7 +34,9 @@ class NamingGamesDB(object):
 				+"Id TEXT, "\
 				+"Creation_Time INT, "\
 				+"Modif_Time INT, "\
+				+"Expe_config TEXT, "\
 				+"Function TEXT, "\
+				+"Time_max INT, "\
 				+"Custom_Graph BLOB)")
 
 	def merge(self, other_db, id_list=None, remove=False, main_only=False):
@@ -143,13 +145,43 @@ class NamingGamesDB(object):
 			return tempexp
 
 
-	def get_graph(self,uuid,method="srtheo"):
+	def get_graph(self,uuid=None,xp_cfg=None,method="srtheo",tmin=0,tmax=None):
 		conn=sql.connect(self.dbpath)
 		with conn:
 			cursor=conn.cursor()
 			cursor.execute("SELECT Custom_Graph FROM computed_data_table WHERE Id=\'"+str(uuid)+"\' AND Function=\'"+method+"\'")
 			tempblob=cursor.fetchone()
 			return cPickle.loads(bz2.decompress(str(tempblob[0])))
+
+
+	def get_graph_id_list(self,xp_cfg,method="srtheo",tmax=None):
+		conn=sql.connect(self.dbpath)
+		with conn:
+				cursor=conn.cursor()
+				if tmax is None:
+					cursor.execute("SELECT Id FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg)+"\' AND Function=\'"+method+"\'")
+					templist=list(cursor)
+					for i in range(0,len(templist)):
+						templist[i]=templist[i][0]
+					return templist
+				else:
+					cursor.execute("SELECT Id FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg)+"\' AND Function=\'"+method+"\' AND Time_max>=\'"+tmax+"\'")
+					templist=list(cursor)
+					for i in range(0,len(templist)):
+						templist[i]=templist[i][0]
+					if templist:
+						return templist
+					elif tmax < 0:
+						return []
+					else:
+						cursor.execute("SELECT Time_max FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg)+"\' AND Function=\'"+method+"\'")
+						templist=list(cursor)
+						for i in range(0,len(templist)):
+							templist[i]=templist[i][0]
+						return self.get_graph_id_list(xp_cfg=xp_cfg,method=method,tmax=t_max)
+
+
+
 
 
 	def get_id_list(self, all_id=False, pattern=None, tmax=0, **xp_cfg):
@@ -199,6 +231,7 @@ class NamingGamesDB(object):
 #					exp._nbagent, \
 					exp._T[-1], \
 					exp._time_step, \
+
 					binary,))
 			elif tempmodiftup[0]<exp.modif_time:
 				cursor.execute("UPDATE main_table SET "\
@@ -213,19 +246,24 @@ class NamingGamesDB(object):
 			cursor=conn.cursor()
 			cursor.execute("SELECT Modif_Time FROM computed_data_table WHERE Id=\'"+exp.uuid+"\' AND Function=\'"+method+"\'")
 			tempmodiftup=cursor.fetchone()
+			cursor.execute("SELECT Time_max FROM computed_data_table WHERE Id=\'"+exp.uuid+"\' AND Function=\'"+method+"\'")
+			tempmodiftup2=cursor.fetchone()
 			if not tempmodiftup:
 				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
-				cursor.execute("INSERT INTO computed_data_table VALUES(?,?,?,?,?)", (\
+				cursor.execute("INSERT INTO computed_data_table VALUES(?,?,?,?,?,?,?)", (\
 					exp.uuid, \
 					graph.init_time, \
 					graph.modif_time, \
+					json.dumps({'pop_cfg':exp._pop_cfg, 'step':exp._time_step}), \
 					method, \
+					graph._X[0][-1], \
 					binary,))
-			elif tempmodiftup[0]!=graph.modif_time:
+			elif tempmodiftup[0]!=graph.modif_time and graph._X[0][-1]>tempmodiftup2[0]:
 				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 				cursor.execute("UPDATE computed_data_table SET "\
-					+"Modif_Time=\'"+graph.modif_time+"\', "\
-					+"Custom_Graph=? WHERE Id=\'"+exp.uuid+"\' AND Function=\'"+method+"\'",(binary,))\
+					+"Modif_Time=\'"+str(graph.modif_time)+"\', "\
+					+"Time_max=\'"+str(graph._X[0][-1])+"\', "\
+					+"Custom_Graph=? WHERE Id=\'"+str(exp.uuid)+"\' AND Function=\'"+method+"\'",(binary,))\
 
 	def data_exists(self,uuid,method):
 		conn=sql.connect(self.dbpath)
@@ -274,8 +312,8 @@ class Experiment(ngsimu.Experiment):
 			dbmin = tempgraph._X[0][0]
 			dbmax = tempgraph._X[0][-1]
 			if dbmin<=tmax and dbmax>=tmin:
-				temptmin = max(dbmin,tmin)
-				temptmax = min(dbmax,tmax)
+				temptmin = max(dbmax,tmin)
+				temptmax = min(dbmin,tmax)
 				tempgraph2 = super(Experiment,self).graph(method=method, tmin=temptmin, tmax=temptmax)
 				tempgraph.complete_with(tempgraph2)
 				while tmax < tempgraph._X[0][-1]:
@@ -285,7 +323,7 @@ class Experiment(ngsimu.Experiment):
 				while tmin > tempgraph._X[0][0]:
 					tempgraph._X[0].pop(0)
 					tempgraph._Y[0].pop(0)
-					tempgraph.stdvec[0].pop()
+					tempgraph.stdvec[0].pop(0)
 			else:
 				tempgraph = super(Experiment,self).graph(method=method, tmin=tmin, tmax=tmax)
 		else:

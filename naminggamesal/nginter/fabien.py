@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from . import BaseInteraction
+from . import Interaction
 import random
 import numpy as np
 from .. import ngmeth
@@ -50,7 +50,7 @@ def FUNC3(agent1, agent2):         #random (equivalent to 0.5?)
 
 
 ##########
-class FabienInteraction(BaseInteraction):
+class FabienInteraction(Interaction):
 
 	def __init__(self, proba_func='proba_info', **interact_cfg2):
 		super(FabienInteraction,self).__init__(**interact_cfg2)
@@ -59,12 +59,12 @@ class FabienInteraction(BaseInteraction):
 			self.alpha = 1.
 
 
-	def interact(self, speaker, hearer):
+	def interact(self, speaker, hearer, pop):
 		r = random.random()
 		if self.proba_func(speaker, hearer, self.alpha) > r:
-			self.base_interact(speaker, hearer)
+			self.base_interact(speaker, hearer, pop)
 
-	def base_interact(self, speaker, hearer):
+	def base_interact(self, speaker, hearer, pop):
 		ms = speaker.pick_m()
 		w =  speaker.pick_w(ms)
 		mh = hearer.guess_m(w)

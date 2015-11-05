@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
 
 #import random
 #from ngvoc import *
@@ -8,13 +7,17 @@ from copy import deepcopy
 import pickle
 import random
 import matplotlib.pyplot as plt
+import uuid
 
 from .. import ngvoc
 from .. import ngstrat
 
 class Agent(object):
-	def __init__(self, agent_id, voc_cfg, strat_cfg):
-		self._id = agent_id;
+	def __init__(self, voc_cfg, strat_cfg, agent_id=None):
+		if agent_id is None:
+			self._id = str(uuid.uuid1())
+		else:
+			self._id = agent_id;
 		self._vocabulary = ngvoc.Vocabulary(**voc_cfg)
 		self._strategy = ngstrat.Strategy(**strat_cfg)
 
@@ -26,7 +29,7 @@ class Agent(object):
 		self.success = 0
 
 	def init_memory(self):
-		self._memory=self._strategy.init_memory(self._vocabulary)
+		self._memory = self._strategy.init_memory(self._vocabulary)
 
 	def get_vocabulary_content(self):
 		return self._vocabulary.get_content()
@@ -42,6 +45,9 @@ class Agent(object):
 
 	def pick_m(self):
 		return self._strategy.pick_m(self._vocabulary,self._memory)
+
+	def pick_mw(self):
+		return self._strategy.pick_mw(self._vocabulary,self._memory)
 
 	def hearer_pick_m(self):
 		return self._strategy.hearer_pick_m(self._vocabulary,self._memory)

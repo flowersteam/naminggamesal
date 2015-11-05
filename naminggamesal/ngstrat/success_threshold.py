@@ -9,10 +9,9 @@ import numpy as np
 ##################################### STRATEGIE SUCCESS THRESHOLD########################################
 class StratSuccessThreshold(StratNaive):
 
-	def __init__(self, threshold_explo=0.9, **strat_cfg2):
-		super(StratSuccessThreshold, self).__init__(**strat_cfg2)
-		if 'threshold_explo' not in strat_cfg2.keys():
-			self.threshold_explo=threshold_explo
+	def __init__(self, vu_cfg, threshold_explo=0.9, **strat_cfg2):
+		super(StratSuccessThreshold, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
+		self.threshold_explo=threshold_explo
 
 	def pick_m(self,voc,mem):
 		test1=self.get_success_rate_over_known_meanings(voc,mem)>self.threshold_explo
@@ -102,6 +101,54 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 		for m in range(0,len(KM)):
 			if ratelist[m] == tempmin:
 				tempm.append(m)
-		j = random.randint(0, len(tempm)-1)
-		ans = KM[tempm[j]]
+		j = random.choice(tempm)
+		ans = KM[j]
 		return ans
+
+##################################### STRATEGIE SUCCESS THRESHOLD WISE MAX########################################
+class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
+
+	def pick_m(self, voc, mem):
+		ratelist = self.get_success_rates(voc, mem)
+		if (np.mean(ratelist)>self.threshold_explo and len(voc.get_known_meanings())<voc._M) or len(voc.get_known_meanings()) == 0 :
+			return voc.get_new_unknown_m()
+		tempmax = 0
+		KM = voc.get_known_meanings()
+		for m in range(0,len(KM)):
+			if ratelist[m] < self.threshold_explo:
+				tempmax = max(tempmax, ratelist[m])
+		tempm = []
+		for m in range(0,len(KM)):
+			if ratelist[m] == tempmax:
+				tempm.append(m)
+		j = random.choice(tempm)
+		ans = KM[j]
+		return ans
+
+##################################### STRATEGIE SUCCESS THRESHOLD WISE########################################
+class StratSuccessThresholdScores(StratSuccessThresholdWise):
+
+	def init_memory(self,voc):
+		mem={}
+		mem["success_m"] = np.zeros((voc._M, voc._W))
+		mem["fail_m"] = np.zeros((voc._M, voc._W))
+		return mem
+
+	def update_memory(self,ms,w,mh,voc,mem,role):
+		if role=='speaker':
+			m1 = ms
+		else:
+			m1 = mh
+		if ms == mh:
+			mem["success_m"][m1, w]+=1
+		else:
+			mem["fail_m"][m1, w]+=1
+
+	def get_success_rates(self, voc, mem):
+		with np.errstate(divide='ignore', invalid='ignore'):
+			c = np.true_divide(mem['success_m'],mem['success_m'] + mem['fail_m'])
+			c[c == np.inf] = 0
+			c = np.nan_to_num(c)
+		rates = np.multiply(voc.get_content(), c).sum(axis = 1)
+		ratelist = [rates[m]/len(voc.get_known_words(m)) for m in voc.get_known_meanings()]
+		return ratelist

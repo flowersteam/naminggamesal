@@ -11,10 +11,11 @@ sns.set(rc={'image.cmap': 'Purples_r'})
 interaction_class={
 	'hearerschoice':'hearerschoice.HearersChoice',
 	'speakerschoice':'speakerschoice.SpeakersChoice',
-	'fabien':'fabien.FabienInteraction'
+	'fabien':'fabien.FabienInteraction',
+	'omniscient':'omniscient.Omniscient'
 }
 
-def Interaction(interact_type='speakerschoice', **interact_cfg2):
+def get_interaction(interact_type='speakerschoice', **interact_cfg2):
 	tempint = interact_type
 	if tempint in interaction_class.keys():
 		tempint = interaction_class[tempint]
@@ -26,7 +27,7 @@ def Interaction(interact_type='speakerschoice', **interact_cfg2):
 	return tempinter
 
 
-class BaseInteraction(object):
+class Interaction(object):
 
 	def __init__(self, **interact_cfg2):
 		self._last_info = None
@@ -35,3 +36,6 @@ class BaseInteraction(object):
 
 	def get_interacttype(self):
 		return self._interacttype
+
+	def interact(self, speaker, hearer, pop):
+		pass

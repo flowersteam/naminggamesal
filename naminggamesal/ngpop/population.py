@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
 
 #import random
 #from ngvoc import *
@@ -10,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from ..ngagent import Agent
-from ..nginter import Interaction
+from ..nginter import get_interaction
 
 
 
@@ -22,25 +21,28 @@ class Population(object):
 		self._M = voc_cfg['M']
 		self._W = voc_cfg['W']
 		self._strat_cfg = strat_cfg
-		self._interaction = Interaction(**interact_cfg)
+		self._interaction = get_interaction(**interact_cfg)
 		self._lastgameinfo = []
 		self._agentlist = []
-		for i in range (0,nbagent):
-			self.add_new_agent(agent_id=i, strat_cfg=strat_cfg, voc_cfg=voc_cfg)
+		for i in range(nbagent):
+			self.add_new_agent(agent_id=None, strat_cfg=strat_cfg, voc_cfg=voc_cfg)
 
 
 	def get_size(self):
 		return self._size
+
 	def get_vocsize(self):
 		return [self._M,self._W]
+
 	def check_id(self,agent_id):
 		for i in range(0,len(self._agentlist)):
-			if self._agentlist[i].get_id()==agent_id:
+			if self._agentlist[i].get_id() == agent_id:
 				return 1
 		return 0
-	def add_agent(self,agent):
-		if self.check_id(agent.get_id())==1:
-			print "ATTENTION: 2 agents avec la même identité"
+
+	def add_agent(self, agent):
+		if self.check_id(agent.get_id()) == 1:
+			print "WARNING: 2 agents with same identity"
 		self._agentlist.append(agent)
 
 	def idmax(self): #Suppose ID=nombre
@@ -50,38 +52,36 @@ class Population(object):
 		return tempid
 
 	def add_new_agent(self, voc_cfg, strat_cfg, agent_id=None):
-		if agent_id is not None:
-			agent_id=self.idmax()+1
 		self._agentlist.append(Agent(agent_id=agent_id, voc_cfg=self._voc_cfg, strat_cfg=self._strat_cfg))
 		self._size+=1
 
-	def get_index_from_id(self,agent_id):
+	def get_index_from_id(self, agent_id):
 		for i in range (0,len(self._agentlist)):
-			if self._agentlist[i].get_id()==agent_id:
+			if self._agentlist[i].get_id() == agent_id:
 				return i
 		print "id non existante"
 
-	def rm_agent(self,agent_id):
+	def rm_agent(self, agent_id):
 		self._agentlist.remove(self.get_index_from_id(agent_id))
-		self._size-=1
+		self._size -= 1
 
 	def pick_speaker(self):
-		j=random.randint(0,len(self._agentlist)-1)
+		j = random.randint(0,len(self._agentlist)-1)
  		return self._agentlist[j].get_id()
 
-	def pick_hearer(self,speaker_id):
-		j=random.randint(0,len(self._agentlist)-2)
+	def pick_hearer(self, speaker_id):
+		j = random.randint(0,len(self._agentlist)-2)
 		if self.get_index_from_id(speaker_id) <= j:
 			j+=1
  		return self._agentlist[j].get_id()
 
-	def play_game(self,steps,**kwargs):
+	def play_game(self, steps, **kwargs):
 		for i in range(0,steps):
-			speaker_id=self.pick_speaker()
-			hearer_id=self.pick_hearer(speaker_id)
-			speaker=self._agentlist[self.get_index_from_id(speaker_id)]
-			hearer=self._agentlist[self.get_index_from_id(hearer_id)]
-			self._interaction.interact(speaker=speaker, hearer=hearer)
+			speaker_id = self.pick_speaker()
+			hearer_id = self.pick_hearer(speaker_id)
+			speaker = self._agentlist[self.get_index_from_id(speaker_id)]
+			hearer = self._agentlist[self.get_index_from_id(hearer_id)]
+			self._interaction.interact(speaker=speaker, hearer=hearer, pop=self)
 #			tempmw=speaker.pick_mw()
 #			ms=tempmw[0]
 #			w=tempmw[1]
