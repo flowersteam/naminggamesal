@@ -296,7 +296,9 @@ class Experiment(ngsimu.Experiment):
 		if autocommit:
 			self.commit_to_db()
 
-	def continue_exp(self,dT, autocommit=True, **kwargs):
+	def continue_exp(self,dT=None, autocommit=True, **kwargs):
+		if dT is None:
+			dT = self._time_step
 		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit, **kwargs)
 
 	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True):

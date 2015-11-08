@@ -68,10 +68,16 @@ class VocMatrix(BaseVocabulary):
 			ans = nz[1]
 		elif option == 'max':
 			coords = np.argwhere(mat == np.amax(mat))
-			ans = [j for (i,j) in [tuple(k) for k in coords]]
+			try:
+				ans = [j for (i,j) in [tuple(k) for k in coords]]
+			except ValueError:
+				ans = [k[0] for k in coords]
 		elif option == 'min':
 			coords = np.argwhere(mat == np.amin(mat))
-			ans = [j for (i,j) in [tuple(k) for k in coords]]
+			try:
+				ans = [j for (i,j) in [tuple(k) for k in coords]]
+			except ValueError:
+				ans = [k[0] for k in coords]
 		else:
 			raise ValueError('Unknown option')
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
@@ -104,10 +110,16 @@ class VocMatrix(BaseVocabulary):
 			ans = nz[0]
 		elif option == 'max':
 			coords = np.argwhere(mat == np.amax(mat))
-			ans = [i for (i,j) in [tuple(k) for [k] in coords]]
+			try:
+				ans = [i for (i,j) in [tuple(k) for k in coords]]
+			except ValueError:
+				ans = [k[0] for k in coords]
 		elif option == 'min':
 			coords = np.argwhere(mat == np.amin(mat))
-			ans = [i for (i,j) in [tuple(k) for [k] in coords]]
+			try:
+				ans = [i for (i,j) in [tuple(k) for k in coords]]
+			except ValueError:
+				ans = [k[0] for k in coords]
 		else:
 			raise ValueError("Unknown option")
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
