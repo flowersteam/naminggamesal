@@ -342,7 +342,7 @@ class Experiment(ngsimu.Experiment):
 		if not tmax:
 			tmax=self._T[-1]
 		ind=-1
-		if tmax > self._T[-1]:
+		if tmax >= self._T[-1] + self._time_step:
 			self.continue_exp_until(tmax)
 			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax, autocommit=autocommit, tempgraph=tempgraph)
 		while self._T[ind]>tmax:
