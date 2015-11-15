@@ -107,7 +107,7 @@ class Experiment(object):
 		if not tmax:
 			tmax = self._T[-1]
 		indmax=-1
-		if tmax > self._T[-1]:
+		if tmax >= self._T[-1] + self._time_step:
 			self.continue_exp_until(tmax)
 			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax)
 		while self._T[indmax]>tmax:
