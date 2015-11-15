@@ -26,6 +26,7 @@ class NamingGamesDB(object):
 				+"Id TEXT, "\
 				+"Creation_Time INT, "\
 				+"Modif_Time INT, "\
+				+"Exec_Time INT, "\
 				+"Config TEXT, "\
 				+"Tmax INT, "\
 				+"step INT, "\
@@ -60,8 +61,30 @@ class NamingGamesDB(object):
 		if remove:
 			os.remove(other_db.dbpath)
 
-	def export(self, other_db, id_list=None, remove=False, main_only=False):
-		other_db.merge(other_db=self.db, id_list=id_list, remove=remove, main_only=main_only)
+	def export(self, other_db, id_list=None, methods=[]):
+		if id_list is None:
+			id_list = self.get_id_list()
+		with sql.connect(self.dbpath):
+			cursor = sql.connect(self.dbpath).cursor()
+			with sql.connect(other_db.dbpath, isolation_level=None):
+				other_cursor = sql.connect(other_db.dbpath, isolation_level=None).cursor()
+				for uuid in id_list:
+					cursor.execute("SELECT * FROM main_table WHERE Id=\'"+str(uuid)+"\'")
+					xp_data = cursor.fetchone()
+					if not uuid in other_db.get_id_list():
+						other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
+					elif self.get_param(uuid=uuid, param='Tmax') > other_db.get_param(uuid=uuid, param='Tmax'):
+						other_cursor.execute("DELETE FROM main_table WHERE Id=\'"+str(uuid)+"\'")
+						other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
+					for method in methods:
+						if self.data_exists(uuid=uuid, method=method):
+							cursor.execute("SELECT * FROM computed_data_table WHERE Id=\'"+str(uuid)+"\' AND Function= \'"+method+"\'")
+							gr_data = cursor.fetchone()
+							if not other_db.data_exists(uuid=uuid, method=method):
+								other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
+							elif self.get_param(uuid=uuid, method=method, param='Time_max') > other_db.get_param(uuid=uuid, method=method, param='Time_max'):
+								other_cursor.execute("DELETE FROM computed_data_table WHERE Id=\'"+str(uuid)+"\' AND Function= \'"+method+"\'")
+								other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
 
 	def delete(self, id_list, graph_only=False, met=''):
 		with sql.connect(self.dbpath):
@@ -108,8 +131,8 @@ class NamingGamesDB(object):
 	def get_experiment(self, uuid=None, force_new=False, blacklist=[], pattern=None, tmax=0, **xp_cfg):
 		if force_new:
 			tempexp = Experiment(database=self,**xp_cfg)
-			return tempexp
-		if uuid:
+			tempexp.commit_to_db()
+		elif uuid is not None:
 			if self.id_in_db(uuid):
 				conn=sql.connect(self.dbpath)
 				with conn:
@@ -118,9 +141,9 @@ class NamingGamesDB(object):
 					tempblob=cursor.fetchone()
 					tempexp = cPickle.loads(bz2.decompress(str(tempblob[0])))
 					tempexp.db=self
-					return tempexp
 			else:
 				print("ID doesn't exist in DB")
+				return self.get_experiment(blacklist=blacklist,pattern=pattern,tmax=tmax, **xp_cfg)
 		else:
 			templist=self.get_id_list(pattern=pattern, tmax=tmax, **xp_cfg)
 			for elt in blacklist:
@@ -142,7 +165,8 @@ class NamingGamesDB(object):
 				tempexp.db=self
 			else:
 				tempexp = Experiment(database=self,**xp_cfg)
-			return tempexp
+				tempexp.commit_to_db()
+		return tempexp
 
 
 	def get_graph(self,uuid=None,xp_cfg=None,method="srtheo",tmin=0,tmax=None):
@@ -188,7 +212,7 @@ class NamingGamesDB(object):
 		conn=sql.connect(self.dbpath)
 		with conn:
 			cursor=conn.cursor()
-			if not all_id:
+			if (not all_id) and (xp_cfg or pattern):
 				if xp_cfg:
 					cursor.execute("SELECT Id FROM main_table WHERE Config=\'{}\'".format(json.dumps(xp_cfg)))
 				else:
@@ -200,11 +224,14 @@ class NamingGamesDB(object):
 				templist[i]=templist[i][0]
 			return templist
 
-	def get_param(self, uuid, param, table='main_table'):
+	def get_param(self, uuid, param, method=None):
 		conn=sql.connect(self.dbpath)
 		with conn:
 			cursor=conn.cursor()
-			cursor.execute("SELECT {} FROM {} WHERE Id=\'{}\'".format(param, table, uuid))
+			if method is None:
+				cursor.execute("SELECT {} FROM {} WHERE Id=\'{}\'".format(param, 'main_table', uuid))
+			else:
+				cursor.execute("SELECT {} FROM {} WHERE Id=\'{}\' and Function=\'{}\'".format(param, 'computed_data_table', uuid, method))
 			temp = cursor.fetchone()
 			return temp[0]
 
@@ -216,13 +243,20 @@ class NamingGamesDB(object):
 		with conn:
 			cursor=conn.cursor()
 			binary=sql.Binary(bz2.compress(cPickle.dumps(exp,cPickle.HIGHEST_PROTOCOL)))
-			cursor.execute("SELECT Modif_Time FROM main_table WHERE Id=\'"+exp.uuid+"\'")
+			try:
+				cursor.execute("SELECT Modif_Time FROM main_table WHERE Id=\'"+exp.uuid+"\'")
+			except:
+				print exp.uuid
+				print self.dbpath
+				print os.getcwd()
+				raise
 			tempmodiftup=cursor.fetchone()
 			if not tempmodiftup:
-				cursor.execute("INSERT INTO main_table VALUES(?,?,?,?,?,?,?)", (\
+				cursor.execute("INSERT INTO main_table VALUES(?,?,?,?,?,?,?,?)", (\
 					exp.uuid, \
 					exp.init_time, \
 					exp.modif_time, \
+					exp._exec_time[-1], \
 					json.dumps({'pop_cfg':exp._pop_cfg, 'step':exp._time_step}), \
 #					exp._voctype, \
 #					exp._strat["strattype"], \
@@ -231,11 +265,11 @@ class NamingGamesDB(object):
 #					exp._nbagent, \
 					exp._T[-1], \
 					exp._time_step, \
-
 					binary,))
 			elif tempmodiftup[0]<exp.modif_time:
 				cursor.execute("UPDATE main_table SET "\
 					+"Modif_Time=\'"+str(exp.modif_time)+"\', "\
+					+"Exec_Time=\'"+str(exp._exec_time[-1])+"\', "\
 					+"Tmax=\'"+str(exp._T[-1])+"\', "\
 					+"step=\'"+str(exp._time_step)+"\', "\
 					+"Experiment_object=? WHERE Id=\'"+str(exp.uuid)+"\'",(binary,))\
@@ -249,6 +283,8 @@ class NamingGamesDB(object):
 			cursor.execute("SELECT Time_max FROM computed_data_table WHERE Id=\'"+exp.uuid+"\' AND Function=\'"+method+"\'")
 			tempmodiftup2=cursor.fetchone()
 			if not tempmodiftup:
+				if not graph._X[0][0] == 0:
+					graph.complete_with(self.get_graph(exp,graph,method))
 				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 				cursor.execute("INSERT INTO computed_data_table VALUES(?,?,?,?,?,?,?)", (\
 					exp.uuid, \
@@ -301,24 +337,26 @@ class Experiment(ngsimu.Experiment):
 			dT = self._time_step
 		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit, **kwargs)
 
-	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True):
+	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True, tempgraph=None):
+		print tmin, tmax
 		if not tmax:
 			tmax=self._T[-1]
 		ind=-1
 		if tmax > self._T[-1]:
 			self.continue_exp_until(tmax)
-			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax, autocommit=autocommit)
+			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax, autocommit=autocommit, tempgraph=tempgraph)
 		while self._T[ind]>tmax:
 			ind-=1
 		if self.db.data_exists(uuid=self.uuid, method=method):
-			tempgraph = self.db.get_graph(self.uuid, method=method)
-			dbmin = tempgraph._X[0][0]
-			dbmax = tempgraph._X[0][-1]
-			if dbmin<=tmax and dbmax>=tmin:
-				temptmin = max(dbmax,tmin)
-				temptmax = min(dbmin,tmax)
-				tempgraph2 = super(Experiment,self).graph(method=method, tmin=temptmin, tmax=temptmax)
-				tempgraph.complete_with(tempgraph2)
+			if tempgraph is None:
+				tempgraph = self.db.get_graph(self.uuid, method=method)
+			#dbmin = tempgraph._X[0][0] - self._time_step
+			dbmax = tempgraph._X[0][-1] + self._time_step
+			if dbmax>=tmin: #and dbmin<=tmax
+				if dbmax<tmax:
+					temptmin = max(dbmax,tmin)
+					tempgraph2 = super(Experiment,self).graph(method=method, tmin=temptmin, tmax=tmax)
+					tempgraph.complete_with(tempgraph2)
 				while tmax < tempgraph._X[0][-1]:
 					tempgraph._X[0].pop()
 					tempgraph._Y[0].pop()
