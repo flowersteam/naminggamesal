@@ -1,5 +1,6 @@
 from . import VocUpdate
 
+
 class BasicLateralInhibition(VocUpdate):
 	def __init__(self, s_init=0.5, d_dec=0.2, d_inh=0.2, d_inc=0.1):
 		self.s_init = s_init
@@ -19,7 +20,6 @@ class BasicLateralInhibition(VocUpdate):
 			for w2 in [w3 for w3 in range(voc._W) if w3 != w]:
 				self.inhibit(ms, w2, voc)
 
-
 	def update_speaker(self,ms,w,mh,voc,mem):
 		if voc.get_content()[ms, w] == 0:
 			voc.add(ms, w, self.s_init)
@@ -31,7 +31,6 @@ class BasicLateralInhibition(VocUpdate):
 				self.inhibit(m, w, voc)
 			for w2 in [w3 for w3 in range(voc._W) if w3 != w]:
 				self.inhibit(ms, w2, voc)
-
 
 	def inhibit(self,m,w,voc):
 		voc.add(m,w,max(voc.get_content()[m,w] - self.d_inh, 0))
