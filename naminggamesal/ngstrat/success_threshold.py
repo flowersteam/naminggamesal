@@ -112,17 +112,19 @@ class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 	def pick_m(self, voc, mem):
 		ratelist = self.get_success_rates(voc, mem)
 		KM = voc.get_known_meanings()
-		if (np.mean(ratelist)>self.threshold_explo and len(KM)<voc._M) or len(KM) == 0 :
+		if (np.mean(ratelist)>self.threshold_explo) or len(KM) == 0 : #and len(KM)<voc._M
 			return voc.get_new_unknown_m()
 		tempmax = 0
 		for m in range(0,len(KM)):
-			if ratelist[m] <= self.threshold_explo:
+			if ratelist[m] < threshold:
 				tempmax = max(tempmax, ratelist[m])
 		tempm = []
 		for m in range(0,len(KM)):
 			if ratelist[m] == tempmax:
 				tempm.append(m)
-		j = random.choice(tempm)
+		try:
+			j = random.choice(tempm)
+
 		ans = KM[j]
 		return ans
 
