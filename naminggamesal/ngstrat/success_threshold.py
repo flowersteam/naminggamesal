@@ -26,18 +26,19 @@ class StratSuccessThreshold(StratNaive):
 	def hearer_pick_m(self,voc,mem):
 		return self.pick_m(voc, mem)
 
-	def update_memory(self,ms,w,mh,voc,mem,role):
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ):
+		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
 		if role=='speaker':
 			m1=ms
 		else:
 			m1=mh
-		if ms==mh:
+		if bool_succ:
 			mem["success_m"][m1]+=1
 		else:
 			mem["fail_m"][m1]+=1
 
 	def init_memory(self,voc):
-		mem={}
+		mem = StratNaive.init_memory(self,voc)
 		mem["success_m"]=[]
 		mem["fail_m"]=[]
 		for i in range(0,voc._M):
@@ -115,7 +116,7 @@ class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 			return voc.get_new_unknown_m()
 		tempmax = 0
 		for m in range(0,len(KM)):
-			if ratelist[m] < self.threshold_explo:
+			if ratelist[m] <= self.threshold_explo:
 				tempmax = max(tempmax, ratelist[m])
 		tempm = []
 		for m in range(0,len(KM)):
@@ -129,17 +130,18 @@ class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 class StratSuccessThresholdScores(StratSuccessThresholdWise):
 
 	def init_memory(self,voc):
-		mem={}
+		mem = StratNaive.init_memory(self,voc)
 		mem["success_m"] = np.zeros((voc._M, voc._W))
 		mem["fail_m"] = np.zeros((voc._M, voc._W))
 		return mem
 
-	def update_memory(self,ms,w,mh,voc,mem,role):
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ):
+		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
 		if role=='speaker':
 			m1 = ms
 		else:
 			m1 = mh
-		if ms == mh:
+		if bool_succ:
 			mem["success_m"][m1, w]+=1
 		else:
 			mem["fail_m"][m1, w]+=1

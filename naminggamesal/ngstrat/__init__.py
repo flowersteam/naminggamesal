@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from importlib import import_module
 
+from .success import get_success
 from .voc_update import get_voc_update
 
 sns.set(rc={'image.cmap': 'Purples_r'})
@@ -33,7 +34,7 @@ strat_class={
 	'omniscient':'omniscient.StratOmniscient'
 }
 
-def Strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, **strat_cfg2):
+def Strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, **strat_cfg2):
 	tempstr = strat_type
 	if tempstr == 'mixed':
 		tot = sum(strat_cfg2['proba'])
@@ -50,21 +51,31 @@ def Strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, **strat_cfg2):
 	temppath = '.'.join(templist[:-1])
 	tempclass = templist[-1]
 	_tempmod = import_module('.'+temppath,package=__name__)
-	return getattr(_tempmod,tempclass)(vu_cfg=vu_cfg, **strat_cfg2)
+	return getattr(_tempmod,tempclass)(vu_cfg=vu_cfg, success_cfg=success_cfg, **strat_cfg2)
 
 
 class BaseStrategy(object):
 
-	def __init__(self, vu_cfg, **strat_cfg2):
+	def __init__(self, vu_cfg, success_cfg, **strat_cfg2):
 		#for key, value in strat_cfg2.iteritems():
 		#	setattr(self, key, value)
 		self.voc_update = get_voc_update(**vu_cfg)
+		self.success = get_success(**success_cfg)
 
-	def update_speaker(self, *args, **kwargs):
-		return self.voc_update.update_speaker(*args, **kwargs)
+	def update_speaker(self, ms, w, mh, voc, mem, bool_succ):
+		return self.voc_update.update_speaker(ms, w, mh, voc, mem, bool_succ)
 
-	def update_hearer(self, *args, **kwargs):
-		return self.voc_update.update_hearer(*args, **kwargs)
+	def update_hearer(self, ms, w, mh, voc, mem, bool_succ):
+		return self.voc_update.update_hearer(ms, w, mh, voc, mem, bool_succ)
+
+	def init_memory(self,voc):
+		return {'success':0,'fail':0}
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ):
+		if bool_succ:
+			mem['success'] += 1
+		else:
+			mem['fail'] += 1
 
 	def get_strattype(self):
 		return self._strattype

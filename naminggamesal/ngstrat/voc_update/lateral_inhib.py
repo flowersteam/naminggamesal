@@ -8,10 +8,10 @@ class BasicLateralInhibition(VocUpdate):
 		self.d_inh = d_inh
 		self.d_inc = d_inc
 
-	def update_hearer(self,ms,w,mh,voc,mem):
+	def update_hearer(self,ms,w,mh,voc,mem,bool_succ):
 		if voc.get_content()[ms, w] == 0:
 			voc.add(ms,w,self.s_init)
-		elif ms != mh:
+		elif not bool_succ:
 			self.decrease(mh, w, voc)
 		else:
 			self.increase(ms, w, voc)
@@ -20,10 +20,10 @@ class BasicLateralInhibition(VocUpdate):
 			for w2 in [w3 for w3 in range(voc._W) if w3 != w]:
 				self.inhibit(ms, w2, voc)
 
-	def update_speaker(self,ms,w,mh,voc,mem):
+	def update_speaker(self,ms,w,mh,voc,mem,bool_succ):
 		if voc.get_content()[ms, w] == 0:
 			voc.add(ms, w, self.s_init)
-		elif ms != mh:
+		elif not bool_succ:
 			self.decrease(ms, w, voc)
 		else:
 			self.increase(ms, w, voc)

@@ -18,12 +18,13 @@ class StratMinCounts(StratNaive):
 	def hearer_pick_m(self,voc,mem):
 		return self.pick_m(voc, mem)
 
-	def update_memory(self,ms,w,mh,voc,mem,role):
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ):
+		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
 		if role=='speaker':
 			m1=ms
 		else:
 			m1=mh
-		if ms==mh:
+		if bool_succ:
 			mem["success_m"][m1]+=1
 		else:
 			mem["fail_m"][m1]+=1

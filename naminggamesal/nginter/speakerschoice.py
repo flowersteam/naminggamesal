@@ -10,12 +10,7 @@ class SpeakersChoice(Interaction):
 		ms = speaker.pick_m()
 		w = speaker.pick_w(ms)
 		mh = hearer.guess_m(w)
-		if ms==mh:
-			speaker.success+=1
-			hearer.success+=1
-		else:
-			speaker.fail+=1
-			hearer.fail+=1
-		speaker.update_speaker(ms,w,mh)
-		hearer.update_hearer(ms,w,mh)
-		self._last_info = [ms,w,mh,speaker._id,hearer._id]
+		bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh)
+		speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
+		hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
+		self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id]

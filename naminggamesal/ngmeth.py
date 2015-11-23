@@ -303,7 +303,9 @@ def srtheo(pop,**kwargs):
 			    'W':pop._W
 			    },
 			'strat_cfg':{
-			    'strat_type':'naive'
+			    'strat_type':'naive',
+			    'voc_update':'imitation',
+			    'success':'communicative'
 			    },
 			'interact_cfg':{
 			    'interact_type':'speakerschoice'

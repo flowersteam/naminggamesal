@@ -6,7 +6,7 @@ import numpy as np
 
 
 
-##################################### STRATEGIE SUCCESS THRESHOLD########################################
+##################################### STRATEGIE Omniscient########################################
 class StratOmniscient(StratNaive):
 
 	def pick_m(self,voc,mem):
@@ -14,12 +14,6 @@ class StratOmniscient(StratNaive):
 
 	def hearer_pick_m(self,voc,mem):
 		return self.pick_m(voc, mem)
-
-	def update_memory(self,ms,w,mh,voc,mem,role):
-		pass
-
-	def init_memory(self,voc):
-		return {}
 
 	def pick_mw(self,voc,mem):
 		matrix = np.multiply(np.multiply((np.ones_like(mem['hearer']) - mem['hearer']), mem['pop']), voc.get_content())

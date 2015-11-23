@@ -61,17 +61,20 @@ class Agent(object):
 	def pick_w(self,m):
 		return self._strategy.pick_w(m,self._vocabulary,self._memory)
 
-	def update_hearer(self,ms,w,mh):
-		self._strategy.update_hearer(ms,w,mh,self._vocabulary,self._memory)
-		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='hearer')
+	def update_hearer(self,ms,w,mh,bool_succ):
+		self._strategy.update_hearer(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ)
+		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='hearer', bool_succ=bool_succ)
 
-	def update_speaker(self,ms,w,mh):
-		self._strategy.update_speaker(ms,w,mh,self._vocabulary,self._memory)
-		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='speaker')
+
+	def update_speaker(self,ms,w,mh,bool_succ):
+		self._strategy.update_speaker(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ)
+		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='speaker', bool_succ=bool_succ)
 
 	def visual(self,vtype=None,iterr=100,mlist="all",wlist="all"):
 		self._strategy.visual(self._vocabulary,mem=self._memory,vtype=vtype,iterr=iterr,mlist=mlist,wlist=wlist)
 
+	def eval_success(self, ms, w, mh):
+		return self._strategy.success.eval(ms=ms, w=w, mh=mh, voc=self._vocabulary, strategy=self)
 
 
 
