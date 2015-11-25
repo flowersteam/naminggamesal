@@ -176,6 +176,7 @@ class NamingGamesDB(object):
 			cursor.execute("SELECT Custom_Graph FROM computed_data_table WHERE Id=\'"+str(uuid)+"\' AND Function=\'"+method+"\'")
 			tempblob=cursor.fetchone()
 			return cPickle.loads(bz2.decompress(str(tempblob[0])))
+		#TODO: implement dealing with xp_cfg
 
 
 	def get_graph_id_list(self,xp_cfg,method="srtheo",tmax=None):
@@ -203,6 +204,7 @@ class NamingGamesDB(object):
 						for i in range(0,len(templist)):
 							templist[i]=templist[i][0]
 						return self.get_graph_id_list(xp_cfg=xp_cfg,method=method,tmax=t_max)
+		#TODO: implement generator instead of list??
 
 
 
@@ -223,6 +225,7 @@ class NamingGamesDB(object):
 			for i in range(0,len(templist)):
 				templist[i]=templist[i][0]
 			return templist
+		#TODO: implement generator instead of list??
 
 	def get_param(self, uuid, param, method=None):
 		conn=sql.connect(self.dbpath)
@@ -311,13 +314,18 @@ class NamingGamesDB(object):
 			else:
 				return False
 
+	def graph(self, cfg=[], nb_iter=1, uuid_list=[]):
+		pass
+
+
 class Experiment(ngsimu.Experiment):
 
-	def __init__(self,pop_cfg,step=1,database=None):
+	def __init__(self,pop_cfg,step=1,database=None,compute=True):
 		if not database:
 			self.db=NamingGamesDB()
 		else:
 			self.db=database
+			self.compute = compute
 		super(Experiment,self).__init__(pop_cfg,step)
 		self.commit_to_db()
 
@@ -327,22 +335,26 @@ class Experiment(ngsimu.Experiment):
 	def commit_data_to_db(self,graph,method):
 		self.db.commit_data(self,graph,method)
 
-	def continue_exp_until(self,T, autocommit=True, **kwargs):
-		super(Experiment,self).continue_exp_until(T,**kwargs)
+	def continue_exp_until(self,T, autocommit=True):
+		if not self.compute and T >= self._T[-1] + self._time_step:
+			raise Exception('Computation needed')
+		super(Experiment,self).continue_exp_until(Ts)
 		if autocommit:
 			self.commit_to_db()
 
-	def continue_exp(self,dT=None, autocommit=True, **kwargs):
+	def continue_exp(self,dT=None, autocommit=True):
 		if dT is None:
 			dT = self._time_step
-		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit, **kwargs)
+		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit)
 
 	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True, tempgraph=None):
 		print tmin, tmax
 		if not tmax:
-			tmax=self._T[-1]
+			tmax = self._T[-1]
 		ind=-1
 		if tmax >= self._T[-1] + self._time_step:
+			if not self.compute:
+				raise Exception('Computation needed')
 			self.continue_exp_until(tmax)
 			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax, autocommit=autocommit, tempgraph=tempgraph)
 		while self._T[ind]>tmax:
@@ -354,6 +366,8 @@ class Experiment(ngsimu.Experiment):
 			dbmax = tempgraph._X[0][-1] + self._time_step
 			if dbmax>=tmin: #and dbmin<=tmax
 				if dbmax<tmax:
+					if not self.compute:
+						raise Exception('Computation needed')
 					temptmin = max(dbmax,tmin)
 					tempgraph2 = super(Experiment,self).graph(method=method, tmin=temptmin, tmax=tmax)
 					tempgraph.complete_with(tempgraph2)
@@ -366,8 +380,12 @@ class Experiment(ngsimu.Experiment):
 					tempgraph._Y[0].pop(0)
 					tempgraph.stdvec[0].pop(0)
 			else:
+				if not self.compute:
+					raise Exception('Computation needed')
 				tempgraph = super(Experiment,self).graph(method=method, tmin=tmin, tmax=tmax)
 		else:
+			if not self.compute:
+				raise Exception('Computation needed')
 			tempgraph = super(Experiment, self).graph(method=method,tmin=tmin, tmax=tmax)
 		if autocommit:
 			self.commit_data_to_db(tempgraph,method)

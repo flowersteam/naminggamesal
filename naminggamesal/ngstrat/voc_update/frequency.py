@@ -9,4 +9,4 @@ class Frequency(VocUpdate):
 		voc.add(ms,w,y) # f <- f+1
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ):
-		pass
+		voc.del_cache()

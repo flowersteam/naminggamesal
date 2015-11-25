@@ -82,6 +82,10 @@ class BaseVocabulary(object):
 	def get_W(self):
 		return self._W
 
+	@del_cache
+	def del_cache(self):
+		pass
+
 
 ###### Classes supplémentaires
 

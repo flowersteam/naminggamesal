@@ -48,8 +48,8 @@ class Experiment(object):
 
 
 	def continue_exp_until(self,T):
-		temppop=self.get_pop("last")
-		temptmax=self._T[-1]
+		temppop = self.get_pop("last")
+		temptmax = self._T[-1]
 		start_time = time.clock() - self._exec_time[-1]
 		while (temptmax + self._time_step <= T) :
 			for tt in range(0,self._time_step):
@@ -65,10 +65,10 @@ class Experiment(object):
 #			temppop.play_game(T-self._T[-1],*progress_info_2)
 #			self.add_pop(temppop.deepcopy(),T)
 
-	def continue_exp(self,dT=None,**kwargs):
+	def continue_exp(self,dT=None):
 		if dT is None:
 			dT = self._time_step
-		self.continue_exp_until((self._T[-1]+dT),**kwargs)
+		self.continue_exp_until((self._T[-1]+dT))
 
 	def add_pop(self,pop,T,exec_time=0):
 		self._poplist.append(pop)

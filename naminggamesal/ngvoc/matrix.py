@@ -241,6 +241,7 @@ class VocSparseMatrix(VocMatrix):
 		self._W = W
 		self._content=sparse.lil_matrix((self._M,self._W))
 
+	@voc_cache
 	def get_content(self):
 		return self._content.todense()
 
