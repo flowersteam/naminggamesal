@@ -338,7 +338,7 @@ class Experiment(ngsimu.Experiment):
 	def continue_exp_until(self,T, autocommit=True):
 		if not self.compute and T >= self._T[-1] + self._time_step:
 			raise Exception('Computation needed')
-		super(Experiment,self).continue_exp_until(Ts)
+		super(Experiment,self).continue_exp_until(T)
 		if autocommit:
 			self.commit_to_db()
 
