@@ -239,7 +239,7 @@ class VocSparseMatrix(VocMatrix):
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._M = M
 		self._W = W
-		self._content=sparse.lil_matrix((self._M,self._W))
+		self._content=sparse.dok_matrix((self._M,self._W))
 
 	@voc_cache
 	def get_content(self):
