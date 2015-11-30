@@ -3,6 +3,7 @@
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy
 from scipy import sparse
 
 from . import BaseVocabulary
@@ -56,89 +57,54 @@ class VocMatrix(BaseVocabulary):
 				self._content[i,w] = 0
 
 	@voc_cache
+	def get_row(self, m):
+		return self._content[m,:]
+
+	@voc_cache
+	def get_column(self, w):
+		return self._content[:,w]
+
+	@voc_cache
 	def get_known_words(self,m=None,option=None):
 		if m is None:
-			mat = self.get_content()
+			mat = self._content
 		else:
-			mat = self.get_content()[m,:]
+			mat = self.get_row(m)
 		nz = mat.nonzero()
-		if not list(nz[0]):
+		if not nz[0].size:
 			ans = []
 		elif option is None:
 			ans = nz[1]
 		elif option == 'max':
 			coords = np.argwhere(mat == np.amax(mat))
-			try:
-				ans = [j for (i,j) in [tuple(k) for k in coords]]
-			except ValueError:
-				ans = [k[0] for k in coords]
+			ans = [k[0,1] for k in coords]
 		elif option == 'min':
 			coords = np.argwhere(mat == np.amin(mat))
-			try:
-				ans = [j for (i,j) in [tuple(k) for k in coords]]
-			except ValueError:
-				ans = [k[0] for k in coords]
+			ans = [k[0,1] for k in coords]
 		else:
 			raise ValueError('Unknown option')
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
-		#templ=[]
-		#if len(args)==0:
-		#	for w in range(0,self._W):
-		#		tempbool=1
-		#		for m in range(0,self._M):
-		#			tempbool=tempbool*self.exists(m,w)
-		#		if tempbool==1:
-		#			templ.append(w)
-		#else:
-		#	for w in range(0,self._W):
-		#		tempbool=1
-		#		tempbool=tempbool*self.exists(args[0],w)
-		#		if tempbool==1:
-		#			templ.append(w)
-		#return templ
 
 	@voc_cache
 	def get_known_meanings(self,w=None,option=None):
 		if w is None:
-			mat = self.get_content()
+			mat = self._content
 		else:
-			mat = self.get_content()[:,w]
+			mat = self.get_column(w)
 		nz = mat.nonzero()
-		if not list(nz[0]):
+		if not nz[0].size:
 			ans = []
 		elif option is None:
 			ans = nz[0]
 		elif option == 'max':
 			coords = np.argwhere(mat == np.amax(mat))
-			try:
-				ans = [i for (i,j) in [tuple(k) for k in coords]]
-			except ValueError:
-				ans = [k[0] for k in coords]
+			ans = [k[0,0] for k in coords]
 		elif option == 'min':
 			coords = np.argwhere(mat == np.amin(mat))
-			try:
-				ans = [i for (i,j) in [tuple(k) for k in coords]]
-			except ValueError:
-				ans = [k[0] for k in coords]
+			ans = [k[0,0] for k in coords]
 		else:
 			raise ValueError("Unknown option")
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
-
-		#templ=[]
-		#if len(args)==0:
-		#	for m in range(0,self._M):
-		#		tempbool=1
-		#		for w in range(0,self._W):
-		#			tempbool=tempbool*self.exists(m,w)
-		#		if tempbool==1:
-		#			templ.append(m)
-		#else:
-		#	for m in range(0,self._M):
-		#		tempbool=1
-		#		tempbool=tempbool*self.exists(m,args[0])
-		#		if tempbool==1:
-		#			templ.append(m)
-		#return templ
 
 	@voc_cache
 	def get_unknown_words(self, m=None, option=None):
@@ -147,23 +113,7 @@ class VocMatrix(BaseVocabulary):
 	@voc_cache
 	def get_unknown_meanings(self, w=None, option=None):
 		return sorted(list(set(range(self._M)) - set(self.get_known_meanings(w=w, option=option))))
-		#templ=[]
-		#if len(args)==0:
-		#	for m in range(0,self._M):
-		#		tempbool=1
-		#		for w in range(0,self._W):
-		#			tempbool=tempbool*(1-self.exists(m,w))
-		#		if tempbool==1:
-		#			templ.append(m)
-		#else:
-		#	for m in range(0,self._M):
-		#		tempbool=1
-		#		tempbool=tempbool*(1-self.exists(m,args[0]))
-		#		if tempbool==1:
-		#			templ.append(m)
-		#return templ
 
-	@voc_cache
 	def get_new_unknown_m(self, option='min'):
 		try:
 			m = random.choice(self.get_unknown_meanings())
@@ -172,7 +122,6 @@ class VocMatrix(BaseVocabulary):
 			m = self.get_random_known_m(option=option)
 		return m
 
-	@voc_cache
 	def get_new_unknown_w(self, option='min'):
 		try:
 			w = random.choice(self.get_unknown_words())
@@ -181,18 +130,18 @@ class VocMatrix(BaseVocabulary):
 			w = self.get_random_known_w(option=option)
 		return w
 
-	@voc_cache
 	def get_random_known_m(self,w=None, option='max'):
 		try:
+			print self.get_known_meanings(w=w, option=option)
 			m = random.choice(self.get_known_meanings(w=w, option=option))
 		except IndexError:
 			print "tried to get known m but none are known"
 			m = self.get_new_unknown_m()
 		return m
 
-	@voc_cache
 	def get_random_known_w(self,m=None, option='max'):
 		try:
+			print self.get_known_words(m=m, option=option)
 			w = random.choice(self.get_known_words(m=m, option=option))
 		except IndexError:
 			print "tried to get known w but none are known"
@@ -239,9 +188,67 @@ class VocSparseMatrix(VocMatrix):
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._M = M
 		self._W = W
-		self._content=sparse.dok_matrix((self._M,self._W))
+		self._content = sparse.csr_matrix((self._M,self._W))
 
 	@voc_cache
 	def get_content(self):
 		return self._content.todense()
 
+	@voc_cache
+	def get_row(self, m):
+		return self._content.getrow(m)
+
+	@voc_cache
+	def get_column(self, w):
+		return self._content.getcol(w)
+
+#	def __getstate__(self):
+#		out_dict = self.__dict__.copy()
+#		out_dict['_content'] = self._content.tocoo()
+#		return out_dict
+#
+#	def __setstate__(self, in_dict):
+#		self.__dict__.update(in_dict)
+#		self._content = self._content.todok()
+
+	@voc_cache
+	def get_known_words(self,m=None,option=None):
+		if m is None:
+			mat = self._content
+		else:
+			mat = self.get_row(m)
+		nz = mat.nonzero()
+		if not list(nz[0]):
+			ans = []
+		elif option is None:
+			ans = nz[0]
+		elif option == 'max':
+			coords = [(nz[0][i],nz[1][i]) for i in np.argwhere(mat.data == mat.data.max())]
+			ans = [j for (i,j) in [tuple(k) for k in coords]]
+		elif option == 'min':
+			coords = [(nz[0][i],nz[1][i]) for i in np.argwhere(mat.data == mat.data.min())]
+			ans = [j for (i,j) in [tuple(k) for k in coords]]
+		else:
+			raise ValueError('Unknown option')
+		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
+
+	@voc_cache
+	def get_known_meanings(self,w=None,option=None):
+		if w is None:
+			mat = self._content
+		else:
+			mat = self.get_column(w)#self._content[:,w]
+		nz = mat.nonzero()
+		if not list(nz[0]):
+			ans = []
+		elif option is None:
+			ans = nz[1]
+		elif option == 'max':
+			coords = [(nz[0][i],nz[1][i]) for i in np.argwhere(mat.data == mat.data.max())]
+			ans = [i for (i,j) in [tuple(k) for k in coords]]
+		elif option == 'min':
+			coords = [(nz[0][i],nz[1][i]) for i in np.argwhere(mat.data == mat.data.min())]
+			ans = [i for (i,j) in [tuple(k) for k in coords]]
+		else:
+			raise ValueError("Unknown option")
+		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))

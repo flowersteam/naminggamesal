@@ -36,11 +36,6 @@ class Experiment(object):
 	def get_self(self):
 		return self
 
-#	def save(self,filename):
-#		with open(filename,'wb') as fichier:
-#			testpickler=pickle.Pickler(fichier)
-#			testpickler.dump(self.get_self())
-
 	def get_pop(self,tempindex):
 		if tempindex=="last":
 			return deepcopy(self._poplist[-1])
@@ -59,11 +54,6 @@ class Experiment(object):
 			self.add_pop(deepcopy(temppop),self._T[-1]+self._time_step,exec_time=end_time-start_time)
 			temptmax+=self._time_step
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
-#		if self._T[-1]!=T:
-#			if len(progress_info)!=0:
-#				progress_info_2=(progress_info[0]+" T:"+str(T-1)+"/"+str(T),)
-#			temppop.play_game(T-self._T[-1],*progress_info_2)
-#			self.add_pop(temppop.deepcopy(),T)
 
 	def continue_exp(self,dT=None):
 		if dT is None:

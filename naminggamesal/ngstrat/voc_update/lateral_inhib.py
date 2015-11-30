@@ -9,7 +9,7 @@ class BasicLateralInhibition(VocUpdate):
 		self.d_inc = d_inc
 
 	def update_hearer(self,ms,w,mh,voc,mem,bool_succ):
-		if voc.get_content()[ms, w] == 0:
+		if voc._content[ms, w] == 0:
 			voc.add(ms,w,self.s_init)
 		elif not bool_succ:
 			self.decrease(mh, w, voc)
@@ -21,7 +21,7 @@ class BasicLateralInhibition(VocUpdate):
 				self.inhibit(ms, w2, voc)
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ):
-		if voc.get_content()[ms, w] == 0:
+		if voc._content[ms, w] == 0:
 			voc.add(ms, w, self.s_init)
 		elif not bool_succ:
 			self.decrease(ms, w, voc)
@@ -33,22 +33,22 @@ class BasicLateralInhibition(VocUpdate):
 				self.inhibit(ms, w2, voc)
 
 	def inhibit(self,m,w,voc):
-		voc.add(m,w,max(voc.get_content()[m,w] - self.d_inh, 0))
+		voc.add(m,w,max(voc._content[m,w] - self.d_inh, 0))
 
 	def increase(self,m,w,voc):
-		voc.add(m,w,min(voc.get_content()[m,w] + self.d_inc, 1))
+		voc.add(m,w,min(voc._content[m,w] + self.d_inc, 1))
 
 	def decrease(self,m,w,voc):
-		voc.add(m,w,max(voc.get_content()[m,w] - self.d_dec, 0))
+		voc.add(m,w,max(voc._content[m,w] - self.d_dec, 0))
 
 
 class InterpolatedLateralInhibition(BasicLateralInhibition):
 
 	def inhibit(self,m,w,voc):
-		voc.add(m,w,voc.get_content()[m,w] * (1 - self.d_inh))
+		voc.add(m,w,voc._content[m,w] * (1 - self.d_inh))
 
 	def decrease(self,m,w,voc):
-		voc.add(m,w,voc.get_content()[m,w] * (1 - self.d_dec))
+		voc.add(m,w,voc._content[m,w] * (1 - self.d_dec))
 
 	def increase(self, m ,w, voc):
-		voc.add(m,w,voc.get_content()[m,w] * (1 - self.d_inc) + self.d_inc)
+		voc.add(m,w,voc._content[m,w] * (1 - self.d_inc) + self.d_inc)
