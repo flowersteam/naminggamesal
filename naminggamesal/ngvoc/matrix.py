@@ -132,7 +132,6 @@ class VocMatrix(BaseVocabulary):
 
 	def get_random_known_m(self,w=None, option='max'):
 		try:
-			print self.get_known_meanings(w=w, option=option)
 			m = random.choice(self.get_known_meanings(w=w, option=option))
 		except IndexError:
 			print "tried to get known m but none are known"
@@ -141,7 +140,6 @@ class VocMatrix(BaseVocabulary):
 
 	def get_random_known_w(self,m=None, option='max'):
 		try:
-			print self.get_known_words(m=m, option=option)
 			w = random.choice(self.get_known_words(m=m, option=option))
 		except IndexError:
 			print "tried to get known w but none are known"
@@ -218,16 +216,16 @@ class VocSparseMatrix(VocMatrix):
 		else:
 			mat = self.get_row(m)
 		nz = mat.nonzero()
-		if not list(nz[0]):
+		if not nz[0].size:
 			ans = []
 		elif option is None:
-			ans = nz[0]
+			ans = nz[1]
 		elif option == 'max':
-			coords = [(nz[0][i],nz[1][i]) for i in np.argwhere(mat.data == mat.data.max())]
-			ans = [j for (i,j) in [tuple(k) for k in coords]]
+			coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max())]
+			ans = [j for (i,j) in coords]
 		elif option == 'min':
-			coords = [(nz[0][i],nz[1][i]) for i in np.argwhere(mat.data == mat.data.min())]
-			ans = [j for (i,j) in [tuple(k) for k in coords]]
+			coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min())]
+			ans = [j for (i,j) in coords]
 		else:
 			raise ValueError('Unknown option')
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
@@ -239,10 +237,10 @@ class VocSparseMatrix(VocMatrix):
 		else:
 			mat = self.get_column(w)#self._content[:,w]
 		nz = mat.nonzero()
-		if not list(nz[0]):
+		if not nz[0].size:
 			ans = []
 		elif option is None:
-			ans = nz[1]
+			ans = nz[0]
 		elif option == 'max':
 			coords = [(nz[0][i],nz[1][i]) for i in np.argwhere(mat.data == mat.data.max())]
 			ans = [i for (i,j) in [tuple(k) for k in coords]]

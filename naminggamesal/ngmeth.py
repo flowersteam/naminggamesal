@@ -298,7 +298,7 @@ def srtheo(pop,**kwargs):
 		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 		pop_cfg = {
 			'voc_cfg':{
-			'voc_type':'sparse_matrix',
+			'voc_type':'matrix',
 			    'M':pop._M,
 			    'W':pop._W
 			    },
@@ -313,8 +313,8 @@ def srtheo(pop,**kwargs):
 			'nbagent':2
 			}
 		tempop = Population(**pop_cfg)
-		tempop._agentlist[0]._vocabulary._content = copy.deepcopy(agent1._vocabulary._content)
-		tempop._agentlist[1]._vocabulary._content = copy.deepcopy(agent2._vocabulary._content)
+		tempop._agentlist[0]._vocabulary._content = copy.deepcopy(agent1._vocabulary.get_content())
+		tempop._agentlist[1]._vocabulary._content = copy.deepcopy(agent2._vocabulary.get_content())
 		tempop.play_game(1)
 		if tempop._lastgameinfo[0] == tempop._lastgameinfo[2]:
 			succ+=1

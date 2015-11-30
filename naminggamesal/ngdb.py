@@ -348,7 +348,6 @@ class Experiment(ngsimu.Experiment):
 		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit)
 
 	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True, tempgraph=None):
-		print tmin, tmax
 		if not tmax:
 			tmax = self._T[-1]
 		ind=-1
