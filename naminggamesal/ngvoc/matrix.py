@@ -46,6 +46,7 @@ class VocMatrix(BaseVocabulary):
 
 	@del_cache
 	def rm_syn(self,m,w):
+		# Do it via get_known_words/meanings()
 		for i in range(0,self._W):
 			if i!=w:
 				self._content[m,i] = 0
@@ -114,10 +115,19 @@ class VocMatrix(BaseVocabulary):
 	def get_unknown_meanings(self, w=None, option=None):
 		return sorted(list(set(range(self._M)) - set(self.get_known_meanings(w=w, option=option))))
 
+	def diagnostic(self):
+		print self._cache
+		print self
+
 	def get_new_unknown_m(self, option='min'):
 		try:
 			m = random.choice(self.get_unknown_meanings())
-		except IndexError:
+		except IndexError as e:
+			try:
+				assert len(self.get_known_meanings()) == self._M
+			except Exception:
+				self.diagnostic()
+				raise e
 			print "tried to get new m but all are known"
 			m = self.get_random_known_m(option=option)
 		return m
@@ -125,7 +135,12 @@ class VocMatrix(BaseVocabulary):
 	def get_new_unknown_w(self, option='min'):
 		try:
 			w = random.choice(self.get_unknown_words())
-		except IndexError:
+		except IndexError as e:
+			try:
+				assert len(self.get_known_words()) == self._W
+			except Exception:
+				self.diagnostic()
+				raise e
 			print "tried to get new w but all are known"
 			w = self.get_random_known_w(option=option)
 		return w
@@ -133,7 +148,12 @@ class VocMatrix(BaseVocabulary):
 	def get_random_known_m(self,w=None, option='max'):
 		try:
 			m = random.choice(self.get_known_meanings(w=w, option=option))
-		except IndexError:
+		except IndexError as e:
+			try:
+				assert len(self.get_known_meanings()) == 0
+			except Exception:
+				self.diagnostic()
+				raise e
 			print "tried to get known m but none are known"
 			m = self.get_new_unknown_m()
 		return m
@@ -141,7 +161,12 @@ class VocMatrix(BaseVocabulary):
 	def get_random_known_w(self,m=None, option='max'):
 		try:
 			w = random.choice(self.get_known_words(m=m, option=option))
-		except IndexError:
+		except IndexError as e:
+			try:
+				assert len(self.get_known_words()) == 0
+			except Exception:
+				self.diagnostic()
+				raise e
 			print "tried to get known w but none are known"
 			w = self.get_new_unknown_w()
 		return w
@@ -211,6 +236,7 @@ class VocSparseMatrix(VocMatrix):
 
 	@voc_cache
 	def get_known_words(self,m=None,option=None):
+		self._content.eliminate_zeros()
 		if m is None:
 			mat = self._content
 		else:
@@ -232,6 +258,7 @@ class VocSparseMatrix(VocMatrix):
 
 	@voc_cache
 	def get_known_meanings(self,w=None,option=None):
+		self._content.eliminate_zeros()
 		if w is None:
 			mat = self._content
 		else:
@@ -242,11 +269,11 @@ class VocSparseMatrix(VocMatrix):
 		elif option is None:
 			ans = nz[0]
 		elif option == 'max':
-			coords = [(nz[0][i],nz[1][i]) for i in np.argwhere(mat.data == mat.data.max())]
-			ans = [i for (i,j) in [tuple(k) for k in coords]]
+			coords = [(nz[0][i],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max())]
+			ans = [i for (i,j) in coords]
 		elif option == 'min':
-			coords = [(nz[0][i],nz[1][i]) for i in np.argwhere(mat.data == mat.data.min())]
-			ans = [i for (i,j) in [tuple(k) for k in coords]]
+			coords = [(nz[0][i],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min())]
+			ans = [i for (i,j) in coords]
 		else:
 			raise ValueError("Unknown option")
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
