@@ -20,15 +20,15 @@ voc_class={
 
 def voc_cache(tempfun):
 	def mod_fun(obj_self, *args, **kwargs):
-		ans = tempfun(obj_self, *args, **kwargs)
-		return ans
-		#args_list = sorted([str(val) for val in list(args) + kwargs.values()])
-		#args_str = ''.join(args_list)
-		#try:
-		#	return obj_self._cache[tempfun.__name__+args_str]
-		#except KeyError:
-		#	obj_self._cache[tempfun.__name__+args_str] = tempfun(obj_self, *args, **kwargs)
-		#	return obj_self._cache[tempfun.__name__+args_str]
+		#ans = tempfun(obj_self, *args, **kwargs)
+		#return ans
+		args_list = sorted([str(val) for val in list(args) + kwargs.values()])
+		args_str = ''.join(args_list)
+		try:
+			return obj_self._cache[tempfun.__name__+args_str]
+		except KeyError:
+			obj_self._cache[tempfun.__name__+args_str] = tempfun(obj_self, *args, **kwargs)
+			return obj_self._cache[tempfun.__name__+args_str]
 	return mod_fun
 
 def del_cache(tempfun):
