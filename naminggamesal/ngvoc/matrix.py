@@ -79,10 +79,12 @@ class VocMatrix(BaseVocabulary):
 			ans = nz[1]
 		elif option == 'max':
 			coords = np.argwhere(mat == np.amax(mat))
-			ans = [k[0,1] for k in coords]
+			coords = coords.reshape((-1,2))
+			ans = [k[1] for k in coords]
 		elif option == 'min':
 			coords = np.argwhere(mat == np.amin(mat))
-			ans = [k[0,1] for k in coords]
+			coords = coords.reshape((-1,2))
+			ans = [k[1] for k in coords]
 		else:
 			raise ValueError('Unknown option')
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
@@ -101,10 +103,12 @@ class VocMatrix(BaseVocabulary):
 			ans = nz[0]
 		elif option == 'max':
 			coords = np.argwhere(mat == np.amax(mat))
-			ans = [k[0,0] for k in coords]
+			coords = coords.reshape((-1,2))
+			ans = [k[0] for k in coords]
 		elif option == 'min':
 			coords = np.argwhere(mat == np.amin(mat))
-			ans = [k[0,0] for k in coords]
+			coords = coords.reshape((-1,2))
+			ans = [k[0] for k in coords]
 		else:
 			raise ValueError("Unknown option")
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
@@ -121,24 +125,24 @@ class VocMatrix(BaseVocabulary):
 		print self._cache
 		print self
 
-	def get_new_unknown_m(self, option='min'):
+	def get_new_unknown_m(self):
 		if not len(self.get_known_meanings()) == self._M:
 			m = random.choice(self.get_unknown_meanings())
 		else:
 			print "tried to get new m but all are known"
-			m = self.get_random_known_m(option=option)
+			m = self.get_random_known_m(option='min')
 		return m
 
-	def get_new_unknown_w(self, option='min'):
+	def get_new_unknown_w(self):
 		if not len(self.get_known_words()) == self._W:
 			w = random.choice(self.get_unknown_words())
 		else:
 			print "tried to get new w but all are known"
-			w = self.get_random_known_w(option=option)
+			w = self.get_random_known_w(option='min')
 		return w
 
 	def get_random_known_m(self,w=None, option='max'):
-		if not len(self.get_known_meanings()) == 0:
+		if not len(self.get_known_meanings(w=w, option=option)) == 0:
 			m = random.choice(self.get_known_meanings(w=w, option=option))
 		else:
 			print "tried to get known m but none are known"
@@ -146,7 +150,7 @@ class VocMatrix(BaseVocabulary):
 		return m
 
 	def get_random_known_w(self,m=None, option='max'):
-		if not len(self.get_known_words()) == 0:
+		if not len(self.get_known_words(m=m, option=option)) == 0:
 			w = random.choice(self.get_known_words(m=m, option=option))
 		else:
 			print "tried to get known w but none are known"
