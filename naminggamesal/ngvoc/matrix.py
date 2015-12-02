@@ -120,53 +120,33 @@ class VocMatrix(BaseVocabulary):
 		print self
 
 	def get_new_unknown_m(self, option='min'):
-		try:
+		if not len(self.get_known_meanings()) == self._M:
 			m = random.choice(self.get_unknown_meanings())
-		except IndexError as e:
-			try:
-				assert len(self.get_known_meanings()) == self._M
-			except Exception:
-				self.diagnostic()
-				raise e
+		else:
 			print "tried to get new m but all are known"
 			m = self.get_random_known_m(option=option)
 		return m
 
 	def get_new_unknown_w(self, option='min'):
-		try:
+		if not len(self.get_known_words()) == self._W:
 			w = random.choice(self.get_unknown_words())
-		except IndexError as e:
-			try:
-				assert len(self.get_known_words()) == self._W
-			except Exception:
-				self.diagnostic()
-				raise e
+		else:
 			print "tried to get new w but all are known"
 			w = self.get_random_known_w(option=option)
 		return w
 
 	def get_random_known_m(self,w=None, option='max'):
-		try:
+		if not len(self.get_known_meanings()) == 0:
 			m = random.choice(self.get_known_meanings(w=w, option=option))
-		except IndexError as e:
-			try:
-				assert len(self.get_known_meanings()) == 0
-			except Exception:
-				self.diagnostic()
-				raise e
+		else:
 			print "tried to get known m but none are known"
 			m = self.get_new_unknown_m()
 		return m
 
 	def get_random_known_w(self,m=None, option='max'):
-		try:
+		if not len(self.get_known_words()) == 0:
 			w = random.choice(self.get_known_words(m=m, option=option))
-		except IndexError as e:
-			try:
-				assert len(self.get_known_words()) == 0
-			except Exception:
-				self.diagnostic()
-				raise e
+		else:
 			print "tried to get known w but none are known"
 			w = self.get_new_unknown_w()
 		return w
@@ -204,8 +184,22 @@ class VocMatrix(BaseVocabulary):
 
 
 
-class VocSparseMatrix(VocMatrix):
-	voctype="sparse_matrix"
+class VocLiLMatrix(VocMatrix):
+	voctype="lil_matrix"
+
+	def __init__(self,M,W,**voc_cfg2):
+		super(VocMatrix,self).__init__(**voc_cfg2)
+		self._M = M
+		self._W = W
+		self._content = sparse.lil_matrix((self._M,self._W))
+
+	@voc_cache
+	def get_content(self):
+		return self._content.todense()
+
+
+class VocCSRMatrix(VocMatrix):
+	voctype="csr_matrix"
 
 	def __init__(self,M,W,**voc_cfg2):
 		super(VocMatrix,self).__init__(**voc_cfg2)
@@ -277,3 +271,13 @@ class VocSparseMatrix(VocMatrix):
 		else:
 			raise ValueError("Unknown option")
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
+
+
+class VocCSCMatrix(VocCSRMatrix):
+	voctype="csc_matrix"
+
+	def __init__(self,M,W,**voc_cfg2):
+		super(VocMatrix,self).__init__(**voc_cfg2)
+		self._M = M
+		self._W = W
+		self._content = sparse.csc_matrix((self._M,self._W))

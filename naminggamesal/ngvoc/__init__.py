@@ -13,7 +13,9 @@ sns.set(rc={'image.cmap': 'Purples_r'})
 
 voc_class={
 	"matrix":"matrix.VocMatrix",
-	"sparse_matrix":"matrix.VocSparseMatrix"
+	"lil_matrix":"matrix.VocLiLMatrix",
+	"csr_matrix":"matrix.VocCSRMatrix",
+	"csc_matrix":"matrix.VocCSCMatrix",
 }
 
 
