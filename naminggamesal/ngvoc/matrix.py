@@ -71,7 +71,7 @@ class VocMatrix(BaseVocabulary):
 			mat = self._content
 		else:
 			mat = self.get_row(m)
-			mat = mat.reshape(1, self._W)
+			mat = mat.reshape((1, self._W))
 		nz = mat.nonzero()
 		if not nz[0].size:
 			ans = []
@@ -93,7 +93,7 @@ class VocMatrix(BaseVocabulary):
 			mat = self._content
 		else:
 			mat = self.get_column(w)
-			mat = mat.reshape(self._M, 1)
+			mat = mat.reshape((self._M, 1))
 		nz = mat.nonzero()
 		if not nz[0].size:
 			ans = []
