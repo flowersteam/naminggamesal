@@ -229,7 +229,6 @@ class VocLiLMatrix(VocSparseMatrix):
 		self._content = sparse.lil_matrix((self._M,self._W))
 
 	def get_coords(self, mat, option=None):
-		self._content.eliminate_zeros()
 		if option is None:
 			coords =[]
 			for i in range(len(mat.rows)):
@@ -257,8 +256,8 @@ class VocCSRMatrix(VocSparseMatrix):
 
 	def get_coords(self, mat, option=None):
 		self._content.eliminate_zeros()
+		nz = mat.nonzero()
 		if option is None:
-			nz = mat.nonzero()
 			coords = [(nz[0][i],nz[1][i]) for i in range(len(nz[0]))] #tolist??
 		elif option == 'max':
 			coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max())]
@@ -333,7 +332,6 @@ class VocDOKMatrix(VocSparseMatrix):
 		self._content = sparse.dok_matrix((self._M,self._W))
 
 	def get_coords(self, mat, option=None):
-		self._content.eliminate_zeros()
 		if option is None:
 			coords = mat.keys()
 		elif option == 'min':
