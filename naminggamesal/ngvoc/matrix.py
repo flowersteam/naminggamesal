@@ -228,6 +228,10 @@ class VocLiLMatrix(VocSparseMatrix):
 		self._W = W
 		self._content = sparse.lil_matrix((self._M,self._W))
 
+	@voc_cache
+	def get_column(self, w):
+		return self._content.getcol(w).tolil()
+
 	def get_coords(self, mat, option=None):
 		if option is None:
 			coords =[]
