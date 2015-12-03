@@ -16,6 +16,7 @@ voc_class={
 	"lil_matrix":"matrix.VocLiLMatrix",
 	"csr_matrix":"matrix.VocCSRMatrix",
 	"csc_matrix":"matrix.VocCSCMatrix",
+	"dok_matrix":"matrix.VocDOKMatrix",
 }
 
 
