@@ -61,11 +61,11 @@ class VocMatrix(BaseVocabulary):
 
 	@voc_cache
 	def get_row(self, m):
-		return self._content[m,:]
+		return self._content[m,:].reshape((1, self._W))
 
 	@voc_cache
 	def get_column(self, w):
-		return self._content[:,w]
+		return self._content[:,w].reshape((self._M, 1))
 
 	@voc_cache
 	def get_known_words(self,m=None,option=None):
@@ -73,7 +73,6 @@ class VocMatrix(BaseVocabulary):
 			mat = self._content
 		else:
 			mat = self.get_row(m)
-			mat = mat.reshape((1, self._W))
 		coords = self.get_coords(mat, option=option)
 		#nz = mat.nonzero()
 		#if not nz[0].size:
@@ -98,7 +97,6 @@ class VocMatrix(BaseVocabulary):
 			mat = self._content
 		else:
 			mat = self.get_column(w)
-			mat = mat.reshape((self._M, 1))
 		coords = self.get_coords(mat, option=option)
 		#nz = mat.nonzero()
 		#if not nz[0].size:
