@@ -47,13 +47,15 @@ class VocMatrix(BaseVocabulary):
 	@del_cache
 	def rm_syn(self,m,w):
 		# Do it via get_known_words/meanings()
-		for i in range(0,self._W):
+		#for i in range(0,self._W):
+		for i in self.get_known_words(m=m):
 			if i!=w:
 				self._content[m,i] = 0
 
 	@del_cache
 	def rm_hom(self,m,w):
-		for i in range(0,self._M):
+		#for i in range(0,self._M):
+		for i in self.get_known_meanings(w=w):
 			if i!=m:
 				self._content[i,w] = 0
 
@@ -72,21 +74,22 @@ class VocMatrix(BaseVocabulary):
 		else:
 			mat = self.get_row(m)
 			mat = mat.reshape((1, self._W))
-		nz = mat.nonzero()
-		if not nz[0].size:
-			ans = []
-		elif option is None:
-			ans = nz[1]
-		elif option == 'max':
-			coords = np.argwhere(mat == np.amax(mat))
-			coords = coords.reshape((-1,2))
-			ans = [k[1] for k in coords]
-		elif option == 'min':
-			coords = np.argwhere(mat == np.amin(mat))
-			coords = coords.reshape((-1,2))
-			ans = [k[1] for k in coords]
-		else:
-			raise ValueError('Unknown option')
+		coords = self.get_coords(mat, option=option)
+		#nz = mat.nonzero()
+		#if not nz[0].size:
+		#	ans = []
+		#elif option is None:
+		#	ans = nz[1]
+		#elif option == 'max':
+		#	#coords = np.argwhere(mat == np.amax(mat))
+		#	#coords = coords.reshape((-1,2))
+		#	ans = [k[1] for k in coords]
+		#elif option == 'min':
+		#	coords = np.argwhere(mat == np.amin(mat))
+		#coords = coords.reshape((-1,2))
+		ans = [k[1] for k in coords]
+		#else:
+		#	raise ValueError('Unknown option')
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
 
 	@voc_cache
@@ -96,22 +99,35 @@ class VocMatrix(BaseVocabulary):
 		else:
 			mat = self.get_column(w)
 			mat = mat.reshape((self._M, 1))
-		nz = mat.nonzero()
-		if not nz[0].size:
-			ans = []
-		elif option is None:
-			ans = nz[0]
+		coords = self.get_coords(mat, option=option)
+		#nz = mat.nonzero()
+		#if not nz[0].size:
+		#	ans = []
+		#elif option is None:
+		#	ans = nz[0]
+		#elif option == 'max':
+		#	coords = np.argwhere(mat == np.amax(mat))
+		#	coords = coords.reshape((-1,2))
+		#	ans = [k[0] for k in coords]
+		#elif option == 'min':
+		#	coords = np.argwhere(mat == np.amin(mat))
+		#coords = coords.reshape((-1,2))
+		ans = [k[0] for k in coords]
+		#else:
+		#	raise ValueError("Unknown option")
+		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
+
+	def get_coords(self,mat,option=None):
+		if option is None:
+			nz = mat.nonzero()
+			coords = [(nz[0][i],nz[1][i]) for i in range(len(nz[0]))]
 		elif option == 'max':
 			coords = np.argwhere(mat == np.amax(mat))
 			coords = coords.reshape((-1,2))
-			ans = [k[0] for k in coords]
 		elif option == 'min':
 			coords = np.argwhere(mat == np.amin(mat))
 			coords = coords.reshape((-1,2))
-			ans = [k[0] for k in coords]
-		else:
-			raise ValueError("Unknown option")
-		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
+		return coords
 
 	@voc_cache
 	def get_unknown_words(self, m=None, option=None):
@@ -142,7 +158,7 @@ class VocMatrix(BaseVocabulary):
 		return w
 
 	def get_random_known_m(self,w=None, option='max'):
-		if not len(self.get_known_meanings(w=w, option=option)) == 0:
+		if not len(self.get_known_meanings(w=w)) == 0:
 			m = random.choice(self.get_known_meanings(w=w, option=option))
 		else:
 			print "tried to get known m but none are known"
@@ -150,7 +166,7 @@ class VocMatrix(BaseVocabulary):
 		return m
 
 	def get_random_known_w(self,m=None, option='max'):
-		if not len(self.get_known_words(m=m, option=option)) == 0:
+		if not len(self.get_known_words(m=m)) == 0:
 			w = random.choice(self.get_known_words(m=m, option=option))
 		else:
 			print "tried to get known w but none are known"
@@ -190,28 +206,8 @@ class VocMatrix(BaseVocabulary):
 
 
 
-class VocLiLMatrix(VocMatrix):
-	voctype="lil_matrix"
-
-	def __init__(self,M,W,**voc_cfg2):
-		super(VocMatrix,self).__init__(**voc_cfg2)
-		self._M = M
-		self._W = W
-		self._content = sparse.lil_matrix((self._M,self._W))
-
-	@voc_cache
-	def get_content(self):
-		return self._content.todense()
-
-
-class VocCSRMatrix(VocMatrix):
-	voctype="csr_matrix"
-
-	def __init__(self,M,W,**voc_cfg2):
-		super(VocMatrix,self).__init__(**voc_cfg2)
-		self._M = M
-		self._W = W
-		self._content = sparse.csr_matrix((self._M,self._W))
+class VocSparseMatrix(VocMatrix):
+	voctype="sparse_matrix"
 
 	@voc_cache
 	def get_content(self):
@@ -225,58 +221,96 @@ class VocCSRMatrix(VocMatrix):
 	def get_column(self, w):
 		return self._content.getcol(w)
 
-#	def __getstate__(self):
-#		out_dict = self.__dict__.copy()
-#		out_dict['_content'] = self._content.tocoo()
-#		return out_dict
-#
-#	def __setstate__(self, in_dict):
-#		self.__dict__.update(in_dict)
-#		self._content = self._content.todok()
+class VocLiLMatrix(VocSparseMatrix):
+	voctype="lil_matrix"
 
-	@voc_cache
-	def get_known_words(self,m=None,option=None):
+	def __init__(self,M,W,**voc_cfg2):
+		super(VocMatrix,self).__init__(**voc_cfg2)
+		self._M = M
+		self._W = W
+		self._content = sparse.lil_matrix((self._M,self._W))
+
+	def get_coords(self, mat, option=None):
 		self._content.eliminate_zeros()
-		if m is None:
-			mat = self._content
-		else:
-			mat = self.get_row(m)
-		nz = mat.nonzero()
-		if not nz[0].size:
-			ans = []
-		elif option is None:
-			ans = nz[1]
+		if option is None:
+			coords =[]
+			for i in range(len(mat.rows)):
+				coords += [(i,mat.rows[i][j]) for j in range(len(mat.rows[i]))]
+		elif option == 'max':
+			mat_max = mat.data.max()
+			coords =[]
+			for i in range(len(mat.rows)):
+				coords += [(i,mat.rows[i][j]) for j in range(len(mat.rows[i])) if mat.data[i][j] == mat_max]
+		elif option == 'min':
+			mat_min = mat.data.min()
+			coords =[]
+			for i in range(len(mat.rows)):
+				coords += [(i,mat.rows[i][j]) for j in range(len(mat.rows[i])) if mat.data[i][j] == mat_min]
+		return coords
+
+class VocCSRMatrix(VocSparseMatrix):
+	voctype="csr_matrix"
+
+	def __init__(self,M,W,**voc_cfg2):
+		super(VocMatrix,self).__init__(**voc_cfg2)
+		self._M = M
+		self._W = W
+		self._content = sparse.csr_matrix((self._M,self._W))
+
+	def get_coords(self, mat, option=None):
+		self._content.eliminate_zeros()
+		if option is None:
+			nz = mat.nonzero()
+			coords = [(nz[0][i],nz[1][i]) for i in range(len(nz[0]))] #tolist??
 		elif option == 'max':
 			coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max())]
-			ans = [j for (i,j) in coords]
 		elif option == 'min':
 			coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min())]
-			ans = [j for (i,j) in coords]
-		else:
-			raise ValueError('Unknown option')
-		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
+		return coords
 
-	@voc_cache
-	def get_known_meanings(self,w=None,option=None):
-		self._content.eliminate_zeros()
-		if w is None:
-			mat = self._content
-		else:
-			mat = self.get_column(w)#self._content[:,w]
-		nz = mat.nonzero()
-		if not nz[0].size:
-			ans = []
-		elif option is None:
-			ans = nz[0]
-		elif option == 'max':
-			coords = [(nz[0][i],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max())]
-			ans = [i for (i,j) in coords]
-		elif option == 'min':
-			coords = [(nz[0][i],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min())]
-			ans = [i for (i,j) in coords]
-		else:
-			raise ValueError("Unknown option")
-		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
+#	@voc_cache
+#	def get_known_words(self,m=None,option=None):
+#		self._content.eliminate_zeros()
+#		if m is None:
+#			mat = self._content
+#		else:
+#			mat = self.get_row(m)
+#		nz = mat.nonzero()
+#		if not nz[0].size:
+#			ans = []
+#		elif option is None:
+#			ans = nz[1]
+#		elif option == 'max':
+#			coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max())]
+#			ans = [j for (i,j) in coords]
+#		elif option == 'min':
+#			coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min())]
+#			ans = [j for (i,j) in coords]
+#		else:
+#			raise ValueError('Unknown option')
+#		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
+#
+#	@voc_cache
+#	def get_known_meanings(self,w=None,option=None):
+#		self._content.eliminate_zeros()
+#		if w is None:
+#			mat = self._content
+#		else:
+#			mat = self.get_column(w)#self._content[:,w]
+#		nz = mat.nonzero()
+#		if not nz[0].size:
+#			ans = []
+#		elif option is None:
+#			ans = nz[0]
+#		elif option == 'max':
+#			coords = [(nz[0][i],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max())]
+#			ans = [i for (i,j) in coords]
+#		elif option == 'min':
+#			coords = [(nz[0][i],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min())]
+#			ans = [i for (i,j) in coords]
+#		else:
+#			raise ValueError("Unknown option")
+#		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
 
 
 class VocCSCMatrix(VocCSRMatrix):
@@ -287,3 +321,55 @@ class VocCSCMatrix(VocCSRMatrix):
 		self._M = M
 		self._W = W
 		self._content = sparse.csc_matrix((self._M,self._W))
+
+
+
+
+class VocDOKMatrix(VocSparseMatrix):
+	voctype="dok_matrix"
+
+	def __init__(self,M,W,**voc_cfg2):
+		super(VocMatrix,self).__init__(**voc_cfg2)
+		self._M = M
+		self._W = W
+		self._content = sparse.dok_matrix((self._M,self._W))
+
+	def get_coords(self, mat, option=None):
+		self._content.eliminate_zeros()
+		if option is None:
+			coords = mat.keys()
+		elif option == 'min':
+			mat_min = min(mat.values())
+			coords = [k for k,v in mat.iteritems() if v == mat_min]
+		elif option == 'max':
+			mat_max = max(mat.values())
+			coords = [k for k,v in mat.iteritems() if v == mat_max]
+		return coords
+
+	#@voc_cache
+	#def get_row(self, m):
+	#	ans = {(m,j): value for ((i,j), value) in self._content.items() if i == m}
+	#	ans.__dict__ = self._content.__dict__.copy()
+	#	return ans
+
+	#@voc_cache
+	#def get_column(self, w):
+	#	ans = {(i,w): value for ((i,j), value) in self._content.items() if j == w}
+	#	ans.__dict__ = self._content.__dict__.copy()
+	#	return ans
+
+	def __getstate__(self):
+		out_dict = self.__dict__.copy()
+		a = {}
+		a.update(out_dict['_content'])
+		out_dict['_content_dict'] = out_dict['_content'].__dict__
+		out_dict['_content'] = a
+		return out_dict
+
+	def __setstate__(self, in_dict):
+		mat = sparse.dok_matrix((in_dict['_M'],in_dict['_W']))
+		mat.__dict__ = in_dict['_content_dict']
+		mat.update(in_dict['_content'])
+		del in_dict['_content_dict']
+		in_dict['_content'] = mat
+		self.__dict__ = in_dict
