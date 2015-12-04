@@ -238,12 +238,15 @@ class VocLiLMatrix(VocSparseMatrix):
 			for i in range(len(mat.rows)):
 				coords += [(i,mat.rows[i][j]) for j in range(len(mat.rows[i]))]
 		elif option == 'max':
-			mat_max = mat.data.max()
+			mat_max = np.amax(mat.data.max())
+			print mat_max
 			coords =[]
 			for i in range(len(mat.rows)):
+				print mat.data
 				coords += [(i,mat.rows[i][j]) for j in range(len(mat.rows[i])) if mat.data[i][j] == mat_max]
+				print coords
 		elif option == 'min':
-			mat_min = mat.data.min()
+			mat_min = np.amin(mat.data.min())
 			coords =[]
 			for i in range(len(mat.rows)):
 				coords += [(i,mat.rows[i][j]) for j in range(len(mat.rows[i])) if mat.data[i][j] == mat_min]
