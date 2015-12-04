@@ -61,7 +61,7 @@ class NamingGamesDB(object):
 		if remove:
 			os.remove(other_db.dbpath)
 
-	def export(self, other_db, id_list=None, methods=[]):
+	def export(self, other_db, id_list=None, methods=[],graph_only=False):
 		if id_list is None:
 			id_list = self.get_id_list()
 		with sql.connect(self.dbpath):
@@ -69,13 +69,14 @@ class NamingGamesDB(object):
 			with sql.connect(other_db.dbpath, isolation_level=None):
 				other_cursor = sql.connect(other_db.dbpath, isolation_level=None).cursor()
 				for uuid in id_list:
-					cursor.execute("SELECT * FROM main_table WHERE Id=\'"+str(uuid)+"\'")
-					xp_data = cursor.fetchone()
-					if not uuid in other_db.get_id_list():
-						other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
-					elif self.get_param(uuid=uuid, param='Tmax') > other_db.get_param(uuid=uuid, param='Tmax'):
-						other_cursor.execute("DELETE FROM main_table WHERE Id=\'"+str(uuid)+"\'")
-						other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
+					if not graph_only:
+						cursor.execute("SELECT * FROM main_table WHERE Id=\'"+str(uuid)+"\'")
+						xp_data = cursor.fetchone()
+						if not uuid in other_db.get_id_list():
+							other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
+						elif self.get_param(uuid=uuid, param='Tmax') > other_db.get_param(uuid=uuid, param='Tmax'):
+							other_cursor.execute("DELETE FROM main_table WHERE Id=\'"+str(uuid)+"\'")
+							other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
 					for method in methods:
 						if self.data_exists(uuid=uuid, method=method):
 							cursor.execute("SELECT * FROM computed_data_table WHERE Id=\'"+str(uuid)+"\' AND Function= \'"+method+"\'")
