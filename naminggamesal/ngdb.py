@@ -248,7 +248,7 @@ class NamingGamesDB(object):
 			cursor=conn.cursor()
 			binary=sql.Binary(bz2.compress(cPickle.dumps(exp,cPickle.HIGHEST_PROTOCOL)))
 			try:
-				cursor.execute("SELECT Modif_Time FROM main_table WHERE Id=\'"+exp.uuid+"\'")
+				cursor.execute("SELECT Tmax FROM main_table WHERE Id=\'"+exp.uuid+"\'")
 			except:
 				print exp.uuid
 				print self.dbpath
@@ -270,7 +270,8 @@ class NamingGamesDB(object):
 					exp._T[-1], \
 					exp._time_step, \
 					binary,))
-			elif tempmodiftup[0]<exp.modif_time:
+			#elif tempmodiftup[0]<exp.modif_time:
+			elif tempmodiftup[0]<exp._T[-1]:
 				cursor.execute("UPDATE main_table SET "\
 					+"Modif_Time=\'"+str(exp.modif_time)+"\', "\
 					+"Exec_Time=\'"+str(exp._exec_time[-1])+"\', "\
@@ -355,7 +356,7 @@ class Experiment(ngsimu.Experiment):
 		if tmax >= self._T[-1] + self._time_step:
 			if not self.compute:
 				raise Exception('Computation needed')
-			self.continue_exp_until(tmax)
+			self.continue_exp_until(tmax, autocommit=autocommit)
 			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax, autocommit=autocommit, tempgraph=tempgraph)
 		while self._T[ind]>tmax:
 			ind-=1
