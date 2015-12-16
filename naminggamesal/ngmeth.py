@@ -298,8 +298,8 @@ def srtheo(pop,**kwargs):
 		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
 		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 		ms = random.randint(0,agent1._vocabulary._M-1)
-		w = agent1._vocabulary.get_random_known_word(m=ms, option='max')
-		mh = agent2._vocabulary.get_random_known_meaning(w=w, option='max')
+		w = agent1._vocabulary.get_random_known_w(m=ms, option='max')
+		mh = agent2._vocabulary.get_random_known_m(w=w, option='max')
 		agent1._vocabulary.del_cache()
 		agent2._vocabulary.del_cache()
 		if ms == mh:
