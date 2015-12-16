@@ -91,6 +91,9 @@ class BaseVocabulary(object):
 	def del_cache(self):
 		pass
 
+	def finish_update(self):
+		self.del_cache()
+
 
 ###### Classes supplémentaires
 

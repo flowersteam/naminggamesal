@@ -29,7 +29,7 @@ class VocUpdate(object):
 		pass
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ):
-		voc.del_cache()
+		voc.finish_update()
 
 	def update_hearer(self,ms,w,mh,voc,mem,bool_succ):
-		voc.del_cache()
+		voc.finish_update()

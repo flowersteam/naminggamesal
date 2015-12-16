@@ -296,30 +296,39 @@ def srtheo(pop,**kwargs):
 		agent2_id = pop.pick_hearer(agent1_id)
 		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
 		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
-		pop_cfg = {
-			'voc_cfg':{
-			'voc_type':'matrix',
-			    'M':pop._M,
-			    'W':pop._W
-			    },
-			'strat_cfg':{
-			    'strat_type':'naive',
-			    'voc_update':'imitation',
-			    'success':'communicative'
-			    },
-			'interact_cfg':{
-			    'interact_type':'speakerschoice'
-			    },
-			'nbagent':2
-			}
-		tempop = Population(**pop_cfg)
-		tempop._agentlist[0]._vocabulary._content = copy.deepcopy(agent1._vocabulary.get_content())
-		tempop._agentlist[1]._vocabulary._content = copy.deepcopy(agent2._vocabulary.get_content())
-		tempop.play_game(1)
-		if tempop._lastgameinfo[0] == tempop._lastgameinfo[2]:
-			succ+=1
+		ms = random.randint(0,agent1._vocabulary._M-1)
+		w = agent1._vocabulary.get_random_known_word(m=ms, option='max')
+		mh = agent2._vocabulary.get_random_known_meaning(w=w, option='max')
+		agent1._vocabulary.del_cache()
+		agent2._vocabulary.del_cache()
+		if ms == mh:
+			succ += 1
 		else:
-			fail+=1
+			fail += 1
+		#pop_cfg = {
+		#	'voc_cfg':{
+		#	'voc_type':'matrix',
+		#	    'M':pop._M,
+		#	    'W':pop._W
+		#	    },
+		#	'strat_cfg':{
+		#	    'strat_type':'naive',
+		#	    'voc_update':'imitation',
+		#	    'success':'communicative'
+		#	    },
+		#	'interact_cfg':{
+		#	    'interact_type':'speakerschoice'
+		#	    },
+		#	'nbagent':2
+		#	}
+		#tempop = Population(**pop_cfg)
+		#tempop._agentlist[0]._vocabulary._content = copy.deepcopy(agent1._vocabulary.get_content())
+		#tempop._agentlist[1]._vocabulary._content = copy.deepcopy(agent2._vocabulary.get_content())
+		#tempop.play_game(1)
+		#if tempop._lastgameinfo[0] == tempop._lastgameinfo[2]:
+		#	succ+=1
+		#else:
+		#	fail+=1
 	return succ/float(succ+fail)
 
 def srtheo_max(pop):

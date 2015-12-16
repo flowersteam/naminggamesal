@@ -44,20 +44,15 @@ class VocMatrix(BaseVocabulary):
 	def rm(self,m,w):
 		self._content[m,w] = 0
 
-	@del_cache
 	def rm_syn(self,m,w):
-		# Do it via get_known_words/meanings()
-		#for i in range(0,self._W):
 		for i in self.get_known_words(m=m):
 			if i!=w:
-				self._content[m,i] = 0
+				self.rm(m,i)
 
-	@del_cache
 	def rm_hom(self,m,w):
-		#for i in range(0,self._M):
 		for i in self.get_known_meanings(w=w):
 			if i!=m:
-				self._content[i,w] = 0
+				self.rm(i,w)
 
 	@voc_cache
 	def get_row(self, m):
@@ -74,21 +69,7 @@ class VocMatrix(BaseVocabulary):
 		else:
 			mat = self.get_row(m)
 		coords = self.get_coords(mat, option=option)
-		#nz = mat.nonzero()
-		#if not nz[0].size:
-		#	ans = []
-		#elif option is None:
-		#	ans = nz[1]
-		#elif option == 'max':
-		#	#coords = np.argwhere(mat == np.amax(mat))
-		#	#coords = coords.reshape((-1,2))
-		#	ans = [k[1] for k in coords]
-		#elif option == 'min':
-		#	coords = np.argwhere(mat == np.amin(mat))
-		#coords = coords.reshape((-1,2))
 		ans = [k[1] for k in coords]
-		#else:
-		#	raise ValueError('Unknown option')
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
 
 	@voc_cache
@@ -98,21 +79,7 @@ class VocMatrix(BaseVocabulary):
 		else:
 			mat = self.get_column(w)
 		coords = self.get_coords(mat, option=option)
-		#nz = mat.nonzero()
-		#if not nz[0].size:
-		#	ans = []
-		#elif option is None:
-		#	ans = nz[0]
-		#elif option == 'max':
-		#	coords = np.argwhere(mat == np.amax(mat))
-		#	coords = coords.reshape((-1,2))
-		#	ans = [k[0] for k in coords]
-		#elif option == 'min':
-		#	coords = np.argwhere(mat == np.amin(mat))
-		#coords = coords.reshape((-1,2))
 		ans = [k[0] for k in coords]
-		#else:
-		#	raise ValueError("Unknown option")
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
 
 	def get_coords(self,mat,option=None):
@@ -269,50 +236,6 @@ class VocCSRMatrix(VocSparseMatrix):
 			coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min())]
 		return coords
 
-#	@voc_cache
-#	def get_known_words(self,m=None,option=None):
-#		self._content.eliminate_zeros()
-#		if m is None:
-#			mat = self._content
-#		else:
-#			mat = self.get_row(m)
-#		nz = mat.nonzero()
-#		if not nz[0].size:
-#			ans = []
-#		elif option is None:
-#			ans = nz[1]
-#		elif option == 'max':
-#			coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max())]
-#			ans = [j for (i,j) in coords]
-#		elif option == 'min':
-#			coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min())]
-#			ans = [j for (i,j) in coords]
-#		else:
-#			raise ValueError('Unknown option')
-#		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
-#
-#	@voc_cache
-#	def get_known_meanings(self,w=None,option=None):
-#		self._content.eliminate_zeros()
-#		if w is None:
-#			mat = self._content
-#		else:
-#			mat = self.get_column(w)#self._content[:,w]
-#		nz = mat.nonzero()
-#		if not nz[0].size:
-#			ans = []
-#		elif option is None:
-#			ans = nz[0]
-#		elif option == 'max':
-#			coords = [(nz[0][i],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max())]
-#			ans = [i for (i,j) in coords]
-#		elif option == 'min':
-#			coords = [(nz[0][i],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min())]
-#			ans = [i for (i,j) in coords]
-#		else:
-#			raise ValueError("Unknown option")
-#		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
-
 
 class VocCSCMatrix(VocCSRMatrix):
 	voctype="csc_matrix"
@@ -346,17 +269,6 @@ class VocDOKMatrix(VocSparseMatrix):
 			coords = [k for k,v in mat.iteritems() if v == mat_max]
 		return coords
 
-	#@voc_cache
-	#def get_row(self, m):
-	#	ans = {(m,j): value for ((i,j), value) in self._content.items() if i == m}
-	#	ans.__dict__ = self._content.__dict__.copy()
-	#	return ans
-
-	#@voc_cache
-	#def get_column(self, w):
-	#	ans = {(i,w): value for ((i,j), value) in self._content.items() if j == w}
-	#	ans.__dict__ = self._content.__dict__.copy()
-	#	return ans
 
 	def __getstate__(self):
 		out_dict = self.__dict__.copy()

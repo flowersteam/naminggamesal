@@ -7,6 +7,7 @@ class Frequency(VocUpdate):
 		y = min(1,y)
 		y = max(0,y)
 		voc.add(ms,w,y) # f <- f+1
+		voc.finish_update()
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ):
-		voc.del_cache()
+		voc.finish_update()

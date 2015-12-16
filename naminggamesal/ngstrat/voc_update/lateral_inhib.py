@@ -15,10 +15,11 @@ class BasicLateralInhibition(VocUpdate):
 			self.decrease(mh, w, voc)
 		else:
 			self.increase(ms, w, voc)
-			for m in [m1 for m1 in range(voc._M) if m1 != ms]:
+			for m in [m1 for m1 in voc.get_known_meanings(w=w,option=None) if m1 != ms]:
 				self.inhibit(ms, w, voc)
-			for w2 in [w3 for w3 in range(voc._W) if w3 != w]:
+			for w2 in [w3 for w3 in voc.get_known_words(m=ms,option=None) if w3 != w]:
 				self.inhibit(ms, w2, voc)
+		voc.finish_update()
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ):
 		if voc._content[ms, w] == 0:
@@ -27,10 +28,11 @@ class BasicLateralInhibition(VocUpdate):
 			self.decrease(ms, w, voc)
 		else:
 			self.increase(ms, w, voc)
-			for m in [m1 for m1 in range(voc._M) if m1 != mh]:
+			for m in [m1 for m1 in voc.get_known_meanings(w=w,option=None) if m1 != mh]:
 				self.inhibit(m, w, voc)
-			for w2 in [w3 for w3 in range(voc._W) if w3 != w]:
+			for w2 in [w3 for w3 in voc.get_known_words(m=ms,option=None) if w3 != w]:
 				self.inhibit(ms, w2, voc)
+		voc.finish_update()
 
 	def inhibit(self,m,w,voc):
 		voc.add(m,w,max(voc._content[m,w] - self.d_inh, 0))
