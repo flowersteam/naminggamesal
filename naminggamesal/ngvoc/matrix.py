@@ -101,6 +101,7 @@ class VocMatrix(BaseVocabulary):
 			coords = coords.reshape((-1,2))
 		elif option == 'minofmaxm':
 			best_scores = mat.max(axis=0)
+			val = min(best_scores)
 			coords = np.argwhere(mat == val)
 			coords = coords.reshape((-1,2))
 		return coords
