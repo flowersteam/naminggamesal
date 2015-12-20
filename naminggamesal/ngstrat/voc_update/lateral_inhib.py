@@ -54,3 +54,47 @@ class InterpolatedLateralInhibition(BasicLateralInhibition):
 
 	def increase(self, m ,w, voc):
 		voc.add(m,w,voc._content[m,w] * (1 - self.d_inc) + self.d_inc)
+
+class BasicLateralInhibitionHearerOnly(BasicLateralInhibition):
+	def update_speaker(self,ms,w,mh,voc,mem,bool_succ):
+		voc.finish_update()
+
+
+class BasicLateralInhibitionHearerOnlyFailure(BasicLateralInhibition):
+
+	def update_speaker(self,ms,w,mh,voc,mem,bool_succ):
+		if voc._content[ms, w] == 0:
+			voc.add(ms, w, self.s_init)
+		elif bool_succ:
+			self.increase(ms, w, voc)
+			for m in [m1 for m1 in voc.get_known_meanings(w=w,option=None) if m1 != mh]:
+				self.inhibit(m, w, voc)
+			for w2 in [w3 for w3 in voc.get_known_words(m=ms,option=None) if w3 != w]:
+				self.inhibit(ms, w2, voc)
+		voc.finish_update()
+
+
+class BLISEpirob(BasicLateralInhibition):
+
+	def update_hearer(self,ms,w,mh,voc,mem,bool_succ):
+		if not voc.get_known_meanings(w=w,option=None):
+			voc.add(ms,w,self.s_init)
+		elif not bool_succ:
+			self.decrease(mh, w, voc)
+			self.increase(ms, w, voc)
+		else:
+			self.increase(ms, w, voc)
+			for m in [m1 for m1 in voc.get_known_meanings(w=w,option=None) if m1 != ms]:
+				self.inhibit(ms, w, voc)
+			for w2 in [w3 for w3 in voc.get_known_words(m=ms,option=None) if w3 != w]:
+				self.inhibit(ms, w2, voc)
+		voc.finish_update()
+
+	def update_speaker(self,ms,w,mh,voc,mem,bool_succ):
+		if bool_succ:
+			self.increase(ms, w, voc)
+			for m in [m1 for m1 in voc.get_known_meanings(w=w,option=None) if m1 != mh]:
+				self.inhibit(m, w, voc)
+			for w2 in [w3 for w3 in voc.get_known_words(m=ms,option=None) if w3 != w]:
+				self.inhibit(ms, w2, voc)
+		voc.finish_update()

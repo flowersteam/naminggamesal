@@ -9,6 +9,9 @@ vu_class={
 	'minimal':'minimal.Minimal',
 
 	'BLIS':'lateral_inhib.BasicLateralInhibition',
+	'BLIS_epirob':'lateral_inhib.BLISEpirob',
+	'BLIS_heareronly':'lateral_inhib.BasicLateralInhibitionHearerOnly',
+	'BLIS_heareronlyfailure':'lateral_inhib.BasicLateralInhibitionHearerOnlyFailure',
 	'ILIS':'lateral_inhib.InterpolatedLateralInhibition',
 
 	'frequency':'frequency.Frequency'

@@ -342,6 +342,116 @@ FUNC=srtheo
 graphconfig={"ymin":srtheo_min,"ymax":srtheo_max}
 custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+###############""srtheo as used in epirob08 paper#############
+def srtheo2(pop,**kwargs):
+	C = np.zeros((pop._W,pop._M))
+	best_scores = np.zeros((pop._M,pop._size))
+	for ag in range(len(pop._agentlist)):
+		for m in range(pop._M):
+			best_scores[m,ag] = np.amax(pop._agentlist[ag]._vocabulary._content[m,:])
+	n_meanings_used = 0
+	for a in range(pop._size):
+		for meaning in range(pop._M):
+			score = best_scores[meaning,a]
+			if score <= 0:
+				break
+			n_meanings_used += 1
+			words = pop._agentlist[a]._vocabulary.get_known_words(m=meaning,option='max')
+			if words:
+				word = words[0]
+				C[word,meaning] += 1
+	C = C/float(pop._size)
+	n_meanings_used = n_meanings_used/float(pop._size)
+
+	D = np.zeros((pop._W,pop._M))
+	best_scores = np.zeros((pop._W,pop._size))
+	for ag in range(len(pop._agentlist)):
+		for w in range(pop._W):
+			best_scores[w,ag] = np.amax(pop._agentlist[ag]._vocabulary._content[:,w])
+	n_words_used = 0
+	for a in range(pop._size):
+		for word in range(pop._W):
+			score = best_scores[word,a]
+			if score <= 0:
+				break
+			n_words_used += 1
+			meanings = pop._agentlist[a]._vocabulary.get_known_meanings(w=word,option='max')
+			if meanings:
+				meaning = meanings[0]
+				D[word,meaning] += 1.
+	D = D/float(pop._size)
+	n_words_used = n_words_used/float(pop._size)
+
+	return sum(sum(np.multiply(C,D)))/float(pop._M)
+
+
+def srtheo2_max(pop):
+	return 1
+
+def srtheo2_min(pop):
+	return 0
+
+FUNC=srtheo2
+graphconfig={"ymin":srtheo2_min,"ymax":srtheo2_max}
+custom_srtheo2=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+###############""srtheo as used in epirob08 paper#############
+def srtheo3(pop,**kwargs):
+	C = np.zeros((pop._W,pop._M))
+	best_scores = np.zeros((pop._M,pop._size))
+	for ag in range(len(pop._agentlist)):
+		for m in range(pop._M):
+			best_scores[m,ag] = np.amax(pop._agentlist[ag]._vocabulary._content[m,:])
+	n_meanings_used = 0
+	for a in range(pop._size):
+		for meaning in range(pop._M):
+			score = best_scores[meaning,a]
+			if score <= 0:
+				break
+			n_meanings_used += 1
+			words = pop._agentlist[a]._vocabulary.get_known_words(m=meaning,option='max')
+			#word = word[0]
+			#C[word,meaning] += 1
+			if words:
+				for word in words:
+					C[word,meaning] += 1./len(words)
+	C = C/float(pop._size)
+	n_meanings_used = n_meanings_used/float(pop._size)
+
+	D = np.zeros((pop._W,pop._M))
+	best_scores = np.zeros((pop._W,pop._size))
+	for ag in range(len(pop._agentlist)):
+		for w in range(pop._W):
+			best_scores[w,ag] = np.amax(pop._agentlist[ag]._vocabulary._content[:,w])
+	n_words_used = 0
+	for a in range(pop._size):
+		for word in range(pop._W):
+			score = best_scores[word,a]
+			if score <= 0:
+				break
+			n_words_used += 1
+			meanings = pop._agentlist[a]._vocabulary.get_known_meanings(w=word,option='max')
+			#meaning = meaning[0]
+			#D[word,meaning] += 1
+			if meanings:
+				for meaning in meanings:
+					D[word,meaning] += 1./len(meanings)
+	D = D/float(pop._size)
+	n_words_used = n_words_used/float(pop._size)
+
+	return sum(sum(np.multiply(C,D)))/float(pop._M)
+
+
+def srtheo3_max(pop):
+	return 1
+
+def srtheo3_min(pop):
+	return 0
+
+FUNC=srtheo3
+graphconfig={"ymin":srtheo3_min,"ymax":srtheo3_max}
+custom_srtheo3=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
 #########entropydistrib##########
 
 def entropydistrib(pop,**kwargs):

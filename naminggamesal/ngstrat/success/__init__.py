@@ -7,7 +7,9 @@ from importlib import import_module
 #####Classe de base
 success_class={
 	'global':'global_success.GlobalSuccess',
+	'global_restrictive':'global_success.GlobalSuccessRestrictive',
 	'communicative':'communicative_success.CommunicativeSuccess',
+	'communicative_max':'communicative_success.CommunicativeSuccessMax',
 	'alignment':'alignment_success.AlignmentSuccess',
 }
 
