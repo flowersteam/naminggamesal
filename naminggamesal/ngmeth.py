@@ -406,15 +406,14 @@ def srtheo3(pop,**kwargs):
 	for a in range(pop._size):
 		for meaning in range(pop._M):
 			score = best_scores[meaning,a]
-			if score <= 0:
-				break
-			n_meanings_used += 1
-			words = pop._agentlist[a]._vocabulary.get_known_words(m=meaning,option='max')
-			#word = word[0]
-			#C[word,meaning] += 1
-			if words:
-				for word in words:
-					C[word,meaning] += 1./len(words)
+			if score > 0:
+				n_meanings_used += 1
+				words = pop._agentlist[a]._vocabulary.get_known_words(m=meaning,option='max')
+				#word = word[0]
+				#C[word,meaning] += 1
+				if words:
+					for word in words:
+						C[word,meaning] += 1./len(words)
 	C = C/float(pop._size)
 	n_meanings_used = n_meanings_used/float(pop._size)
 
@@ -427,15 +426,14 @@ def srtheo3(pop,**kwargs):
 	for a in range(pop._size):
 		for word in range(pop._W):
 			score = best_scores[word,a]
-			if score <= 0:
-				break
-			n_words_used += 1
-			meanings = pop._agentlist[a]._vocabulary.get_known_meanings(w=word,option='max')
-			#meaning = meaning[0]
-			#D[word,meaning] += 1
-			if meanings:
-				for meaning in meanings:
-					D[word,meaning] += 1./len(meanings)
+			if score > 0:
+				n_words_used += 1
+				meanings = pop._agentlist[a]._vocabulary.get_known_meanings(w=word,option='max')
+				#meaning = meaning[0]
+				#D[word,meaning] += 1
+				if meanings:
+					for meaning in meanings:
+						D[word,meaning] += 1./len(meanings)
 	D = D/float(pop._size)
 	n_words_used = n_words_used/float(pop._size)
 
