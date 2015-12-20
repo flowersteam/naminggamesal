@@ -83,14 +83,16 @@ class VocMatrix(BaseVocabulary):
 		return sorted(list(set(np.array(ans).reshape(-1,).tolist())))
 
 	def get_coords(self,mat,option=None):
+		nz = mat.nonzero()
+		if not nz[0].size:
+			return []
 		if option is None:
-			nz = mat.nonzero()
 			coords = [(nz[0][i],nz[1][i]) for i in range(len(nz[0]))]
 		elif option == 'max':
-			coords = np.argwhere(mat == np.amax(mat))
+			coords = np.argwhere(mat == np.amax(mat[nz]))
 			coords = coords.reshape((-1,2))
 		elif option == 'min':
-			coords = np.argwhere(mat == np.amin(mat))
+			coords = np.argwhere(mat == np.amin(mat[nz]))
 			coords = coords.reshape((-1,2))
 		return coords
 

@@ -13,16 +13,16 @@ class StratNaive(BaseStrategy):
 		elif voc.get_unknown_meanings():
 			m = voc.get_new_unknown_m()
 		else:
-			m = random.randint(0,voc.get_M()-1)
+			m = voc.get_random_known_m(option='min')
 		return m
 
 	def pick_w(self,m,voc,mem):
 		if m in voc.get_known_meanings():
-			w = voc.get_random_known_w(m)
+			w = voc.get_random_known_w(m=m)
 		elif voc.get_unknown_words():
 			w = voc.get_new_unknown_w()
 		else:
-			w = random.randint(0,voc.get_W()-1)
+			w = voc.get_random_known_w(option='min')
 		return w
 
 	def pick_m(self,voc,mem):
