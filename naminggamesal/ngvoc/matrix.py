@@ -94,6 +94,15 @@ class VocMatrix(BaseVocabulary):
 		elif option == 'min':
 			coords = np.argwhere(mat == np.amin(mat[nz]))
 			coords = coords.reshape((-1,2))
+		elif option == 'minofmaxw':
+			best_scores = mat.max(axis=1)
+			val = min(best_scores)
+			coords = np.argwhere(mat == val)
+			coords = coords.reshape((-1,2))
+		elif option == 'minofmaxm':
+			best_scores = mat.max(axis=0)
+			coords = np.argwhere(mat == val)
+			coords = coords.reshape((-1,2))
 		return coords
 
 	@voc_cache
@@ -113,7 +122,7 @@ class VocMatrix(BaseVocabulary):
 			m = random.choice(self.get_unknown_meanings())
 		else:
 			print "tried to get new m but all are known"
-			m = self.get_random_known_m(option='min')
+			m = self.get_random_known_m(option='minofmaxm')
 		return m
 
 	def get_new_unknown_w(self):
@@ -121,7 +130,7 @@ class VocMatrix(BaseVocabulary):
 			w = random.choice(self.get_unknown_words())
 		else:
 			print "tried to get new w but all are known"
-			w = self.get_random_known_w(option='min')
+			w = self.get_random_known_w(option='minofmaxw')
 		return w
 
 	def get_random_known_m(self,w=None, option='max'):
