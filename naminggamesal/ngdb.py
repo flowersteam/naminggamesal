@@ -185,13 +185,13 @@ class NamingGamesDB(object):
 		with conn:
 				cursor=conn.cursor()
 				if tmax is None:
-					cursor.execute("SELECT Id FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg)+"\' AND Function=\'"+method+"\'")
+					cursor.execute("SELECT Id FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg, sort_keys=True)+"\' AND Function=\'"+method+"\'")
 					templist=list(cursor)
 					for i in range(0,len(templist)):
 						templist[i]=templist[i][0]
 					return templist
 				else:
-					cursor.execute("SELECT Id FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg)+"\' AND Function=\'"+method+"\' AND Time_max>=\'"+tmax+"\'")
+					cursor.execute("SELECT Id FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg, sort_keys=True)+"\' AND Function=\'"+method+"\' AND Time_max>=\'"+tmax+"\'")
 					templist=list(cursor)
 					for i in range(0,len(templist)):
 						templist[i]=templist[i][0]
@@ -200,7 +200,7 @@ class NamingGamesDB(object):
 					elif tmax < 0:
 						return []
 					else:
-						cursor.execute("SELECT Time_max FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg)+"\' AND Function=\'"+method+"\'")
+						cursor.execute("SELECT Time_max FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg, sort_keys=True)+"\' AND Function=\'"+method+"\'")
 						templist=list(cursor)
 						for i in range(0,len(templist)):
 							templist[i]=templist[i][0]
@@ -217,7 +217,7 @@ class NamingGamesDB(object):
 			cursor=conn.cursor()
 			if (not all_id) and (xp_cfg or pattern):
 				if xp_cfg:
-					cursor.execute("SELECT Id FROM main_table WHERE Config=\'{}\'".format(json.dumps(xp_cfg)))
+					cursor.execute("SELECT Id FROM main_table WHERE Config=\'{}\'".format(json.dumps(xp_cfg, sort_keys=True)))
 				else:
 					cursor.execute("SELECT Id FROM main_table WHERE Config LIKE \'{}\'".format(pattern))
 			else:
@@ -261,7 +261,7 @@ class NamingGamesDB(object):
 					exp.init_time, \
 					exp.modif_time, \
 					exp._exec_time[-1], \
-					json.dumps({'pop_cfg':exp._pop_cfg, 'step':exp._time_step}), \
+					json.dumps({'pop_cfg':exp._pop_cfg, 'step':exp._time_step}, sort_keys=True), \
 #					exp._voctype, \
 #					exp._strat["strattype"], \
 #					exp._M, \
@@ -295,7 +295,7 @@ class NamingGamesDB(object):
 					exp.uuid, \
 					graph.init_time, \
 					graph.modif_time, \
-					json.dumps({'pop_cfg':exp._pop_cfg, 'step':exp._time_step}), \
+					json.dumps({'pop_cfg':exp._pop_cfg, 'step':exp._time_step}, sort_keys=True), \
 					method, \
 					graph._X[0][-1], \
 					binary,))

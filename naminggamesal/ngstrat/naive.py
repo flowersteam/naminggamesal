@@ -32,3 +32,38 @@ class StratNaive(BaseStrategy):
 	def hearer_pick_m(self,voc,mem):
 		m = self.pick_m(voc,mem)
 		return m
+
+######## FOR CATEGORY GAME ############
+class StratNaiveCategory(BaseStrategy):
+
+	def pick_context(self, voc, mem, context_gen):
+		return context_gen.next()
+
+	def guess_m(self, w, voc, mem, context):
+		ml = []
+		for m in context:
+			if w in voc.get_known_words(m):
+				ml.append(m)
+		if not ml:
+			return None
+		else:
+			return random.choice(ml)
+
+	def pick_w(self, m, voc, mem, context):
+		wl = set(voc.get_known_words(m))
+		for c in context:
+			if c != m:
+				wl = wl - set(voc.get_known_words(c))
+		if not wl:
+			return voc.get_new_unknown_w()
+		else:
+			return random.choice(list(wl))
+
+	def pick_m(self, voc, mem, context):
+		m = random.choice(context)
+		voc.minmax_slice(m,context)
+		return m
+
+	def hearer_pick_m(self, voc, mem, context):
+		m = self.pick_m(voc, mem, context)
+		return m

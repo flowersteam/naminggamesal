@@ -23,6 +23,12 @@ class VocMatrix(BaseVocabulary):
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._content=np.matrix(np.zeros((self._M,self._W)))
 
+	@del_cache
+	def fill(self):
+		for i in range(0,self._M):
+			for j in range(0,self._W):
+				self.add(i,j,1)
+
 	@voc_cache
 	def exists(self,m,w):
 		if self._content[m,w] > 0:
@@ -36,8 +42,11 @@ class VocMatrix(BaseVocabulary):
 	def get_size(self):
 		return self._size
 
+	def get_random_m(self):
+		return random.choice(range(self._M))
+
 	@del_cache
-	def add(self,m,w,val):
+	def add(self,m,w,val=1):
 		self._content[m,w] = val
 
 	@del_cache

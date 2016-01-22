@@ -11,18 +11,21 @@ import uuid
 
 from .. import ngvoc
 from .. import ngstrat
+from . import ngsensor
 
 class Agent(object):
-	def __init__(self, voc_cfg, strat_cfg, agent_id=None):
+	def __init__(self, voc_cfg, strat_cfg, sensor_cfg, agent_id=None):
 		if agent_id is None:
 			self._id = str(uuid.uuid1())
 		else:
 			self._id = agent_id;
 		self._vocabulary = ngvoc.Vocabulary(**voc_cfg)
 		self._strategy = ngstrat.Strategy(**strat_cfg)
+		self._sensoryapparatus = ngsensor.get_sensor(**sensor_cfg)
 
-		self._M = self._vocabulary._M
-		self._W = self._vocabulary._W
+		if hasattr(self._vocabulary,'_M'):
+			self._M = self._vocabulary._M
+			self._W = self._vocabulary._W
 
 		self.init_memory()
 		self.fail = 0
@@ -43,8 +46,8 @@ class Agent(object):
 	def __str__(self):
 		return str(self._vocabulary)
 
-	def pick_m(self):
-		return self._strategy.pick_m(self._vocabulary,self._memory)
+	def pick_m(self,context=[]):
+		return self._strategy.pick_m(self._vocabulary,self._memory,context=context)
 
 	def pick_mw(self):
 		return self._strategy.pick_mw(self._vocabulary,self._memory)
@@ -55,11 +58,11 @@ class Agent(object):
 	def pick_new_m(self):
 		return self._strategy.pick_new_m(self._vocabulary,self._memory)
 
-	def guess_m(self,w):
-		return self._strategy.guess_m(w,self._vocabulary,self._memory)
+	def guess_m(self,w, context=[]):
+		return self._strategy.guess_m(w,self._vocabulary,self._memory, context=context)
 
-	def pick_w(self,m):
-		return self._strategy.pick_w(m,self._vocabulary,self._memory)
+	def pick_w(self,m, context=[]):
+		return self._strategy.pick_w(m,self._vocabulary,self._memory,context)
 
 	def update_hearer(self,ms,w,mh,bool_succ):
 		self._strategy.update_hearer(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ)
@@ -75,6 +78,9 @@ class Agent(object):
 
 	def eval_success(self, ms, w, mh):
 		return self._strategy.success.eval(ms=ms, w=w, mh=mh, voc=self._vocabulary, strategy=self)
+
+	def pick_context(self, env, size=2, diff=True):
+		return self._strategy.pick_context(voc=self._vocabulary,mem=self._memory,context_gen=self._sensoryapparatus.context_gen(env=env, diff=diff, size=size))
 
 
 

@@ -17,6 +17,7 @@ voc_class={
 	"csr_matrix":"matrix.VocCSRMatrix",
 	"csc_matrix":"matrix.VocCSCMatrix",
 	"dok_matrix":"matrix.VocDOKMatrix",
+	'category':'category.VocCategory'
 }
 
 
@@ -57,12 +58,6 @@ class BaseVocabulary(object):
 
 	def __init__(self,**voc_cfg2):
 		self._cache = {}
-
-	@del_cache
-	def fill(self):
-		for i in range(0,self._M):
-			for j in range(0,self._W):
-				self.add(i,j,1)
 
 	def __str__(self):
 		str1 = 'Words\n'

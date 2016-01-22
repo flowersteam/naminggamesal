@@ -12,7 +12,8 @@ interaction_class={
 	'hearerschoice':'hearerschoice.HearersChoice',
 	'speakerschoice':'speakerschoice.SpeakersChoice',
 	'fabien':'fabien.FabienInteraction',
-	'omniscient':'omniscient.Omniscient'
+	'omniscient':'omniscient.Omniscient',
+	'category_game':'category_game.CategoryGame'
 }
 
 def get_interaction(interact_type='speakerschoice', **interact_cfg2):
@@ -37,5 +38,5 @@ class Interaction(object):
 	def get_interacttype(self):
 		return self._interacttype
 
-	def interact(self, speaker, hearer, pop):
+	def interact(self, speaker, hearer, pop, env):
 		pass

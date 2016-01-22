@@ -69,6 +69,67 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":success_rate_min,"ymax":success_rate_max}
 custom_success_rate=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
+#########Ncat_percept##########
+
+def Ncat_percept(agent,**kwargs):
+	return len(agent._vocabulary._content_coding)
+
+def Ncat_percept_max(pop):
+	return 1
+
+def Ncat_percept_min(pop):
+	return 0
+
+FUNC=Ncat_percept
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":Ncat_percept_min}#,"ymax":Ncat_percept_max}
+custom_Ncat_percept=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########Ncat_semantic##########
+
+def Ncat_semantic(agent,**kwargs):
+	n = 0
+	data = None
+	for iv in agent._vocabulary._content_coding:
+		if data != iv.data:
+			data = iv.data
+			n += 1
+	return n
+
+def Ncat_semantic_max(pop):
+	return 1
+
+def Ncat_semantic_min(pop):
+	return 0
+
+FUNC=Ncat_semantic
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":Ncat_semantic_min}#,"ymax":Ncat_semantic_max}
+custom_Ncat_semantic=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########N_words##########
+
+def N_words(agent,**kwargs):
+	n = 0
+	data = None
+	for iv in agent._vocabulary._content_coding:
+		if data != iv.data:
+			data = iv.data
+			n += 1
+	return n
+
+def N_words_max(pop):
+	return 1
+
+def N_words_min(pop):
+	return 0
+
+FUNC=N_words
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_words_min}#,"ymax":N_words_max}
+custom_N_words=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
 
 #########entropy##########
 
@@ -287,7 +348,6 @@ graphconfig={"ymin":entropycouples_norm_min,"ymax":entropycouples_norm_max}
 custom_entropycouples_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########srtheo##########
-#########srtheo##########
 
 def srtheo(pop,**kwargs):
 	fail=0
@@ -297,39 +357,15 @@ def srtheo(pop,**kwargs):
 		agent2_id = pop.pick_hearer(agent1_id)
 		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
 		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
-		ms = random.randint(0,agent1._vocabulary._M-1)
-		w = agent1._vocabulary.get_random_known_w(m=ms, option='max')
-		mh = agent2._vocabulary.get_random_known_m(w=w, option='max')
+		ms = agent1._vocabulary.get_random_m()
+		w = agent1._vocabulary.get_random_known_w(m=ms)
+		mh = agent2._vocabulary.get_random_known_m(w=w)
 		agent1._vocabulary.del_cache()
 		agent2._vocabulary.del_cache()
-		if ms == mh:
+		if agent2.eval_success(ms=ms, w=w, mh=mh):
 			succ += 1
 		else:
 			fail += 1
-		#pop_cfg = {
-		#	'voc_cfg':{
-		#	'voc_type':'matrix',
-		#	    'M':pop._M,
-		#	    'W':pop._W
-		#	    },
-		#	'strat_cfg':{
-		#	    'strat_type':'naive',
-		#	    'voc_update':'imitation',
-		#	    'success':'communicative'
-		#	    },
-		#	'interact_cfg':{
-		#	    'interact_type':'speakerschoice'
-		#	    },
-		#	'nbagent':2
-		#	}
-		#tempop = Population(**pop_cfg)
-		#tempop._agentlist[0]._vocabulary._content = copy.deepcopy(agent1._vocabulary.get_content())
-		#tempop._agentlist[1]._vocabulary._content = copy.deepcopy(agent2._vocabulary.get_content())
-		#tempop.play_game(1)
-		#if tempop._lastgameinfo[0] == tempop._lastgameinfo[2]:
-		#	succ+=1
-		#else:
-		#	fail+=1
 	return succ/float(succ+fail)
 
 def srtheo_max(pop):
@@ -341,6 +377,56 @@ def srtheo_min(pop):
 FUNC=srtheo
 graphconfig={"ymin":srtheo_min,"ymax":srtheo_max}
 custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########srtheo_cat##########
+
+def srtheo_cat(pop,**kwargs):
+	fail=0
+	succ=0
+	for i in range(100):
+		agent1_id = pop.pick_speaker()
+		agent2_id = pop.pick_hearer(agent1_id)
+		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
+		v1 = agent1._vocabulary
+		v2 = agent2._vocabulary
+		ct = agent1._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2).next()
+		ms = random.choice(ct)
+
+		ct_maxinf = max([-1] + [m for m in ct if m < ms])
+		ct_minsup = min([2] + [m for m in ct if m > ms])
+		iv = v1.get_category(ms)
+		if iv.begin >= ct_maxinf or iv.end < ct_minsup:
+			w = v1.get_new_unknown_w()
+		else:
+			w = v1.get_random_known_w(m=ms)
+
+		ml = []
+		for m in ct:
+			if w in v2.get_known_words(m):
+				ml.append(m)
+		if not ml:
+			mh = None
+		else:
+			mh = random.choice(ml)
+
+		if agent2.eval_success(ms=ms, w=w, mh=mh):
+			succ += 1
+		else:
+			fail += 1
+		v1.del_cache()
+		v2.del_cache()
+	return succ/float(succ+fail)
+
+def srtheo_cat_max(pop):
+	return 1
+
+def srtheo_cat_min(pop):
+	return 0
+
+FUNC=srtheo_cat
+graphconfig={"ymin":srtheo_cat_min,"ymax":srtheo_cat_max}
+custom_srtheo_cat=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 ###############""srtheo as used in epirob08 paper#############
 def srtheo2(pop,**kwargs):

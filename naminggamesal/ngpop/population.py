@@ -10,22 +10,30 @@ import matplotlib.pyplot as plt
 
 from ..ngagent import Agent
 from ..nginter import get_interaction
+from ..ngenv import get_environment
 
 
 
 class Population(object):
 
-	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent):
+	def __init__(self, voc_cfg, strat_cfg, interact_cfg, sensor_cfg, nbagent, env_cfg=None):
 		self._size = 0
 		self._voc_cfg = voc_cfg
-		self._M = voc_cfg['M']
-		self._W = voc_cfg['W']
+		if 'M' in voc_cfg.keys():
+			self._M = voc_cfg['M']
+			self._W = voc_cfg['W']
 		self._strat_cfg = strat_cfg
+		self._sensor_cfg = sensor_cfg
+		self._env_cfg = env_cfg
 		self._interaction = get_interaction(**interact_cfg)
+		if env_cfg is None:
+			self.env = None
+		else:
+			self.env = get_environment(**env_cfg)
 		self._lastgameinfo = []
 		self._agentlist = []
 		for i in range(nbagent):
-			self.add_new_agent(agent_id=None, strat_cfg=strat_cfg, voc_cfg=voc_cfg)
+			self.add_new_agent(agent_id=None, strat_cfg=strat_cfg, voc_cfg=voc_cfg, sensor_cfg=sensor_cfg)
 
 
 	def get_size(self):
@@ -51,8 +59,14 @@ class Population(object):
 			tempid=max(tempid,self._agentlist[i].get_id())
 		return tempid
 
-	def add_new_agent(self, voc_cfg, strat_cfg, agent_id=None):
-		self._agentlist.append(Agent(agent_id=agent_id, voc_cfg=self._voc_cfg, strat_cfg=self._strat_cfg))
+	def add_new_agent(self, voc_cfg=None, strat_cfg=None, sensor_cfg=None, agent_id=None):
+		if voc_cfg is None:
+			voc_cfg = self.voc_cfg
+		if strat_cfg is None:
+			strat_cfg = self.strat_cfg
+		if sensor_cfg is None:
+			sensor_cfg = self.sensor_cfg
+		self._agentlist.append(Agent(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id))
 		self._size+=1
 
 	def get_index_from_id(self, agent_id):
@@ -72,7 +86,7 @@ class Population(object):
 	def pick_hearer(self, speaker_id):
 		j = random.randint(0,len(self._agentlist)-2)
 		if self.get_index_from_id(speaker_id) <= j:
-			j+=1
+			j += 1
  		return self._agentlist[j].get_id()
 
 	def play_game(self, steps, **kwargs):

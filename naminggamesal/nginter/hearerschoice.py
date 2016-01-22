@@ -6,7 +6,7 @@ import numpy as np
 
 ##########
 class HearersChoice(Interaction):
-	def interact(self, speaker, hearer, pop):
+	def interact(self, speaker, hearer, pop, env):
 		ms = hearer.hearer_pick_m()
 		w =  speaker.pick_w(ms)
 		if hearer._vocabulary.get_known_words(ms) == []:
