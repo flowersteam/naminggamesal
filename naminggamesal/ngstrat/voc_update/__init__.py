@@ -7,6 +7,7 @@ from importlib import import_module
 vu_class={
 	'imitation':'imitation.Imitation',
 	'minimal':'minimal.Minimal',
+	'minimalsynonly':'minimal.MinimalSynOnly',
 
 	'BLIS':'lateral_inhib.BasicLateralInhibition',
 	'BLIS_epirob':'lateral_inhib.BLISEpirob',
@@ -31,8 +32,8 @@ class VocUpdate(object):
 	def __init__(self):
 		pass
 
-	def update_speaker(self,ms,w,mh,voc,mem,bool_succ):
+	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
 		voc.finish_update()
 
-	def update_hearer(self,ms,w,mh,voc,mem,bool_succ):
+	def update_hearer(self,ms,w,mh,voc,mem,bool_succ, context=[]):
 		voc.finish_update()

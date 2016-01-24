@@ -30,7 +30,7 @@ class StratLastResult(StratNaive):
 			m=voc.get_random_known_m()
 		return m
 
-	def update_memory(self,ms,w,mh,voc,mem,role='speaker',bool_succ):
+	def update_memory(self,ms,w,mh,voc,mem,role='speaker',bool_succ,context=[]):
 		if bool_succ:
 			mem["result"]=1
 		else:

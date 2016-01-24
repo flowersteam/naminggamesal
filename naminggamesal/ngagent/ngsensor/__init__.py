@@ -44,7 +44,7 @@ class SensoryApparatus(object):
 						if tries == 0:
 							raise Exception('Could not find enough discriminable elements in environment')
 						else:
-							self.pick_context(size=size,diff=diff,tries=tries-1,env=env)
+							return self.pick_context(size=size,diff=diff,tries=tries-1,env=env)
 				context.append(s1)
 			return context
 

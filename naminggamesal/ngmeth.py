@@ -111,13 +111,7 @@ custom_Ncat_semantic=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 #########N_words##########
 
 def N_words(agent,**kwargs):
-	n = 0
-	data = None
-	for iv in agent._vocabulary._content_coding:
-		if data != iv.data:
-			data = iv.data
-			n += 1
-	return n
+	return len(agent._vocabulary._content_decoding.keys())
 
 def N_words_max(pop):
 	return 1
@@ -129,6 +123,28 @@ FUNC=N_words
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":N_words_min}#,"ymax":N_words_max}
 custom_N_words=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########cat_synonymy##########
+
+def cat_synonymy(agent,**kwargs):
+	n = 0
+	w = 0
+	for iv in agent._vocabulary._content_coding:
+		w += len(iv.data)
+		n += 1
+	return w / float(n)
+
+def cat_synonymy_max(pop):
+	return 1
+
+def cat_synonymy_min(pop):
+	return 0
+
+FUNC=cat_synonymy
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":cat_synonymy_min}#,"ymax":cat_synonymy_max}
+custom_cat_synonymy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
 #########entropy##########
@@ -308,6 +324,26 @@ FUNC=entropycouples_old_norm
 graphconfig={"ymin":entropycouples_old_norm_min,"ymax":entropycouples_old_norm_max}
 custom_entropycouples_old_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+#########N_words_pop##########
+
+
+def N_words_pop(pop,**kwargs):
+	words = set()
+	for ag in pop._agentlist:
+		for w in ag._vocabulary._content_decoding.keys():
+			words.add(w)
+	return len(words)
+
+def N_words_pop_max(pop):
+	return 1
+
+def N_words_pop_min(pop):
+	return 0
+
+FUNC=N_words_pop
+graphconfig={"ymin":N_words_pop_min}#,"ymax":entropycouples_old_norm_max}
+custom_N_words_pop=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
 #########entropycouples##########
 
 def entropycouples(pop,**kwargs):
@@ -396,7 +432,7 @@ def srtheo_cat(pop,**kwargs):
 		ct_maxinf = max([-1] + [m for m in ct if m < ms])
 		ct_minsup = min([2] + [m for m in ct if m > ms])
 		iv = v1.get_category(ms)
-		if iv.begin >= ct_maxinf or iv.end < ct_minsup:
+		if iv.begin < ct_maxinf or iv.end >= ct_minsup:
 			w = v1.get_new_unknown_w()
 		else:
 			w = v1.get_random_known_w(m=ms)
@@ -409,7 +445,7 @@ def srtheo_cat(pop,**kwargs):
 			mh = None
 		else:
 			mh = random.choice(ml)
-
+		#print ct, ms, iv, ct_maxinf, ct_minsup, w, v2.get_known_words(ms), ml, mh
 		if agent2.eval_success(ms=ms, w=w, mh=mh):
 			succ += 1
 		else:
@@ -560,6 +596,92 @@ def entropydistrib_min(pop):
 FUNC=entropydistrib
 graphconfig={"ymin":entropydistrib_min,"ymax":entropydistrib_max}
 custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########overlap##########
+
+def overlap(pop,**kwargs):
+	n_r = min((pop._size**2)/2,100)
+	overlap_val = 0
+	for i in range(n_r):
+		agent1_id = pop.pick_speaker()
+		agent2_id = pop.pick_hearer(agent1_id)
+		ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
+
+
+		ivt1 = []
+		for iv in ag1._vocabulary._content_coding:
+			ivt1.append(iv.begin)
+		ivt1.append(1.)
+		ivt2 = []
+		for iv in ag2._vocabulary._content_coding:
+			ivt2.append(iv.begin)
+		ivt2.append(1.)
+		ivto = sorted(ivt1 + ivt2)
+		ovsum1 =  sum([(ivt1[k+1]-ivt1[k])**2 for k in range(len(ivt1)-1)])
+		ovsum2 =  sum([(ivt2[k+1]-ivt2[k])**2 for k in range(len(ivt2)-1)])
+		ovsumo =  sum([(ivto[k+1]-ivto[k])**2 for k in range(len(ivto)-1)])
+
+#		ivt1 = copy.deepcopy(ag1._vocabulary._content_coding)
+#		ivt2 = copy.deepcopy(ag2._vocabulary._content_coding)
+#		ivto = copy.deepcopy(ag1._vocabulary._content_coding)
+#		ivto.union(ivt2)
+#		ivto.split_overlaps()
+#		ivto.merge_overlaps()
+#		ovsum1 =  sum([(iv.end - iv.begin)**2 for iv in ivt1])
+#		ovsum2 =  sum([(iv.end - iv.begin)**2 for iv in ivt2])
+#		ovsumo =  sum([(iv.end - iv.begin)**2 for iv in ivto])
+		overlap_val += (2*ovsumo/float(ovsum1 + ovsum2))
+	return overlap_val / float(n_r)
+
+def overlap_max(pop):
+	return 1
+
+def overlap_min(pop):
+	return 0
+
+FUNC=overlap
+graphconfig={"ymin":overlap_min,"ymax":overlap_max}
+custom_overlap=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########overlap_semantic##########
+
+def overlap_semantic(pop,**kwargs):
+	n_r = min((pop._size**2)/2,100)
+	overlap_val = 0
+	for i in range(n_r):
+		agent1_id = pop.pick_speaker()
+		agent2_id = pop.pick_hearer(agent1_id)
+		ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
+		ivt1 = []
+		data = None
+		for iv in ag1._vocabulary._content_coding:
+			if iv.data != data:
+				ivt1.append(iv.begin)
+		ivt1.append(1.)
+		ivt2 = []
+		data = None
+		for iv in ag2._vocabulary._content_coding:
+			if iv.data != data:
+				ivt2.append(iv.begin)
+		ivt2.append(1.)
+		ivto = sorted(ivt1 + ivt2)
+		ovsum1 =  sum([(ivt1[k+1]-ivt1[k])**2 for k in range(len(ivt1)-1)])
+		ovsum2 =  sum([(ivt2[k+1]-ivt2[k])**2 for k in range(len(ivt2)-1)])
+		ovsumo =  sum([(ivto[k+1]-ivto[k])**2 for k in range(len(ivto)-1)])
+		overlap_val += (2*ovsumo/float(ovsum1 + ovsum2))
+	return overlap_val / float(n_r)
+
+def overlap_semantic_max(pop):
+	return 1
+
+def overlap_semantic_min(pop):
+	return 0
+
+FUNC=overlap_semantic
+graphconfig={"ymin":overlap_semantic_min,"ymax":overlap_semantic_max}
+custom_overlap_semantic=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########weight_over_degree##########
 

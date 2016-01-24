@@ -26,7 +26,7 @@ class StratSuccessThreshold(StratNaive):
 	def hearer_pick_m(self,voc,mem):
 		return self.pick_m(voc, mem)
 
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ):
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
 		if role=='speaker':
 			m1=ms
@@ -142,7 +142,7 @@ class StratSuccessThresholdScores(StratSuccessThresholdWise):
 		mem["fail_m"] = np.zeros((voc._M, voc._W))
 		return mem
 
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ):
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
 		if role=='speaker':
 			m1 = ms

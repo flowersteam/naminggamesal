@@ -64,20 +64,20 @@ class Agent(object):
 	def pick_w(self,m, context=[]):
 		return self._strategy.pick_w(m,self._vocabulary,self._memory,context)
 
-	def update_hearer(self,ms,w,mh,bool_succ):
-		self._strategy.update_hearer(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ)
-		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='hearer', bool_succ=bool_succ)
+	def update_hearer(self,ms,w,mh,bool_succ,context=[]):
+		self._strategy.update_hearer(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ,context=context)
+		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='hearer', bool_succ=bool_succ,context=context)
 
 
-	def update_speaker(self,ms,w,mh,bool_succ):
-		self._strategy.update_speaker(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ)
-		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='speaker', bool_succ=bool_succ)
+	def update_speaker(self,ms,w,mh,bool_succ,context=[]):
+		self._strategy.update_speaker(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ,context=context)
+		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='speaker', bool_succ=bool_succ,context=context)
 
 	def visual(self,vtype=None,iterr=100,mlist="all",wlist="all"):
 		self._strategy.visual(self._vocabulary,mem=self._memory,vtype=vtype,iterr=iterr,mlist=mlist,wlist=wlist)
 
-	def eval_success(self, ms, w, mh):
-		return self._strategy.success.eval(ms=ms, w=w, mh=mh, voc=self._vocabulary, strategy=self)
+	def eval_success(self, ms, w, mh,context=[]):
+		return self._strategy.success.eval(ms=ms, w=w, mh=mh, voc=self._vocabulary, strategy=self,context=context)
 
 	def pick_context(self, env, size=2, diff=True):
 		return self._strategy.pick_context(voc=self._vocabulary,mem=self._memory,context_gen=self._sensoryapparatus.context_gen(env=env, diff=diff, size=size))

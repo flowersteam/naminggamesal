@@ -5,9 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy
 from scipy import sparse
+from scipy import misc
 import string
 from intervaltree import IntervalTree, Interval
 import copy
+import colorsys
 
 from . import BaseVocabulary
 from . import voc_cache, del_cache
@@ -56,7 +58,7 @@ class VocCategory(BaseVocabulary):
 
 	@del_cache
 	def add(self,m,w,context=[]):
-		self.minmax_slice(m,context,new_words=False)
+		self.minmax_slice(m=m,w=w,context=context)
 		if w not in self.get_category(m).data:
 			self.get_category(m).data.append(w)
 		if self.get_category(m) not in self._content_decoding.setdefault(w,IntervalTree()):
@@ -70,21 +72,48 @@ class VocCategory(BaseVocabulary):
 		return copy.deepcopy(iv.data)
 
 	@del_cache
-	def slice_intervaltree(self,m1,m2,new_words=True):
-		if m1 < 0 or m2 < 0 or m1 > 1 or m2 > 1:
+	def slice_intervaltree(self,m1,m2,w1=[],w2=[]):
+		if not isinstance(w1,list):
+			w1 = [w1]
+		if not isinstance(w2,list):
+			w2 = [w2]
+		if min(m1,m2) == m1:
+			m_1 = m1
+			w_1 = w1
+			m_2 = m2
+			w_2 = w2
+		else:
+			m_1 = m2
+			w_1 = w2
+			m_2 = m1
+			w_2 = w1
+		if m_1 < 0 or m_2 > 1:
 			return None
 		if self.get_category(m1) == self.get_category(m2):
-			if new_words:
-				self._content_coding.slice((m1+m2)/2., self.datafunc_slicing)
-			else:
-				self._content_coding.slice((m1+m2)/2., self.datafunc_chopping)
+			def datafunc(iv,islower):
+				if islower:
+					w = [ word for word in w_1 if word not in iv.data ]
+					return copy.deepcopy(iv.data) + copy.deepcopy(w)
+				else:
+					w = [ word for word in w_2 if word not in iv.data ]
+					return copy.deepcopy(iv.data) + copy.deepcopy(w)
+			self._content_coding.slice((m_1+m_2)/2., datafunc)
 
 	@del_cache
-	def minmax_slice(self,m,context,new_words=True):
+	def minmax_slice(self,m,w=[],context=[],new_words=True):
 		ct_maxinf = max([-1] + [m1 for m1 in context if m1 < m])
 		ct_minsup = min([2] + [m2 for m2 in context if m2 > m])
-		self.slice_intervaltree(m,ct_maxinf,new_words=new_words)
-		self.slice_intervaltree(m,ct_minsup,new_words=new_words)
+		if new_words:
+			if not w:
+				w = self.get_new_unknown_w()
+			w1 = self.get_new_unknown_w()
+			w2 = self.get_new_unknown_w()
+		else:
+			w1 = []
+			w2 = []
+
+		self.slice_intervaltree(m,ct_maxinf,w,w1)
+		self.slice_intervaltree(m,ct_minsup,w,w2)
 
 	@del_cache
 	def rm(self,m,w):
@@ -94,8 +123,6 @@ class VocCategory(BaseVocabulary):
 			self._content_decoding[w].chop(self.get_category(m).begin,self.get_category(m).end,self.datafunc_chopping)
 			if not self._content_decoding[w]:
 				del self._content_decoding[w]
-
-
 
 	def get_random_m(self):
 		return random.random()
@@ -197,3 +224,41 @@ class VocCategory(BaseVocabulary):
 				return self.get_new_unknown_w()
 			else:
 				return random.choice(self.get_category(m).data)
+
+
+
+	def visual(self, env=None, X=500, Y=20):
+		list_perceptual = []
+		list_semantic = []
+		data = None
+		for iv in self._content_coding:
+			list_perceptual.append(iv.begin)
+			if data != iv.data:
+				list_semantic.append(iv.begin)
+				data = iv.data
+		list_semantic.append(1.)
+		list_perceptual.append(1.)
+
+		im = np.ones((Y,X,3))
+
+		for x in range(X):
+			for y in range(Y/2, Y):
+				im[y,x,:] = colorsys.hsv_to_rgb((x)/(X-1.),1.,1.)
+
+		for p in list_perceptual:
+			x = min(int(p*X),X-1)
+			for y in range(Y/4,3*Y/4):
+				im[y,x,:] = (0.,0.,0.)
+
+		for p in list_semantic:
+			x = min(int(p*X),X-1)
+			for y in range(Y):
+				im[y,x,:] = (0.,0.,0.)
+
+		plt.figure()
+		plt.imshow(im,interpolation='nearest')
+		plt.axis('off')
+		plt.show()
+
+
+

@@ -14,7 +14,7 @@ sns.set(rc={'image.cmap': 'Purples_r'})
 strat_class={
 	'naive':'naive.StratNaive',
 	'naive_category':'naive.StratNaiveCategory',
-	'naive_destructive':'naive.StratNaiveDestructive',
+	'naive_category_pone':'naive.StratNaiveCategoryPlosOne',
 
 	'success_threshold':'success_threshold.StratSuccessThreshold',
 	'success_threshold_corrected':'success_threshold.StratSuccessThresholdCorrected',
@@ -63,16 +63,16 @@ class BaseStrategy(object):
 		self.voc_update = get_voc_update(**vu_cfg)
 		self.success = get_success(**success_cfg)
 
-	def update_speaker(self, ms, w, mh, voc, mem, bool_succ):
-		return self.voc_update.update_speaker(ms, w, mh, voc, mem, bool_succ)
+	def update_speaker(self, ms, w, mh, voc, mem, bool_succ, context=[]):
+		return self.voc_update.update_speaker(ms, w, mh, voc, mem, bool_succ, context)
 
-	def update_hearer(self, ms, w, mh, voc, mem, bool_succ):
-		return self.voc_update.update_hearer(ms, w, mh, voc, mem, bool_succ)
+	def update_hearer(self, ms, w, mh, voc, mem, bool_succ, context=[]):
+		return self.voc_update.update_hearer(ms, w, mh, voc, mem, bool_succ, context)
 
 	def init_memory(self,voc):
 		return {'success':0,'fail':0}
 
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ):
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if bool_succ:
 			mem['success'] += 1
 		else:
