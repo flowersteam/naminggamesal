@@ -84,7 +84,7 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 
 	def pick_context(self, voc, mem, context_gen):
 		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
-		dist = [abs(ct_l[0]-ct_l[1]) for ct in ct_l]
+		dist = [abs(ct[0]-ct[1]) for ct in ct_l]
 		thresh_dist = self.get_dist_threshold(voc,mem)
 		above = 1.
 		below = 0.
