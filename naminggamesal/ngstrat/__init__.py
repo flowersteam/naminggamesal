@@ -23,6 +23,7 @@ strat_class={
 	'success_threshold_scores':'success_threshold.StratSuccessThresholdScores',
 
 	'category_success_threshold':'category_success_threshold.CategorySuccessThresholdStrat',
+	'category_st_distance':'category_success_threshold.CategoryDistanceSTStrat',
 
 	'mincounts':'mincounts.StratMinCounts',
 
