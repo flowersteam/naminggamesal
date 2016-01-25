@@ -68,3 +68,6 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 			return 0.
 		else:
 			return s/float(s+f)
+
+	def pick_w(self, m, voc, mem, context):
+		StratNaiveCategoryPlosOne.pick_w(self, m, voc, mem['success_dict'], context)
