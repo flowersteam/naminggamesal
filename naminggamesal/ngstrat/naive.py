@@ -107,7 +107,7 @@ class StratNaiveCategoryPlosOne(StratNaiveCategory):
 			elif iv_before.data == w and iv_after.data == w:
 				mem.chop(iv_before.begin,iv_after.end)
 				mem.add(Interval(iv_before.begin,iv_after.end,w))
-		elif not bool_succ and role == 'hearer' and len(cat.data) > 1:
+		elif not bool_succ and role == 'hearer' and len(cat.data) > 1:#!!!!!!!!!!
 			w1 = cat.data.pop()
 			w2 = cat.data.pop()
 			cat.data.append(w1)

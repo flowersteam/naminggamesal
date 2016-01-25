@@ -22,6 +22,8 @@ strat_class={
 	'success_threshold_wise_max':'success_threshold.StratSuccessThresholdWiseMax',
 	'success_threshold_scores':'success_threshold.StratSuccessThresholdScores',
 
+	'category_success_threshold':'category_success_threshold.CategorySuccessThresholdStrat',
+
 	'mincounts':'mincounts.StratMinCounts',
 
 	'decision_vector':'decision_vector.StratDecisionVector',

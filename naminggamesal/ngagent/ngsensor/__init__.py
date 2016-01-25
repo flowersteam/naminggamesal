@@ -49,7 +49,8 @@ class SensoryApparatus(object):
 			return context
 
 	def context_gen(self, size=2, diff=True, tries=100, env=None):
-		yield self.pick_context(size=size, diff=diff, tries=tries, env=env)
+		while True:
+			yield self.pick_context(size=size, diff=diff, tries=tries, env=env)
 
 
 
