@@ -76,10 +76,11 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 
 class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 
-	def __init__(self, vu_cfg, success_cfg, threshold=0.9, past_window=100, **strat_cfg2):
+	def __init__(self, vu_cfg, success_cfg, threshold=0.9, nb_ctxt=20, past_window=100, **strat_cfg2):
 		BaseStrategy.__init__(self, vu_cfg=vu_cfg, success_cfg=success_cfg, **strat_cfg2)
 		self.threshold = threshold
-		self.past_window = 100
+		self.past_window = past_window
+		self.nb_ctxt = nb_ctxt
 
 	def pick_context(self, voc, mem, context_gen):
 		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
