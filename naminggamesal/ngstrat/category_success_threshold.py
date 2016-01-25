@@ -102,7 +102,7 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 		s = 0
 		f = 0
 		d_val = 1.
-		for d,bool_succ in mem['past_interactions'].sort(key=lambda x: -x[0]):
+		for d,bool_succ in sorted(mem['past_interactions'],key=lambda x: -x[0]):
 			if bool_succ:
 				s += 1
 			else:
