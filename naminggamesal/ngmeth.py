@@ -369,10 +369,12 @@ def actual_successrate(pop,**kwargs):
 	s = 0
 	f = 0
 	for info in pop._past:
-		if pop._past[3]:
+		if info[3]:
 			s += 1
 		else:
 			f += 1
+	print s
+	print f
 	if not s:
 		return 0
 	else:

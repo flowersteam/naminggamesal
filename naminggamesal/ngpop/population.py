@@ -115,7 +115,7 @@ class Population(object):
 #			speaker.update_speaker(ms,w,mh)
 #			hearer.update_hearer(ms,w,mh)
 			self._lastgameinfo = self._interaction._last_info
-			self._past = self._past[-99:]+[copy.copy(self._lastgameinfo)]
+			self._past = self._past[-99:]+[copy.deepcopy(self._lastgameinfo)]
 
 	def get_lastgameinfo(self):
 		return self._lastgameinfo
