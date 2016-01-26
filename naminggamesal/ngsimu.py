@@ -5,6 +5,7 @@ import time
 import uuid
 
 from copy import deepcopy
+import cPickle
 
 from .ngpop import Population
 from . import ngmeth
@@ -38,12 +39,12 @@ class Experiment(object):
 
 	def get_pop(self,tempindex):
 		if tempindex=="last":
-			return deepcopy(self._poplist[-1])
-		return deepcopy(self._poplist[tempindex])
+			return self._poplist[-1]
+		return self._poplist[tempindex]
 
 
 	def continue_exp_until(self,T):
-		temppop = self.get_pop("last")
+		temppop = cPickle.loads(cPickle.dumps(self.get_pop("last"), -1))#deepcopy(self.get_pop("last"))
 		temptmax = self._T[-1]
 		start_time = time.clock() - self._exec_time[-1]
 		while (temptmax + self._time_step <= T) :
@@ -51,7 +52,7 @@ class Experiment(object):
 				temppop.play_game(1)
 				self.reconstruct_info.append(temppop._lastgameinfo)
 			end_time = time.clock()
-			self.add_pop(deepcopy(temppop),self._T[-1]+self._time_step,exec_time=end_time-start_time)
+			self.add_pop(temppop,self._T[-1]+self._time_step,exec_time=end_time-start_time)
 			temptmax+=self._time_step
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 

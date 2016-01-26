@@ -3,10 +3,11 @@
 #import random
 #from ngvoc import *
 import os
-from copy import deepcopy
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import uuid
+import copy
 
 from ..ngagent import Agent
 from ..nginter import get_interaction
@@ -29,8 +30,13 @@ class Population(object):
 		if env_cfg is None:
 			self.env = None
 		else:
-			self.env = get_environment(**env_cfg)
+			if 'uuid_instance' not in self._env_cfg.keys():
+				self.env_id = str(uuid.uuid1())
+			else:
+				self.env_id = self._env_cfg['uuid_instance']
+			self.env = get_environment(uuid_instance=self.env_id,**self._env_cfg)
 		self._lastgameinfo = []
+		self._past = []
 		self._agentlist = []
 		for i in range(nbagent):
 			self.add_new_agent(agent_id=None, strat_cfg=strat_cfg, voc_cfg=voc_cfg, sensor_cfg=sensor_cfg)
@@ -109,6 +115,7 @@ class Population(object):
 #			speaker.update_speaker(ms,w,mh)
 #			hearer.update_hearer(ms,w,mh)
 			self._lastgameinfo = self._interaction._last_info
+			self._past = self._past[-99:]+[copy.copy(self._lastgameinfo)]
 
 	def get_lastgameinfo(self):
 		return self._lastgameinfo

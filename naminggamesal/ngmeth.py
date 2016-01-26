@@ -344,6 +344,51 @@ FUNC=N_words_pop
 graphconfig={"ymin":N_words_pop_min}#,"ymax":entropycouples_old_norm_max}
 custom_N_words_pop=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+#########distance_used##########
+
+
+def distance_used(pop,**kwargs):
+	return abs(pop._lastgameinfo[-1][0]-pop._lastgameinfo[-1][1])
+
+def distance_used_max(pop):
+	return 1
+
+def distance_used_min(pop):
+	return 0
+
+FUNC=distance_used
+graphconfig={"ymin":distance_used_min}#,"ymax":entropycouples_old_norm_max}
+custom_distance_used=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+
+
+#########actual_successrate##########
+
+
+def actual_successrate(pop,**kwargs):
+	s = 0
+	f = 0
+	for info in pop._past:
+		if pop.past[3]:
+			s += 1
+		else:
+			f += 1
+	if not s:
+		return 0
+	else:
+		return s/float(s+f)
+
+def actual_successrate_max(pop):
+	return 1
+
+def actual_successrate_min(pop):
+	return 0
+
+FUNC=actual_successrate
+graphconfig={"ymin":actual_successrate_min}#,"ymax":entropycouples_old_norm_max}
+custom_actual_successrate=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+
 #########entropycouples##########
 
 def entropycouples(pop,**kwargs):
@@ -746,6 +791,10 @@ custom_interactions_per_agent =custom_func.CustomFunc(FUNC,"time",**graphconfig)
 
 
 ################################################################
+
+
+
+
 ################  AUTRES    ####################################
 
 def m_limit_theorique(M,W):

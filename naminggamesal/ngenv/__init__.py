@@ -23,9 +23,20 @@ def get_environment(env_type=None, **env_cfg2):
 	return tempenv
 
 
-class Environment(object):
+#class Singleton(type):
+#	_instances = {}
+#	def __call__(cls, uuid_instance, *args, **kwargs):
+#		if (cls,uuid_instance) not in cls._instances:
+#			cls._instances[(cls,uuid_instance)] = super(Singleton, cls).__call__(uuid_instance=uuid_instance, *args, **kwargs)
+#		return cls._instances[cls,uuid_instance]
+#	def __copy__(cls, instance):
+#		return instance
 
-	def __init__(self, **env_cfg2):
+
+class Environment(object):
+	#__metaclass__ = Singleton
+	def __init__(self, uuid_instance, **env_cfg2):
+		self.uuid = uuid_instance
 		for key, value in env_cfg2.iteritems():
 			setattr(self, key, value)
 
