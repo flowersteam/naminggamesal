@@ -6,7 +6,7 @@ import numpy as np
 
 ##########
 class SpeakersChoice(Interaction):
-	def interact(self, speaker, hearer, pop, env):
+	def interact(self, speaker, hearer, pop):
 		ms = speaker.pick_m()
 		w = speaker.pick_w(ms)
 		mh = hearer.guess_m(w)

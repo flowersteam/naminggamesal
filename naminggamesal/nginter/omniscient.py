@@ -6,7 +6,7 @@ import numpy as np
 
 ##########
 class Omniscient(Interaction):
-	def interact(self, speaker, hearer, pop, env):
+	def interact(self, speaker, hearer, pop):
 
 		matrix_pop = pop.get_content()
 		matrix_hearer = hearer.get_vocabulary_content()
