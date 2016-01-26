@@ -462,7 +462,8 @@ graphconfig={"ymin":srtheo_min,"ymax":srtheo_max}
 custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########srtheo_cat##########
-
+from .ngstrat.naive import StratNaiveCategoryPlosOne
+strat_srtheo_cat = StratNaiveCategoryPlosOne
 def srtheo_cat(pop,**kwargs):
 	fail=0
 	succ=0
@@ -474,26 +475,30 @@ def srtheo_cat(pop,**kwargs):
 		v1 = agent1._vocabulary
 		v2 = agent2._vocabulary
 		ct = agent1._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2).next()
-		ms = random.choice(ct)
+		#ms = random.choice(ct)
+		ms = strat_srtheo_cat.pick_m(v1,agent1._memory,ct)
+		w = strat_srtheo_cat.pick_w(ms,v1,agent1._memory,ct)
+		mh = strat_srtheo_cat.guess_m(w,v2,agent2._memory,ct)
 
-		ct_maxinf = max([-1] + [m for m in ct if m < ms])
-		ct_minsup = min([2] + [m for m in ct if m > ms])
-		iv = v1.get_category(ms)
-		if iv.begin < ct_maxinf or iv.end >= ct_minsup:
-			w = v1.get_new_unknown_w()
-		else:
-			w = v1.get_random_known_w(m=ms)
 
-		ml = []
-		for m in ct:
-			if w in v2.get_known_words(m):
-				ml.append(m)
-		if not ml:
-			mh = None
-		else:
-			mh = random.choice(ml)
-		#print ct, ms, iv, ct_maxinf, ct_minsup, w, v2.get_known_words(ms), ml, mh
-		if agent2.eval_success(ms=ms, w=w, mh=mh):
+		#ct_maxinf = max([-1] + [m for m in ct if m < ms])
+		#ct_minsup = min([2] + [m for m in ct if m > ms])
+		#iv = v1.get_category(ms)
+		#if iv.begin < ct_maxinf or iv.end >= ct_minsup:
+		#	w = v1.get_new_unknown_w()
+		#else:
+		#	w = v1.get_random_known_w(m=ms)
+#
+#		#ml = []
+#		#for m in ct:
+#		#	if w in v2.get_known_words(m):
+#		#		ml.append(m)
+#		#if not ml:
+#		#	mh = None
+#		#else:
+#		#	mh = random.choice(ml)
+		##print ct, ms, iv, ct_maxinf, ct_minsup, w, v2.get_known_words(ms), ml, mh
+		if agent2.eval_success(ms=ms, w=w, mh=mh,context=ct):
 			succ += 1
 		else:
 			fail += 1
