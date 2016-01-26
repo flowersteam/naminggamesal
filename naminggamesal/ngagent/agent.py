@@ -14,14 +14,15 @@ from .. import ngstrat
 from . import ngsensor
 
 class Agent(object):
-	def __init__(self, voc_cfg, strat_cfg, sensor_cfg, agent_id=None):
+	def __init__(self, voc_cfg, strat_cfg, sensor_cfg=None, agent_id=None):
 		if agent_id is None:
 			self._id = str(uuid.uuid1())
 		else:
 			self._id = agent_id;
 		self._vocabulary = ngvoc.Vocabulary(**voc_cfg)
 		self._strategy = ngstrat.Strategy(**strat_cfg)
-		self._sensoryapparatus = ngsensor.get_sensor(**sensor_cfg)
+		if sensor_cfg is not None:
+			self._sensoryapparatus = ngsensor.get_sensor(**sensor_cfg)
 
 		if hasattr(self._vocabulary,'_M'):
 			self._M = self._vocabulary._M

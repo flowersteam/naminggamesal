@@ -17,7 +17,7 @@ from ..ngenv import get_environment
 
 class Population(object):
 
-	def __init__(self, voc_cfg, strat_cfg, interact_cfg, sensor_cfg, nbagent, env_cfg=None):
+	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent, sensor_cfg=None, env_cfg=None):
 		self._size = 0
 		self._voc_cfg = voc_cfg
 		if 'M' in voc_cfg.keys():
@@ -71,7 +71,7 @@ class Population(object):
 		if strat_cfg is None:
 			strat_cfg = self.strat_cfg
 		if sensor_cfg is None:
-			sensor_cfg = self.sensor_cfg
+			sensor_cfg = self._sensor_cfg
 		self._agentlist.append(Agent(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id))
 		self._size+=1
 
