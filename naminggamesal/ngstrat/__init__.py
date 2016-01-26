@@ -60,7 +60,7 @@ def Strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'s
 
 class BaseStrategy(object):
 
-	def __init__(self, vu_cfg, success_cfg, **strat_cfg2):
+	def __init__(self, vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, **strat_cfg2):
 		#for key, value in strat_cfg2.iteritems():
 		#	setattr(self, key, value)
 		self.voc_update = get_voc_update(**vu_cfg)

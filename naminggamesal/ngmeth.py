@@ -463,7 +463,7 @@ custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########srtheo_cat##########
 from .ngstrat.naive import StratNaiveCategoryPlosOne
-strat_srtheo_cat = StratNaiveCategoryPlosOne
+strat_srtheo_cat = StratNaiveCategoryPlosOne()
 def srtheo_cat(pop,**kwargs):
 	fail=0
 	succ=0
