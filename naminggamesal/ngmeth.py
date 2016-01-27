@@ -669,7 +669,7 @@ def overlap(pop,**kwargs):
 		for iv in sorted(ag2._vocabulary._content_coding):
 			ivt2.append(iv.begin)
 		ivt2.append(1.)
-		ivt.sort()
+		ivt1.sort()
 		ivt2.sort()
 		ivto = sorted(ivt1 + ivt2)
 		ovsum1 =  sum([(ivt1[k+1]-ivt1[k])**2 for k in range(len(ivt1)-1)])
