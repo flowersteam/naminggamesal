@@ -373,8 +373,6 @@ def actual_successrate(pop,**kwargs):
 			s += 1
 		else:
 			f += 1
-	print s
-	print f
 	if not s:
 		return 0
 	else:

@@ -22,7 +22,7 @@ class VocCategory(BaseVocabulary):
 
 	def __init__(self, shape=1, **voc_cfg2):
 		BaseVocabulary.__init__(self,**voc_cfg2)
-		self._content_coding = IntervalTree([Interval(0,1,[])])
+		self._content_coding = IntervalTree([Interval(0,1,{})])
 		self._content_decoding = {}
 
 	@voc_cache
@@ -31,7 +31,7 @@ class VocCategory(BaseVocabulary):
 
 	@voc_cache
 	def exists(self,m,w):
-		if w in self.get_category(m).data:
+		if w in self.get_category(m).data.keys():
 			return True
 		else:
 			return False
@@ -48,22 +48,34 @@ class VocCategory(BaseVocabulary):
 
 	@voc_cache
 	def get_M(self):
-		data = None
-		iv_l = sorted(self._content_coding)
-		for i in iv_l:
-			if i.data != data:
-				M += 1
-				data = i.data
-		return M
+		return len(self._content_coding)
+
+	@voc_cache
+	def get_score(self,m,w):
+		if w in self.get_known_words(m):
+			return self.get_category(m).data[w]
+		else:
+			return 0
 
 	@del_cache
-	def add(self,m,w,context=[]):
-		self.minmax_slice(m=m,w=w,context=context)
-		if w not in self.get_category(m).data:
-			self.get_category(m).data.append(w)
-		if self.get_category(m) not in self._content_decoding.setdefault(w,IntervalTree()):
-			self._content_decoding[w].add(self.get_category(m))
-			self._content_decoding[w].merge_overlaps()
+	def add(self,m,w,val=1,context=[]):
+		iv_inf,iv_sup = self.minmax_slice(m=m,w=w,context=context)
+		categ = self.get_category(m)
+		if iv_inf is not None:
+			w1 = self.get_new_unknown_w()
+			vals = [v for v in iv_inf.data.values() if v <1]
+			iv_inf.data[w1] = (1+max(vals+[0]))/2.
+		if iv_sup is not None:
+			w2 = self.get_new_unknown_w()
+			vals = [v for v in iv_sup.data.values() if v <1]
+			iv_sup.data[w2] = (1+max(vals+[0]))/2.
+		if val > self.get_score(m,w):
+			categ.data[w] = val
+
+		if w not in self._content_decoding.keys():
+			self._content_decoding[w] = IntervalTree()
+		self._content_decoding[w].add(Interval(categ.begin, categ.end))
+		self._content_decoding[w].merge_overlaps()
 
 	def datafunc_slicing(self,iv,islower):
 		return copy.deepcopy(iv.data) + [self.get_new_unknown_w()]
@@ -72,54 +84,60 @@ class VocCategory(BaseVocabulary):
 		return copy.deepcopy(iv.data)
 
 	@del_cache
-	def slice_intervaltree(self,m1,m2,w1=[],w2=[]):
-		if not isinstance(w1,list):
-			w1 = [w1]
-		if not isinstance(w2,list):
-			w2 = [w2]
+	def slice_intervaltree(self,m1,m2): # ,w1=[],w2=[],val1=1,val2=1):
+		#if not isinstance(w1,list):
+		#	w1 = [w1]
+		#if not isinstance(w2,list):
+		#	w2 = [w2]
 		if min(m1,m2) == m1:
 			m_1 = m1
-			w_1 = w1
+		#	w_1 = w1
 			m_2 = m2
-			w_2 = w2
+		#	w_2 = w2
 		else:
 			m_1 = m2
-			w_1 = w2
+		#	w_1 = w2
 			m_2 = m1
-			w_2 = w1
+		#	w_2 = w1
 		if m_1 < 0 or m_2 > 1:
 			return None
-		if self.get_category(m1) == self.get_category(m2):
-			def datafunc(iv,islower):
-				if islower:
-					w = [ word for word in w_1 if word not in iv.data ]
-					return copy.deepcopy(iv.data) + copy.deepcopy(w)
-				else:
-					w = [ word for word in w_2 if word not in iv.data ]
-					return copy.deepcopy(iv.data) + copy.deepcopy(w)
-			self._content_coding.slice((m_1+m_2)/2., datafunc)
+		if self.get_category(m_1) == self.get_category(m_2):
+			#def datafunc(iv,islower):
+			#	if islower:
+			#		w = [ word for word in w_1 if word not in iv.data ]
+			#		return copy.deepcopy(iv.data) + copy.deepcopy(w)
+			#	else:
+			#		w = [ word for word in w_2 if word not in iv.data ]
+			#		return copy.deepcopy(iv.data) + copy.deepcopy(w)
+			self._content_coding.slice((m_1+m_2)/2., self.datafunc_chopping)
 
 	@del_cache
-	def minmax_slice(self,m,w=[],context=[],new_words=True):
+	def minmax_slice(self,m,context=[],w=None):#,w=[],val=1,new_words=True,new_val=1):
 		ct_maxinf = max([-1] + [m1 for m1 in context if m1 < m])
 		ct_minsup = min([2] + [m2 for m2 in context if m2 > m])
-		if new_words:
-			if not w:
-				w = self.get_new_unknown_w()
-			w1 = self.get_new_unknown_w()
-			w2 = self.get_new_unknown_w()
-		else:
-			w1 = []
-			w2 = []
+		self.slice_intervaltree(m,ct_maxinf)#,w,w1)
+		self.slice_intervaltree(m,ct_minsup)#,w,w2)
+		#if new_words:
+		#	if not w:
+		#		w = self.get_new_unknown_w()
+		#	w1 = self.get_new_unknown_w()
+		#	w2 = self.get_new_unknown_w()
+		#else:
+		#	w1 = []
+		#	w2 = []
+		if w is not None:
+			vals = [v for v in self.get_category(m).data.values() if v <1]
+			self.get_category(m).data[w] = (1+max(vals+[0]))/2.
+		iv_inf = next((iv for iv in self._content_coding if iv.end == ct_maxinf),None)
+		iv_sup = next((iv for iv in self._content_coding if iv.begin == ct_minsup),None)
+		return iv_inf,iv_sup
 
-		self.slice_intervaltree(m,ct_maxinf,w,w1)
-		self.slice_intervaltree(m,ct_minsup,w,w2)
 
 	@del_cache
 	def rm(self,m,w):
-		if w in self.get_category(m).data:
-			self.get_category(m).data.remove(w)
-		if w in self._content_decoding.keys() and self._content_decoding[w][m]:
+		if w in self.get_known_words(m):
+			del self.get_category(m).data[w]
+		if w in self._content_decoding.keys():
 			self._content_decoding[w].chop(self.get_category(m).begin,self.get_category(m).end,self.datafunc_chopping)
 			if not self._content_decoding[w]:
 				del self._content_decoding[w]
@@ -151,9 +169,14 @@ class VocCategory(BaseVocabulary):
 	@voc_cache
 	def get_known_words(self,m=None,option=None):
 		if m is None:
-			return self._content_decoding.keys()
+			if option is None:
+				return self._content_decoding.keys()
 		else:
-			return self.get_category(m).data
+			if option is None:
+				return self.get_category(m).data
+			elif option == 'max':
+				val_max = max([0]+list(self.get_category(m).data.values()))
+				return [w for w,val in self.get_category(m).data.items() if val == val_max]
 
 	@voc_cache
 	def get_known_meanings(self,w=None,option=None):
@@ -223,7 +246,7 @@ class VocCategory(BaseVocabulary):
 			if not self.get_category(m).data:
 				return self.get_new_unknown_w()
 			else:
-				return random.choice(self.get_category(m).data)
+				return random.choice(self.get_known_words(m,option=option))
 
 
 
@@ -233,9 +256,11 @@ class VocCategory(BaseVocabulary):
 		data = None
 		for iv in sorted(self._content_coding):
 			list_perceptual.append(iv.begin)
-			if data != iv.data:
+			val = max([0]+list(iv.data.values()))
+			data1 = [w for w,v in iv.data.items() if v == val]
+			if data != data1:
 				list_semantic.append(iv.begin)
-				data = iv.data
+				data = copy.copy(data1)
 		list_semantic.append(1.)
 		list_perceptual.append(1.)
 

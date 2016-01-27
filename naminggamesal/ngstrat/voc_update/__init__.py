@@ -8,6 +8,7 @@ vu_class={
 	'imitation':'imitation.Imitation',
 	'minimal':'minimal.Minimal',
 	'minimalsynonly':'minimal.MinimalSynOnly',
+	'minimalpone':'minimal.MinimalPOne',
 
 	'BLIS':'lateral_inhib.BasicLateralInhibition',
 	'BLIS_epirob':'lateral_inhib.BLISEpirob',

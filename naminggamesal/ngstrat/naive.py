@@ -73,43 +73,40 @@ class StratNaiveCategory(BaseStrategy):
 class StratNaiveCategoryPlosOne(StratNaiveCategory):
 
 	def pick_w(self, m, voc, mem, context):
-		wl = voc.get_known_words(m)
-		succ = mem[m]
+		wl = voc.get_known_words(m,option='max')
 		if not wl:
 			return voc.get_new_unknown_w()
-		elif succ in wl:
-			return succ
 		else:
-			return wl[-1]
+			return random.choice(list(wl))
 
-	def init_memory(self,voc):
-		return IntervalTree([Interval(0,1,None)])
-
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
-		cat = voc.get_category(ms)
-		if bool_succ:
-			iv = Interval(cat.begin,cat.end,w)
-			mem.chop(cat.begin,cat.end)
-			iv_before = Interval(-1,0,[None])
-			iv_after = Interval(1,2,[None])
-			for iv2 in [i for i in sorted(mem) if i.end==iv.begin]:
-				iv_before = iv2
-			for iv2 in [i for i in sorted(mem) if iv.end==i.begin]:
-				iv_after = iv2
-			if iv_before.data != w and iv_after.data != w:
-				mem.add(iv)
-			elif iv_before.data == w and iv_after.data != w:
-				mem.chop(iv_before.begin,iv_before.end)
-				mem.add(Interval(iv_before.begin,cat.end,w))
-			elif iv_before.data != w and iv_after.data == w:
-				mem.chop(iv_after.begin,iv_after.end)
-				mem.add(Interval(cat.begin,iv_after.end,w))
-			elif iv_before.data == w and iv_after.data == w:
-				mem.chop(iv_before.begin,iv_after.end)
-				mem.add(Interval(iv_before.begin,iv_after.end,w))
-		elif not bool_succ and role == 'hearer' and len(cat.data) > 1:#!!!!!!!!!!
-			w1 = cat.data.pop()
-			w2 = cat.data.pop()
-			cat.data.append(w1)
-			cat.data.append(w2)
+#	def init_memory(self,voc):
+#		return IntervalTree([Interval(0,1,None)])
+#
+#	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
+#		cat = voc.get_category(ms)
+#		if bool_succ:
+#			iv = Interval(cat.begin,cat.end,w)
+#			mem.chop(cat.begin,cat.end)
+#			iv_before = Interval(-1,0,[None])
+#			iv_after = Interval(1,2,[None])
+#			for iv2 in [i for i in sorted(mem) if i.end==iv.begin]:
+#				iv_before = iv2
+#			for iv2 in [i for i in sorted(mem) if iv.end==i.begin]:
+#				iv_after = iv2
+#			if iv_before.data != w and iv_after.data != w:
+#				mem.add(iv)
+#			elif iv_before.data == w and iv_after.data != w:
+#				mem.chop(iv_before.begin,iv_before.end)
+#				mem.add(Interval(iv_before.begin,cat.end,w))
+#			elif iv_before.data != w and iv_after.data == w:
+#				mem.chop(iv_after.begin,iv_after.end)
+#				mem.add(Interval(cat.begin,iv_after.end,w))
+#			elif iv_before.data == w and iv_after.data == w:
+#				mem.chop(iv_before.begin,iv_after.end)
+#				mem.add(Interval(iv_before.begin,iv_after.end,w))
+#		elif not bool_succ and role == 'hearer' and len(cat.data) > 1:#!!!!!!!!!!
+#			w1 = cat.data.pop()
+#			w2 = cat.data.pop()
+#			cat.data.append(w1)
+#			cat.data.append(w2)
 
