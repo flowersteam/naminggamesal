@@ -91,8 +91,10 @@ def Ncat_semantic(agent,**kwargs):
 	n = 0
 	data = None
 	for iv in sorted(agent._vocabulary._content_coding):
-		if data != iv.data:
-			data = iv.data
+		val = max([0]+list(iv.data.values()))
+		data1 = [w for w,v in iv.data.items() if v == val]
+		if data != data1:
+			data = copy.copy(data1)
 			n += 1
 	return n
 
@@ -709,14 +711,20 @@ def overlap_semantic(pop,**kwargs):
 		ivt1 = []
 		data = None
 		for iv in sorted(ag1._vocabulary._content_coding):
-			if iv.data != data:
+			val = max([0]+list(iv.data.values()))
+			data1 = [w for w,v in iv.data.items() if v == val]
+			if data != data1:
 				ivt1.append(iv.begin)
+				data = copy.copy(data1)
 		ivt1.append(1.)
 		ivt2 = []
 		data = None
 		for iv in sorted(ag2._vocabulary._content_coding):
-			if iv.data != data:
+			val = max([0]+list(iv.data.values()))
+			data1 = [w for w,v in iv.data.items() if v == val]
+			if data != data1:
 				ivt2.append(iv.begin)
+				data = copy.copy(data1)
 		ivt2.append(1.)
 		ivto = sorted(ivt1 + ivt2)
 		ovsum1 =  sum([(ivt1[k+1]-ivt1[k])**2 for k in range(len(ivt1)-1)])
