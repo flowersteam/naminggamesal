@@ -78,10 +78,11 @@ class CustomGraph(object):
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def show(self):
-		plt.figure()
 		plt.ion()
+		fig = plt.gcf()
 		self.draw()
 		plt.show()
+		return fig
 
 	def save(self,*path):
 		if path:

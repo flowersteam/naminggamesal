@@ -74,6 +74,16 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 
 
 
+class CategoryDistCenterStrat(CategorySuccessThresholdStrat): #For the moment only for context size = 2
+
+	def get_coords(self,context):
+		m_1 = np.mean(context)
+		m_2 = abs(context[0]-context[1])
+		x = int(self.nb_boxes*m_1)
+		y = int(self.nb_boxes*m_2)
+		return x,y
+
+
 class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 
 	def __init__(self, vu_cfg, success_cfg, threshold=0.9, nb_ctxt=20, past_window=100, **strat_cfg2):
