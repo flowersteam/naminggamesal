@@ -92,9 +92,9 @@ class StratNaiveCategoryPlosOne(StratNaiveCategory):
 			mem.chop(cat.begin,cat.end)
 			iv_before = Interval(-1,0,[None])
 			iv_after = Interval(1,2,[None])
-			for iv2 in [i for i in mem if i.end==iv.begin]:
+			for iv2 in [i for i in sorted(mem) if i.end==iv.begin]:
 				iv_before = iv2
-			for iv2 in [i for i in mem if iv.end==i.begin]:
+			for iv2 in [i for i in sorted(mem) if iv.end==i.begin]:
 				iv_after = iv2
 			if iv_before.data != w and iv_after.data != w:
 				mem.add(iv)

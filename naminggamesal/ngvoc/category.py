@@ -161,7 +161,7 @@ class VocCategory(BaseVocabulary):
 			new_tree = IntervalTree()
 			data = None
 			begin = 0
-			for iv in self._content_coding:
+			for iv in sorted(self._content_coding):
 				if iv.data != data:
 					if data:
 						new_tree.add(Interval(begin, iv.end))
@@ -231,7 +231,7 @@ class VocCategory(BaseVocabulary):
 		list_perceptual = []
 		list_semantic = []
 		data = None
-		for iv in self._content_coding:
+		for iv in sorted(self._content_coding):
 			list_perceptual.append(iv.begin)
 			if data != iv.data:
 				list_semantic.append(iv.begin)

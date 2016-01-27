@@ -90,7 +90,7 @@ custom_Ncat_percept=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 def Ncat_semantic(agent,**kwargs):
 	n = 0
 	data = None
-	for iv in agent._vocabulary._content_coding:
+	for iv in sorted(agent._vocabulary._content_coding):
 		if data != iv.data:
 			data = iv.data
 			n += 1
@@ -130,7 +130,7 @@ custom_N_words=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 def cat_synonymy(agent,**kwargs):
 	n = 0
 	w = 0
-	for iv in agent._vocabulary._content_coding:
+	for iv in sorted(agent._vocabulary._content_coding):
 		w += len(iv.data)
 		n += 1
 	return w / float(n)
@@ -652,7 +652,7 @@ custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########overlap##########
 
 def overlap(pop,**kwargs):
-	n_r = min((pop._size**2)/2,100)
+	n_r = min((pop._size**2),100)
 	overlap_val = 0
 	for i in range(n_r):
 		agent1_id = pop.pick_speaker()
@@ -662,13 +662,15 @@ def overlap(pop,**kwargs):
 
 
 		ivt1 = []
-		for iv in ag1._vocabulary._content_coding:
+		for iv in sorted(ag1._vocabulary._content_coding):
 			ivt1.append(iv.begin)
 		ivt1.append(1.)
 		ivt2 = []
-		for iv in ag2._vocabulary._content_coding:
+		for iv in sorted(ag2._vocabulary._content_coding):
 			ivt2.append(iv.begin)
 		ivt2.append(1.)
+		ivt.sort()
+		ivt2.sort()
 		ivto = sorted(ivt1 + ivt2)
 		ovsum1 =  sum([(ivt1[k+1]-ivt1[k])**2 for k in range(len(ivt1)-1)])
 		ovsum2 =  sum([(ivt2[k+1]-ivt2[k])**2 for k in range(len(ivt2)-1)])
@@ -708,13 +710,13 @@ def overlap_semantic(pop,**kwargs):
 		ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 		ivt1 = []
 		data = None
-		for iv in ag1._vocabulary._content_coding:
+		for iv in sorted(ag1._vocabulary._content_coding):
 			if iv.data != data:
 				ivt1.append(iv.begin)
 		ivt1.append(1.)
 		ivt2 = []
 		data = None
-		for iv in ag2._vocabulary._content_coding:
+		for iv in sorted(ag2._vocabulary._content_coding):
 			if iv.data != data:
 				ivt2.append(iv.begin)
 		ivt2.append(1.)
