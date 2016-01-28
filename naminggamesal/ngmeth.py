@@ -4,6 +4,7 @@ import numpy as np
 import math
 import random
 import networkx as nx
+from intervaltree import IntervalTree,Interval
 
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
@@ -429,6 +430,61 @@ def entropycouples_norm_min(pop):
 FUNC=entropycouples_norm
 graphconfig={"ymin":entropycouples_norm_min,"ymax":entropycouples_norm_max}
 custom_entropycouples_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########cat_agreement##########
+
+def cat_agreement(pop,**kwargs):
+	agr = 0
+	for i in range(100):
+		agent1_id = pop.pick_speaker()
+		agent2_id = pop.pick_hearer(agent1_id)
+		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
+		#ivt1 = copy.deepcopy(agent1._vocabulary._content_decoding)
+		#ivt2 = copy.deepcopy(agent2._vocabulary._content_decoding)
+
+		ivt1 = {}
+		ivt2 = {}
+
+		for iv in agent1._vocabulary._content_coding:
+			val_max = max([0]+list(iv.data.values()))
+			wl = [w for w,v in iv.data.items() if v == val_max]
+			if wl:
+				ivt1.setdefault(wl[0], IntervalTree()).add(Interval(iv.begin,iv.end))
+		for iv in agent2._vocabulary._content_coding:
+			val_max = max([0]+list(iv.data.values()))
+			wl = [w for w,v in iv.data.items() if v == val_max]
+			if wl:
+				ivt2.setdefault(wl[0], IntervalTree()).add(Interval(iv.begin,iv.end))
+
+		for w in ivt1.keys():
+			ivt1[w].merge_overlaps()
+		for w in ivt2.keys():
+			ivt2[w].merge_overlaps()
+
+		ivt = IntervalTree()
+		for w in ivt1.keys():
+			if w in ivt2.keys():
+				for iv in ivt1[w]:
+					ivt2[w].slice(iv.end)
+					ivt2[w].slice(iv.begin)
+				for iv in ivt2[w]:
+					ivt1[w].slice(iv.end)
+					ivt1[w].slice(iv.begin)
+				ivt.update(ivt1[w] & ivt2[w])
+		ivt.merge_overlaps()
+		agr += sum([iv.end-iv.begin for iv in ivt])
+	return agr/100.
+
+def cat_agreement_max(pop):
+	return 1
+
+def cat_agreement_min(pop):
+	return 0
+
+FUNC=cat_agreement
+graphconfig={"ymin":cat_agreement_min,"ymax":cat_agreement_max}
+custom_cat_agreement=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########srtheo##########
 

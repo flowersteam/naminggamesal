@@ -43,21 +43,21 @@ class NamingGamesDB(object):
 	def merge(self, other_db, id_list=None, remove=False, main_only=False):
 		if id_list is None:
 			id_list=other_db.get_id_list(all_id=True)
-		for uuid in id_list:
-			if self.id_in_db(uuid) and (self.get_modif_time(uuid)<other_db.get_modif_time(uuid)):
-				self.commit(other_db.get_experiment(uuid=uuid))
+		for xp_uuid in id_list:
+			if self.id_in_db(xp_uuid) and (self.get_modif_time(xp_uuid)<other_db.get_modif_time(xp_uuid)):
+				self.commit(other_db.get_experiment(xp_uuid=xp_uuid))
 				#these few lines would be seen as repetitive and unnecessary, but for large databases it avoids loading all experiment objects, just the needed ones
-			elif not self.id_in_db(uuid):
-				self.commit(other_db.get_experiment(uuid=uuid))
+			elif not self.id_in_db(xp_uuid):
+				self.commit(other_db.get_experiment(xp_uuid=xp_uuid))
 		if not main_only:
-			for uuid in id_list:
-				other_methd_list=other_db.get_method_list(uuid)
-				methd_list=self.get_method_list(uuid)
+			for xp_uuid in id_list:
+				other_methd_list=other_db.get_method_list(xp_uuid)
+				methd_list=self.get_method_list(xp_uuid)
 				for met in other_methd_list:
-					if (met in methd_list) and (self.get_modif_time(uuid,graph=met)<other_db.get_modif_time(uuid,graph=met)):
-						self.commit_data(other_db.get_experiment(uuid=uuid),other_db.get_graph(uuid,method=met),met)
+					if (met in methd_list) and (self.get_modif_time(xp_uuid,graph=met)<other_db.get_modif_time(xp_uuid,graph=met)):
+						self.commit_data(other_db.get_experiment(xp_uuid=xp_uuid),other_db.get_graph(xp_uuid,method=met),met)
 					elif not (met in methd_list):
-						self.commit_data(other_db.get_experiment(uuid=uuid),other_db.get_graph(uuid,method=met),met)
+						self.commit_data(other_db.get_experiment(xp_uuid=xp_uuid),other_db.get_graph(xp_uuid,method=met),met)
 		if remove:
 			os.remove(other_db.dbpath)
 
@@ -68,23 +68,23 @@ class NamingGamesDB(object):
 			cursor = sql.connect(self.dbpath).cursor()
 			with sql.connect(other_db.dbpath, isolation_level=None):
 				other_cursor = sql.connect(other_db.dbpath, isolation_level=None).cursor()
-				for uuid in id_list:
+				for xp_uuid in id_list:
 					if not graph_only:
-						cursor.execute("SELECT * FROM main_table WHERE Id=\'"+str(uuid)+"\'")
+						cursor.execute("SELECT * FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
 						xp_data = cursor.fetchone()
-						if not uuid in other_db.get_id_list():
+						if not xp_uuid in other_db.get_id_list():
 							other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
-						elif self.get_param(uuid=uuid, param='Tmax') > other_db.get_param(uuid=uuid, param='Tmax'):
-							other_cursor.execute("DELETE FROM main_table WHERE Id=\'"+str(uuid)+"\'")
+						elif self.get_param(xp_uuid=xp_uuid, param='Tmax') > other_db.get_param(xp_uuid=xp_uuid, param='Tmax'):
+							other_cursor.execute("DELETE FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
 							other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
 					for method in methods:
-						if self.data_exists(uuid=uuid, method=method):
-							cursor.execute("SELECT * FROM computed_data_table WHERE Id=\'"+str(uuid)+"\' AND Function= \'"+method+"\'")
+						if self.data_exists(xp_uuid=xp_uuid, method=method):
+							cursor.execute("SELECT * FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function= \'"+method+"\'")
 							gr_data = cursor.fetchone()
-							if not other_db.data_exists(uuid=uuid, method=method):
+							if not other_db.data_exists(xp_uuid=xp_uuid, method=method):
 								other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
-							elif self.get_param(uuid=uuid, method=method, param='Time_max') > other_db.get_param(uuid=uuid, method=method, param='Time_max'):
-								other_cursor.execute("DELETE FROM computed_data_table WHERE Id=\'"+str(uuid)+"\' AND Function= \'"+method+"\'")
+							elif self.get_param(xp_uuid=xp_uuid, method=method, param='Time_max') > other_db.get_param(xp_uuid=xp_uuid, method=method, param='Time_max'):
+								other_cursor.execute("DELETE FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function= \'"+method+"\'")
 								other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
 
 	def delete(self, id_list, graph_only=False, met=''):
@@ -93,52 +93,52 @@ class NamingGamesDB(object):
 			if met:
 				met = ' AND Function=\'{}\''.format(met)
 			if graph_only:
-				for uuid in id_list:
-					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(uuid)+met))
+				for xp_uuid in id_list:
+					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(xp_uuid)+met))
 			else:
-				for uuid in id_list:
-					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(uuid)+met))
-					cursor.execute("DELETE FROM main_table WHERE Id=\'{}\'".format(str(uuid)))
+				for xp_uuid in id_list:
+					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(xp_uuid)+met))
+					cursor.execute("DELETE FROM main_table WHERE Id=\'{}\'".format(str(xp_uuid)))
 
 
-	def get_method_list(self,uuid):
+	def get_method_list(self,xp_uuid):
 		with sql.connect(self.dbpath):
 			cursor=sql.connect(self.dbpath).cursor()
-			cursor.execute("SELECT Function FROM computed_data_table WHERE Id=\'"+str(uuid)+"\'")
+			cursor.execute("SELECT Function FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\'")
 			templist=list(cursor)
 			for i in range(0,len(templist)):
 				templist[i]=templist[i][0]
 			return templist
 
-	def get_modif_time(self,uuid,graph=None):
+	def get_modif_time(self,xp_uuid,graph=None):
 		with sql.connect(self.dbpath):
 			cursor=sql.connect(self.dbpath).cursor()
 			if not graph:
-				cursor.execute("SELECT Modif_Time FROM main_table WHERE Id=\'"+str(uuid)+"\'")
+				cursor.execute("SELECT Modif_Time FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
 				return cursor.fetchone()[0]
 			else:
-				cursor.execute("SELECT Modif_Time FROM computed_data_table WHERE Id=\'"+str(uuid)+"\' AND Function=\'"+graph+"\'")
+				cursor.execute("SELECT Modif_Time FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function=\'"+graph+"\'")
 				return cursor.fetchone()[0]
 
-	def id_in_db(self,uuid):
+	def id_in_db(self,xp_uuid):
 		with sql.connect(self.dbpath):
 			cursor=sql.connect(self.dbpath).cursor()
-			cursor.execute("SELECT Id FROM main_table WHERE Id=\'"+str(uuid)+"\'")
+			cursor.execute("SELECT Id FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
 			if cursor.fetchall():
 				return True
 			else:
 				return False
 
-	def get_experiment(self, uuid=None, force_new=False, blacklist=[], pattern=None, tmax=0, **xp_cfg):
+	def get_experiment(self, xp_uuid=None, force_new=False, blacklist=[], pattern=None, tmax=0, **xp_cfg):
 		if force_new:
 			tempexp = Experiment(database=self,**xp_cfg)
 			tempexp.commit_to_db()
-		elif uuid is not None:
-			if self.id_in_db(uuid):
+		elif xp_uuid is not None:
+			if self.id_in_db(xp_uuid):
 				conn=sql.connect(self.dbpath)
 				with conn:
 					cursor=conn.cursor()
-					cursor.execute("SELECT Experiment_object FROM main_table WHERE Id=\'"+str(uuid)+"\'")
+					cursor.execute("SELECT Experiment_object FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
 					tempblob=cursor.fetchone()
 					tempexp = cPickle.loads(bz2.decompress(str(tempblob[0])))
 					tempexp.db=self
@@ -153,16 +153,16 @@ class NamingGamesDB(object):
 				except ValueError:
 					pass
 			temptmax = -1
-			for uuid in templist:
-				t = int(self.get_param(param='Tmax', uuid=uuid))
+			for xp_uuid in templist:
+				t = int(self.get_param(param='Tmax', xp_uuid=xp_uuid))
 				temptmax = max(temptmax, min(t ,tmax))
-			for uuid in templist:
-				t = int(self.get_param(param='Tmax', uuid=uuid))
+			for xp_uuid in templist:
+				t = int(self.get_param(param='Tmax', xp_uuid=xp_uuid))
 				if t < temptmax:
-					templist.remove(uuid)
+					templist.remove(xp_uuid)
 			if templist:
 				i=random.randint(0,len(templist)-1)
-				tempexp = self.get_experiment(uuid=templist[i])
+				tempexp = self.get_experiment(xp_uuid=templist[i])
 				tempexp.db=self
 			else:
 				tempexp = Experiment(database=self,**xp_cfg)
@@ -170,11 +170,11 @@ class NamingGamesDB(object):
 		return tempexp
 
 
-	def get_graph(self,uuid=None,xp_cfg=None,method="srtheo",tmin=0,tmax=None):
+	def get_graph(self,xp_uuid=None,xp_cfg=None,method="srtheo",tmin=0,tmax=None):
 		conn=sql.connect(self.dbpath)
 		with conn:
 			cursor=conn.cursor()
-			cursor.execute("SELECT Custom_Graph FROM computed_data_table WHERE Id=\'"+str(uuid)+"\' AND Function=\'"+method+"\'")
+			cursor.execute("SELECT Custom_Graph FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function=\'"+method+"\'")
 			tempblob=cursor.fetchone()
 			return cPickle.loads(bz2.decompress(str(tempblob[0])))
 		#TODO: implement dealing with xp_cfg
@@ -228,14 +228,14 @@ class NamingGamesDB(object):
 			return templist
 		#TODO: implement generator instead of list??
 
-	def get_param(self, uuid, param, method=None):
+	def get_param(self, xp_uuid, param, method=None):
 		conn=sql.connect(self.dbpath)
 		with conn:
 			cursor=conn.cursor()
 			if method is None:
-				cursor.execute("SELECT {} FROM {} WHERE Id=\'{}\'".format(param, 'main_table', uuid))
+				cursor.execute("SELECT {} FROM {} WHERE Id=\'{}\'".format(param, 'main_table', xp_uuid))
 			else:
-				cursor.execute("SELECT {} FROM {} WHERE Id=\'{}\' and Function=\'{}\'".format(param, 'computed_data_table', uuid, method))
+				cursor.execute("SELECT {} FROM {} WHERE Id=\'{}\' and Function=\'{}\'".format(param, 'computed_data_table', xp_uuid, method))
 			temp = cursor.fetchone()
 			return temp[0]
 
@@ -289,7 +289,8 @@ class NamingGamesDB(object):
 			tempmodiftup2=cursor.fetchone()
 			if not tempmodiftup:
 				if not graph._X[0][0] == 0:
-					graph.complete_with(self.get_graph(exp,graph,method))
+					print graph._X
+					graph.complete_with(self.get_graph(exp.uuid,graph,method))
 				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 				cursor.execute("INSERT INTO computed_data_table VALUES(?,?,?,?,?,?,?)", (\
 					exp.uuid, \
@@ -306,11 +307,11 @@ class NamingGamesDB(object):
 					+"Time_max=\'"+str(graph._X[0][-1])+"\', "\
 					+"Custom_Graph=? WHERE Id=\'"+str(exp.uuid)+"\' AND Function=\'"+method+"\'",(binary,))\
 
-	def data_exists(self,uuid,method):
+	def data_exists(self,xp_uuid,method):
 		conn=sql.connect(self.dbpath)
 		with conn:
 			cursor=conn.cursor()
-			cursor.execute("SELECT Id FROM computed_data_table WHERE Id=\'"+uuid+"\' AND Function=\'"+method+"\'")
+			cursor.execute("SELECT Id FROM computed_data_table WHERE Id=\'"+xp_uuid+"\' AND Function=\'"+method+"\'")
 			if cursor.fetchall():
 				return True
 			else:
@@ -360,7 +361,7 @@ class Experiment(ngsimu.Experiment):
 			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax, autocommit=autocommit, tempgraph=tempgraph)
 		while self._T[ind]>tmax:
 			ind-=1
-		if self.db.data_exists(uuid=self.uuid, method=method):
+		if self.db.data_exists(xp_uuid=self.uuid, method=method):
 			if tempgraph is None:
 				tempgraph = self.db.get_graph(self.uuid, method=method)
 			#dbmin = tempgraph._X[0][0] - self._time_step
