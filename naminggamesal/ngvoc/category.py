@@ -188,11 +188,12 @@ class VocCategory(BaseVocabulary):
 			data = None
 			begin = 0
 			for iv in sorted(self._content_coding):
-				if iv.data != data:
+				m1 = (iv.end-iv.begin)/2.
+				if self.get_known_words(m1,option='max') != data:
 					if data:
 						new_tree.add(Interval(begin, iv.end))
 					begin = iv.end
-					data = iv.data
+					data = self.get_known_words(m1,option='max')
 			return new_tree
 		elif w in self._content_decoding.keys():
 			return self._content_decoding[w]

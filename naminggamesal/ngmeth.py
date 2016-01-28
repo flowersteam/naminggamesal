@@ -70,6 +70,22 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":success_rate_min,"ymax":success_rate_max}
 custom_success_rate=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
+#########connex_components_per_word##########
+
+def connex_components_per_word(agent,**kwargs):
+	return sum([len(x) for x in agent._vocabulary._content_decoding.values()])/float(len(agent._vocabulary._content_decoding.keys()))
+
+def connex_components_per_word_max(pop):
+	return 1
+
+def connex_components_per_word_min(pop):
+	return 0
+
+FUNC=connex_components_per_word
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":connex_components_per_word_min}#,"ymax":connex_components_per_word_max}
+custom_connex_components_per_word=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
 #########Ncat_percept##########
 
 def Ncat_percept(agent,**kwargs):
@@ -148,6 +164,64 @@ FUNC=cat_synonymy
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":cat_synonymy_min}#,"ymax":cat_synonymy_max}
 custom_cat_synonymy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########norm_std_Ncat##########
+
+def norm_std_Ncat(agent,**kwargs):
+	ncat = Ncat_semantic(agent)
+	cat_l = agent._vocabulary.get_known_meanings()
+	var = sum([(len(cat)-1./ncat)**2 for cat in cat_l])/float(ncat)
+	return ncat*np.sqrt(var)
+
+def norm_std_Ncat_max(pop):
+	return 1
+
+def norm_std_Ncat_min(pop):
+	return 0
+
+FUNC=norm_std_Ncat
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":norm_std_Ncat_min}#,"ymax":norm_std_Ncat_max}
+custom_norm_std_Ncat=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########norm_std_Npercept##########
+
+def norm_std_Npercept(agent,**kwargs):
+	ncat = Ncat_percept(agent)
+	cat_l = agent._vocabulary._content_coding()
+	var = sum([(len(cat)-1./ncat)**2 for cat in cat_l])/float(ncat)
+	return ncat*np.sqrt(var)
+
+def norm_std_Npercept_max(pop):
+	return 1
+
+def norm_std_Npercept_min(pop):
+	return 0
+
+FUNC=norm_std_Npercept
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":norm_std_Npercept_min}#,"ymax":norm_std_Npercept_max}
+custom_norm_std_Npercept=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########dist_threshold##########
+
+def dist_threshold(agent,**kwargs):
+	agent._strategy.get_dist_threshold(agent._vocabulary,agent._memory)
+	return ncat*np.sqrt(var)
+
+def dist_threshold_max(pop):
+	return 1
+
+def dist_threshold_min(pop):
+	return 0
+
+FUNC=dist_threshold
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":dist_threshold_min}#,"ymax":dist_threshold_max}
+custom_dist_threshold=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
 #########entropy##########
@@ -347,6 +421,28 @@ FUNC=N_words_pop
 graphconfig={"ymin":N_words_pop_min}#,"ymax":entropycouples_old_norm_max}
 custom_N_words_pop=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+#########N_words_ratio##########
+
+
+def N_words_ratio(pop,**kwargs):
+	words = set()
+	n = 0
+	for ag in pop._agentlist:
+		for w in ag._vocabulary._content_decoding.keys():
+			words.add(w)
+			n += 1
+	return len(words)*len(pop._agentlist)/float(n)
+
+def N_words_ratio_max(pop):
+	return 1
+
+def N_words_ratio_min(pop):
+	return 0
+
+FUNC=N_words_ratio
+graphconfig={"ymin":N_words_ratio_min}#,"ymax":entropycouples_old_norm_max}
+custom_N_words_ratio=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
 #########distance_used##########
 
 
@@ -360,9 +456,56 @@ def distance_used_min(pop):
 	return 0
 
 FUNC=distance_used
-graphconfig={"ymin":distance_used_min}#,"ymax":entropycouples_old_norm_max}
+graphconfig={"ymin":distance_used_min,"ymax":entropycouples_old_norm_max}
 custom_distance_used=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+
+#########discrim_success##########
+
+def discrim_success(pop,**kwargs):
+	n = 0
+	for i in range(100):
+		agent = random.choice(pop._agentlist)
+		m1, m2 = agent._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2).next()
+		if agent._vocabulary.get_category(m1) != agent._vocabulary.get_category(m2):
+			n += 1
+		agent._vocabulary.del_cache()
+	return n/100.
+
+def discrim_success_max(pop):
+	return 1
+
+def discrim_success_min(pop):
+	return 0
+
+FUNC=discrim_success
+graphconfig={"ymin":discrim_success_min,"ymax":discrim_success_max}
+custom_discrim_success=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########discrim_success_semantic##########
+
+def discrim_success_semantic(pop,**kwargs):
+	n = 0
+	for i in range(100):
+		agent = random.choice(pop._agentlist)
+		m1, m2 = agent._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2).next()
+		wl_1 = agent._vocabulary.get_known_words(m1,option='max')
+		wl_2 = agent._vocabulary.get_known_words(m2,option='max')
+		if wl_1 != wl_2:
+			n += 1
+
+		agent._vocabulary.del_cache()
+	return n/100.
+
+def discrim_success_semantic_max(pop):
+	return 1
+
+def discrim_success_semantic_min(pop):
+	return 0
+
+FUNC=discrim_success_semantic
+graphconfig={"ymin":discrim_success_semantic_min,"ymax":discrim_success_semantic_max}
+custom_discrim_success_semantic=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 
 #########actual_successrate##########
@@ -730,7 +873,10 @@ def overlap(pop,**kwargs):
 		ivto = sorted(ivt1 + ivt2)
 		ovsum1 =  sum([(ivt1[k+1]-ivt1[k])**2 for k in range(len(ivt1)-1)])
 		ovsum2 =  sum([(ivt2[k+1]-ivt2[k])**2 for k in range(len(ivt2)-1)])
-		ovsumo =  sum([(ivto[k+1]-ivto[k])**2 for k in range(len(ivto)-1)])
+		if ivto == IntervalTree([Interval(0,1)]):
+			ovsumo = 0
+		else:
+			ovsumo =  sum([(ivto[k+1]-ivto[k])**2 for k in range(len(ivto)-1)])
 
 #		ivt1 = copy.deepcopy(ag1._vocabulary._content_coding)
 #		ivt2 = copy.deepcopy(ag2._vocabulary._content_coding)
@@ -785,7 +931,10 @@ def overlap_semantic(pop,**kwargs):
 		ivto = sorted(ivt1 + ivt2)
 		ovsum1 =  sum([(ivt1[k+1]-ivt1[k])**2 for k in range(len(ivt1)-1)])
 		ovsum2 =  sum([(ivt2[k+1]-ivt2[k])**2 for k in range(len(ivt2)-1)])
-		ovsumo =  sum([(ivto[k+1]-ivto[k])**2 for k in range(len(ivto)-1)])
+		if ivto == IntervalTree([Interval(0,1)]):
+			ovsumo = 0
+		else:
+			ovsumo =  sum([(ivto[k+1]-ivto[k])**2 for k in range(len(ivto)-1)])
 		overlap_val += (2*ovsumo/float(ovsum1 + ovsum2))
 	return overlap_val / float(n_r)
 
