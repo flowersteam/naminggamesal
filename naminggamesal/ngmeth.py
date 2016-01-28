@@ -73,7 +73,10 @@ custom_success_rate=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 #########connex_components_per_word##########
 
 def connex_components_per_word(agent,**kwargs):
-	return sum([len(x) for x in agent._vocabulary._content_decoding.values()])/float(len(agent._vocabulary._content_decoding.keys()))
+	if agent._vocabulary._content_decoding:
+		return sum([len(x) for x in agent._vocabulary._content_decoding.values()])/float(len(agent._vocabulary._content_decoding.keys()))
+	else:
+		return 0
 
 def connex_components_per_word_max(pop):
 	return 1
