@@ -51,6 +51,7 @@ class Experiment(object):
 			for tt in range(0,self._time_step):
 				temppop.play_game(1)
 				self.reconstruct_info.append(temppop._lastgameinfo)
+				self.reconstruct_info = self.reconstruct_info[-100:]
 			end_time = time.clock()
 			self.add_pop(temppop,self._T[-1]+self._time_step,exec_time=end_time-start_time)
 			temptmax+=self._time_step
