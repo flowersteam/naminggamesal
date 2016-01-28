@@ -59,7 +59,10 @@ class VocCategory(BaseVocabulary):
 
 	@del_cache
 	def add(self,m,w,val=1,context=[]):
-		iv_inf,iv_sup = self.minmax_slice(m=m,w=w,context=context)
+		if val == 0.5:
+			iv_inf,iv_sup = self.minmax_slice(m=m,w=w,context=context)
+		else:
+			iv_inf,iv_sup = self.minmax_slice(m=m,w=None,context=context)
 		categ = self.get_category(m)
 		if iv_inf is not None:
 			w1 = self.get_new_unknown_w()
@@ -125,7 +128,7 @@ class VocCategory(BaseVocabulary):
 		#else:
 		#	w1 = []
 		#	w2 = []
-		if w is not None:
+		if w is not None and w not in self.get_category(m).data.keys():
 			vals = [v for v in self.get_category(m).data.values() if v <1]
 			self.get_category(m).data[w] = (1+max(vals+[0]))/2.
 		iv_inf = next((iv for iv in self._content_coding if iv.end == ct_maxinf),None)
