@@ -190,7 +190,7 @@ custom_norm_std_Ncat=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 def norm_std_Npercept(agent,**kwargs):
 	ncat = Ncat_percept(agent)
-	cat_l = agent._vocabulary._content_coding()
+	cat_l = agent._vocabulary._content_coding
 	var = sum([(len(cat)-1./ncat)**2 for cat in cat_l])/float(ncat)
 	return ncat*np.sqrt(var)
 
