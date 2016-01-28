@@ -450,7 +450,10 @@ custom_N_words_ratio=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 
 def distance_used(pop,**kwargs):
-	return abs(pop._lastgameinfo[-1][0]-pop._lastgameinfo[-1][1])
+	if pop._lastgameinfo:
+		return abs(pop._lastgameinfo[-1][0]-pop._lastgameinfo[-1][1])
+	else:
+		return 1
 
 def distance_used_max(pop):
 	return 1
