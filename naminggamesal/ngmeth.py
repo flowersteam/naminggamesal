@@ -431,7 +431,10 @@ def N_words_ratio(pop,**kwargs):
 		for w in ag._vocabulary._content_decoding.keys():
 			words.add(w)
 			n += 1
-	return len(words)*len(pop._agentlist)/float(n)
+	if n:
+		return len(words)*len(pop._agentlist)/float(n)
+	else:
+		return 0
 
 def N_words_ratio_max(pop):
 	return 1
