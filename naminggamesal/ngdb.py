@@ -87,7 +87,7 @@ class NamingGamesDB(object):
 								other_cursor.execute("DELETE FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function= \'"+method+"\'")
 								other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
 
-	def delete(self, id_list, graph_only=False, met=''):
+	def delete(self, id_list, graph_only=False, xp_only=False, met=''):
 		with sql.connect(self.dbpath):
 			cursor=sql.connect(self.dbpath).cursor()
 			if met:
@@ -97,7 +97,8 @@ class NamingGamesDB(object):
 					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(xp_uuid)+met))
 			else:
 				for xp_uuid in id_list:
-					cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(xp_uuid)+met))
+					if not xp_only:
+						cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(xp_uuid)+met))
 					cursor.execute("DELETE FROM main_table WHERE Id=\'{}\'".format(str(xp_uuid)))
 
 

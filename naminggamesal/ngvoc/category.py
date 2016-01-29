@@ -59,7 +59,7 @@ class VocCategory(BaseVocabulary):
 
 	@del_cache
 	def add(self,m,w,val=1,context=[]):
-		if val == 0.5:
+		if val == 2:
 			iv_inf,iv_sup = self.minmax_slice(m=m,w=w,context=context)
 		else:
 			iv_inf,iv_sup = self.minmax_slice(m=m,w=None,context=context)
@@ -67,11 +67,11 @@ class VocCategory(BaseVocabulary):
 		if iv_inf is not None:
 			w1 = self.get_new_unknown_w()
 			vals = [v for v in iv_inf.data.values() if v <1]
-			iv_inf.data[w1] = (1+max(vals+[0]))/2.
+			iv_inf.data[w1] = (1+max(vals+[1]))#/2.
 		if iv_sup is not None:
 			w2 = self.get_new_unknown_w()
 			vals = [v for v in iv_sup.data.values() if v <1]
-			iv_sup.data[w2] = (1+max(vals+[0]))/2.
+			iv_sup.data[w2] = (1+max(vals+[1]))#/2.
 		if val > self.get_score(m,w):
 			categ.data[w] = val
 
@@ -132,7 +132,7 @@ class VocCategory(BaseVocabulary):
 			w = self.get_new_unknown_w()
 		if w not in self.get_category(m).data.keys():
 			vals = [v for v in self.get_category(m).data.values() if v <1]
-			self.get_category(m).data[w] = (1+max(vals+[0]))/2.
+			self.get_category(m).data[w] = (1+max(vals+[1]))#/2.
 		iv_inf = next((iv for iv in self._content_coding if iv.end == ct_maxinf),None)
 		iv_sup = next((iv for iv in self._content_coding if iv.begin == ct_minsup),None)
 		return iv_inf,iv_sup

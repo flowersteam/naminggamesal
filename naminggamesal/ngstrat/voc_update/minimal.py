@@ -44,7 +44,7 @@ class MinimalPOne(VocUpdate):
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
 		if not voc.exists(ms,w):
-			voc.add(ms,w,val=0.5,context=context)
+			voc.add(ms,w,val=2,context=context)
 		if bool_succ:
 			voc.add(ms,w,val=1,context=context)
 			voc.rm_syn(ms,w)
