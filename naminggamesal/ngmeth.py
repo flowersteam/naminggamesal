@@ -539,7 +539,7 @@ def actual_successrate_min(pop):
 	return 0
 
 FUNC=actual_successrate
-graphconfig={"ymin":actual_successrate_min}#,"ymax":entropycouples_old_norm_max}
+graphconfig={"ymin":actual_successrate_min,"ymax":actual_successrate_max}
 custom_actual_successrate=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 

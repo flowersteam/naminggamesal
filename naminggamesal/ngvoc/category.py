@@ -59,10 +59,10 @@ class VocCategory(BaseVocabulary):
 
 	@del_cache
 	def add(self,m,w,val=1,context=[]):
-		if val == 2:
-			iv_inf,iv_sup = self.minmax_slice(m=m,w=w,context=context)
-		else:
-			iv_inf,iv_sup = self.minmax_slice(m=m,w=None,context=context)
+		#if val == 2:
+		iv_inf,iv_sup = self.minmax_slice(m=m,w=w,context=context)
+		#else:
+		#	iv_inf,iv_sup = self.minmax_slice(m=m,w=None,context=context)
 		categ = self.get_category(m)
 		if iv_inf is not None:
 			w1 = self.get_new_unknown_w()
@@ -113,13 +113,16 @@ class VocCategory(BaseVocabulary):
 			#		w = [ word for word in w_2 if word not in iv.data ]
 			#		return copy.deepcopy(iv.data) + copy.deepcopy(w)
 			self._content_coding.slice((m_1+m_2)/2., self.datafunc_chopping)
+			return True
+		else:
+			return False
 
 	@del_cache
 	def minmax_slice(self,m,context=[],w=None):#,w=[],val=1,new_words=True,new_val=1):
 		ct_maxinf = max([-1] + [m1 for m1 in context if m1 < m])
 		ct_minsup = min([2] + [m2 for m2 in context if m2 > m])
-		self.slice_intervaltree(m,ct_maxinf)#,w,w1)
-		self.slice_intervaltree(m,ct_minsup)#,w,w2)
+		a = self.slice_intervaltree(m,ct_maxinf)#,w,w1)
+		b = self.slice_intervaltree(m,ct_minsup)#,w,w2)
 		#if new_words:
 		#	if not w:
 		#		w = self.get_new_unknown_w()
@@ -130,7 +133,8 @@ class VocCategory(BaseVocabulary):
 		#	w2 = []
 		if w is None:
 			w = self.get_new_unknown_w()
-		if w not in self.get_category(m).data.keys():
+		#if w not in self.get_category(m).data.keys():
+		elif a or b:
 			vals = [v for v in self.get_category(m).data.values() if v <1]
 			self.get_category(m).data[w] = (1+max(vals+[1]))#/2.
 		iv_inf = next((iv for iv in self._content_coding if iv.end == ct_maxinf),None)
