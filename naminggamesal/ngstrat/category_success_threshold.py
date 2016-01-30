@@ -189,3 +189,68 @@ class CenterSuccessGoal(DistSuccessGoal):
 			return 0.
 		else:
 			return val/norm
+
+
+class DCSuccessGoal(DistSuccessGoal):
+
+
+	def success_rate(self,past_inter=[],context=None):
+		center =  (context[0] + context[1])/2.
+		dist =  abs(context[0] - context[1])
+		norm = 0
+		val = 0
+		for d,c,bool_succ in past_inter:
+			wc = self.weight(c,center)
+			wd = self.weight(d,dist)
+			w = wc*wd
+			norm += w
+			if bool_succ:
+				val += w
+		if not norm:
+			return 0.
+		else:
+			return val/norm
+
+
+
+
+class DistSuccessSlope(DistSuccessGoal):
+
+	def __init__(self, vu_cfg, success_cfg, dt=10, nb_ctxt=20, past_window=100, d_ref=0.1,**strat_cfg2):
+		BaseStrategy.__init__(self, vu_cfg=vu_cfg, success_cfg=success_cfg, **strat_cfg2)
+		self.dt = dt
+		self.past_window = past_window
+		self.nb_ctxt = nb_ctxt
+		self.d_ref = d_ref
+
+	def pick_context(self, voc, mem, context_gen):
+		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
+		vals = [self.success_slope(context=ct,past_inter=mem['past_interactions']) for ct in ct_l]
+		val = max(vals)
+		return random.choice([ct_l[i] for i in range(len(ct_l)) if vals[i] == val])
+
+
+	def success_slope(self,past_inter=[],context=None):
+		dt = min(len(past_inter)/3,self.dt)
+		T = len(past_inter)-dt
+		if not dt:
+			return 0
+		else:
+			past_inter_1 = past_inter[:-dt]
+			past_inter_2 = past_inter[-T:]
+			old = self.success_rate(context=context,past_inter=past_inter_1)
+			new = self.success_rate(context=context,past_inter=past_inter_2)
+			return (new-old)/float(dt)
+
+
+class CenterSuccessSlope(DistSuccessSlope):
+
+	def success_rate(self,center=None,past_inter=[],context=None):
+		return CenterSuccessGoal.success_rate(self,center=center,past_inter=past_inter,context=context)
+
+
+class DCSuccessSlope(DistSuccessSlope):
+
+	def success_rate(self,center=None,past_inter=[],context=None):
+		return DCSuccessGoal.success_rate(self,center=center,past_inter=past_inter,context=context)
+

@@ -27,6 +27,10 @@ strat_class={
 	'category_st_distcenter':'category_success_threshold.CategoryDistCenterStrat',
 	'category_dist_successgoal': 'category_success_threshold.DistSuccessGoal',
 	'category_center_successgoal': 'category_success_threshold.CenterSuccessGoal',
+	'category_dc_successgoal': 'category_success_threshold.DCSuccessGoal',
+	'category_dist_successslope': 'category_success_threshold.DistSuccessSlope',
+	'category_center_successslope': 'category_success_threshold.CenterSuccessSlope',
+	'category_dc_successslope': 'category_success_threshold.DCSuccessSlope',
 
 
 	'mincounts':'mincounts.StratMinCounts',
