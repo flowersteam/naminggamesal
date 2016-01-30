@@ -134,7 +134,7 @@ class VocCategory(BaseVocabulary):
 		if w is None:
 			w = self.get_new_unknown_w()
 		#if w not in self.get_category(m).data.keys():
-		elif a or b:
+		if a or b:
 			vals = [v for v in self.get_category(m).data.values() if v <1]
 			self.get_category(m).data[w] = (1+max(vals+[1]))#/2.
 		iv_inf = next((iv for iv in self._content_coding if iv.end == ct_maxinf),None)

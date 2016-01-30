@@ -109,4 +109,3 @@ class StratNaiveCategoryPlosOne(StratNaiveCategory):
 #			w2 = cat.data.pop()
 #			cat.data.append(w1)
 #			cat.data.append(w2)
-
