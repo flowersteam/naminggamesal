@@ -25,6 +25,9 @@ strat_class={
 	'category_success_threshold':'category_success_threshold.CategorySuccessThresholdStrat',
 	'category_st_distance':'category_success_threshold.CategoryDistanceSTStrat',
 	'category_st_distcenter':'category_success_threshold.CategoryDistCenterStrat',
+	'category_dist_successgoal': 'category_success_threshold.DistSuccessGoal',
+	'category_center_successgoal': 'category_success_threshold.CenterSuccessGoal',
+
 
 	'mincounts':'mincounts.StratMinCounts',
 

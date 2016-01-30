@@ -4,7 +4,7 @@ from . import BaseStrategy
 import random
 import numpy as np
 from intervaltree import IntervalTree, Interval
-
+from scipy.optimize import minimize_scalar
 
 
 class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment only for context size = 2
@@ -43,7 +43,7 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 
 
 	def init_memory(self,voc):
-		return {'success_matrix':np.zeros((self.nb_boxes,self.nb_boxes,2)),'success_dict':StratNaiveCategoryPlosOne.init_memory(self,voc)}
+		return {'success_matrix':np.zeros((self.nb_boxes,self.nb_boxes,2))}
 
 	def get_coords(self,context):
 		m_1 = min(context)
@@ -53,7 +53,6 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 		return x,y
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
-		StratNaiveCategoryPlosOne.update_memory(self,ms,w,mh,voc,mem['success_dict'],role,bool_succ,context)
 		x,y = self.get_coords(context)
 		if bool_succ:
 			mem['success_matrix'][x,y,0] += 1
@@ -68,10 +67,6 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 			return 0.
 		else:
 			return s/float(s+f)
-
-	def pick_w(self, m, voc, mem, context):
-		return StratNaiveCategoryPlosOne.pick_w(self, m, voc, mem['success_dict'], context)
-
 
 
 class CategoryDistCenterStrat(CategorySuccessThresholdStrat): #For the moment only for context size = 2
@@ -112,7 +107,7 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 		s = 0
 		f = 0
 		d_val = 1.
-		for d,bool_succ in sorted(mem['past_interactions'],key=lambda x: -x[0]):
+		for d,c,bool_succ in sorted(mem['past_interactions'],key=lambda x: -x[0]):
 			if bool_succ:
 				s += 1
 			else:
@@ -124,17 +119,17 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 		return d_val
 
 	def init_memory(self,voc):
-		return {'past_interactions':[],'success_dict':StratNaiveCategoryPlosOne.init_memory(self,voc)}
+		return {'past_interactions':[]}
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
-		StratNaiveCategoryPlosOne.update_memory(self,ms,w,mh,voc,mem['success_dict'],role,bool_succ,context)
 		past_int = mem['past_interactions']
 		d = abs(context[0]-context[1])
-		mem['past_interactions'] = past_int[-self.past_window:]+[(d, bool_succ)]
+		c = (context[0]+context[1])/2.
+		mem['past_interactions'] = past_int[-self.past_window:]+[(d, c, bool_succ)]
 
 
 
-class CategoryLocalDST(CategoryDistanceSTStrat):
+class DistSuccessGoal(CategoryDistanceSTStrat):
 
 	def __init__(self, vu_cfg, success_cfg, threshold=0.9, nb_ctxt=20, past_window=100, d_ref=0.1,**strat_cfg2):
 		BaseStrategy.__init__(self, vu_cfg=vu_cfg, success_cfg=success_cfg, **strat_cfg2)
@@ -143,44 +138,54 @@ class CategoryLocalDST(CategoryDistanceSTStrat):
 		self.nb_ctxt = nb_ctxt
 		delf.d_ref = d_ref
 
+	def weight(self,v1,v2):
+		return np.exp(-abs(v1-v2)/float(self.d_ref))
+
 	def pick_context(self, voc, mem, context_gen):
 		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
-		dist = [abs(ct[0]-ct[1]) for ct in ct_l]
-		thresh_dist = self.get_dist_threshold(voc,mem)
-		above = 1.
-		below = 0.
-		for i in range(len(dist)):
-			if dist[i] >= thresh_dist:
-				above = min(above, dist[i])
-			else:
-				below = max(below,dist[i])
-		if below:
-			return random.choice([ct_l[i] for i in range(len(dist)) if dist[i] == below])
-		else:
-			return random.choice([ct_l[i] for i in range(len(dist)) if dist[i] == above])
+		s_rate = [self.success_rate(context=ct,past_inter=mem['past_interactions']) for ct in ct_l]
+		vals = [abs(sr-self.threshold) for sr in s_rate]
+		val = min(vals)
+		return random.choice([ct_l[i] for i in range(len(ct_l)) if vals[i] == val])
 
 	def get_dist_threshold(self,voc,mem):
-		s = 0
-		f = 0
-		d_val = 1.
-		for d,bool_succ in sorted(mem['past_interactions'],key=lambda x: -x[0]):
+		if not mem['past_interactions']:
+			return 1.
+		else:
+			f = lambda x: abs(self.threshold - self.success_rate(x,mem['past_interactions']))
+			res = minimize_scalar(f, bounds=(0,1), method='bounded')
+			return res.x
+
+	def success_rate(self,dist=None,past_inter=[],context=None):
+		if dist is None:
+			dist =  abs(context[0] - context[1])
+		norm = 0
+		val = 0
+		for d,c,bool_succ in past_inter:
+			w = self.weight(d,dist)
+			norm += w
 			if bool_succ:
-				s += 1
-			else:
-				f += 1
-			if s/float(s+f) < self.threshold:
-				return d_val
-			else:
-				d_val = d
-		return d_val
-
-	def init_memory(self,voc):
-		return {'past_interactions':[],'success_dict':StratNaiveCategoryPlosOne.init_memory(self,voc)}
-
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
-		StratNaiveCategoryPlosOne.update_memory(self,ms,w,mh,voc,mem['success_dict'],role,bool_succ,context)
-		past_int = mem['past_interactions']
-		d = abs(context[0]-context[1])
-		mem['past_interactions'] = past_int[-self.past_window:]+[(d, bool_succ)]
+				val += w
+		if not norm:
+			return 0.
+		else:
+			return val/norm
 
 
+
+class CenterSuccessGoal(DistSuccessGoal):
+
+	def success_rate(self,center=None,past_inter=[],context=None):
+		if center is None:
+			center =  (context[0] + context[1])/2.
+		norm = 0
+		val = 0
+		for d,c,bool_succ in past_inter:
+			w = self.weight(c,center)
+			norm += w
+			if bool_succ:
+				val += w
+		if not norm:
+			return 0.
+		else:
+			return val/norm
