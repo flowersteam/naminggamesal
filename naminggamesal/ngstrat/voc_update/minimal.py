@@ -53,7 +53,7 @@ class MinimalPOne(VocUpdate):
 class MinimalPOne2(VocUpdate):
 
 	def update_hearer(self,ms,w,mh,voc,mem,bool_succ, context=[]):
-		if [m for m in context if voc.getcategory(m) == voc.get_category(ms) and m != ms]:
+		if [m for m in context if voc.get_category(m) == voc.get_category(ms) and m != ms]:
 			new_w = voc.get_new_unknown_w()
 			voc.add(ms,new_w,val=2,context=context)
 		if not voc.exists(ms,w):
