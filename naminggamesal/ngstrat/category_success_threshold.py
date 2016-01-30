@@ -128,6 +128,25 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 		mem['past_interactions'] = past_int[-self.past_window:]+[(d, c, bool_succ)]
 
 
+class DistSTStrict(CategoryDistanceSTStrat):
+
+	def pick_context(self, voc, mem, context_gen):
+		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
+		dist = [abs(ct[0]-ct[1]) for ct in ct_l]
+		thresh_dist = self.get_dist_threshold(voc,mem)
+		above = 1.
+		below = 0.
+		for i in range(len(dist)):
+			if dist[i] >= thresh_dist:
+				above = min(above, dist[i])
+			else:
+				below = max(below,dist[i])
+		if above<1:
+			return random.choice([ct_l[i] for i in range(len(dist)) if dist[i] == above])
+		else:
+			return random.choice([ct_l[i] for i in range(len(dist)) if dist[i] == below])
+
+
 
 class DistSuccessGoal(CategoryDistanceSTStrat):
 
@@ -159,8 +178,8 @@ class DistSuccessGoal(CategoryDistanceSTStrat):
 	def success_rate(self,dist=None,past_inter=[],context=None):
 		if dist is None:
 			dist =  abs(context[0] - context[1])
-		norm = 0
-		val = 0
+		norm = 0.
+		val = 0.
 		for d,c,bool_succ in past_inter:
 			w = self.weight(d,dist)
 			norm += w
@@ -178,8 +197,8 @@ class CenterSuccessGoal(DistSuccessGoal):
 	def success_rate(self,center=None,past_inter=[],context=None):
 		if center is None:
 			center =  (context[0] + context[1])/2.
-		norm = 0
-		val = 0
+		norm = 0.
+		val = 0.
 		for d,c,bool_succ in past_inter:
 			w = self.weight(c,center)
 			norm += w
@@ -197,8 +216,8 @@ class DCSuccessGoal(DistSuccessGoal):
 	def success_rate(self,past_inter=[],context=None):
 		center =  (context[0] + context[1])/2.
 		dist =  abs(context[0] - context[1])
-		norm = 0
-		val = 0
+		norm = 0.
+		val = 0.
 		for d,c,bool_succ in past_inter:
 			wc = self.weight(c,center)
 			wd = self.weight(d,dist)
@@ -245,8 +264,24 @@ class DistSuccessSlope(DistSuccessGoal):
 
 class CenterSuccessSlope(DistSuccessSlope):
 
+	#def success_rate(self,center=None,past_inter=[],context=None):
+	#	return CenterSuccessGoal.success_rate(self,center=center,past_inter=past_inter,context=context)
+
+
 	def success_rate(self,center=None,past_inter=[],context=None):
-		return CenterSuccessGoal.success_rate(self,center=center,past_inter=past_inter,context=context)
+		if center is None:
+			center =  (context[0] + context[1])/2.
+		norm = 0.
+		val = 0.
+		for d,c,bool_succ in past_inter:
+			w = self.weight(c,center)
+			norm += w
+			if bool_succ:
+				val += w
+		if not norm:
+			return 0.
+		else:
+			return val/norm
 
 
 class DCSuccessSlope(DistSuccessSlope):
