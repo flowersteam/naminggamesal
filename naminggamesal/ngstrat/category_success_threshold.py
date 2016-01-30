@@ -136,7 +136,7 @@ class DistSuccessGoal(CategoryDistanceSTStrat):
 		self.threshold = threshold
 		self.past_window = past_window
 		self.nb_ctxt = nb_ctxt
-		delf.d_ref = d_ref
+		self.d_ref = d_ref
 
 	def weight(self,v1,v2):
 		return np.exp(-abs(v1-v2)/float(self.d_ref))
