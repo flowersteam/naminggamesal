@@ -60,20 +60,23 @@ class VocCategory(BaseVocabulary):
 	@del_cache
 	def add(self,m,w,val=1,context=[]):
 		#if val == 2:
-		iv_inf,iv_sup = self.minmax_slice(m=m,w=w,context=context)
+		iv_inf,iv_sup = self.minmax_slice(m=m,context=context)
 		#else:
 		#	iv_inf,iv_sup = self.minmax_slice(m=m,w=None,context=context)
 		categ = self.get_category(m)
 		if iv_inf is not None:
 			w1 = self.get_new_unknown_w()
-			vals = [v for v in iv_inf.data.values() if v <1]
+			vals = [v for v in iv_inf.data.values()]
 			iv_inf.data[w1] = (1+max(vals+[1]))#/2.
 		if iv_sup is not None:
 			w2 = self.get_new_unknown_w()
-			vals = [v for v in iv_sup.data.values() if v <1]
+			vals = [v for v in iv_sup.data.values()]
 			iv_sup.data[w2] = (1+max(vals+[1]))#/2.
-		if val > self.get_score(m,w):
-			categ.data[w] = val
+		#if val > self.get_score(m,w):
+		if val == 2:
+			vals = [v for v in self.get_category(m).data.values()]
+			val = (1+max(vals+[1]))#/2.
+		categ.data[w] = val
 
 		if w not in self._content_decoding.keys():
 			self._content_decoding[w] = IntervalTree()
@@ -118,7 +121,7 @@ class VocCategory(BaseVocabulary):
 			return False
 
 	@del_cache
-	def minmax_slice(self,m,context=[],w=None):#,w=[],val=1,new_words=True,new_val=1):
+	def minmax_slice(self,m,context=[]):#,w=[],val=1,new_words=True,new_val=1):
 		ct_maxinf = max([-1] + [m1 for m1 in context if m1 < m])
 		ct_minsup = min([2] + [m2 for m2 in context if m2 > m])
 		a = self.slice_intervaltree(m,ct_maxinf)#,w,w1)
@@ -131,14 +134,18 @@ class VocCategory(BaseVocabulary):
 		#else:
 		#	w1 = []
 		#	w2 = []
-		if w is None:
-			w = self.get_new_unknown_w()
 		#if w not in self.get_category(m).data.keys():
-		if a or b:
-			vals = [v for v in self.get_category(m).data.values() if v <1]
-			self.get_category(m).data[w] = (1+max(vals+[1]))#/2.
-		iv_inf = next((iv for iv in self._content_coding if iv.end == ct_maxinf),None)
-		iv_sup = next((iv for iv in self._content_coding if iv.begin == ct_minsup),None)
+		#if a or b:
+		#	vals = [v for v in self.get_category(m).data.values() if v <1]
+		#	self.get_category(m).data[w] = (1+max(vals+[1]))#/2.
+		if a:
+			iv_inf = self.get_category(ct_maxinf)
+		else:
+			iv_inf = None
+		if b:
+			iv_sup = self.get_category(ct_minsup)
+		else:
+			iv_sup = None
 		return iv_inf,iv_sup
 
 
