@@ -78,25 +78,25 @@ class MinimalCatNew(VocUpdate):
 		ambig = [m for m in context if ms != m and voc.get_random_known_w(m=m,option='max') == w]
 		if bool_succ:
 			if [m for m in context if voc.get_category(m) == voc.get_category(ms) and m != ms]:
-				voc.add(ms,w,val=1)
+				voc.add(ms,w,val=1,context=context)
 			elif ambig:
 				new_w = voc.get_new_unknown_w()
 				for m in ambig:
 					voc.add(m,new_w,val=2,context=[])
-				voc.add(ms,w,val=1)
+				voc.add(ms,w,val=1,context=context)
 			else:
-				voc.add(ms,w,val=1)
+				voc.add(ms,w,val=1,context=context)
 			voc.rm_syn(m,w)
 		else:
 			if [m for m in context if voc.get_category(m) == voc.get_category(ms) and m != ms]:
-				voc.add(ms,w,val=2)
+				voc.add(ms,w,val=2,context=context)
 			elif ambig:
 				new_w = voc.get_new_unknown_w()
 				for m in ambig:
 					voc.add(m,new_w,val=2,context=[])
-				voc.add(ms,w,val=2)
-			else:
-				voc.add(ms,w,val=0.1)
+				voc.add(ms,w,val=2,context=context)
+			elif not voc.exists(m,w):
+				voc.add(ms,w,val=0.1,context=context)
 		voc.finish_update()
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
