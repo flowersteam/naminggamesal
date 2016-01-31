@@ -70,3 +70,46 @@ class MinimalPOne2(VocUpdate):
 			voc.add(ms,w,val=1,context=context)
 			voc.rm_syn(ms,w)
 		voc.finish_update()
+
+
+class MinimalCatNew(VocUpdate):
+
+	def update_hearer(self,ms,w,mh,voc,mem,bool_succ, context=[]):
+		ambig = [m for m in context if ms != m and voc.get_random_known_w(m=m,option='max') == w]
+		if bool_succ:
+			if [m for m in context if voc.get_category(m) == voc.get_category(ms) and m != ms]:
+				voc.add(ms,w,val=1)
+			elif ambig:
+				new_w = voc.get_new_unknown_w()
+				for m in ambig:
+					voc.add(m,new_w,val=2,context=[])
+				voc.add(ms,w,val=1)
+			else:
+				voc.add(ms,w,val=1)
+			voc.rm_syn(m,w)
+		else:
+			if [m for m in context if voc.get_category(m) == voc.get_category(ms) and m != ms]:
+				voc.add(ms,w,val=2)
+			elif ambig:
+				new_w = voc.get_new_unknown_w()
+				for m in ambig:
+					voc.add(m,new_w,val=2,context=[])
+				voc.add(ms,w,val=2)
+			else:
+				voc.add(ms,w,val=0.1)
+		voc.finish_update()
+
+	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
+		ambig = [m for m in context if ms != m and voc.get_random_known_w(m=m,option='max') == w]
+		if ambig:
+			new_w = voc.get_new_unknown_w()
+			for m in ambig:
+				voc.add(m,new_w,val=2,context=[])
+		elif not voc.exists(ms,w):
+			voc.add(ms,w,val=2,context=context)
+		if bool_succ:
+			voc.add(ms,w,val=1,context=context)
+			voc.rm_syn(ms,w)
+		voc.finish_update()
+
+
