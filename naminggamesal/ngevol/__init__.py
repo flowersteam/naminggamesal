@@ -15,8 +15,8 @@ evolution_class={
 
 def get_evolution(evolution_type='idle', **evolution_cfg2):
 	if evolution_type == 'idle':
-		return Evolution
-	else:	
+		return Evolution(evolution_type='idle', **evolution_cfg2)
+	else:
 		tempevo = evolution_type
 		if tempevo in evolution_class.keys():
 			tempevo = evolution_class[tempevo]
