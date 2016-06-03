@@ -133,7 +133,10 @@ custom_Ncat_semantic=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 #########N_words##########
 
 def N_words(agent,**kwargs):
-	return len(agent._vocabulary._content_decoding.keys())
+	if hasattr(agent._vocabulary,'_content_decoding'):
+		return len(agent._vocabulary._content_decoding.keys())
+	else:
+		return len(agent._vocabulary.get_known_words())
 
 def N_words_max(pop):
 	return 1
@@ -145,6 +148,41 @@ FUNC=N_words
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":N_words_min}#,"ymax":N_words_max}
 custom_N_words=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########N_meanings##########
+
+def N_meanings(agent,**kwargs):
+	return len(agent._vocabulary.get_known_meanings())
+
+def N_meanings_max(pop):
+	return 1
+
+def N_meanings_min(pop):
+	return 0
+
+FUNC=N_meanings
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_meanings_min}#,"ymax":N_meanings_max}
+custom_N_meanings=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########N_w_per_m##########
+
+def N_w_per_m(agent,**kwargs):
+	if not agent._vocabulary.get_known_meanings():
+		return 0
+	else:
+		return Nlink(agent)/len(agent._vocabulary.get_known_meanings())
+
+def N_w_per_m_max(pop):
+	return 1
+
+def N_w_per_m_min(pop):
+	return 0
+
+FUNC=N_w_per_m
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_w_per_m_min}#,"ymax":N_w_per_m_max}
+custom_N_w_per_m=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
 #########cat_synonymy##########
@@ -274,6 +312,24 @@ custom_entropy_moyen_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig
 
 #graphconfig={}
 #	custom_FUNC=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########N_d##########
+
+def N_d(pop,**kwargs):
+	tempmat = np.matrix(np.zeros((pop._M,pop._W)))
+	for agent in pop._agentlist:
+		tempmat += agent._vocabulary._content
+	return np.sum(tempmat)/len(pop._agentlist)
+
+def N_d_max(pop):
+	return pop._M*pop._W
+
+def N_d_min(pop):
+	return 0
+
+FUNC=N_d
+graphconfig={"ymin":N_d_min}#,"ymax":N_d_max}
+custom_N_d=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########Nlinksurs##########
 
@@ -672,8 +728,8 @@ custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 from .ngstrat.naive import StratNaiveCategoryPlosOne
 strat_srtheo_cat = StratNaiveCategoryPlosOne()
 def srtheo_cat(pop,**kwargs):
-	fail=0
-	succ=0
+	fail = 0
+	succ = 0
 	for i in range(100):
 		agent1_id = pop.pick_speaker()
 		agent2_id = pop.pick_hearer(agent1_id)
@@ -729,7 +785,14 @@ def srtheo2(pop,**kwargs):
 	best_scores = np.zeros((pop._M,pop._size))
 	for ag in range(len(pop._agentlist)):
 		for m in range(pop._M):
-			best_scores[m,ag] = np.amax(pop._agentlist[ag]._vocabulary._content[m,:])
+			try:
+				best_scores[m,ag] = np.amax(pop._agentlist[ag]._vocabulary.get_row(m))
+			except TypeError:
+				print 'e'
+				print pop._agentlist[ag]._vocabulary.get_row(m)
+				print max(pop._agentlist[ag]._vocabulary.get_row(m))
+				print 'e'
+				best_scores[m,ag] = max(pop._agentlist[ag]._vocabulary.get_row(m))
 	n_meanings_used = 0
 	for a in range(pop._size):
 		for meaning in range(pop._M):
@@ -747,8 +810,10 @@ def srtheo2(pop,**kwargs):
 	best_scores = np.zeros((pop._W,pop._size))
 	for ag in range(len(pop._agentlist)):
 		for w in range(pop._W):
-			best_scores[w,ag] = np.amax(pop._agentlist[ag]._vocabulary._content[:,w])
-	n_words_used = 0
+			try:
+				best_scores[w,ag] = np.amax(pop._agentlist[ag]._vocabulary.get_column(w))
+			except TypeError:
+				best_scores[m,ag] = max(pop._agentlist[ag]._vocabulary.get_column(w))
 	for a in range(pop._size):
 		for word in range(pop._W):
 			score = best_scores[word,a]
@@ -780,7 +845,10 @@ def srtheo3(pop,**kwargs):
 	best_scores = np.zeros((pop._M,pop._size))
 	for ag in range(len(pop._agentlist)):
 		for m in range(pop._M):
-			best_scores[m,ag] = np.amax(pop._agentlist[ag]._vocabulary._content[m,:])
+			try:
+				best_scores[m,ag] = np.amax(pop._agentlist[ag]._vocabulary.get_row(m))
+			except TypeError:
+				best_scores[m,ag] = max(pop._agentlist[ag]._vocabulary.get_row(m))
 	n_meanings_used = 0
 	for a in range(pop._size):
 		for meaning in range(pop._M):
@@ -800,7 +868,10 @@ def srtheo3(pop,**kwargs):
 	best_scores = np.zeros((pop._W,pop._size))
 	for ag in range(len(pop._agentlist)):
 		for w in range(pop._W):
-			best_scores[w,ag] = np.amax(pop._agentlist[ag]._vocabulary._content[:,w])
+			try:
+				best_scores[w,ag] = np.amax(pop._agentlist[ag]._vocabulary.get_column(w))
+			except TypeError:
+				best_scores[m,ag] = max(pop._agentlist[ag]._vocabulary.get_column(w))
 	n_words_used = 0
 	for a in range(pop._size):
 		for word in range(pop._W):

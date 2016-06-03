@@ -13,7 +13,7 @@ class StratSuccessThreshold(StratNaive):
 		super(StratSuccessThreshold, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		self.threshold_explo=threshold_explo
 
-	def pick_m(self,voc,mem):
+	def pick_m(self,voc,mem,context):
 		test1=self.get_success_rate_over_known_meanings(voc,mem)>self.threshold_explo
 		test2=len(voc.get_known_meanings())==voc._M
 		test3=len(voc.get_known_meanings())==0
@@ -23,8 +23,8 @@ class StratSuccessThreshold(StratNaive):
 			m=voc.get_random_known_m()
 		return m
 
-	def hearer_pick_m(self,voc,mem):
-		return self.pick_m(voc, mem)
+	def hearer_pick_m(self,voc,mem,context):
+		return self.pick_m(voc, mem,context)
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
@@ -90,7 +90,7 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 				ratelist.append(0)
 		return ratelist
 
-	def pick_m(self, voc, mem):
+	def pick_m(self, voc, mem, context):
 		ratelist = self.get_success_rates(voc, mem)
 		KM = voc.get_known_meanings()
 		if (np.mean(ratelist)>self.threshold_explo and len(KM)<voc._M) or len(KM) == 0 :
@@ -109,7 +109,7 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 ##################################### STRATEGIE SUCCESS THRESHOLD WISE MAX########################################
 class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 
-	def pick_m(self, voc, mem):
+	def pick_m(self, voc, mem, context):
 		ratelist = self.get_success_rates(voc, mem)
 		threshold = self.threshold_explo
 		KM = voc.get_known_meanings()

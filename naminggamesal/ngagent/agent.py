@@ -50,11 +50,15 @@ class Agent(object):
 	def pick_m(self,context=[]):
 		return self._strategy.pick_m(self._vocabulary,self._memory,context=context)
 
-	def pick_mw(self):
-		return self._strategy.pick_mw(self._vocabulary,self._memory)
+	def pick_mw(self,context=[]):
+		return self._strategy.pick_mw(self._vocabulary,self._memory,context=context)
 
-	def hearer_pick_m(self):
-		return self._strategy.hearer_pick_m(self._vocabulary,self._memory)
+	def hearer_pick_m(self,context=[]):
+		try:
+			return self._strategy.hearer_pick_m(self._vocabulary,self._memory,context=context)
+		except:
+			print self._strategy
+			raise
 
 	def pick_new_m(self):
 		return self._strategy.pick_new_m(self._vocabulary,self._memory)

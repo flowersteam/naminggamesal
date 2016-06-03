@@ -44,10 +44,10 @@ class Experiment(object):
 
 
 	def continue_exp_until(self,T):
-		temppop = cPickle.loads(cPickle.dumps(self.get_pop("last"), -1))#deepcopy(self.get_pop("last"))
 		temptmax = self._T[-1]
 		start_time = time.clock() - self._exec_time[-1]
 		while (temptmax + self._time_step <= T) :
+			temppop = cPickle.loads(cPickle.dumps(self.get_pop("last"), -1))#deepcopy(self.get_pop("last"))
 			for tt in range(0,self._time_step):
 				temppop.play_game(1)
 				self.reconstruct_info.append(temppop._lastgameinfo)

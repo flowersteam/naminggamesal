@@ -11,22 +11,28 @@ import copy
 
 from ..ngagent import Agent
 from ..nginter import get_interaction
+from ..ngtopology import get_topology
 from ..ngenv import get_environment
+from ..ngagentpicking import get_agentpick
+from ..ngevol import get_evolution
 
 
 
 class Population(object):
 
-	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent, sensor_cfg=None, env_cfg=None):
+	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent, evolution_cfg={'evolution_type':'idle'}, agentpick_cfg={'agentpick_type':'random_pick'}, sensor_cfg=None, env_cfg=None,topology_cfg={'topology_type':'full_graph'}):
 		self._size = 0
 		self._voc_cfg = voc_cfg
 		if 'M' in voc_cfg.keys():
 			self._M = voc_cfg['M']
 			self._W = voc_cfg['W']
 		self._strat_cfg = strat_cfg
+		self._agentpick_cfg = agentpick_cfg
+		self.agent_pick = get_agentpick(**agentpick_cfg)
 		self._sensor_cfg = sensor_cfg
 		self._env_cfg = env_cfg
 		self._interaction = get_interaction(**interact_cfg)
+		self._evolution = get_evolution(**evolution_cfg)
 		if env_cfg is None:
 			self.env = None
 		else:
@@ -40,6 +46,7 @@ class Population(object):
 		self._agentlist = []
 		for i in range(nbagent):
 			self.add_new_agent(agent_id=None, strat_cfg=strat_cfg, voc_cfg=voc_cfg, sensor_cfg=sensor_cfg)
+		self._topology = get_topology(pop=self,**topology_cfg)
 
 
 	def get_size(self):
@@ -58,6 +65,9 @@ class Population(object):
 		if self.check_id(agent.get_id()) == 1:
 			print "WARNING: 2 agents with same identity"
 		self._agentlist.append(agent)
+		self._size+=1
+		if hasattr(self,'_topology'):
+			self._topology.add_agent(agent,pop=self)
 
 	def idmax(self): #Suppose ID=nombre
 		tempid=0
@@ -67,13 +77,13 @@ class Population(object):
 
 	def add_new_agent(self, voc_cfg=None, strat_cfg=None, sensor_cfg=None, agent_id=None):
 		if voc_cfg is None:
-			voc_cfg = self.voc_cfg
+			voc_cfg = self._voc_cfg
 		if strat_cfg is None:
-			strat_cfg = self.strat_cfg
+			strat_cfg = self._strat_cfg
 		if sensor_cfg is None:
 			sensor_cfg = self._sensor_cfg
-		self._agentlist.append(Agent(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id))
-		self._size+=1
+		agent = Agent(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id)
+		self.add_agent(agent)
 
 	def get_index_from_id(self, agent_id):
 		for i in range (0,len(self._agentlist)):
@@ -81,26 +91,30 @@ class Population(object):
 				return i
 		print "id non existante"
 
-	def rm_agent(self, agent_id):
-		self._agentlist.remove(self.get_index_from_id(agent_id))
+	def rm_agent(self, agent_id=None):
+		if agent_id is None:
+			agent = self._agentlist[0]
+			agent_id =  agent._id
+		else:
+			agent = self._agentlist[self.get_index_from_id(agent_id)]
+		self._agentlist.remove(agent)
 		self._size -= 1
+		self._topology.rm_agent(agent,pop=self)
 
 	def pick_speaker(self):
-		j = random.randint(0,len(self._agentlist)-1)
- 		return self._agentlist[j].get_id()
+ 		return self.agent_pick.pick_speaker(self).get_id()
 
 	def pick_hearer(self, speaker_id):
-		j = random.randint(0,len(self._agentlist)-2)
-		if self.get_index_from_id(speaker_id) <= j:
-			j += 1
- 		return self._agentlist[j].get_id()
+		speaker = self._agentlist[self.get_index_from_id(speaker_id)]
+		return self.agent_pick.pick_hearer(speaker,self).get_id()
 
 	def play_game(self, steps, **kwargs):
 		for i in range(0,steps):
-			speaker_id = self.pick_speaker()
-			hearer_id = self.pick_hearer(speaker_id)
-			speaker = self._agentlist[self.get_index_from_id(speaker_id)]
-			hearer = self._agentlist[self.get_index_from_id(hearer_id)]
+			self._evolution.step(pop=self)
+			speaker = self.agent_pick.pick_speaker(pop=self)
+			speaker_id = speaker.get_id()
+			hearer = self.agent_pick.pick_hearer(speaker,pop=self)
+			hearer_id = hearer.get_id()
 			self._interaction.interact(speaker=speaker, hearer=hearer, pop=self)
 #			tempmw=speaker.pick_mw()
 #			ms=tempmw[0]

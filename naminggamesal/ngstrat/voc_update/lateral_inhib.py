@@ -34,25 +34,25 @@ class BasicLateralInhibition(VocUpdate):
 				self.inhibit(ms, w2, voc)
 		voc.finish_update()
 
-	def inhibit(self,m,w,voc):
+	def inhibit(self,m,w,voc, context=[]):
 		voc.add(m,w,max(voc._content[m,w] - self.d_inh, 0),context=context)
 
-	def increase(self,m,w,voc):
+	def increase(self,m,w,voc, context=[]):
 		voc.add(m,w,min(voc._content[m,w] + self.d_inc, 1),context=context)
 
-	def decrease(self,m,w,voc):
+	def decrease(self,m,w,voc, context=[]):
 		voc.add(m,w,max(voc._content[m,w] - self.d_dec, 0),context=context)
 
 
 class InterpolatedLateralInhibition(BasicLateralInhibition):
 
-	def inhibit(self,m,w,voc):
+	def inhibit(self,m,w,voc, context=[]):
 		voc.add(m,w,voc._content[m,w] * (1 - self.d_inh),context=context)
 
-	def decrease(self,m,w,voc):
+	def decrease(self,m,w,voc, context=[]):
 		voc.add(m,w,voc._content[m,w] * (1 - self.d_dec),context=context)
 
-	def increase(self, m ,w, voc):
+	def increase(self, m ,w, voc, context=[]):
 		voc.add(m,w,voc._content[m,w] * (1 - self.d_inc) + self.d_inc,context=context)
 
 class BasicLateralInhibitionHearerOnly(BasicLateralInhibition):

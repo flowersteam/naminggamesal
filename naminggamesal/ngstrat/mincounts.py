@@ -15,8 +15,8 @@ class StratMinCounts(StratNaive):
 			self.mincounts=mincounts
 
 
-	def hearer_pick_m(self,voc,mem):
-		return self.pick_m(voc, mem)
+	def hearer_pick_m(self,voc,mem, context):
+		return self.pick_m(voc, mem, context)
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
@@ -30,7 +30,7 @@ class StratMinCounts(StratNaive):
 			mem["fail_m"][m1]+=1
 
 	def init_memory(self,voc):
-		mem={}
+		mem = StratNaive.init_memory(self,voc=voc)
 		mem["success_m"]=[0]*voc._M
 		mem["fail_m"]=[0]*voc._M
 		return mem
@@ -45,7 +45,7 @@ class StratMinCounts(StratNaive):
 			countlist.append(succ_sum)
 		return countlist
 
-	def pick_m(self, voc, mem):
+	def pick_m(self, voc, mem, context):
 		counts = self.get_success_counts(voc, mem)
 		if  (len(voc.get_known_meanings())==0) or (min(counts)>self.mincounts and len(voc.get_known_meanings())<voc._M):
 			return voc.get_new_unknown_m()

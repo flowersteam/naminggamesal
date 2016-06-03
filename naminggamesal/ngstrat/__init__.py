@@ -82,7 +82,10 @@ class BaseStrategy(object):
 		return self.voc_update.update_hearer(ms, w, mh, voc, mem, bool_succ, context)
 
 	def init_memory(self,voc):
-		return {'success':0,'fail':0}
+		mem = {}
+		mem['success'] = 0
+		mem['fail'] = 0
+		return mem
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if bool_succ:
