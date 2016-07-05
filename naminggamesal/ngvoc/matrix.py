@@ -36,6 +36,9 @@ class VocMatrix(BaseVocabulary):
 		else:
 			return 0
 
+	def get_value(self,m,w):
+		return self._content[m,w]
+
 	def get_content(self):
 		return self._content
 

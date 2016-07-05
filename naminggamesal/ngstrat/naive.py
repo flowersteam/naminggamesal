@@ -8,7 +8,7 @@ from intervaltree import IntervalTree, Interval
 		#####################################NAIVE STRATEGY########################################
 class StratNaive(BaseStrategy):
 
-	def guess_m(self,w,voc,mem,context):
+	def guess_m(self,w,voc,mem,context=[]):
 		if w in voc.get_known_words():
 			m = voc.get_random_known_m(w)
 		elif voc.get_unknown_meanings():
@@ -17,7 +17,7 @@ class StratNaive(BaseStrategy):
 			m = voc.get_random_known_m(option='min')
 		return m
 
-	def pick_w(self,m,voc,mem,context):
+	def pick_w(self,m,voc,mem,context=[]):
 		if m in voc.get_known_meanings():
 			w = voc.get_random_known_w(m=m)
 		elif voc.get_unknown_words():
@@ -26,11 +26,11 @@ class StratNaive(BaseStrategy):
 			w = voc.get_random_known_w(option='min')
 		return w
 
-	def pick_m(self,voc,mem,context):
+	def pick_m(self,voc,mem,context=[]):
 		m = random.randint(0,voc.get_M()-1)
 		return m
 
-	def hearer_pick_m(self,voc,mem,context):
+	def hearer_pick_m(self,voc,mem,context=[]):
 		m = self.pick_m(voc,mem,context)
 		return m
 

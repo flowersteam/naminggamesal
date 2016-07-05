@@ -161,3 +161,57 @@ class StratSuccessThresholdScores(StratSuccessThresholdWise):
 		rates = np.multiply(voc.get_content(), c).sum(axis = 1)
 		ratelist = [rates[m]/len(voc.get_known_words(m)) for m in voc.get_known_meanings()]
 		return ratelist
+
+##################################### STRATEGIE SUCCESS THRESHOLD EPIROB########################################
+class StratSuccessThresholdEpirob(StratNaive):
+
+	def __init__(self, vu_cfg, threshold_explo=0.9, proba_new_m=0.001,proba_2=0.1,**strat_cfg2):
+		super(StratSuccessThresholdEpirob, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
+		self.threshold_explo = threshold_explo
+		self.proba_new_m = proba_new_m
+		self.proba_2 = proba_2
+
+	def pick_m(self,voc,mem,context):
+		test1 = self.get_bestscores_mean(voc,mem) >= self.threshold_explo
+		test2 = len(voc.get_known_meanings()) == voc._M
+		test3 = len(voc.get_known_meanings()) == 0
+		test4 = random.random() < self.proba_new_m
+		test5 = random.random() < self.proba_2
+		if (test1 and not test2) or (test4 and not test2):
+			m = voc.get_new_unknown_m()
+		else:
+			if not test3:
+				if test5:
+					m = voc.get_random_known_m()
+				else:
+					m = self.get_lowest_score_m(voc,mem)
+			else:
+				m = voc.get_new_unknown_m()
+		return m
+
+	def hearer_pick_m(self,voc,mem,context):
+		return self.pick_m(voc, mem,context)
+
+	def get_bestscores_mean(self,voc,mem):
+		BS = []
+		for m in voc.get_known_meanings():
+			BS.append(0)
+			w_l = []
+			for w in voc.get_known_words(m=m):
+				BS[-1] = max(voc.get_value(m,w),BS[-1])
+		if not BS:
+			return 0
+		else:
+			return np.mean(BS)
+
+	def get_lowest_score_m(self,voc,mem):
+		LS = 1.
+		m_l = []
+		for m in voc.get_known_meanings():
+			for w in voc.get_known_words(m=m):
+				if voc.get_value(m,w) < LS:
+					m_l = [m]
+				elif voc.get_value(m,w) == LS:
+					m_l.append(m)
+		m_l = list(set(m_l))
+		return random.choice(m_l)

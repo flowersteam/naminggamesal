@@ -17,6 +17,7 @@ strat_class={
 	'naive_category_pone':'naive.StratNaiveCategoryPlosOne',
 
 	'success_threshold':'success_threshold.StratSuccessThreshold',
+	'success_threshold_epirob':'success_threshold.StratSuccessThresholdEpirob',
 	'success_threshold_corrected':'success_threshold.StratSuccessThresholdCorrected',
 	'success_threshold_wise':'success_threshold.StratSuccessThresholdWise',
 	'success_threshold_wise_max':'success_threshold.StratSuccessThresholdWiseMax',
@@ -154,14 +155,16 @@ class BaseStrategy(object):
 		elif vtype=="hom":
 			voc.visual(vtype="hom")
 
-	def pick_mw(self):
+	def pick_mw(self,voc,mem,context=[]):
+		m = self.pick_m(voc,mem,context)
+		w = self.pick_w(m,voc,mem,context)
+		return [m,w]
+
+	def pick_m(self,voc,mem,context=[]):
 		pass
 
-	def pick_m(self):
+	def pick_w(self,voc,mem,context=[]):
 		pass
 
-	def pick_w(self):
-		pass
-
-	def guess_m(self):
+	def guess_m(self,voc,mem,context=[]):
 		pass
