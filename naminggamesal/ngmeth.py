@@ -806,6 +806,7 @@ def srtheo2(pop,**kwargs):
 	C = C/float(pop._size)
 	n_meanings_used = n_meanings_used/float(pop._size)
 
+	n_words_used = 0
 	D = np.zeros((pop._W,pop._M))
 	best_scores = np.zeros((pop._W,pop._size))
 	for ag in range(len(pop._agentlist)):

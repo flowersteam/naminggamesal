@@ -182,9 +182,9 @@ class StratSuccessThresholdEpirob(StratNaive):
 		else:
 			if not test3:
 				if test5:
-					m = voc.get_random_known_m()
-				else:
 					m = self.get_lowest_score_m(voc,mem)
+				else:
+					m = voc.get_random_known_m()
 			else:
 				m = voc.get_new_unknown_m()
 		return m
