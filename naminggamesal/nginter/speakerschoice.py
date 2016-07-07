@@ -19,7 +19,7 @@ class SpeakersChoiceEpirob(Interaction):
 	def interact(self, speaker, hearer, pop):
 		ms = speaker.pick_m()
 		w = speaker.pick_w(ms)
-		if hearer._vocabulary.get_known_meanings():
+		if hearer._vocabulary.get_known_meanings(w):
 			mh = hearer.guess_m(w)
 		else:
 			mh = ms
