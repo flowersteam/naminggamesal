@@ -11,6 +11,8 @@ sns.set(rc={'image.cmap': 'Purples_r'})
 interaction_class={
 	'hearerschoice':'hearerschoice.HearersChoice',
 	'speakerschoice':'speakerschoice.SpeakersChoice',
+	'hearerschoice_epirob':'hearerschoice.HearersChoiceEpirob',
+	'speakerschoice_epirob':'speakerschoice.SpeakersChoiceEpirob',
 	'fabien':'fabien.FabienInteraction',
 	'omniscient':'omniscient.Omniscient',
 	'category_game':'category_game.CategoryGame'
