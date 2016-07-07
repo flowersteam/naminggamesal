@@ -14,3 +14,12 @@ class GlobalSuccessRestrictive(object):
 			return True
 		else:
 			return False
+
+
+class GlobalSuccessEpirob(object):
+
+	def eval(self, ms, w, mh, voc, strategy, context=[]):
+		if ms == mh or not voc.get_known_meanings():
+			return True
+		else:
+			return False
