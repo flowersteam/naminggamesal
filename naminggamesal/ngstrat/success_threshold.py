@@ -172,7 +172,7 @@ class StratSuccessThresholdEpirob(StratNaive):
 		self.proba_2 = proba_2
 
 	def pick_m(self,voc,mem,context):
-		test1 = self.get_bestscores_mean(voc,mem) >= self.threshold_explo
+		test1 = self.get_bestscores_mean(voc,mem) > self.threshold_explo
 		test2 = len(voc.get_known_meanings()) == voc._M
 		test3 = len(voc.get_known_meanings()) == 0
 		test4 = random.random() < self.proba_new_m
