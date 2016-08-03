@@ -36,7 +36,9 @@ def pop_ize(func):
 #########Nlink##########
 
 def Nlink(agent,**kwargs):
-	return np.sum(agent.get_vocabulary_content())
+	tempmat = copy.deepcopy(agent.get_vocabulary_content())
+	tempmat[tempmat>0] = 1
+	return np.sum(tempmat)
 
 def Nlink_max(pop):
 	return pop._M * pop._W
@@ -319,7 +321,8 @@ def N_d(pop,**kwargs):
 	tempmat = np.matrix(np.zeros((pop._M,pop._W)))
 	for agent in pop._agentlist:
 		tempmat += agent._vocabulary._content
-	return np.sum(tempmat)/len(pop._agentlist)
+	tempmat[tempmat>0] = 1
+	return np.sum(tempmat)
 
 def N_d_max(pop):
 	return pop._M*pop._W
@@ -337,6 +340,7 @@ def Nlinksurs(pop,**kwargs):
 	tempmat=np.matrix(np.ones((pop._M,pop._W)))
 	for agent in pop._agentlist:
 		tempmat=np.multiply(tempmat,agent._vocabulary.get_content())
+		tempmat[tempmat>0] = 1
 	return np.sum(tempmat)
 
 def Nlinksurs_max(pop):
@@ -1079,16 +1083,65 @@ graphconfig={"ymin":interactions_per_agent_min,"ymax":interactions_per_agent_max
 custom_interactions_per_agent =custom_func.CustomFunc(FUNC,"time",**graphconfig)
 
 
-############################	LEVEL EXPE ############################
+############################	LEVEL EXP ############################
 
 #### 	INPUT:		expe, **progress_info
 ####	OUTPUT:		value
 
 #graphconfig={}
-#	custom_FUNC=custom_func.CustomFunc(FUNC,"experiment",**graphconfig)
+#	custom_FUNC=custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 
 
+#########max_mem##########
+
+def max_mem(exp,X=0,**kwargs):
+	mem = exp.graph(method='Nlink')
+	return [max(mem._Y[0])]
+
+
+FUNC = max_mem
+
+graphconfig = {}
+custom_max_mem =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########conv_time##########
+
+def conv_time(exp,X=0,**kwargs):
+	sr_gr = exp.graph(method='srtheo')
+	sr = sr_gr._Y[0]
+	for i in range(len(sr)):
+		if sr[i] == 1.:
+			break
+	return [sr_gr._X[0][i]]
+
+
+def conv_time_max(exp):
+	return exp._T[-1]
+
+def conv_time_min(exp):
+	return 0
+
+FUNC = conv_time
+
+graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
+custom_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########partial_conv_time##########
+
+def partial_conv_time(exp,X=0,**kwargs):
+	sr_gr = exp.graph(method='srtheo')
+	sr = sr_gr._Y[0]
+	for i in range(len(sr)):
+		if sr[i] >= 0.9:
+			break
+	return [sr_gr._X[0][i]]
+
+
+FUNC = partial_conv_time
+
+graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
+custom_partial_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 ################################################################
 

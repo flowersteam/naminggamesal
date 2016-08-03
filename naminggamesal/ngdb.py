@@ -374,14 +374,15 @@ class Experiment(ngsimu.Experiment):
 					temptmin = max(dbmax,tmin)
 					tempgraph2 = super(Experiment,self).graph(method=method, tmin=temptmin, tmax=tmax)
 					tempgraph.complete_with(tempgraph2)
-				while tmax < tempgraph._X[0][-1]:
-					tempgraph._X[0].pop()
-					tempgraph._Y[0].pop()
-					tempgraph.stdvec[0].pop()
-				while tmin > tempgraph._X[0][0]:
-					tempgraph._X[0].pop(0)
-					tempgraph._Y[0].pop(0)
-					tempgraph.stdvec[0].pop(0)
+				if not len(tempgraph._X)==1: # for data at exp level
+					while tmax < tempgraph._X[0][-1]:
+						tempgraph._X[0].pop()
+						tempgraph._Y[0].pop()
+						tempgraph.stdvec[0].pop()
+					while tmin > tempgraph._X[0][0]:
+						tempgraph._X[0].pop(0)
+						tempgraph._Y[0].pop(0)
+						tempgraph.stdvec[0].pop(0)
 			else:
 				if not self.compute:
 					raise Exception('Computation needed')

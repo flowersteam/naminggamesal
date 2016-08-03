@@ -47,7 +47,7 @@ class StratMinCounts(StratNaive):
 
 	def pick_m(self, voc, mem, context):
 		counts = self.get_success_counts(voc, mem)
-		if  (len(voc.get_known_meanings())==0) or (min(counts)>self.mincounts and len(voc.get_known_meanings())<voc._M):
+		if  (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc._M and min(counts)>self.mincounts):
 			return voc.get_new_unknown_m()
 		KM = voc.get_known_meanings()
 		tempmin = min(counts)

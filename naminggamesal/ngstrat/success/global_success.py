@@ -19,7 +19,7 @@ class GlobalSuccessRestrictive(object):
 class GlobalSuccessEpirob(object):
 
 	def eval(self, ms, w, mh, voc, strategy, context=[]):
-		if ms == mh or not voc.get_known_meanings():
+		if ms == mh or not voc.get_known_meanings(w):
 			return True
 		else:
 			return False

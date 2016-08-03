@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
 
 import time
 import uuid
@@ -141,6 +140,15 @@ class Experiment(object):
 			configgraph["xlabel"]="T"
 			tempY=tempout
 			tempX=self._T[indmin:(len(self._T)+indmax+1)]
+			#configgraph["xmin"]=min(tempX)
+			#configgraph["xmax"]=max(tempX)
+			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
+		elif tempfun.level=="exp":
+			tempout=tempfun.apply(self)#,X=X)# TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			configgraph=tempfun.get_graph_config()
+			#configgraph["xlabel"]="T"
+			tempY=tempout
+			tempX=[0]# TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			#configgraph["xmin"]=min(tempX)
 			#configgraph["xmax"]=max(tempX)
 			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
