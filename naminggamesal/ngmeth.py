@@ -463,6 +463,26 @@ FUNC=entropycouples_old_norm
 graphconfig={"ymin":entropycouples_old_norm_min,"ymax":entropycouples_old_norm_max}
 custom_entropycouples_old_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+#########explo_rate##########
+
+
+def explo_rate(pop,**kwargs):
+	rate = 0.
+	for hist in pop._past[6]:
+		if hist[]:
+			rate += 1.
+	return rate/len(pop._past)
+
+def explo_rate_max(pop):
+	return 1
+
+def explo_rate_min(pop):
+	return 0
+
+FUNC=explo_rate
+graphconfig={"ymin":explo_rate_min,"ymax":explo_rate_max}
+custom_explo_rate=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
 #########N_words_pop##########
 
 
