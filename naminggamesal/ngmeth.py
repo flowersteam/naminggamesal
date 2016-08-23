@@ -467,11 +467,14 @@ custom_entropycouples_old_norm=custom_func.CustomFunc(FUNC,"population",**graphc
 
 
 def explo_rate(pop,**kwargs):
-	rate = 0.
+	count = 0.
 	for hist in pop._past:
 		if hist[6]:
-			rate += 1.
-	return rate/len(pop._past)
+			count += 1.
+	if len(pop._past) == 0:
+		return 1.
+	else:
+		return count/len(pop._past)
 
 def explo_rate_max(pop):
 	return 1
