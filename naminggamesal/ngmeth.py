@@ -498,10 +498,10 @@ custom_explo_rate=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 def relative_explo_rate(pop,**kwargs):
 	Nm = pop_ize(N_meanings)(pop,**kwargs)
 	naive_explo = 1.-(float(Nm)/N_meanings_max(pop,**kwargs))
-	if ==0:
+	if naive_explo == 0.:
 		return 1.
 	else:
-		return explo_rate(pop,**kwargs)/naive_explo
+		return explo_rate(pop,**kwargs)/float(naive_explo)
 
 def relative_explo_rate_min(pop):
 	return 0
