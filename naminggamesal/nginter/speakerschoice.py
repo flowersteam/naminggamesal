@@ -11,7 +11,7 @@ class SpeakersChoice(Interaction):
 		w = speaker.pick_w(ms)
 		mh = hearer.guess_m(w)
 		bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh)
-		bool_newconv = (ms in speaker._vocabulary.get_known_meanings())
+		bool_newconv = (ms not in speaker._vocabulary.get_known_meanings())
 		speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 		hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 		self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
@@ -25,7 +25,7 @@ class SpeakersChoiceEpirob(Interaction):
 		else:
 			mh = ms
 		bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh)
-		bool_newconv = (ms in speaker._vocabulary.get_known_meanings())
+		bool_newconv = (ms not in speaker._vocabulary.get_known_meanings())
 		if speaker._vocabulary.get_known_meanings() or random.random()<0.001:
 			speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)

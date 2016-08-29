@@ -34,7 +34,8 @@ class CustomFunc(object):
 
 	def apply(self,data,**kwargs):
 		for key,value in self.graph_config.iteritems():
-			self.graph_config_temp[key]=value(data)
+			if value(data) is not None:
+				self.graph_config_temp[key]=value(data)
 		if "progress_info" in kwargs.keys():
 			return self.func(data,progress_info=kwargs["progress_info"])
 		return self.func(data)

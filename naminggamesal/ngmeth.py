@@ -141,14 +141,17 @@ def N_words(agent,**kwargs):
 		return len(agent._vocabulary.get_known_words())
 
 def N_words_max(pop):
-	return 1
+	if hasattr(pop._agentlist[0]._vocabulary,'_W'):
+		return pop._agentlist[0]._vocabulary._W
+	else:
+		return None
 
 def N_words_min(pop):
 	return 0
 
 FUNC=N_words
 FUNC_BIS=pop_ize(FUNC)
-graphconfig={"ymin":N_words_min}#,"ymax":N_words_max}
+graphconfig={"ymin":N_words_min,"ymax":N_words_max}
 custom_N_words=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 #########N_meanings##########
@@ -157,14 +160,17 @@ def N_meanings(agent,**kwargs):
 	return len(agent._vocabulary.get_known_meanings())
 
 def N_meanings_max(pop):
-	return 1
+	if hasattr(pop._agentlist[0]._vocabulary,'_M'):
+		return pop._agentlist[0]._vocabulary._M
+	else:
+		return None
 
 def N_meanings_min(pop):
 	return 0
 
 FUNC=N_meanings
 FUNC_BIS=pop_ize(FUNC)
-graphconfig={"ymin":N_meanings_min}#,"ymax":N_meanings_max}
+graphconfig={"ymin":N_meanings_min,"ymax":N_meanings_max}
 custom_N_meanings=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 #########N_w_per_m##########
@@ -477,14 +483,32 @@ def explo_rate(pop,**kwargs):
 		return count/len(pop._past)
 
 def explo_rate_max(pop):
-	return 1
+	return 1.
 
 def explo_rate_min(pop):
-	return 0
+	return 0.
 
 FUNC=explo_rate
 graphconfig={"ymin":explo_rate_min,"ymax":explo_rate_max}
 custom_explo_rate=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########relative_explo_rate##########
+
+
+def relative_explo_rate(pop,**kwargs):
+	Nm = pop_ize(N_meanings)(pop,**kwargs)
+	naive_explo = 1.-(float(Nm)/N_meanings_max(pop,**kwargs))
+	if ==0:
+		return 1.
+	else:
+		return explo_rate(pop,**kwargs)/naive_explo
+
+def relative_explo_rate_min(pop):
+	return 0
+
+FUNC=relative_explo_rate
+graphconfig={"ymin":relative_explo_rate_min}#,"ymax":relative_explo_rate_max}
+custom_relative_explo_rate=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########N_words_pop##########
 
