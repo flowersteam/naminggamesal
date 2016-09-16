@@ -36,6 +36,7 @@ strat_class={
 
 
 	'mincounts':'mincounts.StratMinCounts',
+	'mincounts_wise_max':'mincounts.StratMinCountsWiseMax',
 
 	'decision_vector':'decision_vector.StratDecisionVector',
 	'decision_vector_gainmax':'decision_vector.StratDecisionVectorGainmax',

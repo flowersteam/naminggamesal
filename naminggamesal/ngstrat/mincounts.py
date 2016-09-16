@@ -12,7 +12,7 @@ class StratMinCounts(StratNaive):
 	def __init__(self, vu_cfg, mincounts=5 , **strat_cfg2):
 		super(StratMinCounts, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		if 'mincounts' not in strat_cfg2.keys():
-			self.mincounts=mincounts
+			self.mincounts = mincounts
 
 
 	def hearer_pick_m(self,voc,mem, context):
@@ -47,7 +47,7 @@ class StratMinCounts(StratNaive):
 
 	def pick_m(self, voc, mem, context):
 		counts = self.get_success_counts(voc, mem)
-		if  (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc._M and min(counts)>self.mincounts):
+		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc._M and min(counts)>self.mincounts):
 			return voc.get_new_unknown_m()
 		KM = voc.get_known_meanings()
 		tempmin = min(counts)
@@ -57,3 +57,28 @@ class StratMinCounts(StratNaive):
 				tempm.append(m)
 		j = random.randint(0, len(tempm)-1)
 		return KM[tempm[j]]
+
+##################################### STRATEGIE SUCCESS THRESHOLD WISE MAX########################################
+class StratMinCountsWiseMax(StratMinCounts):
+
+	def pick_m(self, voc, mem, context):
+		counts = self.get_success_counts(voc, mem)
+		mincounts = self.mincounts
+		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc._M and min(counts)>self.mincounts):
+			return voc.get_new_unknown_m()
+		KM = voc.get_known_meanings()
+		tempmax = 0
+		for m in range(0,len(KM)):
+			if counts[m] < mincounts:
+				tempmax = max(tempmax, counts[m])
+		tempm = []
+		for m in range(0,len(KM)):
+			if counts[m] == tempmax:
+				tempm.append(m)
+		try:
+			j = random.choice(tempm)
+		except IndexError:
+			return voc.get_random_known_m()
+		ans = KM[j]
+		return ans
+
