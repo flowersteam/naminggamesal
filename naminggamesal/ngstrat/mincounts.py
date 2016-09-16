@@ -82,3 +82,15 @@ class StratMinCountsWiseMax(StratMinCounts):
 		ans = KM[j]
 		return ans
 
+
+##################################### STRATEGIE SUCCESS THRESHOLD WISE MAX########################################
+class StratMinCountsBasic(StratMinCounts):
+
+	def pick_m(self, voc, mem, context):
+		counts = self.get_success_counts(voc, mem)
+		mincounts = self.mincounts
+		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc._M and min(counts)>self.mincounts):
+			return voc.get_new_unknown_m()
+		KM = voc.get_known_meanings()
+		return random.choice(KM)
+
