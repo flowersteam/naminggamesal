@@ -1,6 +1,6 @@
 import lzo
 
-
+import cPickle
 import sqlite3 as sql
 
 
@@ -8,7 +8,8 @@ import sqlite3 as sql
 
 
 def add_data(filepath,data,label):
-	lz_data = lzo.compress(data)
+	pickled_data = cPickle.dumps(data, cPickle.HIGHEST_PROTOCOL)
+	lz_data = lzo.compress(pickled_data)
 	conn = sql.connect(filepath)
 	with conn:
 		cursor = conn.cursor()
@@ -28,4 +29,6 @@ def read_data(filepath,label=None):
 		cursor.execute("SELECT Population_object FROM main_table WHERE T=\'"+str(label)+"\'")
 		blob = cursor.fetchone()
 	lz_data = blob[0]
-	return lzo.decompress(lz_data)
+	pickled_data = lzo.decompress(lz_data)
+	data = cPickle.loads(pickled_data)
+	return data
