@@ -43,9 +43,9 @@ class Experiment(object):
 		self._T = []
 		self._exec_time=[]
 		self._pop_cfg = pop_cfg
-		self.add_pop(Population(**pop_cfg),0)
 		self.uuid = str(uuid.uuid1())
 		self._poplist = Poplist('data/' + self.uuid + '.db')
+		self.add_pop(Population(**pop_cfg),0)
 		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.reconstruct_info = []
