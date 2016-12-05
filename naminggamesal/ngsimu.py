@@ -10,7 +10,30 @@ from .ngpop import Population
 from . import ngmeth
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
+from additional.sqlite_storage import add_data,read_data
 
+
+
+class Poplist(object):
+	def __init__(self,path):
+		self.filepath = path
+		self.pop = None
+
+	def append(self,pop,T):
+		add_data(filepath=self.filepath,data=pop,label=T)
+
+	def get(self,T):
+		return read_data(filepath=self.filepath,label=T)
+
+	def get_last(self):
+		if self.pop is None:
+			self.pop = read_data(filepath=self.filepath)
+		return self.pop
+
+	def __getstate__(self):
+		out_dict = self.__dict__.copy()
+		out_dict['pop'] = None
+		return out_dict
 
 
 class Experiment(object):
@@ -19,10 +42,10 @@ class Experiment(object):
 		self._time_step = step
 		self._T = []
 		self._exec_time=[]
-		self._poplist = []
 		self._pop_cfg = pop_cfg
 		self.add_pop(Population(**pop_cfg),0)
 		self.uuid = str(uuid.uuid1())
+		self._poplist = Poplist('data/' + self.uuid + '.db')
 		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.reconstruct_info = []
@@ -31,22 +54,13 @@ class Experiment(object):
 
 
 	def __str__(self):
-		return "T: "+str(self._T[-1])+"\n"+str(self._poplist[-1])
-
-	def get_self(self):
-		return self
-
-	def get_pop(self,tempindex):
-		if tempindex=="last":
-			return self._poplist[-1]
-		return self._poplist[tempindex]
-
+		return "T: "+str(self._T[-1])+"\n"+str(self._poplist.get(self._T[-1]))
 
 	def continue_exp_until(self,T):
 		temptmax = self._T[-1]
 		start_time = time.clock() - self._exec_time[-1]
 		while (temptmax + self._time_step <= T) :
-			temppop = cPickle.loads(cPickle.dumps(self.get_pop("last"), -1))#deepcopy(self.get_pop("last"))
+			temppop = self._poplist.get_last()
 			for tt in range(0,self._time_step):
 				temppop.play_game(1)
 				self.reconstruct_info.append(temppop._lastgameinfo)
@@ -62,29 +76,12 @@ class Experiment(object):
 		self.continue_exp_until((self._T[-1]+dT))
 
 	def add_pop(self,pop,T,exec_time=0):
-		self._poplist.append(pop)
+		self._poplist.append(pop,T)
 		self._T.append(T)
 		self._exec_time.append(exec_time)
 
-	def extend_step(self,bigstep):
-		tempt=self._T[0]
-		temppoplist=[self._poplist[0]]
-		tempT=[self._T[0]]
-		for i in range(1,len(self._T)):
-			if self._T[i]>=tempt+bigstep:
-				temppoplist.append(self.get_pop(i))
-				tempT.append(self._T[i])
-				tempt=self._T[i]
-		self._T=tempT
-		self._poplist=temppoplist
-
 	def set_time_step(self,newstep):
 		self._time_step=newstep
-
-	def truncate(self,tmax):
-		while self._T[-1]>tmax:
-			self._poplist.pop()
-			self._T.pop()
 
 	def visual(self,vtype=None,ag_list=None,tmax=None):
 		if tmax==None:
@@ -110,8 +107,8 @@ class Experiment(object):
 		tempoutmean=[]
 		tempoutstd=[]
 		if tempfun.level=="agent":
-			for j in range(indmin,len(self._poplist)+1+indmax):
-				tempout=tempfun.apply(self._poplist[j])
+			for j in range(indmin,len(self._T)+1+indmax):
+				tempout=tempfun.apply(self._poplist.get(self._T[j]))
 				tempoutmean.append(tempout[0])
 				tempoutstd.append(tempout[1])
 			configgraph=tempfun.get_graph_config()
@@ -124,8 +121,8 @@ class Experiment(object):
 			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=1,sort=0,stdvec=stdvec,filename="graph_"+tempfun.func.__name__,**configgraph)
 		elif tempfun.level=="population":
 			tempout=[]
-			for j in range(indmin,len(self._poplist)+1+indmax):
-				tempout.append(tempfun.apply(self._poplist[j]))
+			for j in range(indmin,len(self._T)+1+indmax):
+				tempout.append(tempfun.apply(self._poplist.get(self._T[j])))
 			configgraph=tempfun.get_graph_config()
 			configgraph["xlabel"]="T"
 			tempY=tempout
