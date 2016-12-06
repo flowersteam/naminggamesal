@@ -3,7 +3,7 @@
 import os
 import sqlite3 as sql
 import time
-import bz2
+import lzo
 import cPickle
 import json
 from copy import deepcopy
@@ -141,7 +141,7 @@ class NamingGamesDB(object):
 					cursor=conn.cursor()
 					cursor.execute("SELECT Experiment_object FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
 					tempblob=cursor.fetchone()
-					tempexp = cPickle.loads(bz2.decompress(str(tempblob[0])))
+					tempexp = cPickle.loads(lzo.decompress(str(tempblob[0])))
 					tempexp.db=self
 			else:
 				print("ID doesn't exist in DB")
@@ -177,7 +177,7 @@ class NamingGamesDB(object):
 			cursor=conn.cursor()
 			cursor.execute("SELECT Custom_Graph FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function=\'"+method+"\'")
 			tempblob=cursor.fetchone()
-			return cPickle.loads(bz2.decompress(str(tempblob[0])))
+			return cPickle.loads(lzo.decompress(str(tempblob[0])))
 		#TODO: implement dealing with xp_cfg
 
 
@@ -247,7 +247,7 @@ class NamingGamesDB(object):
 		conn=sql.connect(self.dbpath)
 		with conn:
 			cursor=conn.cursor()
-			binary=sql.Binary(bz2.compress(cPickle.dumps(exp,cPickle.HIGHEST_PROTOCOL)))
+			binary=sql.Binary(lzo.compress(cPickle.dumps(exp,cPickle.HIGHEST_PROTOCOL)))
 			try:
 				cursor.execute("SELECT Tmax FROM main_table WHERE Id=\'"+exp.uuid+"\'")
 			except:
@@ -292,7 +292,7 @@ class NamingGamesDB(object):
 				if not graph._X[0][0] == 0:
 					print graph._X
 					graph.complete_with(self.get_graph(exp.uuid,graph,method))
-				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
+				binary=sql.Binary(lzo.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 				cursor.execute("INSERT INTO computed_data_table VALUES(?,?,?,?,?,?,?)", (\
 					exp.uuid, \
 					graph.init_time, \
@@ -302,7 +302,7 @@ class NamingGamesDB(object):
 					graph._X[0][-1], \
 					binary,))
 			elif tempmodiftup[0]!=graph.modif_time and graph._X[0][-1]>tempmodiftup2[0]:
-				binary=sql.Binary(bz2.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
+				binary=sql.Binary(lzo.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 				cursor.execute("UPDATE computed_data_table SET "\
 					+"Modif_Time=\'"+str(graph.modif_time)+"\', "\
 					+"Time_max=\'"+str(graph._X[0][-1])+"\', "\

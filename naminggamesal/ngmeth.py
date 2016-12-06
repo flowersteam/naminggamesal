@@ -72,6 +72,33 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":success_rate_min,"ymax":success_rate_max}
 custom_success_rate=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
+
+#########transinformation##########
+
+def voc_transinf(voc):
+	M = voc._M
+	W = voc._W
+	KM = voc.get_known_meanings()
+	Mtransinf = len(KM)*np.log2(W)
+	for m in KM:
+		Mtransinf -= np.log2(len(voc.get_known_words(m=m)))
+	return Mtransinf*1./M
+
+def transinformation(agent,**kwargs):
+	voc = agent._vocabulary
+	return voc_transinf(voc)
+
+def transinformation_max(pop):
+	return np.log2(pop._W)
+
+def transinformation_min(pop):
+	return 0
+
+FUNC=transinformation
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":transinformation_min,"ymax":transinformation_max}
+custom_transinformation=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
 #########connex_components_per_word##########
 
 def connex_components_per_word(agent,**kwargs):
