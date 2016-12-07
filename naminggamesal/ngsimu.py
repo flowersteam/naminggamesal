@@ -145,7 +145,7 @@ class Experiment(object):
 			configgraph=tempfun.get_graph_config()
 			#configgraph["xlabel"]="T"
 			tempY=tempout
-			tempX=[self._T[-1]]# TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			tempX=[[self._T[-1]]]# TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			#configgraph["xmin"]=min(tempX)
 			#configgraph["xmax"]=max(tempX)
 			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
