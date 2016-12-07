@@ -292,6 +292,10 @@ class NamingGamesDB(object):
 				if not graph._X[0][0] == 0 and self.data_exists(xp_uuid=exp.uuid,method=method):
 					graph.complete_with(self.get_graph(exp.uuid,graph,method))
 				binary=sql.Binary(lzo.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
+				print graph._X
+				print graph._X[0]
+				print graph._X[0][-1]
+				print binary
 				cursor.execute("INSERT INTO computed_data_table VALUES(?,?,?,?,?,?,?)", (\
 					exp.uuid, \
 					graph.init_time, \
