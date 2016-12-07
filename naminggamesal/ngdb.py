@@ -289,8 +289,7 @@ class NamingGamesDB(object):
 			cursor.execute("SELECT Time_max FROM computed_data_table WHERE Id=\'"+exp.uuid+"\' AND Function=\'"+method+"\'")
 			tempmodiftup2=cursor.fetchone()
 			if not tempmodiftup:
-				if not graph._X[0][0] == 0:
-					print graph._X
+				if not graph._X[0][0] == 0 and self.data_exists(xp_uuid=exp.uuid,method=method):
 					graph.complete_with(self.get_graph(exp.uuid,graph,method))
 				binary=sql.Binary(lzo.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 				cursor.execute("INSERT INTO computed_data_table VALUES(?,?,?,?,?,?,?)", (\
