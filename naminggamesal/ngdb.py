@@ -339,7 +339,7 @@ class Experiment(ngsimu.Experiment):
 		self.db.commit_data(self,graph,method)
 
 	def continue_exp_until(self,T, autocommit=True):
-		if not self.compute and T >= self._T[-1] + self._time_step:
+		if not self.compute and T >= self._T[-1] + self.stepfun(self._T[-1]):
 			raise Exception('Computation needed')
 		super(Experiment,self).continue_exp_until(T)
 		if autocommit:
@@ -354,7 +354,7 @@ class Experiment(ngsimu.Experiment):
 		if not tmax:
 			tmax = self._T[-1]
 		ind=-1
-		if tmax >= self._T[-1] + self._time_step:
+		if tmax >= self._T[-1] + self.stepfun(self._T[-1]):
 			if not self.compute:
 				raise Exception('Computation needed')
 			self.continue_exp_until(tmax, autocommit=autocommit)
@@ -365,7 +365,7 @@ class Experiment(ngsimu.Experiment):
 			if tempgraph is None:
 				tempgraph = self.db.get_graph(self.uuid, method=method)
 			#dbmin = tempgraph._X[0][0] - self._time_step
-			dbmax = tempgraph._X[0][-1] + self._time_step
+			dbmax = tempgraph._X[0][-1] + self.stepfun(tempgraph._X[0][-1])
 			if dbmax>=tmin: #and dbmin<=tmax
 				if dbmax<tmax:
 					if not self.compute:

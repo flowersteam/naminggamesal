@@ -36,10 +36,38 @@ class Poplist(object):
 		return out_dict
 
 
+def logstepfun(time):
+	if time == 0:
+		return 1
+	oom = len(str(int(time)))-1
+	double_prefix = int((10*time)/(10**oom))
+	if double_prefix < 15:
+		out_prefix = 1.5
+	elif double_prefix < 20:
+		out_prefix = 2.
+	elif double_prefix < 30:
+		out_prefix = 3.
+	elif double_prefix < 50:
+		out_prefix = 5.
+	elif double_prefix < 70:
+		out_prefix = 7.
+	else:
+		out_prefix = 10.
+	return int(out_prefix*(10**oom)-time)
+
+def linearstepfun(step):
+	return lambda x : x+step
+
+
+
 class Experiment(object):
 
 	def __init__(self, pop_cfg, step=1):
 		self._time_step = step
+		if self._time_step == 'log':
+			self.stepfun = logstepfun
+		else:
+			self.stepfun = linearstepfun(self._time_step)
 		self._T = []
 		self._exec_time=[]
 		self._pop_cfg = pop_cfg
@@ -59,15 +87,14 @@ class Experiment(object):
 	def continue_exp_until(self,T):
 		temptmax = self._T[-1]
 		start_time = time.clock() - self._exec_time[-1]
-		while (temptmax + self._time_step <= T) :
+		while (temptmax + self.stepfun(temptmax) <= T) :
 			temppop = self._poplist.get_last()
 			for tt in range(0,self._time_step):
 				temppop.play_game(1)
 				self.reconstruct_info.append(temppop._lastgameinfo)
 				self.reconstruct_info = self.reconstruct_info[-100:]
 			end_time = time.clock()
-			self.add_pop(temppop,self._T[-1]+self._time_step,exec_time=end_time-start_time)
-			temptmax+=self._time_step
+			self.add_pop(temppop,temptmax+self.stepfun(temptmax),exec_time=end_time-start_time)
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def continue_exp(self,dT=None):
@@ -80,8 +107,8 @@ class Experiment(object):
 		self._T.append(T)
 		self._exec_time.append(exec_time)
 
-	def set_time_step(self,newstep):
-		self._time_step=newstep
+#	def set_time_step(self,newstep):
+#		self._time_step=newstep
 
 	def visual(self,vtype=None,ag_list=None,tmax=None):
 		if tmax==None:
@@ -95,7 +122,7 @@ class Experiment(object):
 		if not tmax:
 			tmax = self._T[-1]
 		indmax=-1
-		if tmax >= self._T[-1] + self._time_step:
+		if tmax >= self._T[-1] + self.stepfun(self._T[-1]):
 			self.continue_exp_until(tmax)
 			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax)
 		while self._T[indmax]>tmax:
