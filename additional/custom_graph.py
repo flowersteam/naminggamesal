@@ -38,6 +38,7 @@ class CustomGraph(object):
 		self.legend_permut = []
 
 		self.loglog = False
+		self.semilog = False
 		self.loglog_basex = 10
 		self.loglog_basey = 10
 
@@ -140,10 +141,12 @@ class CustomGraph(object):
 					Ytemp[j]=temptup[j][1][0]
 					stdtemp[j]=temptup[j][1][1]
 
-			if not self.loglog:
-				base_line = plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
-			else:
-				base_line = plt.loglog(Xtemp,Ytemp,basex=self.loglog_basex,basey=self.loglog_basey,**self.Yoptions[i])[0]
+			base_line = plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
+			if self.loglog:
+				plt.xscale('symlog',basex=self.loglog_basex)
+				plt.yscale('symlog',basex=self.loglog_basey)
+			elif self.semilog:
+				plt.xscale('symlog',basex=self.loglog_basex)
 			if self.std:
 				Ytempmin=[0]*len(Ytemp)
 				Ytempmax=[0]*len(Ytemp)

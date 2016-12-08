@@ -36,28 +36,6 @@ class Poplist(object):
 		return out_dict
 
 
-def logstepfun(time):
-	if time == 0:
-		return 1
-	oom = len(str(int(time)))-1
-	double_prefix = int((10*time)/(10**oom))
-	if double_prefix < 15:
-		out_prefix = 1.5
-	elif double_prefix < 20:
-		out_prefix = 2.
-	elif double_prefix < 30:
-		out_prefix = 3.
-	elif double_prefix < 50:
-		out_prefix = 5.
-	elif double_prefix < 70:
-		out_prefix = 7.
-	else:
-		out_prefix = 10.
-	return int(out_prefix*(10**oom)-time)
-
-def linearstepfun(step):
-	return lambda x : x+step
-
 
 
 class Experiment(object):
@@ -65,9 +43,9 @@ class Experiment(object):
 	def __init__(self, pop_cfg, step=1):
 		self._time_step = step
 		if self._time_step == 'log':
-			self.stepfun = logstepfun
+			self.stepfun = self.logstepfun
 		else:
-			self.stepfun = linearstepfun(self._time_step)
+			self.stepfun = self.linearstepfun
 		self._T = []
 		self._exec_time=[]
 		self._pop_cfg = pop_cfg
@@ -78,6 +56,58 @@ class Experiment(object):
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.reconstruct_info = []
 
+	def __getstate__(self):
+		out_dict = self.__dict__.copy()
+		out_dict['stepfun'] = None
+		return out_dict
+
+
+	def __setstate__(self, in_dict):
+		self.__dict__.update(in_dict)
+		if self._time_step == 'log':
+			self.stepfun = self.logstepfun
+		else:
+			self.stepfun = self.linearstepfun
+
+
+	def backwards_stepfun(self,time):
+		i = 1
+		while time - i + self.stepfun(time-i) > time:
+			i += 1
+			assert(time>=i)
+		return i
+
+	def logstepfun(self,time,backwards=False):
+		time = int(time)
+		if time <= 1:
+			return 1
+		oom = len(str(time))-1
+		double_prefix = int((10*time)/(10**oom))
+		if double_prefix < 15:
+			out_prefix = 1.5
+			backw_prefix = 0.7
+		elif double_prefix < 20:
+			out_prefix = 2.
+			backw_prefix = 1.
+		elif double_prefix < 30:
+			out_prefix = 3.
+			backw_prefix = 1.5
+		elif double_prefix < 50:
+			out_prefix = 5.
+			backw_prefix = 2.
+		elif double_prefix < 70:
+			out_prefix = 7.
+			backw_prefix = 3.
+		else:
+			out_prefix = 10.
+			backw_prefix = 5.
+		if backwards:
+			return int(time - backw_prefix*(10**oom))
+		else:
+			return int(out_prefix*(10**oom)-time)
+
+	def linearstepfun(self,time,backwards=False):
+		return self._time_step
 
 
 
@@ -89,18 +119,19 @@ class Experiment(object):
 		start_time = time.clock() - self._exec_time[-1]
 		while (temptmax + self.stepfun(temptmax) <= T) :
 			temppop = self._poplist.get_last()
-			for tt in range(0,self._time_step):
+			for tt in range(0,self.stepfun(temptmax)):
 				temppop.play_game(1)
 				self.reconstruct_info.append(temppop._lastgameinfo)
 				self.reconstruct_info = self.reconstruct_info[-100:]
 			end_time = time.clock()
 			self.add_pop(temppop,temptmax+self.stepfun(temptmax),exec_time=end_time-start_time)
+			temptmax += self.stepfun(temptmax)
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def continue_exp(self,dT=None):
 		if dT is None:
-			dT = self._time_step
-		self.continue_exp_until((self._T[-1]+dT))
+			dT = self.stepfun(self._T[-1])
+		self.continue_exp_until(self._T[-1]+dT)
 
 	def add_pop(self,pop,T,exec_time=0):
 		self._poplist.append(pop,T)

@@ -347,7 +347,7 @@ class Experiment(ngsimu.Experiment):
 
 	def continue_exp(self,dT=None, autocommit=True):
 		if dT is None:
-			dT = self._time_step
+			dT = self.stepfun(self._T[-1])
 		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit)
 
 	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True, tempgraph=None):
