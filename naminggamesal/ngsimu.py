@@ -44,6 +44,8 @@ class Experiment(object):
 		self._time_step = step
 		if self._time_step == 'log':
 			self.stepfun = self.logstepfun
+		if self._time_step == 'log_improved':
+			self.stepfun = self.logstepfun2
 		else:
 			self.stepfun = self.linearstepfun
 		self._T = []
@@ -105,6 +107,35 @@ class Experiment(object):
 			return int(time - backw_prefix*(10**oom))
 		else:
 			return int(out_prefix*(10**oom)-time)
+
+	def logstepfun2(self,time,backwards=False):
+		time = int(time)
+		if time <= 10:
+			return 1
+		oom = len(str(time))-1
+		double_prefix = int((10*time)/(10**oom))
+		if double_prefix == 10:
+			step_out_prefix = 0.1
+			step_backw_prefix = 0.05
+		elif double_prefix <= 39:
+			step_out_prefix = 0.1
+			step_backw_prefix = 0.1
+		elif double_prefix == 40:
+			step_out_prefix = 0.2
+			step_backw_prefix = 0.1
+		elif double_prefix <= 69:
+			step_out_prefix = 0.2
+			step_backw_prefix = 0.2
+		elif double_prefix == 70:
+			step_out_prefix = 0.5
+			step_backw_prefix = 0.2
+		elif double_prefix <= 99:
+			step_out_prefix = 0.5
+			step_backw_prefix = 0.5
+		if backwards:
+			return int(step_backw_prefix*(10**oom))
+		else:
+			return int(step_out_prefix*(10**oom))
 
 	def linearstepfun(self,time,backwards=False):
 		return self._time_step
