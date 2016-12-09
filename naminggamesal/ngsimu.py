@@ -42,12 +42,7 @@ class Experiment(object):
 
 	def __init__(self, pop_cfg, step=1):
 		self._time_step = step
-		if self._time_step == 'log':
-			self.stepfun = self.logstepfun
-		if self._time_step == 'log_improved':
-			self.stepfun = self.logstepfun2
-		else:
-			self.stepfun = self.linearstepfun
+		self.define_stepfun()
 		self._T = []
 		self._exec_time=[]
 		self._pop_cfg = pop_cfg
@@ -58,6 +53,16 @@ class Experiment(object):
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.reconstruct_info = []
 
+	def define_stepfun(self):
+		if self._time_step == 'log':
+			self.stepfun = self.logstepfun
+		elif self._time_step == 'log_improved':
+			self.stepfun = self.logstepfun2
+		elif isinstance(self._time_step,int):
+			self.stepfun = self.linearstepfun
+		else:
+			raise Exception('unknown step function definition: '+str(self._time_step))
+
 	def __getstate__(self):
 		out_dict = self.__dict__.copy()
 		out_dict['stepfun'] = None
@@ -66,11 +71,7 @@ class Experiment(object):
 
 	def __setstate__(self, in_dict):
 		self.__dict__.update(in_dict)
-		if self._time_step == 'log':
-			self.stepfun = self.logstepfun
-		else:
-			self.stepfun = self.linearstepfun
-
+		self.define_stepfun()
 
 	def backwards_stepfun(self,time):
 		i = 1
