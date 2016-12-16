@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: latin-1 -*-
 
 import numpy as np
 import random
@@ -9,12 +8,13 @@ from importlib import import_module
 
 sns.set(rc={'image.cmap': 'Purples_r'})
 
-#####Classe de base
+#####Base class
 
 voc_class={
 	"matrix":"matrix.VocMatrix",
 	"lil_matrix":"matrix.VocLiLMatrix",
 	"csr_matrix":"matrix.VocCSRMatrix",
+	"csr_matrix_improved":"matrix.VocCSRMatrixImproved",
 	"csc_matrix":"matrix.VocCSCMatrix",
 	"dok_matrix":"matrix.VocDOKMatrix",
 	'category':'category.VocCategory'
@@ -36,11 +36,11 @@ def voc_cache(tempfun):
 	return mod_fun
 
 def del_cache(tempfun):
-	def mod_fun(obj_self, *args, **kwargs):
+	def mod_fun_del(obj_self, *args, **kwargs):
 		ans = tempfun(obj_self, *args, **kwargs)
 		obj_self._cache = {}
 		return ans
-	return mod_fun
+	return mod_fun_del
 
 def Vocabulary(voc_type='matrix', **voc_cfg2):
 	tempstr = voc_type
@@ -90,7 +90,3 @@ class BaseVocabulary(object):
 		self.del_cache()
 
 
-###### Classes supplémentaires
-
-#from .matrix import *
-#from .sparse_matrix import *

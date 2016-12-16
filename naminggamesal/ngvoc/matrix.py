@@ -2,6 +2,7 @@
 
 import random
 import numpy as np
+import copy
 import matplotlib.pyplot as plt
 import scipy
 from scipy import sparse
@@ -342,6 +343,31 @@ class VocCSRMatrix(VocSparseMatrix):
 		for w_i in coords_w:
 			coords += [(m_i,w_i) for m_i in self.get_known_meanings(w=w_i,option='max')]
 		return coords
+
+
+class VocCSRMatrixImproved(VocCSRMatrix):
+	voctype="csr_matrix_improved"
+
+	def __init__(self,M,W,**voc_cfg2):
+		VocCSRMatrix.__init__(self,M,W,**voc_cfg2)
+		self._content.tocoo = self.convert_to_coo
+
+
+	def convert_to_coo(self,copy=True):
+		if 'coo' not in self._cache.keys():
+			self._cache['coo'] = sparse.csr_matrix.tocoo(self._content)
+		return self._cache['coo']
+
+	def __getstate__(self):
+		del self._content.tocoo
+		out_dict = self.__dict__.copy()
+		out_dict['_content'] = copy.deepcopy(self._content)
+		self._content.tocoo = self.convert_to_coo
+		return out_dict
+
+	def __setstate__(self, in_dict):
+		self.__dict__.update(in_dict)
+		self._content.tocoo = self.convert_to_coo
 
 
 
