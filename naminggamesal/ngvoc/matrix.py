@@ -109,7 +109,6 @@ class VocMatrix(BaseVocabulary):
 			return self.get_coords_minofmaxw(mat,nz=nz)
 		elif option == 'minofmaxm':
 			return self.get_coords_minofmaxm(mat,nz=nz)
-		return coords
 
 	def get_coords_none(self,mat,nz=None):
 		if nz is None:

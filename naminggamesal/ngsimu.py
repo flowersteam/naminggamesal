@@ -10,7 +10,7 @@ from .ngpop import Population
 from . import ngmeth
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
-from additional.sqlite_storage import add_data,read_data
+from additional.sqlite_storage import add_data,read_data,xz_compress,xz_decompress
 
 
 
@@ -29,6 +29,9 @@ class Poplist(object):
 		if self.pop is None:
 			self.pop = read_data(filepath=self.filepath)
 		return self.pop
+
+	def compress(self):
+		xz_compress(self.filepath,rm=True)
 
 	def __getstate__(self):
 		out_dict = self.__dict__.copy()
@@ -52,6 +55,9 @@ class Experiment(object):
 		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.reconstruct_info = []
+
+	def compress(self):
+		self._poplist.compress()
 
 	def define_stepfun(self):
 		if self._time_step == 'log':

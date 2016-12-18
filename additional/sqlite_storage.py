@@ -3,9 +3,11 @@ import os
 import errno
 import cPickle
 import sqlite3 as sql
+import backports.lzma as lzma
+import bz2
+from shutil import copyfileobj
 
-
-
+#!!!For the moment global compression is bz2 not lzma/xz. Waiting for implementation.
 
 
 def add_data(filepath,data,label):
@@ -27,6 +29,9 @@ def add_data(filepath,data,label):
 		cursor.execute("INSERT INTO main_table VALUES (?,?)",(label,sql.Binary(lz_data)))
 
 def read_data(filepath,label=None):
+	if not os.path.isfile(filepath):
+		xz_decompress(filepath+'.xz')
+		os.remove(filepath+'.xz')
 	conn = sql.connect(filepath)
 	with conn:
 		cursor = conn.cursor()
@@ -40,3 +45,20 @@ def read_data(filepath,label=None):
 	pickled_data = lzo.decompress(lz_data)
 	data = cPickle.loads(pickled_data)
 	return data
+
+def xz_decompress(file):
+	outfile = file[:-3]
+	with open(outfile,'w') as output:
+		with lzma.LZMAFile(file) as uncompressed:
+		#with bz2.BZ2File(file) as uncompressed:
+			copyfileobj(uncompressed,output)
+
+def xz_compress(file,rm=False):
+	outfile = file+'.xz'
+	#with open(outfile) as output:
+	with open(file) as uncompressed:
+		with lzma.LZMAFile(outfile,'w') as compressed:
+		#with bz2.BZ2File(outfile,'w') as compressed:
+			copyfileobj(uncompressed,compressed)
+	if rm:
+		os.remove(file)

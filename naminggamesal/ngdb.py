@@ -100,6 +100,15 @@ class NamingGamesDB(object):
 					if not xp_only:
 						cursor.execute("DELETE FROM computed_data_table WHERE Id=\'{}\'".format(str(xp_uuid)+met))
 					cursor.execute("DELETE FROM main_table WHERE Id=\'{}\'".format(str(xp_uuid)))
+					try:
+						os.remove(os.path.join(os.path.dirname(self.dbpath),'data',xp_uuid+'.db'))
+					except OSError:
+						pass
+					try:
+						os.remove(os.path.join(os.path.dirname(self.dbpath),'data',xp_uuid+'.db.xz'))
+					except OSError:
+						pass
+
 
 
 	def get_method_list(self,xp_uuid):
@@ -263,11 +272,11 @@ class NamingGamesDB(object):
 					exp.modif_time, \
 					exp._exec_time[-1], \
 					json.dumps({'pop_cfg':exp._pop_cfg, 'step':exp._time_step}, sort_keys=True), \
-#					exp._voctype, \
-#					exp._strat["strattype"], \
-#					exp._M, \
-#					exp._W, \
-#					exp._nbagent, \
+			#		exp._voctype, \
+			#		exp._strat["strattype"], \
+			#		exp._M, \
+			#		exp._W, \
+			#		exp._nbagent, \
 					exp._T[-1], \
 					exp._time_step, \
 					binary,))
@@ -278,7 +287,7 @@ class NamingGamesDB(object):
 					+"Exec_Time=\'"+str(exp._exec_time[-1])+"\', "\
 					+"Tmax=\'"+str(exp._T[-1])+"\', "\
 					+"step=\'"+str(exp._time_step)+"\', "\
-					+"Experiment_object=? WHERE Id=\'"+str(exp.uuid)+"\'",(binary,))\
+					+"Experiment_object=? WHERE Id=\'"+str(exp.uuid)+"\'",(binary,))
 
 	def commit_data(self,exp,graph,method):
 		conn=sql.connect(self.dbpath)
@@ -305,7 +314,7 @@ class NamingGamesDB(object):
 				cursor.execute("UPDATE computed_data_table SET "\
 					+"Modif_Time=\'"+str(graph.modif_time)+"\', "\
 					+"Time_max=\'"+str(graph._X[0][-1])+"\', "\
-					+"Custom_Graph=? WHERE Id=\'"+str(exp.uuid)+"\' AND Function=\'"+method+"\'",(binary,))\
+					+"Custom_Graph=? WHERE Id=\'"+str(exp.uuid)+"\' AND Function=\'"+method+"\'",(binary,))
 
 	def data_exists(self,xp_uuid,method):
 		conn=sql.connect(self.dbpath)
@@ -325,12 +334,13 @@ class Experiment(ngsimu.Experiment):
 
 	def __init__(self,pop_cfg,step=1,database=None,compute=True):
 		if not database:
-			self.db=NamingGamesDB()
+			self.db = NamingGamesDB()
 		else:
-			self.db=database
+			self.db = database
 			self.compute = compute
 		super(Experiment,self).__init__(pop_cfg,step)
 		self.commit_to_db()
+		self.compress()
 
 	def commit_to_db(self):
 		self.db.commit(self)
