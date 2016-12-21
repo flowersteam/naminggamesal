@@ -285,7 +285,10 @@ custom_norm_std_Npercept=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 #########dist_threshold##########
 
 def dist_threshold(agent,**kwargs):
-	return agent._strategy.get_dist_threshold(agent._vocabulary,agent._memory)
+	if hasattr(agent._strategy,'get_dist_threshold'):
+		return agent._strategy.get_dist_threshold(agent._vocabulary,agent._memory)
+	else:
+		return 0
 
 def dist_threshold_max(pop):
 	return 1
@@ -295,7 +298,7 @@ def dist_threshold_min(pop):
 
 FUNC=dist_threshold
 FUNC_BIS=pop_ize(FUNC)
-graphconfig={"ymin":dist_threshold_min}#,"ymax":dist_threshold_max}
+graphconfig={"ymin":dist_threshold_min,"ymax":dist_threshold_max}
 custom_dist_threshold=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
