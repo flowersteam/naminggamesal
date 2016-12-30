@@ -28,12 +28,12 @@ class CustomGraph(object):
 		self.filename="graph"+time.strftime("%Y%m%d%H%M%S", time.localtime())
 		if "filename" in kwargs.keys():
 			self.filename=kwargs["filename"]
-		self.title=self.filename
-		self.xlabel="X"
-		self.ylabel="Y"
-		self.alpha=0.3
+		self.title = self.filename
+		self.xlabel = "X"
+		self.ylabel = "Y"
+		self.alpha = 0.3
 
-		self.Yoptions=[{}]
+		self.Yoptions = [{}]
 		self.legendoptions = {}
 		self.legend_permut = []
 
@@ -42,14 +42,14 @@ class CustomGraph(object):
 		self.loglog_basex = 10
 		self.loglog_basey = 10
 
-		self.xmin=[0,0]
-		self.xmax=[0,5]
-		self.ymin=[0,0]
-		self.ymax=[0,5]
+		self.xmin = None
+		self.xmax = None
+		self.ymin = None
+		self.ymax = None
 
-		self.std=0
+		self.std = False
 
-		self._Y=[Y]
+		self._Y = [Y]
 		self.stdvec=[0]*len(Y)
 
 		if len(arg)!=0:
@@ -65,19 +65,6 @@ class CustomGraph(object):
 			setattr(self,key,value)
 
 		self.stdvec=[self.stdvec]
-
-		if not isinstance(self.xmin,list):
-			temp=self.xmin
-			self.xmin=[1,temp]
-		if not isinstance(self.xmax,list):
-			temp=self.xmax
-			self.xmax=[1,temp]
-		if not isinstance(self.ymin,list):
-			temp=self.ymin
-			self.ymin=[1,temp]
-		if not isinstance(self.ymax,list):
-			temp=self.ymax
-			self.ymax=[1,temp]
 
 		self.init_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
@@ -162,14 +149,14 @@ class CustomGraph(object):
 		plt.ylabel(self.ylabel)
 		plt.title(self.title)
 
-		if self.xmin[0]:
-			plt.xlim(xmin=self.xmin[1])
-		if self.xmax[0]:
-			plt.xlim(xmax=self.xmax[1])
-		if self.ymin[0]:
-			plt.ylim(ymin=self.ymin[1])
-		if self.ymax[0]:
-			plt.ylim(ymax=self.ymax[1])
+		if self.xmin is not None:
+			plt.xlim(xmin=self.xmin)
+		if self.xmax is not None:
+			plt.xlim(xmax=self.xmax)
+		if self.ymin is not None:
+			plt.ylim(ymin=self.ymin)
+		if self.ymax is not None:
+			plt.ylim(ymax=self.ymax)
 
 		handles, labels = plt.axes().get_legend_handles_labels()
 		handles2, labels2 = [], []
