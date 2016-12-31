@@ -1190,7 +1190,7 @@ def max_mem_conv(exp,X=0,thresh=1.,**kwargs):
 	if sr >= thresh:
 		return max_mem(exp,X=X,**kwargs)
 	else:
-		return np.nan
+		return [np.nan]
 
 
 FUNC = max_mem_conv
@@ -1206,7 +1206,7 @@ def conv_time(exp,X=0,thresh=1.,**kwargs):
 	for i in range(len(sr)):
 		if sr[i] >= thresh:
 			return [sr_gr._X[0][i]]
-	return np.nan
+	return [np.nan]
 
 
 def conv_time_max(exp):
@@ -1228,7 +1228,7 @@ def partial_conv_time(exp,X=0,thresh=1.,**kwargs):
 	for i in range(len(sr)):
 		if sr[i] >= 0.9*thresh:
 			return [sr_gr._X[0][i]]
-	return np.nan
+	return [np.nan]
 
 
 FUNC = partial_conv_time
