@@ -1182,12 +1182,12 @@ FUNC = max_mem
 graphconfig = {}
 custom_max_mem =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
-#########max_mem##########
+#########max_mem_conv##########
 
-def max_mem_conv(exp,X=0,**kwargs):
+def max_mem_conv(exp,X=0,thresh=1.,**kwargs):
 	sr_gr = exp.graph(method='srtheo')
 	sr = sr_gr._Y[0][-1]
-	if sr == 1.:
+	if sr >= thresh:
 		return max_mem(exp,X=X,**kwargs)
 	else:
 		return np.nan
@@ -1200,11 +1200,11 @@ custom_max_mem_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########conv_time##########
 
-def conv_time(exp,X=0,**kwargs):
+def conv_time(exp,X=0,thresh=1.,**kwargs):
 	sr_gr = exp.graph(method='srtheo')
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
-		if sr[i] == 1.:
+		if sr[i] >= thresh:
 			return [sr_gr._X[0][i]]
 	return np.nan
 
@@ -1222,11 +1222,11 @@ custom_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########partial_conv_time##########
 
-def partial_conv_time(exp,X=0,**kwargs):
+def partial_conv_time(exp,X=0,thresh=1.,**kwargs):
 	sr_gr = exp.graph(method='srtheo')
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
-		if sr[i] >= 0.9:
+		if sr[i] >= 0.9*thresh:
 			return [sr_gr._X[0][i]]
 	return np.nan
 
@@ -1235,6 +1235,44 @@ FUNC = partial_conv_time
 
 graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
 custom_partial_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########max_mem_conv_threshold##########
+
+def max_mem_conv_threshold(exp,X=0,**kwargs):
+	sr_gr = exp.graph(method='srtheo')
+	thresh = sr_gr._Y[0][-1]
+	return max_mem(exp,X=X,thresh=thresh,**kwargs)
+
+
+FUNC = max_mem_conv_threshold
+
+graphconfig = {}
+custom_max_mem_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########conv_time_threshold##########
+
+def conv_time_threshold(exp,X=0,**kwargs):
+	sr_gr = exp.graph(method='srtheo')
+	thresh = sr_gr._Y[0][-1]
+	return conv_time(exp,X=X,thresh=thresh,**kwargs)
+
+FUNC = conv_time_threshold
+
+graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
+custom_conv_time_threshold =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########partial_conv_time_threshold##########
+
+def partial_conv_time_threshold(exp,X=0,**kwargs):
+	sr_gr = exp.graph(method='srtheo')
+	thresh = sr_gr._Y[0][-1]
+	return partial_conv_time(exp,X=X,thresh=thresh,**kwargs)
+
+
+FUNC = partial_conv_time_threshold
+
+graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
+custom_partial_conv_time_threshold = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 ################################################################
 
