@@ -1220,6 +1220,22 @@ FUNC = conv_time
 graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
 custom_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
+#########conv_time_plus_srtheo##########
+
+def conv_time_plus_srtheo(exp,X=0,thresh=1.,**kwargs):
+	sr_gr = exp.graph(method='srtheo')
+	sr = sr_gr._Y[0]
+	for i in range(len(sr)):
+		if sr[i] >= thresh:
+			break
+	return [sr_gr._X[0][i]+sr_gr._Y[0][i]]
+
+
+FUNC = conv_time_plus_srtheo
+
+graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
+custom_conv_time_plus_srtheo =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
 #########partial_conv_time##########
 
 def partial_conv_time(exp,X=0,thresh=1.,**kwargs):
