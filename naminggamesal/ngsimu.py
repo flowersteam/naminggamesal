@@ -214,7 +214,7 @@ class Experiment(object):
 			stdvec=tempoutstd
 			#configgraph["xmin"]=min(tempX)
 			#configgraph["xmax"]=max(tempX)
-			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=1,sort=0,stdvec=stdvec,filename="graph_"+tempfun.func.__name__,**configgraph)
+			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=1,sort=0,stdvec=stdvec,filename="graph_"+tempfun.func.__name__,**configgraph)
 		elif tempfun.level=="population":
 			tempout=[]
 			for j in range(indmin,len(self._T)+1+indmax):
@@ -225,7 +225,7 @@ class Experiment(object):
 			tempX=self._T[indmin:(len(self._T)+indmax+1)]
 			#configgraph["xmin"]=min(tempX)
 			#configgraph["xmax"]=max(tempX)
-			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
+			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
 		elif tempfun.level=="time":
 			tempout=tempfun.apply(self)
 			tempout=tempout[indmin:(len(self._T)+indmax+1)]
@@ -235,7 +235,7 @@ class Experiment(object):
 			tempX=self._T[indmin:(len(self._T)+indmax+1)]
 			#configgraph["xmin"]=min(tempX)
 			#configgraph["xmax"]=max(tempX)
-			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
+			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
 		elif tempfun.level=="exp":
 			tempout=tempfun.apply(self)#,X=X)# TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			configgraph=tempfun.get_graph_config()
@@ -244,7 +244,7 @@ class Experiment(object):
 			tempX=[self._T[-1]]# TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			#configgraph["xmin"]=min(tempX)
 			#configgraph["xmax"]=max(tempX)
-			tempgraph=custom_graph.CustomGraph(tempX,tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
+			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
 		else:
 			print("Custom_func level doesn't exist or has an unknown value:")
 			print(tempfun.level)

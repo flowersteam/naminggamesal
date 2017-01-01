@@ -22,7 +22,7 @@ def load_graph(filename):
 
 
 class CustomGraph(object):
-	def __init__(self,Y,X=None,**kwargs):
+	def __init__(self,Y=None,X=None,**kwargs):
 		self.keepwinopen=0
 		self.sort=1
 		self.filename="graph"+time.strftime("%Y%m%d%H%M%S", time.localtime())
@@ -49,11 +49,14 @@ class CustomGraph(object):
 
 		self.std = False
 
-		self._Y = [Y]
+		if Y is None:
+			self._Y = []
+		else:
+			self._Y = [Y]
 		self.stdvec=[0]*len(Y)
 
 		if X is None:
-			self._X = [range(0,len(Y))]
+			self._X = [range(len(Y))]
 		else:
 			self._X = [X]
 
