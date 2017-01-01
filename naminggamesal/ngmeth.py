@@ -1247,7 +1247,7 @@ def max_mem_conv_threshold(exp,X=0,**kwargs):
 FUNC = max_mem_conv_threshold
 
 graphconfig = {}
-custom_max_mem_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+custom_max_mem_conv_threshold = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########conv_time_threshold##########
 
