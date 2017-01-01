@@ -1173,7 +1173,8 @@ custom_interactions_per_agent =custom_func.CustomFunc(FUNC,"time",**graphconfig)
 #########max_mem##########
 
 def max_mem(exp,X=0,**kwargs):
-	mem = exp.graph(method='Nlink')
+
+	mem = exp.db.get_graph(exp.uuid, method='Nlink')#mem = exp.graph(method='Nlink')
 	return [max(mem._Y[0])]
 
 
@@ -1185,7 +1186,7 @@ custom_max_mem =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_mem_conv##########
 
 def max_mem_conv(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.graph(method='srtheo')
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
 	sr = sr_gr._Y[0][-1]
 	if sr >= thresh:
 		return max_mem(exp,X=X,**kwargs)
@@ -1201,7 +1202,7 @@ custom_max_mem_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time##########
 
 def conv_time(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.graph(method='srtheo')
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
 		if sr[i] >= thresh:
@@ -1223,7 +1224,7 @@ custom_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time_plus_srtheo##########
 
 def conv_time_plus_srtheo(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.graph(method='srtheo')
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
 		if sr[i] >= thresh:
@@ -1239,7 +1240,7 @@ custom_conv_time_plus_srtheo =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########partial_conv_time##########
 
 def partial_conv_time(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.graph(method='srtheo')
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
 		if sr[i] >= 0.9*thresh:
@@ -1255,7 +1256,7 @@ custom_partial_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_mem_conv_threshold##########
 
 def max_mem_conv_threshold(exp,X=0,**kwargs):
-	sr_gr = exp.graph(method='srtheo')
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
 	thresh = sr_gr._Y[0][-1]
 	return max_mem(exp,X=X,thresh=thresh,**kwargs)
 
@@ -1268,7 +1269,7 @@ custom_max_mem_conv_threshold = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time_threshold##########
 
 def conv_time_threshold(exp,X=0,**kwargs):
-	sr_gr = exp.graph(method='srtheo')
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
 	thresh = sr_gr._Y[0][-1]
 	return conv_time(exp,X=X,thresh=thresh,**kwargs)
 
@@ -1280,7 +1281,7 @@ custom_conv_time_threshold =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########partial_conv_time_threshold##########
 
 def partial_conv_time_threshold(exp,X=0,**kwargs):
-	sr_gr = exp.graph(method='srtheo')
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
 	thresh = sr_gr._Y[0][-1]
 	return partial_conv_time(exp,X=X,thresh=thresh,**kwargs)
 
