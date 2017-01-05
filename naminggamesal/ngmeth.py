@@ -1229,7 +1229,7 @@ def conv_time_plus_srtheo(exp,X=0,thresh=1.,**kwargs):
 	for i in range(len(sr)):
 		if sr[i] >= thresh:
 			break
-	return [sr_gr._X[0][i]+sr_gr._Y[0][i]]
+	return [sr_gr._X[0][i]+(1.-sr_gr._Y[0][i])]
 
 
 FUNC = conv_time_plus_srtheo
