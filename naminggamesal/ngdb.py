@@ -92,26 +92,27 @@ class NamingGamesDB(object):
 	def export(self, other_db, id_list=None, methods=[],graph_only=False):
 		if id_list is None:
 			id_list = self.get_id_list()
-		with sql.connect(other_db.dbpath, isolation_level=None):
-			other_cursor = sql.connect(other_db.dbpath, isolation_level=None).cursor()
-			for xp_uuid in id_list:
-				if not graph_only:
-					self.cursor.execute("SELECT * FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
-					xp_data = self.cursor.fetchone()
-					if not xp_uuid in other_db.get_id_list():
-						other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
-					elif self.get_param(xp_uuid=xp_uuid, param='Tmax') > other_db.get_param(xp_uuid=xp_uuid, param='Tmax'):
-						other_cursor.execute("DELETE FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
-						other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
-				for method in methods:
-					if self.data_exists(xp_uuid=xp_uuid, method=method):
-						self.cursor.execute("SELECT * FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function= \'"+method+"\'")
-						gr_data = self.cursor.fetchone()
-						if not other_db.data_exists(xp_uuid=xp_uuid, method=method):
-							other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
-						elif self.get_param(xp_uuid=xp_uuid, method=method, param='Time_max') > other_db.get_param(xp_uuid=xp_uuid, method=method, param='Time_max'):
-							other_cursor.execute("DELETE FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function= \'"+method+"\'")
-							other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
+		#with sql.connect(other_db.dbpath, isolation_level=None):
+		other_cursor = other_db.cursor #sql.connect(other_db.dbpath, isolation_level=None).cursor()
+		for xp_uuid in id_list:
+			if not graph_only:
+				self.cursor.execute("SELECT * FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
+				xp_data = self.cursor.fetchone()
+				if not xp_uuid in other_db.get_id_list():
+					other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
+				elif self.get_param(xp_uuid=xp_uuid, param='Tmax') > other_db.get_param(xp_uuid=xp_uuid, param='Tmax'):
+					other_cursor.execute("DELETE FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
+					other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
+			for method in methods:
+				if self.data_exists(xp_uuid=xp_uuid, method=method):
+					self.cursor.execute("SELECT * FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function= \'"+method+"\'")
+					gr_data = self.cursor.fetchone()
+					if not other_db.data_exists(xp_uuid=xp_uuid, method=method):
+						other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
+					elif self.get_param(xp_uuid=xp_uuid, method=method, param='Time_max') > other_db.get_param(xp_uuid=xp_uuid, method=method, param='Time_max'):
+						other_cursor.execute("DELETE FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function= \'"+method+"\'")
+						other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
+		other_db.connection.commit()
 
 	def delete(self, id_list, graph_only=False, xp_only=False, met=''):
 		if met:
