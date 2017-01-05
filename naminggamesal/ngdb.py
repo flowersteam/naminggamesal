@@ -45,6 +45,11 @@ class NamingGamesDB(object):
 	def execute(self,command):
 		self.cursor.execute(command)
 
+	def reconnect(self):
+		self.connection = sql.connect(self.dbpath)
+		self.cursor = self.connection.cursor()
+
+
 	def move_to_RAM(self):
 		if not hasattr(self,'old_conn'):
 			self.old_conn = self.connection
