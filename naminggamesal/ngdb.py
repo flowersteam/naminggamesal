@@ -9,6 +9,7 @@ import cPickle
 import json
 from copy import deepcopy
 import random
+import uuid
 
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
@@ -18,6 +19,7 @@ from . import ngsimu
 
 class NamingGamesDB(object):
 	def __init__(self,path=None):
+		self.uuid = str(uuid.uuid1())
 		if not path:
 			path='naminggames.db'
 		self.dbpath=path
@@ -45,16 +47,21 @@ class NamingGamesDB(object):
 	def execute(self,command):
 		self.cursor.execute(command)
 
-	def reconnect(self):
-		self.connection = sql.connect(self.dbpath)
-		self.cursor = self.connection.cursor()
+	def reconnect(self,RAM_only=False):
+		if RAM_only:
+			self.connection = sql.connect('file:' + self.uuid + '?mode=memory&cache=shared',uri=True)#':memory:'
+			self.cursor = self.connection.cursor()
+		else:
+			self.connection = sql.connect(self.dbpath)
+			self.cursor = self.connection.cursor()
+
 
 
 	def move_to_RAM(self):
 		if not hasattr(self,'old_conn'):
 			self.old_conn = self.connection
 			self.old_cur = self.cursor
-			self.connection = sql.connect(':memory:')
+			self.connection = sql.connect('file:' + self.uuid + '?mode=memory&cache=shared')#':memory:'
 			self.cursor = self.connection.cursor()
 			sqlitebck.copy(self.old_conn,self.connection)
 
@@ -70,6 +77,16 @@ class NamingGamesDB(object):
 			self.cursor = self.old_cur
 			delattr(self,'old_cur')
 			delattr(self,'old_conn')
+
+	def close(self):
+		if hasattr(self,'old_conn'):
+			self.old_conn.close()
+			delattr(self,'old_cur')
+			delattr(self,'old_conn')
+		self.connection.close()
+		delattr(self,'cursor')
+		delattr(self,'connection')
+
 
 
 	def merge(self, other_db, id_list=None, remove=False, main_only=False):
@@ -333,13 +350,11 @@ class NamingGamesDB(object):
 		pass
 
 	def __getstate__(self):
-		try:
-			self.connection.commit()
-		except sql.ProgrammingError:
-			pass
 		out_dict = self.__dict__.copy()
-		del out_dict['cursor']
-		del out_dict['connection']
+		if hasattr(self,'connection'):
+			self.connection.commit()
+			del out_dict['cursor']
+			del out_dict['connection']
 		if hasattr(self,'old_conn'):
 			del out_dict['old_conn']
 			del out_dict['old_cur']
@@ -347,8 +362,8 @@ class NamingGamesDB(object):
 
 	def __setstate__(self, in_dict):
 		self.__dict__.update(in_dict)
-		self.connection = sql.connect(self.dbpath)
-		self.cursor = self.connection.cursor()
+		#self.connection = sql.connect(self.dbpath)
+		#self.cursor = self.connection.cursor()
 
 
 class Experiment(ngsimu.Experiment):
