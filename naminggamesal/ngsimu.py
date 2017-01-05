@@ -2,6 +2,7 @@
 
 import time
 import uuid
+import sqlite3
 
 from copy import deepcopy
 import cPickle
@@ -18,26 +19,39 @@ class Poplist(object):
 	def __init__(self,path):
 		self.filepath = path
 		self.pop = None
+		#self.conn = sqlite3.connect(self.filepath)
+		#self.cursor = self.conn.cursor()
 
 	def append(self,pop,T):
 		add_data(filepath=self.filepath,data=pop,label=T)
+		#add_data_conn(cursor=self.cursor,data=pop,label=T)
 
 	def get(self,T):
 		return read_data(filepath=self.filepath,label=T)
+		#return read_data_conn(cursor=self.cursor,label=T)
 
 	def get_last(self):
 		if self.pop is None:
 			self.pop = read_data(filepath=self.filepath)
+			#self.pop = read_data_conn(cursor=self.cursor)
 		return self.pop
 
 	def compress(self):
+		#self.conn.commit()
 		xz_compress(self.filepath,rm=True)
 
 	def __getstate__(self):
+		#self.conn.commit()
 		out_dict = self.__dict__.copy()
 		out_dict['pop'] = None
+		#del out_dict['conn']
+		#del out_dict['cursor']
 		return out_dict
 
+	def __setstate__(self,in_dict):
+		self.__dict__.update(in_dict)
+		#self.conn = sqlite3.connect(self.filepath)
+		#self.cursor = self.conn.cursor()
 
 
 
