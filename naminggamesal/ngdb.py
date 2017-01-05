@@ -18,12 +18,17 @@ from . import ngmeth
 from . import ngsimu
 
 class NamingGamesDB(object):
-	def __init__(self,path=None):
-		self.uuid = str(uuid.uuid1())
+	def __init__(self,path=None,do_not_close=False):
+		self.do_not_close = do_not_close
+		#self.uuid = str(uuid.uuid1())
 		if not path:
 			path='naminggames.db'
 		self.dbpath=path
-		self.connection = sql.connect(self.dbpath)
+		try:
+			self.connection = sql.connect(self.dbpath)
+		except Exception as e:
+			#raise
+			raise Exception(self.dbpath)
 		self.cursor = self.connection.cursor()
 		self.cursor.execute("CREATE TABLE IF NOT EXISTS main_table("\
 				+"Id TEXT, "\
@@ -59,14 +64,16 @@ class NamingGamesDB(object):
 
 	def move_to_RAM(self):
 		if not hasattr(self,'old_conn'):
+			self.connection.commit()
 			self.old_conn = self.connection
 			self.old_cur = self.cursor
-			self.connection = sql.connect('file:' + self.uuid + '?mode=memory&cache=shared')#':memory:'
+			self.connection = sql.connect(':memory:')#'file:' + self.uuid + '?mode=memory&cache=shared',uri=True)
 			self.cursor = self.connection.cursor()
 			sqlitebck.copy(self.old_conn,self.connection)
 
 	def commit_from_RAM(self):
 		if hasattr(self,'old_conn'):
+			self.connection.commit()
 			sqlitebck.copy(self.connection, self.old_conn)
 
 	def get_back_from_RAM(self):
@@ -78,14 +85,15 @@ class NamingGamesDB(object):
 			delattr(self,'old_cur')
 			delattr(self,'old_conn')
 
-	def close(self):
-		if hasattr(self,'old_conn'):
-			self.old_conn.close()
-			delattr(self,'old_cur')
-			delattr(self,'old_conn')
-		self.connection.close()
-		delattr(self,'cursor')
-		delattr(self,'connection')
+	def close(self,force=False):
+		if not self.do_not_close or force:
+			if hasattr(self,'old_conn'):
+				self.old_conn.close()
+				delattr(self,'old_cur')
+				delattr(self,'old_conn')
+			self.connection.close()
+			delattr(self,'cursor')
+			delattr(self,'connection')
 
 
 
@@ -358,6 +366,7 @@ class NamingGamesDB(object):
 		if hasattr(self,'old_conn'):
 			del out_dict['old_conn']
 			del out_dict['old_cur']
+		out_dict['do_not_close'] = False
 		return out_dict
 
 	def __setstate__(self, in_dict):
