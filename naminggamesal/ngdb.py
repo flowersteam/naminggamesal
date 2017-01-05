@@ -333,7 +333,10 @@ class NamingGamesDB(object):
 		pass
 
 	def __getstate__(self):
-		self.connection.commit()
+		try:
+			self.connection.commit()
+		except sql.ProgrammingError:
+			pass
 		out_dict = self.__dict__.copy()
 		del out_dict['cursor']
 		del out_dict['connection']
