@@ -19,7 +19,7 @@ def pop_ize(func):
 			mean=np.mean(tempNlist)
 			std=np.std(tempNlist)
 		return [mean,std,tempNlist]
-	out_func.__name__=func.__name__+"_moyen"
+	out_func.__name__=func.__name__+"_mean"
 	return out_func
 
 
