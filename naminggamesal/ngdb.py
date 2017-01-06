@@ -23,7 +23,8 @@ class NamingGamesDB(object):
 		#self.uuid = str(uuid.uuid1())
 		if not path:
 			path='naminggames.db'
-		self.dbpath=path
+		self.dbpath = path
+		self.name = os.path.basename(path)
 		try:
 			self.connection = sql.connect(self.dbpath)
 		except Exception as e:
@@ -57,7 +58,10 @@ class NamingGamesDB(object):
 			self.connection = sql.connect('file:' + self.uuid + '?mode=memory&cache=shared',uri=True)#':memory:'
 			self.cursor = self.connection.cursor()
 		else:
-			self.connection = sql.connect(self.dbpath)
+			try:
+				self.connection = sql.connect(self.dbpath)
+			except sql.OperationalError:
+				self.connection = sql.connect(self.name)
 			self.cursor = self.connection.cursor()
 
 
