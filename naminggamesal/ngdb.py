@@ -366,10 +366,10 @@ class NamingGamesDB(object):
 		if hasattr(self,'old_conn'):
 			del out_dict['old_conn']
 			del out_dict['old_cur']
-		out_dict['do_not_close'] = False
 		return out_dict
 
 	def __setstate__(self, in_dict):
+		in_dict['do_not_close'] = False
 		self.__dict__.update(in_dict)
 		#self.connection = sql.connect(self.dbpath)
 		#self.cursor = self.connection.cursor()

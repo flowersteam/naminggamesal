@@ -1177,10 +1177,12 @@ def max_mem(exp,X=0,**kwargs):
 	mem = exp.db.get_graph(exp.uuid, method='Nlink')#mem = exp.graph(method='Nlink')
 	return [max(mem._Y[0])]
 
+def max_mem_min(exp):
+	return 0
 
 FUNC = max_mem
 
-graphconfig = {}
+graphconfig = {"ymin":max_mem_min}#,"ymax":max_mem_max}
 custom_max_mem =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########max_mem_conv##########
@@ -1196,7 +1198,7 @@ def max_mem_conv(exp,X=0,thresh=1.,**kwargs):
 
 FUNC = max_mem_conv
 
-graphconfig = {}
+graphconfig = {"ymin":max_mem_min}#,"ymax":max_mem_max}
 custom_max_mem_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########conv_time##########
@@ -1263,7 +1265,7 @@ def max_mem_conv_threshold(exp,X=0,**kwargs):
 
 FUNC = max_mem_conv_threshold
 
-graphconfig = {}
+graphconfig = {"ymin":max_mem_min}#,"ymax":max_mem_max}
 custom_max_mem_conv_threshold = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########conv_time_threshold##########
