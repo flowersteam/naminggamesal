@@ -95,9 +95,10 @@ class NamingGamesDB(object):
 				self.old_conn.close()
 				delattr(self,'old_cur')
 				delattr(self,'old_conn')
-			self.connection.close()
-			delattr(self,'cursor')
-			delattr(self,'connection')
+			if hasattr(self,'connection'):
+				self.connection.close()
+				delattr(self,'cursor')
+				delattr(self,'connection')
 
 
 
