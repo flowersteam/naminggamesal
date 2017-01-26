@@ -52,7 +52,7 @@ class HumanHueSA(SensoryApparatus):
 		self.y = [p[1] for p in self.points]	
 
 	def d_min(self, h):
-		f = interp1d(self.x,self.y,kind=cubic)
+		f = interp1d(self.x,self.y,kind='cubic')
 		return f(h)
 
 
