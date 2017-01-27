@@ -64,5 +64,6 @@ class HumanHueSA(SensoryApparatus):
 
 	def __getstate__(self):
 		out_dict = self.__dict__.copy()
-		del out_dict['d_min_func']
+		if 'd_min_func' in out_dict.keys():
+			del out_dict['d_min_func']
 		return out_dict
