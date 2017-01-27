@@ -7,7 +7,7 @@ from importlib import import_module
 
 sns.set(rc={'image.cmap': 'Purples_r'})
 
-#####Classe de base
+#####
 interaction_class={
 	'hearerschoice':'hearerschoice.HearersChoice',
 	'speakerschoice':'speakerschoice.SpeakersChoice',
@@ -15,7 +15,9 @@ interaction_class={
 	'speakerschoice_epirob':'speakerschoice.SpeakersChoiceEpirob',
 	'fabien':'fabien.FabienInteraction',
 	'omniscient':'omniscient.Omniscient',
-	'category_game':'category_game.CategoryGame'
+	'category_game':'category_game.CategoryGameSpeakersChoice',
+	'category_game_speakerschoice':'category_game.CategoryGameSpeakersChoice',
+	'category_game_hearerschoice':'category_game.CategoryGameHearersChoice'
 }
 
 def get_interaction(interact_type='speakerschoice', **interact_cfg2):
