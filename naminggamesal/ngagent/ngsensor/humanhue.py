@@ -53,14 +53,16 @@ class HumanHueSA(SensoryApparatus):
 		self.x = [p[0] for p in self.points]
 		self.y = [p[1] for p in self.points]	
 
-	def d_min(self, h):
-		f = interp1d(self.x,self.y,kind='cubic')
-		return f(h)
-
-
-
 	def discriminable(self, input_sig1, input_sig2):
-		if abs(input_sig1 - input_sig2) >= max(self.d_min(input_sig1),self.d_min(input_sig2)):
+		if not hasattr(self,'d_min_func'):
+			self.d_min_func = interp1d(self.x,self.y,kind='cubic')
+		if abs(input_sig1 - input_sig2) >= max(self.d_min_func(input_sig1),self.d_min_func(input_sig2)):
 			return True
 		else:
 			return False
+
+
+	def __getstate__(self):
+		out_dict = self.__dict__.copy()
+		del out_dict['d_min_func']
+		return out_dict
