@@ -105,20 +105,21 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 
 	def get_dist_threshold(self,voc,mem):
 		if not hasattr(self,'threshold'):
-			return 0
-		s = 0
-		f = 0
-		d_val = 1.
-		for d,c,bool_succ in sorted(mem['past_interactions'],key=lambda x: -x[0]):
-			if bool_succ:
-				s += 1
-			else:
-				f += 1
-			if s/float(s+f) < self.threshold:
-				return d_val
-			else:
-				d_val = d
-		return d_val
+			return 1.
+		else:
+			s = 0
+			f = 0
+			d_val = 1.
+			for d,c,bool_succ in sorted(mem['past_interactions'],key=lambda x: -x[0]):
+				if bool_succ:
+					s += 1
+				else:
+					f += 1
+				if s/float(s+f) < self.threshold:
+					return d_val
+				else:
+					d_val = d
+			return d_val
 
 	def init_memory(self,voc):
 		return {'past_interactions':[]}
@@ -171,11 +172,11 @@ class DistSuccessGoal(CategoryDistanceSTStrat):
 
 	def get_dist_threshold(self,voc,mem):
 		if not hasattr(self,'threshold'):
-			return 0
-		if not mem['past_interactions']:
+			return 1.
+		elif not mem['past_interactions']:
 			return 1.
 		else:
-			f = lambda x: abs(self.threshold - self.success_rate(x,mem['past_interactions']))
+			f = lambda x: abs(self.threshold - self.success_rate(dist=x,past_inter=mem['past_interactions']))
 			res = minimize_scalar(f, bounds=(0,1), method='bounded')
 			return res.x
 
@@ -213,13 +214,19 @@ class CenterSuccessGoal(DistSuccessGoal):
 		else:
 			return val/norm
 
+	def get_dist_threshold(self,*args,**kwargs):
+		return 1.
+
 
 class DCSuccessGoal(DistSuccessGoal):
 
 
-	def success_rate(self,past_inter=[],context=None):
-		center =  (context[0] + context[1])/2.
-		dist =  abs(context[0] - context[1])
+	def success_rate(self,dist=None,center=None,past_inter=[],context=None):
+		if context is not None:
+			if center is None:
+				center =  (context[0] + context[1])/2.
+			if dist is None:
+				dist =  abs(context[0] - context[1])
 		norm = 0.
 		val = 0.
 		for d,c,bool_succ in past_inter:
@@ -233,6 +240,9 @@ class DCSuccessGoal(DistSuccessGoal):
 			return 0.
 		else:
 			return val/norm
+
+	def get_dist_threshold(self,*args,**kwargs):
+		return 1.
 
 
 
@@ -265,6 +275,9 @@ class DistSuccessSlope(DistSuccessGoal):
 			new = self.success_rate(context=context,past_inter=past_inter_2)
 			return (new-old)/float(dt)
 
+	def get_dist_threshold(self,*args,**kwargs):
+		return 1.
+
 
 class CenterSuccessSlope(DistSuccessSlope):
 
@@ -286,6 +299,10 @@ class CenterSuccessSlope(DistSuccessSlope):
 			return 0.
 		else:
 			return val/norm
+			
+	def get_dist_threshold(self,*args,**kwargs):
+		return 1.
+
 
 
 class DCSuccessSlope(DistSuccessSlope):
@@ -293,3 +310,6 @@ class DCSuccessSlope(DistSuccessSlope):
 	def success_rate(self,center=None,past_inter=[],context=None):
 		return DCSuccessGoal.success_rate(self,center=center,past_inter=past_inter,context=context)
 
+
+	def get_dist_threshold(self,*args,**kwargs):
+		return 1.

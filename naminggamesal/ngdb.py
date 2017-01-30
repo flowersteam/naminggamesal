@@ -17,38 +17,55 @@ import additional.custom_graph as custom_graph
 from . import ngmeth
 from . import ngsimu
 
+from weakref import WeakSet
+
 class NamingGamesDB(object):
+
+	def __new__(cls, inst_uuid, *args, **kwargs):
+		if "instances" not in cls.__dict__:
+			cls.instances = WeakSet()
+		for inst in cls.instances:
+			if inst_uuid == inst.uuid:
+				return inst
+		instance = object.__new__(cls, *args, **kwargs)
+		cls.instances.add(instance)
+		return instance
+
+	def __getnewargs__(self):
+		return (self.uuid,)
+
 	def __init__(self,path=None,do_not_close=False):
-		self.do_not_close = do_not_close
-		#self.uuid = str(uuid.uuid1())
-		if not path:
-			path='naminggames.db'
-		self.dbpath = path
-		self.name = os.path.basename(path)
-		try:
-			self.connection = sql.connect(self.dbpath)
-		except Exception as e:
-			#raise
-			raise Exception(self.dbpath)
-		self.cursor = self.connection.cursor()
-		self.cursor.execute("CREATE TABLE IF NOT EXISTS main_table("\
-				+"Id TEXT, "\
-				+"Creation_Time INT, "\
-				+"Modif_Time INT, "\
-				+"Exec_Time INT, "\
-				+"Config TEXT, "\
-				+"Tmax INT, "\
-				+"step INT, "\
-				+"Experiment_object BLOB)")
-		self.cursor.execute("CREATE TABLE IF NOT EXISTS computed_data_table("\
-				+"Id TEXT, "\
-				+"Creation_Time INT, "\
-				+"Modif_Time INT, "\
-				+"Expe_config TEXT, "\
-				+"Function TEXT, "\
-				+"Time_max INT, "\
-				+"Custom_Graph BLOB)")
-		self.connection.commit()
+		if not hasattr(self,'uuid'):
+			self.do_not_close = do_not_close
+			self.uuid = str(uuid.uuid1())
+			if not path:
+				path='naminggames.db'
+			self.dbpath = path
+			self.name = os.path.basename(path)
+			try:
+				self.connection = sql.connect(self.dbpath)
+			except Exception as e:
+				#raise
+				raise Exception(self.dbpath)
+			self.cursor = self.connection.cursor()
+			self.cursor.execute("CREATE TABLE IF NOT EXISTS main_table("\
+					+"Id TEXT, "\
+					+"Creation_Time INT, "\
+					+"Modif_Time INT, "\
+					+"Exec_Time INT, "\
+					+"Config TEXT, "\
+					+"Tmax INT, "\
+					+"step INT, "\
+					+"Experiment_object BLOB)")
+			self.cursor.execute("CREATE TABLE IF NOT EXISTS computed_data_table("\
+					+"Id TEXT, "\
+					+"Creation_Time INT, "\
+					+"Modif_Time INT, "\
+					+"Expe_config TEXT, "\
+					+"Function TEXT, "\
+					+"Time_max INT, "\
+					+"Custom_Graph BLOB)")
+			self.connection.commit()
 
 	def execute(self,command):
 		self.cursor.execute(command)
