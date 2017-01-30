@@ -104,6 +104,8 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 			return random.choice([ct_l[i] for i in range(len(dist)) if dist[i] == above])
 
 	def get_dist_threshold(self,voc,mem):
+		if not hasattr(self,'threshold'):
+			return 0
 		s = 0
 		f = 0
 		d_val = 1.
@@ -168,6 +170,8 @@ class DistSuccessGoal(CategoryDistanceSTStrat):
 		return random.choice([ct_l[i] for i in range(len(ct_l)) if vals[i] == val])
 
 	def get_dist_threshold(self,voc,mem):
+		if not hasattr(self,'threshold'):
+			return 0
 		if not mem['past_interactions']:
 			return 1.
 		else:
