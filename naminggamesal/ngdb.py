@@ -21,18 +21,22 @@ from weakref import WeakSet
 
 class NamingGamesDB(object):
 
-	def __new__(cls, inst_uuid, *args, **kwargs):
+	def __new__(cls, inst_uuid=None, *args, **kwargs):
 		if "instances" not in cls.__dict__:
 			cls.instances = WeakSet()
-		for inst in cls.instances:
-			if inst_uuid == inst.uuid:
-				return inst
+		if inst_uuid is not None:
+			for inst in cls.instances:
+				if hasattr(inst,'uuid') and inst_uuid == inst.uuid:
+					return inst
 		instance = object.__new__(cls, *args, **kwargs)
 		cls.instances.add(instance)
 		return instance
 
 	def __getnewargs__(self):
-		return (self.uuid,)
+		if hasattr(self,'uuid'):
+			return (self.uuid,)
+		else:
+			return ()
 
 	def __init__(self,path=None,do_not_close=False):
 		if not hasattr(self,'uuid'):
