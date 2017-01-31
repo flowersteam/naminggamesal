@@ -27,6 +27,7 @@ class NamingGamesDB(object):
 		if inst_uuid is not None:
 			for inst in cls.instances:
 				if hasattr(inst,'uuid') and inst_uuid == inst.uuid:
+					inst.just_retrieved = True
 					return inst
 		instance = object.__new__(cls, *args, **kwargs)
 		cls.instances.add(instance)
@@ -395,8 +396,11 @@ class NamingGamesDB(object):
 		return out_dict
 
 	def __setstate__(self, in_dict):
-		in_dict['do_not_close'] = False
-		self.__dict__.update(in_dict)
+		if not hasattr(self,'just_retrieved'):
+			in_dict['do_not_close'] = False
+			self.__dict__.update(in_dict)
+		else:
+			delattr(self,'just_retrieved')
 		#self.connection = sql.connect(self.dbpath)
 		#self.cursor = self.connection.cursor()
 
