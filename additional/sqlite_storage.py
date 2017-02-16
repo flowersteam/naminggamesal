@@ -33,7 +33,7 @@ def add_data(filepath,data,label,priority='decompressed'):
 def read_data(filepath,label=None,priority='decompressed'):
 	if not os.path.isfile(filepath) or (priority == 'compressed' and os.path.isfile(filepath+'.xz')):
 		xz_decompress(filepath+'.xz')
-		os.remove(filepath+'.xz')
+		#os.remove(filepath+'.xz')
 	conn = sql.connect(filepath)
 	with conn:
 		cursor = conn.cursor()
