@@ -9,7 +9,9 @@ from shutil import copyfileobj
 
 
 
-def add_data(filepath,data,label):
+def add_data(filepath,data,label,priority='decompressed'):
+	if priority == 'compressed' and os.path.isfile(filepath+'.xz'):
+		xz_decompress(filepath+'.xz')
 	pickled_data = cPickle.dumps(data, cPickle.HIGHEST_PROTOCOL)
 	lz_data = lzo.compress(pickled_data)
 	try:
@@ -28,8 +30,8 @@ def add_data(filepath,data,label):
 		cursor.execute("INSERT INTO main_table VALUES (?,?)",(label,sql.Binary(lz_data)))
 
 
-def read_data(filepath,label=None):
-	if not os.path.isfile(filepath):
+def read_data(filepath,label=None,priority='decompressed'):
+	if not os.path.isfile(filepath) or (priority == 'compressed' and os.path.isfile(filepath+'.xz')):
 		xz_decompress(filepath+'.xz')
 		os.remove(filepath+'.xz')
 	conn = sql.connect(filepath)

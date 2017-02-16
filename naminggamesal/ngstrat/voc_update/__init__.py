@@ -7,6 +7,7 @@ from importlib import import_module
 vu_class={
 	'imitation':'imitation.Imitation',
 	'minimal':'minimal.Minimal',
+	'minimal_keeppreference':'minimal.MinimalKeepPreference',
 	'minimalsynonly':'minimal.MinimalSynOnly',
 	'minimalpone':'minimal.MinimalPOne',
 	'minimalpone2':'minimal.MinimalPOne2',

@@ -3,6 +3,7 @@
 import time
 import uuid
 import sqlite3
+import os
 
 from copy import deepcopy
 import cPickle
@@ -16,18 +17,25 @@ from additional.sqlite_storage import add_data,read_data,xz_compress,xz_decompre
 
 
 class Poplist(object):
-	def __init__(self,path):
+	def __init__(self,path,priority='decompressed'):
+		self.priority = priority
 		self.filepath = path
+		if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Policy: if both compressed and uncompressed versions present, erase uncompressed
+			os.remove(self.filepath)
 		self.pop = None
 		#self.conn = sqlite3.connect(self.filepath)
 		#self.cursor = self.conn.cursor()
 
-	def append(self,pop,T):
-		add_data(filepath=self.filepath,data=pop,label=T)
+	def append(self,pop,T,priority=None):
+		if priority is None:
+			priority = self.priority
+		add_data(filepath=self.filepath,data=pop,label=T,priority=priority)
 		#add_data_conn(cursor=self.cursor,data=pop,label=T)
 
-	def get(self,T):
-		return read_data(filepath=self.filepath,label=T)
+	def get(self,T,priority=None):
+		if priority is None:
+			priority = self.priority
+		return read_data(filepath=self.filepath,label=T,priority=priority)
 		#return read_data_conn(cursor=self.cursor,label=T)
 
 	def get_last(self):
@@ -36,9 +44,9 @@ class Poplist(object):
 			#self.pop = read_data_conn(cursor=self.cursor)
 		return self.pop
 
-	def compress(self):
+	def compress(self,rm=True):
 		#self.conn.commit()
-		xz_compress(self.filepath,rm=True)
+		xz_compress(self.filepath,rm=rm)
 
 	def __getstate__(self):
 		#self.conn.commit()
@@ -50,6 +58,8 @@ class Poplist(object):
 
 	def __setstate__(self,in_dict):
 		self.__dict__.update(in_dict)
+		if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Policy: if both compressed and uncompressed versions present, erase uncompressed
+			os.remove(self.filepath)
 		#self.conn = sqlite3.connect(self.filepath)
 		#self.cursor = self.conn.cursor()
 
@@ -70,8 +80,8 @@ class Experiment(object):
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.reconstruct_info = []
 
-	def compress(self):
-		self._poplist.compress()
+	def compress(self,rm=True):
+		self._poplist.compress(rm=rm)
 
 	def define_stepfun(self):
 		if self._time_step == 'log':
