@@ -438,14 +438,14 @@ class Experiment(ngsimu.Experiment):
 	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True, tempgraph=None):
 		if not tmax:
 			tmax = self._T[-1]
-		ind=-1
+		ind = -1
 		if tmax >= self._T[-1] + self.stepfun(self._T[-1]):
 			if not self.compute:
 				raise Exception('Computation needed')
 			self.continue_exp_until(tmax, autocommit=autocommit)
 			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax, autocommit=autocommit, tempgraph=tempgraph)
 		while self._T[ind]>tmax:
-			ind-=1
+			ind -= 1
 		if self.db.data_exists(xp_uuid=self.uuid, method=method):
 			if tempgraph is None:
 				tempgraph = self.db.get_graph(self.uuid, method=method)

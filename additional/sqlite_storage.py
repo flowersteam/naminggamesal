@@ -43,6 +43,8 @@ def read_data(filepath,label=None,priority='decompressed'):
 			label = max_T
 		cursor.execute("SELECT Population_object FROM main_table WHERE T=\'"+str(label)+"\'")
 		blob = cursor.fetchone()
+	if blob is None:
+		raise IOError('No row in database ' + str(filepath) + ' for label: '+str(label))
 	lz_data = blob[0]
 	pickled_data = lzo.decompress(lz_data)
 	data = cPickle.loads(pickled_data)
