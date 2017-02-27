@@ -47,7 +47,9 @@ strat_class={
 	'decision_vector_gainsoftmax_hearer_test':'decision_vector.StratDecisionVectorGainSoftmaxHearerTest',
 
 	'last_result':'last_result.StratLastResult',
-	'omniscient':'omniscient.StratOmniscient'
+	'omniscient':'omniscient.StratOmniscient',
+
+	'betadecrease':'beta_decrease.BetaDecreaseStrat'
 }
 
 def Strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, **strat_cfg2):

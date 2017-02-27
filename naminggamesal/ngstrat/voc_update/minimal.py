@@ -1,4 +1,5 @@
 from . import VocUpdate
+import random
 
 class Minimal(VocUpdate):
 
@@ -15,6 +16,25 @@ class Minimal(VocUpdate):
 			voc.rm_hom(ms,w)
 		voc.add(ms,w,context=context)
 		voc.finish_update()
+
+
+
+class MinimalBeta(Minimal):
+
+	def __init__(self, beta=1.):
+		self.beta = beta
+
+	def update_hearer(self,ms,w,mh,voc,mem,bool_succ, context=[]):
+		r = random.random()
+		if r<=self.beta:
+			Minimal.update_hearer(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,bool_succ=bool_succ, context=context)
+
+	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
+		r = random.random()
+		if r<=self.beta:
+			Minimal.update_speaker(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,bool_succ=bool_succ, context=context)
+
+
 
 class MinimalKeepPreference(VocUpdate):
 

@@ -12,6 +12,7 @@ vu_class={
 	'minimalpone':'minimal.MinimalPOne',
 	'minimalpone2':'minimal.MinimalPOne2',
 	'minimalcatnew':'minimal.MinimalCatNew',
+	'minimalbeta':'minimal.MinimalBeta',
 
 	'BLIS':'lateral_inhib.BasicLateralInhibition',
 	'BLIS_epirob':'lateral_inhib.BLISEpirob',
