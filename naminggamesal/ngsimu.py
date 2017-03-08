@@ -20,8 +20,8 @@ class Poplist(object):
 	def __init__(self,path,priority='decompressed'):
 		self.priority = priority
 		self.filepath = path
-		if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Policy: if both compressed and uncompressed versions present, erase uncompressed
-			os.remove(self.filepath)
+		#if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Old Policy: if both compressed and uncompressed versions present, erase uncompressed
+			#os.remove(self.filepath)
 		self.pop = None
 		#self.conn = sqlite3.connect(self.filepath)
 		#self.cursor = self.conn.cursor()

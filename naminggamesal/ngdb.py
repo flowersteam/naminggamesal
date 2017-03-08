@@ -415,10 +415,13 @@ class Experiment(ngsimu.Experiment):
 		self.compute = compute
 		super(Experiment,self).__init__(pop_cfg,step)
 		self.commit_to_db()
-		self.compress()
+		#self.compress()
 
 	def commit_to_db(self):
 		self.db.commit(self)
+		filepath = self._poplist.filepath
+		if os.path.isfile(filepath):
+			self.compress(rm=False)
 
 	def commit_data_to_db(self,graph,method):
 		self.db.commit_data(self,graph,method)
