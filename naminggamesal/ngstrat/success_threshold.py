@@ -12,6 +12,9 @@ class StratSuccessThreshold(StratNaive):
 	def __init__(self, vu_cfg, threshold_explo=0.9, **strat_cfg2):
 		super(StratSuccessThreshold, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		self.threshold_explo=threshold_explo
+		mp = {'mem_type':'successcount_perm'}
+		if mp not in self.memory_policies:
+			self.memory_policies.append(mp)
 
 	def pick_m(self,voc,mem,context):
 		test1=self.get_success_rate_over_known_meanings(voc,mem)>self.threshold_explo
@@ -26,25 +29,25 @@ class StratSuccessThreshold(StratNaive):
 	def hearer_pick_m(self,voc,mem,context):
 		return self.pick_m(voc, mem,context)
 
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
-		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
-		if role=='speaker':
-			m1=ms
-		else:
-			m1=mh
-		if bool_succ:
-			mem["success_m"][m1]+=1
-		else:
-			mem["fail_m"][m1]+=1
-
-	def init_memory(self,voc):
-		mem = StratNaive.init_memory(self,voc)
-		mem["success_m"]=[]
-		mem["fail_m"]=[]
-		for i in range(0,voc._M):
-			mem["success_m"].append(0)
-			mem["fail_m"].append(0)
-		return mem
+#	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+#		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
+#		if role=='speaker':
+#			m1=ms
+#		else:
+#			m1=mh
+#		if bool_succ:
+#			mem["success_m"][m1]+=1
+#		else:
+#			mem["fail_m"][m1]+=1
+#
+#	def init_memory(self,voc):
+#		mem = StratNaive.init_memory(self,voc)
+#		mem["success_m"]=[]
+#		mem["fail_m"]=[]
+#		for i in range(0,voc._M):
+#			mem["success_m"].append(0)
+#			mem["fail_m"].append(0)
+#		return mem
 
 	def get_success_rate_over_known_meanings(self,voc,mem):
 		succ_sum=0
@@ -136,26 +139,31 @@ class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 ##################################### STRATEGIE SUCCESS THRESHOLD WISE########################################
 class StratSuccessThresholdScores(StratSuccessThresholdWise):
 
-	def init_memory(self,voc):
-		mem = StratNaive.init_memory(self,voc)
-		mem["success_m"] = np.zeros((voc._M, voc._W))
-		mem["fail_m"] = np.zeros((voc._M, voc._W))
-		return mem
-
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
-		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
-		if role=='speaker':
-			m1 = ms
-		else:
-			m1 = mh
-		if bool_succ:
-			mem["success_m"][m1, w]+=1
-		else:
-			mem["fail_m"][m1, w]+=1
+	def __init__(self, vu_cfg, **strat_cfg2):
+		StratSuccessThresholdWise.__init__(self,vu_cfg=vu_cfg, **strat_cfg2)
+		mp = {'mem_type':'successcount_permw'}
+		if mp not in self.memory_policies:
+			self.memory_policies.append(mp)
+#	def init_memory(self,voc):
+#		mem = StratNaive.init_memory(self,voc)
+#		mem["success_m"] = np.zeros((voc._M, voc._W))
+#		mem["fail_m"] = np.zeros((voc._M, voc._W))
+#		return mem
+#
+#	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+#		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
+#		if role=='speaker':
+#			m1 = ms
+#		else:
+#			m1 = mh
+#		if bool_succ:
+#			mem["success_m"][m1, w]+=1
+#		else:
+#			mem["fail_m"][m1, w]+=1
 
 	def get_success_rates(self, voc, mem):
 		with np.errstate(divide='ignore', invalid='ignore'):
-			c = np.true_divide(mem['success_m'],mem['success_m'] + mem['fail_m'])
+			c = np.true_divide(mem['success_mw'],mem['success_mw'] + mem['fail_mw'])
 			c[c == np.inf] = 0
 			c = np.nan_to_num(c)
 		rates = np.multiply(voc.get_content(), c).sum(axis = 1)

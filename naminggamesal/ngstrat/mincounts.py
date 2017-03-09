@@ -13,27 +13,30 @@ class StratMinCounts(StratNaive):
 		super(StratMinCounts, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		if 'mincounts' not in strat_cfg2.keys():
 			self.mincounts = mincounts
+		mp = {'mem_type':'successcount_perm'}
+		if mp not in self.memory_policies:
+			self.memory_policies.append(mp)
 
 
 	def hearer_pick_m(self,voc,mem, context):
 		return self.pick_m(voc, mem, context)
 
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
-		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
-		if role=='speaker':
-			m1=ms
-		else:
-			m1=mh
-		if bool_succ:
-			mem["success_m"][m1]+=1
-		else:
-			mem["fail_m"][m1]+=1
-
-	def init_memory(self,voc):
-		mem = StratNaive.init_memory(self,voc=voc)
-		mem["success_m"]=[0]*voc._M
-		mem["fail_m"]=[0]*voc._M
-		return mem
+#	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+#		StratNaive.update_memory(self,ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ)
+#		if role=='speaker':
+#			m1=ms
+#		else:
+#			m1=mh
+#		if bool_succ:
+#			mem["success_m"][m1]+=1
+#		else:
+#			mem["fail_m"][m1]+=1
+#
+#	def init_memory(self,voc):
+#		mem = StratNaive.init_memory(self,voc=voc)
+#		mem["success_m"]=[0]*voc._M
+#		mem["fail_m"]=[0]*voc._M
+#		return mem
 
 	def get_success_counts(self, voc, mem):
 		succ_sum=0

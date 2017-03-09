@@ -14,6 +14,9 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 		self.threshold = threshold
 		self.nb_ctxt = nb_ctxt
 		self.nb_boxes = nb_boxes
+		mp = {'mem_type':'success_matrix'}
+		if mp not in self.memory_policies:
+			self.memory_policies.append(mp)
 
 
 	def pick_context(self, voc, mem, context_gen):
@@ -42,8 +45,8 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 			return random.choice([ct_l[i] for i,cf in above if cf == cf_ab_min])
 
 
-	def init_memory(self,voc):
-		return {'success_matrix':np.zeros((self.nb_boxes,self.nb_boxes,2))}
+#	def init_memory(self,voc):
+#		return {'success_matrix':np.zeros((self.nb_boxes,self.nb_boxes,2))}
 
 	def get_coords(self,context):
 		m_1 = min(context)
@@ -52,13 +55,13 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 		y = int(self.nb_boxes*m_2)
 		return x,y
 
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
-		x,y = self.get_coords(context)
-		if bool_succ:
-			mem['success_matrix'][x,y,0] += 1
-		else:
-			mem['success_matrix'][x,y,1] += 1
-
+#	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
+#		x,y = self.get_coords(context)
+#		if bool_succ:
+#			mem['success_matrix'][x,y,0] += 1
+#		else:
+#			mem['success_matrix'][x,y,1] += 1
+#
 
 	def eval_confidence(self,mem,x,y):
 		s = mem['success_matrix'][x,y,0]
@@ -86,6 +89,9 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 		self.threshold = threshold
 		self.past_window = past_window
 		self.nb_ctxt = nb_ctxt
+		mp = {'mem_type':'past_interactions'}
+		if mp not in self.memory_policies:
+			self.memory_policies.append(mp)
 
 	def pick_context(self, voc, mem, context_gen):
 		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
@@ -121,15 +127,15 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 					d_val = d
 			return d_val
 
-	def init_memory(self,voc):
-		return {'past_interactions':[]}
-
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
-		past_int = mem['past_interactions']
-		d = abs(context[0]-context[1])
-		c = (context[0]+context[1])/2.
-		mem['past_interactions'] = past_int[-self.past_window:]+[(d, c, bool_succ)]
-
+#	def init_memory(self,voc):
+#		return {'past_interactions':[]}
+#
+#	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
+#		past_int = mem['past_interactions']
+#		d = abs(context[0]-context[1])
+#		c = (context[0]+context[1])/2.
+#		mem['past_interactions'] = past_int[-self.past_window:]+[(d, c, bool_succ)]
+ #
 
 class DistSTStrict(CategoryDistanceSTStrat):
 
@@ -299,7 +305,7 @@ class CenterSuccessSlope(DistSuccessSlope):
 			return 0.
 		else:
 			return val/norm
-			
+
 	def get_dist_threshold(self,*args,**kwargs):
 		return 1.
 

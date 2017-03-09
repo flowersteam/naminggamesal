@@ -12,15 +12,21 @@ import uuid
 from .. import ngvoc
 from .. import ngstrat
 from . import ngsensor
+from . import ngmem
 
 class Agent(object):
-	def __init__(self, voc_cfg, strat_cfg, sensor_cfg=None, agent_id=None):
+	def __init__(self, voc_cfg, strat_cfg, sensor_cfg=None, memory_policies=[], agent_id=None):
 		if agent_id is None:
 			self._id = str(uuid.uuid1())
 		else:
 			self._id = agent_id;
 		self._vocabulary = ngvoc.Vocabulary(**voc_cfg)
 		self._strategy = ngstrat.Strategy(**strat_cfg)
+		self.memory_policies = memory_policies
+		if hasattr(self._strategy,'memory_policies'):
+			for mp in self._strategy.memory_policies:
+				if mp not in self.memory_policies:
+					self.memory_policies.append(mp)
 		if sensor_cfg is not None:
 			self._sensoryapparatus = ngsensor.get_sensor(**sensor_cfg)
 
@@ -33,7 +39,7 @@ class Agent(object):
 		self.success = 0
 
 	def init_memory(self):
-		self._memory = self._strategy.init_memory(self._vocabulary)
+		self._memory = ngmem.get_memory(memory_policies=self.memory_policies,voc=self._vocabulary)#self._strategy.init_memory(self._vocabulary)
 
 	def get_vocabulary_content(self):
 		return self._vocabulary.get_content()
@@ -71,12 +77,14 @@ class Agent(object):
 
 	def update_hearer(self,ms,w,mh,bool_succ,context=[]):
 		self._strategy.update_hearer(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ,context=context)
-		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='hearer', bool_succ=bool_succ,context=context)
+		#self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='hearer', bool_succ=bool_succ,context=context)
+		self._memory.update_memory(ms,w,mh,self._vocabulary,role='hearer', bool_succ=bool_succ,context=context)
 
 
 	def update_speaker(self,ms,w,mh,bool_succ,context=[]):
 		self._strategy.update_speaker(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ,context=context)
-		self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='speaker', bool_succ=bool_succ,context=context)
+		#self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='speaker', bool_succ=bool_succ,context=context)
+		self._memory.update_memory(ms,w,mh,self._vocabulary,role='speaker', bool_succ=bool_succ,context=context)
 
 	def visual(self,vtype=None,iterr=100,mlist="all",wlist="all"):
 		self._strategy.visual(self._vocabulary,mem=self._memory,vtype=vtype,iterr=iterr,mlist=mlist,wlist=wlist)

@@ -74,10 +74,17 @@ def Strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'s
 
 class BaseStrategy(object):
 
-	def __init__(self, vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, **strat_cfg2):
+	def __init__(self, vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, memory_policies=[], **strat_cfg2):
 		#for key, value in strat_cfg2.iteritems():
 		#	setattr(self, key, value)
 		self.voc_update = get_voc_update(**vu_cfg)
+		self.memory_policies = memory_policies
+		if {'mem_type':'successcount'} not in self.memory_policies:
+			self.memory_policies.append({'mem_type':'successcount'})
+		if hasattr(self.voc_update,'memory_policies'):
+			for mp in self.voc_update.memory_policies:
+				if mp not in self.memory_policies:
+					self.memory_policies.append(mp)
 		self.success = get_success(**success_cfg)
 
 	def update_speaker(self, ms, w, mh, voc, mem, bool_succ, context=[]):
@@ -86,17 +93,17 @@ class BaseStrategy(object):
 	def update_hearer(self, ms, w, mh, voc, mem, bool_succ, context=[]):
 		return self.voc_update.update_hearer(ms, w, mh, voc, mem, bool_succ, context)
 
-	def init_memory(self,voc):
-		mem = {}
-		mem['success'] = 0
-		mem['fail'] = 0
-		return mem
-
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
-		if bool_succ:
-			mem['success'] += 1
-		else:
-			mem['fail'] += 1
+#	def init_memory(self,voc):
+#		mem = {}
+#		mem['success'] = 0
+#		mem['fail'] = 0
+#		return mem
+#
+#	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+#		if bool_succ:
+#			mem['success'] += 1
+#		else:
+#			mem['fail'] += 1
 
 	def get_strattype(self):
 		return self._strattype
