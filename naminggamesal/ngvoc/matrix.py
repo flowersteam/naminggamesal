@@ -15,7 +15,7 @@ from . import voc_cache, del_cache
 
 class VocMatrix(BaseVocabulary):
 
-	def __init__(self, M, W, **voc_cfg2):
+	def __init__(self, M, W, start='empty',**voc_cfg2):
 		self._M = M
 		self._W = W
 		self._size = [self._M,self._W]
@@ -23,12 +23,21 @@ class VocMatrix(BaseVocabulary):
 		#W = voc_cfg2['W']
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._content=np.matrix(np.zeros((self._M,self._W)))
+		if start == 'completed':
+			self.complete_empty()
 
 	@del_cache
 	def fill(self):
 		for i in range(0,self._M):
 			for j in range(0,self._W):
 				self.add(i,j,1)
+
+	@del_cache
+	def complete_empty(self):
+		assert len(self.get_known_meanings()) == 0
+		for i in range(0,self._M):
+			j = self.get_new_unknown_w()
+			self.add(i,j,1)
 
 	@voc_cache
 	def exists(self,m,w):
@@ -245,11 +254,13 @@ class VocSparseMatrix(VocMatrix):
 class VocLiLMatrix(VocSparseMatrix):
 	voctype="lil_matrix"
 
-	def __init__(self,M,W,**voc_cfg2):
+	def __init__(self,M,W,start='empty',**voc_cfg2):
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._M = M
 		self._W = W
 		self._content = sparse.lil_matrix((self._M,self._W))
+		if start == 'completed':
+			self.complete_empty()
 
 	@voc_cache
 	def get_column(self, w):
@@ -285,11 +296,14 @@ class VocLiLMatrix(VocSparseMatrix):
 class VocCSRMatrix(VocSparseMatrix):
 	voctype="csr_matrix"
 
-	def __init__(self,M,W,**voc_cfg2):
+	def __init__(self,M,W,start='empty',**voc_cfg2):
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._M = M
 		self._W = W
 		self._content = sparse.csr_matrix((self._M,self._W))
+
+		if start == 'completed':
+			self.complete_empty()
 
 	def get_coords_none(self,mat,nz=None):
 		if nz is None:
@@ -373,23 +387,28 @@ class VocCSRMatrixImproved(VocCSRMatrix):
 class VocCSCMatrix(VocCSRMatrix):
 	voctype="csc_matrix"
 
-	def __init__(self,M,W,**voc_cfg2):
+	def __init__(self,M,W,start='empty',**voc_cfg2):
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._M = M
 		self._W = W
 		self._content = sparse.csc_matrix((self._M,self._W))
 
+		if start == 'completed':
+			self.complete_empty()
 
 
 
 class VocDOKMatrix(VocSparseMatrix):
 	voctype="dok_matrix"
 
-	def __init__(self,M,W,**voc_cfg2):
+	def __init__(self,M,W,start='empty',**voc_cfg2):
 		super(VocMatrix,self).__init__(**voc_cfg2)
 		self._M = M
 		self._W = W
 		self._content = sparse.dok_matrix((self._M,self._W))
+
+		if start == 'completed':
+			self.complete_empty()
 
 	def get_coords(self, mat, option=None):
 		if option is None:

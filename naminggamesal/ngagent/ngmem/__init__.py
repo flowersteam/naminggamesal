@@ -9,6 +9,8 @@ mempolicy_class={
 'successcount':'memory_policies.SuccessCountMP',
 'successcount_perm':'memory_policies.SuccessCountPerMMP',
 'successcount_permw':'memory_policies.SuccessCountPerMWMP',
+'timeweighted_successcount_permw':'memory_policies.TimeWeightedSuccessCountPerMWMP',
+'timedecrease_successcount_permw':'memory_policies.TimeDecreaseSuccessCountPerMWMP',
 'lastresult':'memory_policies.LastResultMP'
 }
 
@@ -51,9 +53,9 @@ class Memory(collections.MutableMapping):
 	def __len__(self):
 		return len(self.store)
 
-	def update_memory(self,*args,**kwargs):
+	def update_memory(self,ms,w,mh,voc,role,bool_succ,context=[]):
 		for mem_p in self.memory_policies:
-			mem_p.update_memory(mem=self,*args,**kwargs)
+			mem_p.update_memory(mem=self,ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
 
 	def init_memory(self,voc=None):
 		for mem_p in self.memory_policies:
@@ -61,9 +63,9 @@ class Memory(collections.MutableMapping):
 		if voc is not None:
 			voc.finish_update()
 
-	def simulated_update_memory(self,*args,**kwargs):
+	def simulated_update_memory(self,ms,w,mh,voc,role,bool_succ,context=[]):
 		fake_mem = copy.deepcopy(self)
-		fake_mem.update_memory(*args,**kwargs)
+		fake_mem.update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
 		return fake_mem
 
 

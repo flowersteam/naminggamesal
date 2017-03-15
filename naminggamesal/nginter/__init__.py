@@ -42,5 +42,5 @@ class Interaction(object):
 	def get_interacttype(self):
 		return self._interacttype
 
-	def interact(self, speaker, hearer, pop):
+	def interact(self, speaker, hearer, pop, simulated=False):
 		pass

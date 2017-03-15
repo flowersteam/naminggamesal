@@ -5,6 +5,7 @@ import math
 import random
 import networkx as nx
 from intervaltree import IntervalTree,Interval
+import scipy
 
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
@@ -71,6 +72,114 @@ FUNC=success_rate
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":success_rate_min,"ymax":success_rate_max}
 custom_success_rate=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########new_entropy##########
+
+def new_entropy(agent=None,mem=None,voc=None,**kwargs):
+	if mem is None:
+		mem = agent._memory
+		if voc is None:
+			voc = agent._vocabulary
+
+	success = mem['success_mw']
+
+	normalized0 = success.sum(axis=0, keepdims=True)
+	normalized0 = np.where(normalized0!=0,success/normalized0,0.)
+	entr0 = scipy.special.entr(normalized0).sum()#.sum(axis=0)
+
+	normalized1 = success.sum(axis=1, keepdims=True)
+	normalized1 = np.where(normalized1!=0,success/normalized1,0.)
+	entr1 = scipy.special.entr(normalized1).sum()#.sum(axis=1)
+
+	return entr0 + entr1
+
+
+
+
+#def new_entropy_max(pop):
+#	return 1
+
+def new_entropy_min(pop):
+	return 0
+
+FUNC=new_entropy
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":new_entropy_min}#,"ymax":new_entropy_max}
+custom_new_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########new_entropy_globalnorm##########
+
+def new_entropy_globalnorm(agent=None,mem=None,voc=None,**kwargs):
+	if mem is None:
+		mem = agent._memory
+		if voc is None:
+			voc = agent._vocabulary
+
+	success = mem['success_mw']
+
+	norms = success.sum(axis=0, keepdims=True)
+	if not norms.all() == 0:
+		normalized = success/norms
+	else:
+		normalized = success
+	entr = scipy.special.entr(normalized).sum()
+
+	return entr
+
+
+
+
+#def new_entropy_globalnorm_max(pop):
+#	return 1
+
+def new_entropy_globalnorm_min(pop):
+	return 0
+
+FUNC=new_entropy_globalnorm
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":new_entropy_globalnorm_min}#,"ymax":new_entropy_globalnorm_max}
+custom_new_entropy_globalnorm=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########new_entropy_success_rate##########
+
+def new_entropy_success_rate(agent=None,mem=None,voc=None,**kwargs):
+	if mem is None:
+		mem = agent._memory
+		if voc is None:
+			voc = agent._vocabulary
+
+	success = mem['success_mw']
+	failure = mem['success_mw']
+	total = success + failure
+
+	success_rate = np.where(total!=0,success/total,0.)
+
+	normalized0 = success_rate.sum(axis=0, keepdims=True)
+	normalized0 = np.where(normalized0!=0,success_rate/normalized0,0.)
+	entr0 = scipy.special.entr(normalized0).sum()#.sum(axis=0)
+
+	normalized1 = success_rate.sum(axis=1, keepdims=True)
+	normalized1 = np.where(normalized1!=0,success_rate/normalized1,0.)
+	entr1 = scipy.special.entr(normalized1).sum()#.sum(axis=1)
+
+	return entr0 + entr1
+
+
+
+
+#def new_entropy_success_rate_max(pop):
+#	return 1
+
+def new_entropy_success_rate_min(pop):
+	return 0
+
+FUNC=new_entropy_success_rate
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":new_entropy_success_rate_min}#,"ymax":new_entropy_success_rate_max}
+custom_new_entropy_success_rate=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
 #########transinformation##########

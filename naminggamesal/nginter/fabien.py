@@ -59,16 +59,17 @@ class FabienInteraction(Interaction):
 			self.alpha = 1.
 
 
-	def interact(self, speaker, hearer, pop):
+	def interact(self, speaker, hearer, pop,simulated=False):
 		r = random.random()
 		if self.proba_func(speaker, hearer, self.alpha) > r:
-			self.base_interact(speaker, hearer, pop)
+			self.base_interact(speaker=speaker, hearer=hearer, pop=pop,simulated=simulated)
 
-	def base_interact(self, speaker, hearer, pop):
+	def base_interact(self, speaker, hearer, pop,simulated=False):
 		ms = speaker.pick_m()
 		w =  speaker.pick_w(ms)
 		mh = hearer.guess_m(w)
 		bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh)
-		speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
-		hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
-		self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id]
+		if not simulated:
+			speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
+			hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
+			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id]

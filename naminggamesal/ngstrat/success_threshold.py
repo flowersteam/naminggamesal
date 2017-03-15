@@ -11,19 +11,19 @@ class StratSuccessThreshold(StratNaive):
 
 	def __init__(self, vu_cfg, threshold_explo=0.9, **strat_cfg2):
 		super(StratSuccessThreshold, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
-		self.threshold_explo=threshold_explo
+		self.threshold_explo = threshold_explo
 		mp = {'mem_type':'successcount_perm'}
 		if mp not in self.memory_policies:
 			self.memory_policies.append(mp)
 
 	def pick_m(self,voc,mem,context):
-		test1=self.get_success_rate_over_known_meanings(voc,mem)>self.threshold_explo
-		test2=len(voc.get_known_meanings())==voc._M
-		test3=len(voc.get_known_meanings())==0
+		test1 = self.get_success_rate_over_known_meanings(voc,mem)>self.threshold_explo
+		test2 = len(voc.get_known_meanings())==voc._M
+		test3 = len(voc.get_known_meanings())==0
 		if (test1 or test3) and (not test2):
-			m=voc.get_new_unknown_m()
+			m = voc.get_new_unknown_m()
 		else:
-			m=voc.get_random_known_m()
+			m = voc.get_random_known_m()
 		return m
 
 	def hearer_pick_m(self,voc,mem,context):
@@ -85,8 +85,8 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 		fail_sum = 0
 		ratelist = []
 		for m in voc.get_known_meanings():
-			succ_sum=mem["success_m"][m]
-			fail_sum=mem["fail_m"][m]
+			succ_sum = mem["success_m"][m]
+			fail_sum = mem["fail_m"][m]
 			if succ_sum!=0:
 				ratelist.append(succ_sum/float(fail_sum+succ_sum))
 			else:

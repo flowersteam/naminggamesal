@@ -49,7 +49,7 @@ strat_class={
 	'last_result':'last_result.StratLastResult',
 	'omniscient':'omniscient.StratOmniscient',
 
-	'betadecrease':'beta_decrease.BetaDecreaseStrat'
+	#'betadecrease':'beta_decrease.BetaDecreaseStrat'
 }
 
 def Strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, **strat_cfg2):
@@ -79,7 +79,7 @@ class BaseStrategy(object):
 		#	setattr(self, key, value)
 		self.voc_update = get_voc_update(**vu_cfg)
 		self.memory_policies = memory_policies
-		if {'mem_type':'successcount'} not in self.memory_policies:
+		if 'successcount' not in [mp['mem_type'] for mp in self.memory_policies]:
 			self.memory_policies.append({'mem_type':'successcount'})
 		if hasattr(self.voc_update,'memory_policies'):
 			for mp in self.voc_update.memory_policies:

@@ -6,6 +6,8 @@ from importlib import import_module
 #####Classe de base
 vu_class={
 	'imitation':'imitation.Imitation',
+	'imitation_permutation':'imitation.ImitationPermutation',
+
 	'minimal':'minimal.Minimal',
 	'minimal_keeppreference':'minimal.MinimalKeepPreference',
 	'minimalsynonly':'minimal.MinimalSynOnly',
@@ -20,7 +22,13 @@ vu_class={
 	'BLIS_heareronlyfailure':'lateral_inhib.BasicLateralInhibitionHearerOnlyFailure',
 	'ILIS':'lateral_inhib.InterpolatedLateralInhibition',
 
-	'frequency':'frequency.Frequency'
+	'frequency':'frequency.Frequency',
+
+	'acceptance':'acceptance.AcceptancePolicy',
+	'acceptance_beta':'acceptance.AcceptanceBeta',
+	'acceptance_betadecrease':'acceptance.AcceptanceBetaDecrease',
+	'acceptance_entropy':'acceptance.AcceptanceEntropy',
+	'acceptance_entropybeta':'acceptance.AcceptanceEntropyBeta',
 }
 
 def get_voc_update(vu_type='imitation', **vu_cfg2):
@@ -35,7 +43,7 @@ def get_voc_update(vu_type='imitation', **vu_cfg2):
 
 class VocUpdate(object):
 	def __init__(self):
-		pass
+		self.memory_policies = []
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
 		voc.finish_update()
