@@ -11,6 +11,7 @@ vu_class={
 	'minimal':'minimal.Minimal',
 	'minimal_keeppreference':'minimal.MinimalKeepPreference',
 	'minimalsynonly':'minimal.MinimalSynOnly',
+	'minimalhomreduc':'minimal.MinimalHomonymyReduc',
 	'minimalpone':'minimal.MinimalPOne',
 	'minimalpone2':'minimal.MinimalPOne2',
 	'minimalcatnew':'minimal.MinimalCatNew',
@@ -27,8 +28,11 @@ vu_class={
 	'acceptance':'acceptance.AcceptancePolicy',
 	'acceptance_beta':'acceptance.AcceptanceBeta',
 	'acceptance_betadecrease':'acceptance.AcceptanceBetaDecrease',
+	'acceptance_tsmax':'acceptance.AcceptanceTSMax',
 	'acceptance_entropy':'acceptance.AcceptanceEntropy',
 	'acceptance_entropybeta':'acceptance.AcceptanceEntropyBeta',
+	'acceptance_vocrelatedentropy':'acceptance.AcceptanceVocRelatedEntropy',
+	'acceptance_vocrelatedentropybeta':'acceptance.AcceptanceVocRelatedEntropyBeta',
 }
 
 def get_voc_update(vu_type='imitation', **vu_cfg2):

@@ -79,12 +79,21 @@ class Agent(object):
 		self._strategy.update_hearer(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ,context=context)
 		#self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='hearer', bool_succ=bool_succ,context=context)
 		self._memory.update_memory(ms,w,mh,self._vocabulary,role='hearer', bool_succ=bool_succ,context=context)
+		if bool_succ:
+			self.success += 1
+		else:
+			self.fail += 1
 
 
 	def update_speaker(self,ms,w,mh,bool_succ,context=[]):
 		self._strategy.update_speaker(ms=ms,w=w,mh=mh,voc=self._vocabulary,mem=self._memory,bool_succ=bool_succ,context=context)
 		#self._strategy.update_memory(ms,w,mh,self._vocabulary,self._memory,role='speaker', bool_succ=bool_succ,context=context)
 		self._memory.update_memory(ms,w,mh,self._vocabulary,role='speaker', bool_succ=bool_succ,context=context)
+		if bool_succ:
+			self.success += 1
+		else:
+			self.fail += 1
+
 
 	def visual(self,vtype=None,iterr=100,mlist="all",wlist="all"):
 		self._strategy.visual(self._vocabulary,mem=self._memory,vtype=vtype,iterr=iterr,mlist=mlist,wlist=wlist)

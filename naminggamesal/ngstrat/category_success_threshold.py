@@ -15,7 +15,7 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 		self.nb_ctxt = nb_ctxt
 		self.nb_boxes = nb_boxes
 		mp = {'mem_type':'success_matrix'}
-		if mp not in self.memory_policies:
+		if sum([ (mp['mem_type'] not in mmpp['mem_type']) for mmpp in self.memory_policies]):
 			self.memory_policies.append(mp)
 
 
@@ -90,7 +90,7 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 		self.past_window = past_window
 		self.nb_ctxt = nb_ctxt
 		mp = {'mem_type':'past_interactions'}
-		if mp not in self.memory_policies:
+		if sum([ (mp['mem_type'] not in mmpp['mem_type']) for mmpp in self.memory_policies]):
 			self.memory_policies.append(mp)
 
 	def pick_context(self, voc, mem, context_gen):

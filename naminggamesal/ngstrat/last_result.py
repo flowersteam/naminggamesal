@@ -13,7 +13,7 @@ class StratLastResult(StratNaive):
 	def __init__(self,*args,**kwargs):
 		StratNaive.__init__(self,*args,**kwargs)
 		mp = {'mem_type':'lastresult'}
-		if mp not in self.memory_policies:
+		if sum([ (mp['mem_type'] not in mmpp['mem_type']) for mmpp in self.memory_policies]):
 			self.memory_policies.append(mp)
 
 	def pick_m(self,voc,mem, context=[]):

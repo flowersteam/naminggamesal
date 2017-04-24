@@ -17,6 +17,24 @@ class Minimal(VocUpdate):
 		voc.add(ms,w,context=context)
 		voc.finish_update()
 
+class MinimalHomonymyReduc(VocUpdate):
+	def update_hearer(self,ms,w,mh,voc,mem,bool_succ, context=[]):
+		if bool_succ:
+			voc.rm_syn(ms,w)
+			#voc.rm_hom(ms,w)
+		else:
+			if voc.get_known_meanings(w=w):
+				voc.rm(mh,w)
+		voc.add(ms,w,context=context)
+		voc.finish_update()
+
+	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
+		if bool_succ:
+			voc.rm_syn(ms,w)
+			#voc.rm_hom(ms,w)
+		voc.add(ms,w,context=context)
+		voc.finish_update()
+
 
 
 class MinimalBeta(Minimal):

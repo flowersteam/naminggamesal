@@ -13,7 +13,7 @@ class StratSuccessThreshold(StratNaive):
 		super(StratSuccessThreshold, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		self.threshold_explo = threshold_explo
 		mp = {'mem_type':'successcount_perm'}
-		if mp not in self.memory_policies:
+		if sum([ (mp['mem_type'] not in mmpp['mem_type']) for mmpp in self.memory_policies]):
 			self.memory_policies.append(mp)
 
 	def pick_m(self,voc,mem,context):
@@ -142,7 +142,7 @@ class StratSuccessThresholdScores(StratSuccessThresholdWise):
 	def __init__(self, vu_cfg, **strat_cfg2):
 		StratSuccessThresholdWise.__init__(self,vu_cfg=vu_cfg, **strat_cfg2)
 		mp = {'mem_type':'successcount_permw'}
-		if mp not in self.memory_policies:
+		if sum([ (mp['mem_type'] not in mmpp['mem_type']) for mmpp in self.memory_policies]):
 			self.memory_policies.append(mp)
 #	def init_memory(self,voc):
 #		mem = StratNaive.init_memory(self,voc)

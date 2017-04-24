@@ -196,7 +196,7 @@ class CustomGraph(object):
 		self.Yoptions=self.Yoptions+other_graph.Yoptions
 		self.stdvec=self.stdvec+other_graph.stdvec
 
-	def complete_with(self,other_graph, mix=True):
+	def complete_with(self,other_graph, mix=True, remove_duplicates=False):
 		for i in range(0,len(self._X)):
 			if mix and not self._X[-1]<other_graph._X[0]:
 				X = copy.deepcopy(self._X[i])
@@ -206,6 +206,7 @@ class CustomGraph(object):
 				oXind = 0
 				self._X[i] = []
 				self._Y[i] = []
+				self.stdvec[i] = []
 				while Xind < len(X) and oXind < len(other_graph._X[i]):
 					if X[Xind] < other_graph._X[i][oXind]:
 						self._X[i].append(X[Xind])
@@ -227,6 +228,18 @@ class CustomGraph(object):
 				self._X[i]=list(copy.deepcopy(self._X[i]))+list(copy.deepcopy(other_graph._X[i]))
 				self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
 				self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
+			if remove_duplicates:
+				X = copy.deepcopy(self._X[i])
+				Y = copy.deepcopy(self._Y[i])
+				stdvec = copy.deepcopy(self.stdvec[i])
+				self._X[i] = []
+				self._Y[i] = []
+				self.stdvec[i] = []
+				for j in range(len(X)):
+					if X[j] not in self._X[i]:
+						self._X[i].append(X[j])
+						self._Y[i].append(Y[j])
+						self.stdvec[i].append(stdvec[j])
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 #	def complete_with(self,other_graph):

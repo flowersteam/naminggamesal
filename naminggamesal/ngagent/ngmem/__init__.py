@@ -11,6 +11,7 @@ mempolicy_class={
 'successcount_permw':'memory_policies.SuccessCountPerMWMP',
 'timeweighted_successcount_permw':'memory_policies.TimeWeightedSuccessCountPerMWMP',
 'timedecrease_successcount_permw':'memory_policies.TimeDecreaseSuccessCountPerMWMP',
+'timedecrease_successcount_perm':'memory_policies.TimeDecreaseSuccessCountPerMMP',
 'lastresult':'memory_policies.LastResultMP'
 }
 

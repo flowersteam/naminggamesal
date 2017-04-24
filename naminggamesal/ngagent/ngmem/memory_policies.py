@@ -48,7 +48,7 @@ class SuccessCountPerMMP(MemoryPolicy):
 		if role=='speaker':
 			m1=ms
 		else:
-			m1=mh
+			m1=ms#mh justification: getting information from the other's vocabulary for the hearer
 		if bool_succ:
 			mem["success_m"][m1]+=1
 		else:
@@ -56,6 +56,34 @@ class SuccessCountPerMMP(MemoryPolicy):
 
 	def init_memory(self,mem,voc):
 
+		assert not hasattr(mem,'success_m')
+		assert not hasattr(mem,'fail_m')
+		mem["success_m"] = np.zeros(voc._M)#[0]*voc._M
+		mem["fail_m"] = np.zeros(voc._M)#[0]*voc._M
+
+class TimeDecreaseSuccessCountPerMMP(SuccessCountPerMMP):
+
+	def __init__(self,mem_type,time_scale=100):
+		MemoryPolicy.__init__(self,mem_type=mem_type)
+		self.time_scale = time_scale
+		if self.time_scale == 0:
+			self.factor = 0.
+		else:
+			self.factor = np.exp(-1./self.time_scale)
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		if role=='speaker':
+			m1=ms
+		else:
+			m1=ms#mh justification: getting information from the other's vocabulary for the hearer
+		for a in [mem["success_m"][m1],mem["fail_m"][m1]]:
+			a *= self.factor
+		if bool_succ:
+			mem["success_m"][m1]+=1
+		else:
+			mem["fail_m"][m1]+=1
+
+	def init_memory(self,mem,voc):
 		assert not hasattr(mem,'success_m')
 		assert not hasattr(mem,'fail_m')
 		mem["success_m"] = np.zeros(voc._M)#[0]*voc._M
@@ -75,7 +103,7 @@ class SuccessCountPerMWMP(MemoryPolicy):
 		if role=='speaker':
 			m1 = ms
 		else:
-			m1 = mh
+			m1 =ms#mh justification: getting information from the other's vocabulary for the hearer
 		if bool_succ:
 			mem["success_mw"][m1, w]+=1.
 		else:
@@ -98,18 +126,21 @@ class SuccessCountMP(MemoryPolicy):
 
 class TimeWeightedSuccessCountPerMWMP(SuccessCountPerMWMP):
 
-	def __init__(self,mem_type,time_scale):
+	def __init__(self,mem_type,time_scale=100):
 		MemoryPolicy.__init__(self,mem_type=mem_type)
 		self.time_scale = time_scale
 		self.increment = 1.
-		self.factor = np.exp(1./self.time_scale)
+		if time_scale == 0.:
+			self.factor = 0.
+		else:
+			self.factor = np.exp(1./self.time_scale)
 
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if role == 'speaker':
 			m1 = ms
 		else:
-			m1 = mh
+			m1 = ms#mh justification: getting information from the other's vocabulary for the hearer
 		if bool_succ:
 			mem["success_mw"][m1, w] += self.increment
 		else:
@@ -118,10 +149,13 @@ class TimeWeightedSuccessCountPerMWMP(SuccessCountPerMWMP):
 
 class TimeDecreaseSuccessCountPerMWMP(TimeWeightedSuccessCountPerMWMP):
 
-	def __init__(self,mem_type,time_scale,epsilon=0.01):
+	def __init__(self,mem_type,time_scale=100,epsilon=0.01):
 		MemoryPolicy.__init__(self,mem_type=mem_type)
 		self.time_scale = time_scale
-		self.factor = np.exp(-1./self.time_scale)
+		if time_scale == 0.:
+			self.factor = 0.
+		else:
+			self.factor = np.exp(1./self.time_scale)
 		self.epsilon = epsilon
 
 
@@ -129,13 +163,14 @@ class TimeDecreaseSuccessCountPerMWMP(TimeWeightedSuccessCountPerMWMP):
 		if role == 'speaker':
 			m1 = ms
 		else:
-			m1 = mh
-		for a in [mem["success_mw"],mem["fail_mw"]]:
+			m1 = ms#mh justification: getting information from the other's vocabulary for the hearer
+		previous_val = mem["success_mw"][m1, w],mem["fail_mw"][m1, w]
+		for a in [mem["success_mw"][:,w],mem["fail_mw"][:,w],mem["success_mw"][m1,:],mem["fail_mw"][m1,:]]:
 			a *= self.factor
 			a[:] = np.where(a>self.epsilon,a,0.)
 			if hasattr(a,'eliminate_zeros'):
 				a.eliminate_zeros()
 		if bool_succ:
-			mem["success_mw"][m1, w] += 1.
+			mem["success_mw"][m1, w] = previous_val[0]*self.factor + 1.
 		else:
-			mem["fail_mw"][m1, w] += 1.
+			mem["fail_mw"][m1, w] = previous_val[1]*self.factor + 1.

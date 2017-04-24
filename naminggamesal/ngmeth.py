@@ -7,6 +7,8 @@ import networkx as nx
 from intervaltree import IntervalTree,Interval
 import scipy
 
+#from numpy.linalg import norm
+
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
 from .ngpop import Population
@@ -73,10 +75,62 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":success_rate_min,"ymax":success_rate_max}
 custom_success_rate=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
+#########had_success##########
+
+def had_success(agent,**kwargs):
+	if agent.success>0:
+		return 1.
+	else:
+		return 0.
+
+def had_success_max(pop):
+	return 1.
+
+def had_success_min(pop):
+	return 0.
+
+FUNC=had_success
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":had_success_min,"ymax":had_success_max}
+custom_had_success=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
 
 #########new_entropy##########
 
 def new_entropy(agent=None,mem=None,voc=None,**kwargs):
+	if mem is None:
+		mem = agent._memory
+		if voc is None:
+			voc = agent._vocabulary
+
+	total = mem['success_mw'] + mem['fail_mw']
+
+	normalized0 = total.sum(axis=0, keepdims=True)
+	normalized0 = np.where(normalized0!=0,total/normalized0,0.)
+	entr0 = scipy.special.entr(normalized0).sum()#.sum(axis=0)
+
+	normalized1 = total.sum(axis=1, keepdims=True)
+	normalized1 = np.where(normalized1!=0,total/normalized1,0.)
+	entr1 = scipy.special.entr(normalized1).sum()#.sum(axis=1)
+
+	return entr0 + entr1
+
+
+
+
+#def new_entropy_max(pop):
+#	return 1
+
+def new_entropy_min(pop):
+	return 0
+
+FUNC=new_entropy
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":new_entropy_min}#,"ymax":new_entropy_max}
+custom_new_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+#########new_entropy_success##########
+
+def new_entropy_success(agent=None,mem=None,voc=None,**kwargs):
 	if mem is None:
 		mem = agent._memory
 		if voc is None:
@@ -97,16 +151,67 @@ def new_entropy(agent=None,mem=None,voc=None,**kwargs):
 
 
 
-#def new_entropy_max(pop):
+#def new_entropy_success_max(pop):
 #	return 1
 
-def new_entropy_min(pop):
+def new_entropy_success_min(pop):
 	return 0
 
-FUNC=new_entropy
+FUNC=new_entropy_success
 FUNC_BIS=pop_ize(FUNC)
-graphconfig={"ymin":new_entropy_min}#,"ymax":new_entropy_max}
-custom_new_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+graphconfig={"ymin":new_entropy_success_min}#,"ymax":new_entropy_max}
+custom_new_entropy_success=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########new_entropy_withvoc##########
+
+def new_entropy_withvoc(agent=None,mem=None,voc=None,**kwargs):
+	if mem is None:
+		mem = agent._memory
+		if voc is None:
+			voc = agent._vocabulary
+
+	success = mem['success_mw']
+	fail = mem['fail_mw']
+	total = success + fail
+
+	#normalized0 = total.sum(axis=0, keepdims=True)
+	#normalized0 = np.where(normalized0!=0,total/normalized0,0.)
+	#own_assoc0 = np.where(voc._content!=0,normalized0,0.)
+	#others0 = normalized0-own_assoc0
+
+	total = np.where(voc._content!=0,total,0.)
+
+	norm0 = total.sum(axis=0, keepdims=True)
+	normalized0 = np.where(total!=0,total/norm0,0.)
+	entr0 = scipy.special.entr(normalized0).sum()#.sum(axis=0)
+
+	norm1 = total.sum(axis=1, keepdims=True)
+	normalized1 = np.where(norm1!=0,total/norm1,0.)
+	entr1 = scipy.special.entr(normalized1).sum()#.sum(axis=0)
+
+
+	#normalized1 = total.sum(axis=1, keepdims=True)
+	#normalized1 = np.where(normalized1!=0,total/normalized1,0.)
+	#own_assoc1 = np.where(voc._content!=0,normalized1,0.)
+	#others1 = normalized1-own_assoc1
+
+	#entr1 = scipy.special.entr(own_assoc1).sum()# + scipy.special.entr(others1.sum(axis=0)).sum()
+
+	return entr0 + entr1
+
+
+
+
+#def new_entropy_withvoc_max(pop):
+#	return 1
+
+def new_entropy_withvoc_min(pop):
+	return 0
+
+FUNC=new_entropy_withvoc
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":new_entropy_withvoc_min}#,"ymax":new_entropy_withvoc_max}
+custom_new_entropy_withvoc=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
 #########new_entropy_globalnorm##########
@@ -119,8 +224,8 @@ def new_entropy_globalnorm(agent=None,mem=None,voc=None,**kwargs):
 
 	success = mem['success_mw']
 
-	norms = success.sum(axis=0, keepdims=True)
-	if not norms.all() == 0:
+	norms = success.sum()#keepdims=True)
+	if not (norms.all() == 0):
 		normalized = success/norms
 	else:
 		normalized = success
@@ -328,6 +433,25 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":N_w_per_m_min}#,"ymax":N_w_per_m_max}
 custom_N_w_per_m=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
+#########N_w_per_m_agentmax##########
+
+def N_w_per_m_agentmax(agent,**kwargs):
+	if not agent._vocabulary.get_known_meanings():
+		return 0
+	else:
+		return max([len(agent._vocabulary.get_known_words(m=m)) for m in agent._vocabulary.get_known_meanings()])
+
+def N_w_per_m_agentmax_max(pop):
+	return 1
+
+def N_w_per_m_agentmax_min(pop):
+	return 0
+
+FUNC=N_w_per_m_agentmax
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_w_per_m_agentmax_min}#,"ymax":N_w_per_m_max}
+custom_N_w_per_m_agentmax=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
 
 #########cat_synonymy##########
 
@@ -478,6 +602,44 @@ def N_d_min(pop):
 FUNC=N_d
 graphconfig={"ymin":N_d_min}#,"ymax":N_d_max}
 custom_N_d=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########N_d_m##########
+
+def N_d_m(pop,**kwargs):
+	tempmat = np.matrix(np.zeros((pop._M,pop._W)))
+	for agent in pop._agentlist:
+		tempmat += agent._vocabulary._content
+	tempmat[tempmat>0] = 1
+	return np.sum(tempmat[0,:])
+
+def N_d_m_max(pop):
+	return pop._W
+
+def N_d_m_min(pop):
+	return 0
+
+FUNC=N_d_m
+graphconfig={"ymin":N_d_m_min}#,"ymax":N_d_m_max}
+custom_N_d_m=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########N_d_m_ag##########
+
+def N_d_m_ag(pop,**kwargs):
+	tempmat = np.matrix(np.zeros((pop._M,pop._W)))
+	agent = pop._agentlist[0]
+	tempmat += agent._vocabulary._content
+	tempmat[tempmat>0] = 1
+	return np.sum(tempmat[0,:])
+
+def N_d_m_ag_max(pop):
+	return pop._W
+
+def N_d_m_ag_min(pop):
+	return 0
+
+FUNC=N_d_m_ag
+graphconfig={"ymin":N_d_m_ag_min}#,"ymax":N_d_m_ag_max}
+custom_N_d_m_ag=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########Nlinksurs##########
 
@@ -1598,3 +1760,26 @@ def edgevalue_distrib(pop,**kwargs):
 
 
 
+#==================
+
+
+def srtheo_voc(voc1,voc2,role='both'):
+	ans = 0.
+	if role == 'both' or role == 'hearer':
+		m1 = copy.deepcopy(voc1)
+		m2 = copy.deepcopy(voc2)
+		m1 = m1 / np.linalg.norm(m1, axis=0, ord=1,keepdims=True)
+		m2 = m2 / np.linalg.norm(m2, axis=1, ord=1,keepdims=True)
+		mult = np.multiply(m1,m2)
+		ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
+	if role == 'both' or role == 'speaker':
+		m1 = copy.deepcopy(voc1)
+		m2 = copy.deepcopy(voc2)
+		m1 = m1 / np.linalg.norm(m1, axis=1, ord=1,keepdims=True)
+		m2 = m2 / np.linalg.norm(m2, axis=0, ord=1,keepdims=True)
+		mult = np.multiply(m1,m2)
+		ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
+	if role == 'both':
+		return ans/2.
+	else:
+		return ans

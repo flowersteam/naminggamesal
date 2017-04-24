@@ -83,7 +83,7 @@ class BaseStrategy(object):
 			self.memory_policies.append({'mem_type':'successcount'})
 		if hasattr(self.voc_update,'memory_policies'):
 			for mp in self.voc_update.memory_policies:
-				if mp not in self.memory_policies:
+				if sum([ (mp['mem_type'] not in mmpp['mem_type']) for mmpp in self.memory_policies]):
 					self.memory_policies.append(mp)
 		self.success = get_success(**success_cfg)
 
