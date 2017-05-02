@@ -52,7 +52,7 @@ strat_class={
 	#'betadecrease':'beta_decrease.BetaDecreaseStrat'
 }
 
-def Strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, **strat_cfg2):
+def get_strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, **strat_cfg2):
 	tempstr = strat_type
 	if tempstr == 'mixed':
 		tot = sum(strat_cfg2['proba'])

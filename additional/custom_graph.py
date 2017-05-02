@@ -250,20 +250,42 @@ class CustomGraph(object):
 #		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def merge(self):
-		Yarray=np.array(self._Y)
-		stdarray=np.array(self.stdvec)
-		stdtemp=[]
-		Ytemp=[]
+		#Yarray=np.array(self._Y)
+		#stdarray=np.array(self.stdvec)
+		Xcopy = copy.deepcopy(self._X)
+		Ycopy = copy.deepcopy(self._Y)
+		stdcopy = copy.deepcopy(self.stdvec)
+		stdtemp = []
+		Ytemp = []
+		#Xtemp = []
 		self.Yoptions=[self.Yoptions[0]]
 		self.std=1
+		Ydict = {}
+		for j in range(len(self._Y)):
+			for i in range(len(self._Y[j])):
+				if Xcopy[j][i] in Ydict.keys():
+					Ydict[Xcopy[j][i]].append(Ycopy[j][i])
+				else:
+					Ydict[Xcopy[j][i]] = [Ycopy[j][i]]
+		Xlist = Ydict.keys()
+		Xlist.sort()
+		for x in Xlist:
+			Ylist = Ydict[x]
+			Ytemp.append(np.mean(Ylist))
+			stdtemp.append(np.std(Ylist))
 
-		for i in range(0,len(self._Y[0])):
-			Ytemp.append(np.mean(list(Yarray[:,i])))
-			stdtemp.append(np.std(list(Yarray[:,i])))
-		self._Y=[Ytemp]
-		self.stdvec=[stdtemp]
-		self._X=[self._X[0]]
-		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
+
+		#max_length = max([len(self._Y[j]) for j in range(len(self._Y))])
+		#for i in range(max_length):
+		#	Ylist = [Ycopy[j][i] for j in range(len(Ycopy)) if len(Ycopy[j])>i]
+		#	Ytemp.append(np.mean(Ylist))
+		#	stdtemp.append(np.std(Ylist))
+		#	#Ytemp.append(np.mean(list(Yarray[:,i])))
+		#	#stdtemp.append(np.std(list(Yarray[:,i])))
+		self._Y = [Ytemp]
+		self.stdvec = [stdtemp]
+		self._X = [Xlist]
+		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 
 

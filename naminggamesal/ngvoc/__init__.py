@@ -17,6 +17,8 @@ voc_class={
 	"csr_matrix_improved":"matrix.VocCSRMatrixImproved",
 	"csc_matrix":"matrix.VocCSCMatrix",
 	"dok_matrix":"matrix.VocDOKMatrix",
+	"graph":"graph.VocGraph",
+	"graph_ba":"graph.BarabasiAlbertVocGraph",
 	'category':'category.VocCategory'
 }
 
@@ -42,7 +44,7 @@ def del_cache(tempfun):
 		return ans
 	return mod_fun_del
 
-def Vocabulary(voc_type='matrix', **voc_cfg2):
+def get_vocabulary(voc_type='matrix', **voc_cfg2):
 	tempstr = voc_type
 	if tempstr in voc_class.keys():
 		tempstr = voc_class[tempstr]

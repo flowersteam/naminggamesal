@@ -442,6 +442,7 @@ class Experiment(ngsimu.Experiment):
 		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit)
 
 	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True, tempgraph=None):
+		do_not_commit = False
 		if not tmax:
 			tmax = self._T[-1]
 		ind = -1
@@ -463,13 +464,17 @@ class Experiment(ngsimu.Experiment):
 						raise Exception('Computation needed')
 					temptmin = max(dbmax,tmin)
 					tempgraph2 = super(Experiment,self).graph(method=method, tmin=temptmin, tmax=tmax)
-					tempgraph.complete_with(tempgraph2)
+					cust_func = getattr(ngmeth,'custom_'+method)# avoiding having several values for exp level
+					if cust_func.level != 'exp':
+						tempgraph.complete_with(tempgraph2)
 				if not len(tempgraph._X)==1: # for data at exp level
 					while tmax < tempgraph._X[0][-1]:
+						do_not_commit = True
 						tempgraph._X[0].pop()
 						tempgraph._Y[0].pop()
 						tempgraph.stdvec[0].pop()
 					while tmin > tempgraph._X[0][0]:
+						do_not_commit = True
 						tempgraph._X[0].pop(0)
 						tempgraph._Y[0].pop(0)
 						tempgraph.stdvec[0].pop(0)
@@ -482,6 +487,8 @@ class Experiment(ngsimu.Experiment):
 				raise Exception('Computation needed')
 			tempgraph = super(Experiment, self).graph(method=method,tmin=tmin, tmax=tmax)
 		if autocommit:
+			if do_not_commit:
+				raise Exception('trying to commit a reduced version of graph')
 			self.commit_data_to_db(tempgraph,method)
 		if X:
 			tempgraph2 = self.graph(method=X, tmin=tmin, tmax=tmax, autocommit=autocommit)

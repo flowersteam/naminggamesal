@@ -8,6 +8,7 @@ from importlib import import_module
 env_class={
 	'image_hue':'imagehue.ImageHueEnv',
 	'hue_distrib':'imagehue.HueDistribEnv',
+	'graphenv':'graphenv.GraphEnv',
 }
 
 def get_environment(env_type=None, **env_cfg2):

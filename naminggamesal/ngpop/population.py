@@ -26,6 +26,9 @@ class Population(object):
 		if 'M' in voc_cfg.keys():
 			self._M = voc_cfg['M']
 			self._W = voc_cfg['W']
+		elif 'subvoc_cfg' in voc_cfg.keys() and 'M' in voc_cfg['subvoc_cfg'].keys():
+			self._M = voc_cfg['subvoc_cfg']['M']
+			self._W = voc_cfg['subvoc_cfg']['W']
 		self._strat_cfg = strat_cfg
 		self._agentpick_cfg = agentpick_cfg
 		self.agent_pick = get_agentpick(**agentpick_cfg)
@@ -82,7 +85,7 @@ class Population(object):
 			strat_cfg = self._strat_cfg
 		if sensor_cfg is None:
 			sensor_cfg = self._sensor_cfg
-		agent = Agent(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id)
+		agent = Agent(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id, env=self.env)
 		self.add_agent(agent)
 
 	def get_index_from_id(self, agent_id):

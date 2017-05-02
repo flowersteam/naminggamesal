@@ -1472,6 +1472,38 @@ FUNC = max_mem_conv
 graphconfig = {"ymin":max_mem_min}#,"ymax":max_mem_max}
 custom_max_mem_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
+
+#########max_N_d##########
+
+def max_N_d(exp,X=0,**kwargs):
+
+	mem = exp.db.get_graph(exp.uuid, method='N_d')#mem = exp.graph(method='Nlink')
+	return [max(mem._Y[0])]
+
+def max_N_d_min(exp):
+	return 0
+
+FUNC = max_N_d
+
+graphconfig = {"ymin":max_N_d_min}#,"ymax":max_N_d_max}
+custom_max_N_d =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########max_N_d_conv##########
+
+def max_N_d_conv(exp,X=0,thresh=1.,**kwargs):
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
+	sr = sr_gr._Y[0][-1]
+	if sr >= thresh:
+		return max_N_d(exp,X=X,**kwargs)
+	else:
+		return [np.nan]
+
+
+FUNC = max_N_d_conv
+
+graphconfig = {"ymin":max_N_d_min}#,"ymax":max_N_d_max}
+custom_max_N_d_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
 #########conv_time##########
 
 def conv_time(exp,X=0,thresh=1.,**kwargs):
@@ -1493,6 +1525,29 @@ FUNC = conv_time
 
 graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
 custom_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########max_N_d_time##########
+
+def max_N_d_time(exp,X=0,thresh=1.,**kwargs):
+	N_d_gr = exp.db.get_graph(exp.uuid, method='N_d')#exp.graph(method='srtheo')
+	N_d_vec = N_d_gr._Y[0]
+	val = max(N_d_vec)
+	for i in range(len(N_d_vec)-1):
+		if N_d_vec[i] == val:
+			return [sr_gr._X[0][i]]
+	return [np.nan]
+
+
+def max_N_d_time_max(exp):
+	return exp._T[-1]
+
+def max_N_d_time_min(exp):
+	return 0
+
+FUNC = max_N_d_time
+
+graphconfig = {"ymin":max_N_d_time_min,"ymax":max_N_d_time_max}
+custom_max_N_d_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########conv_time_plus_srtheo##########
 

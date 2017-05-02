@@ -15,13 +15,13 @@ from . import ngsensor
 from . import ngmem
 
 class Agent(object):
-	def __init__(self, voc_cfg, strat_cfg, sensor_cfg=None, memory_policies=[], agent_id=None):
+	def __init__(self, voc_cfg, strat_cfg, sensor_cfg=None, memory_policies=[], agent_id=None, env=None):
 		if agent_id is None:
 			self._id = str(uuid.uuid1())
 		else:
 			self._id = agent_id;
-		self._vocabulary = ngvoc.Vocabulary(**voc_cfg)
-		self._strategy = ngstrat.Strategy(**strat_cfg)
+		self._vocabulary = ngvoc.get_vocabulary(env=env,**voc_cfg)
+		self._strategy = ngstrat.get_strategy(**strat_cfg)
 		self.memory_policies = memory_policies
 		if hasattr(self._strategy,'memory_policies'):
 			for mp in self._strategy.memory_policies:
