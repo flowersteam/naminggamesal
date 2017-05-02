@@ -11,7 +11,8 @@ class Omniscient(Interaction):
 		matrix_pop = pop.get_content()
 		#matrix_hearer = hearer.get_vocabulary_content()
 		#speaker._memory.update({'pop':matrix_pop,'hearer':matrix_hearer})
-		speaker._memory.update({'success_mw':matrix_pop})
+		speaker._memory.update({'success_mw':matrix_pop,'failure_mw':np.zeros(matrix_pop.shape)})
+		hearer._memory.update({'success_mw':matrix_pop,'failure_mw':np.zeros(matrix_pop.shape)})
 		ms ,w = speaker.pick_mw()
 		if hearer._vocabulary.get_known_words(ms) == []:
 			mh = ms
