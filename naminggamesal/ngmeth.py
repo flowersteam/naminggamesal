@@ -1534,7 +1534,7 @@ def max_N_d_time(exp,X=0,thresh=1.,**kwargs):
 	val = max(N_d_vec)
 	for i in range(len(N_d_vec)-1):
 		if N_d_vec[i] == val:
-			return [sr_gr._X[0][i]]
+			return [N_d_gr._X[0][i]]
 	return [np.nan]
 
 
