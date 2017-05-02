@@ -14,6 +14,8 @@ import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
 from additional.sqlite_storage import add_data,read_data,xz_compress,xz_decompress
 
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
 
 
 class Poplist(object):
@@ -279,5 +281,12 @@ class Experiment(object):
 			tempgraph=tempgraph.func_of(tempgraph2)
 		return tempgraph
 
-
+	def animate(self,animation_type=None):
+		fig = plt.figure()
+		def anim_func(i):
+			t = self._T[i]
+			pop = self._poplist.get(T=t)
+			pop.draw(fig=fig, draw_type=animation_type)
+		ani = animation.FuncAnimation(fig, anim_func, blit=False, interval=10, repeat=False, frames=len(self._T))#, init_func=init)
+		return ani
 

@@ -17,6 +17,8 @@ class SpeakersChoice(Interaction):
 			speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
+		else:
+			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
 
 class SpeakersChoiceEpirob(Interaction):
 	def interact(self, speaker, hearer, pop,simulated=False):
@@ -33,6 +35,8 @@ class SpeakersChoiceEpirob(Interaction):
 				speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 				hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
+		else:
+			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
 
 
 
@@ -52,3 +56,5 @@ class SpeakersChoiceOmniscient(Interaction):
 			if bool_succ or pop.finalvoc.get_known_words(m=ms)[0] not in hearer._vocabulary.get_known_words(m=ms):
 				hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
+		else:
+			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]

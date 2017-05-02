@@ -16,6 +16,7 @@ from ..ngenv import get_environment
 from ..ngagentpicking import get_agentpick
 from ..ngevol import get_evolution
 
+import networkx as nx
 
 
 class Population(object):
@@ -221,4 +222,24 @@ class Population(object):
 			print str(self._agentlist[i])
 
 
+	def draw(self, draw_type=None, fig=None):
+		if fig is None:
+			fig = plt.figure()
 
+		plt.figure(fig.number)
+		
+		def color_of_node(m):
+			return (random.random(),random.random(),random.random())
+
+
+		G = self.env.meaning_graph
+		pos = nx.spring_layout(G)
+		node_list = G.nodes()
+		node_color = []
+		labels = {}
+		for m in node_list:
+			labels[m] = str(m)
+			node_color.append(color_of_node(m))
+
+		nx.draw_networkx_nodes(G,pos,nodelist=node_list,node_color=node_color,alpha=0.8)
+		nx.draw_networkx_edges(G,pos)#,width=1.0,alpha=0.5)
