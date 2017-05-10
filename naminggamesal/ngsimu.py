@@ -17,6 +17,7 @@ from additional.sqlite_storage import add_data,read_data,xz_compress,xz_decompre
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 
+import subprocess
 
 class Poplist(object):
 	def __init__(self,path,priority='decompressed'):
@@ -48,7 +49,8 @@ class Poplist(object):
 
 	def compress(self,rm=True):
 		#self.conn.commit()
-		xz_compress(self.filepath,rm=rm)
+		if os.path.exists(self.filepath):
+			xz_compress(self.filepath,rm=rm)
 
 	def __getstate__(self):
 		#self.conn.commit()
@@ -281,12 +283,34 @@ class Experiment(object):
 			tempgraph=tempgraph.func_of(tempgraph2)
 		return tempgraph
 
-	def animate(self,animation_type=None):
+	def old_animate(self,animation_type=None):#not working
 		fig = plt.figure()
 		def anim_func(i):
 			t = self._T[i]
 			pop = self._poplist.get(T=t)
-			pop.draw(fig=fig, draw_type=animation_type)
-		ani = animation.FuncAnimation(fig, anim_func, blit=False, interval=10, repeat=False, frames=len(self._T))#, init_func=init)
+			plt.clf()
+			return pop.draw()#fig=fig, draw_type=animation_type)
+		ani = animation.FuncAnimation(fig, anim_func, blit=False, interval=500, repeat=False, frames=len(self._T))#, init_func=init)
 		return ani
 
+
+	def second_animate(self,animation_type=None):
+		filenames = []
+		for t in self._T:
+			pop = self._poplist.get(T=t)
+			plt.clf()
+			pop.draw()
+			num = str(t)
+			plt.savefig('image'+num+'.png', format='png')
+			filenames.append('image'+num+'.png')
+		from scitools.std import movie
+		movie('*.png',fps=1,output_file='thisismygif.gif')
+		#subprocess.call('ffmpeg -f image2 -r 10 -i image%07d.png -vcodec mpeg4 -y movie.mp4')
+
+
+
+	def animate(self,animation_type=None):
+		for t in self._T:
+			pop = self._poplist.get(T=t)
+			G = pop.draw(write=False)
+			num = str(t)

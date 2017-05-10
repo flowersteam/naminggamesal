@@ -23,3 +23,12 @@ class GlobalSuccessEpirob(object):
 			return True
 		else:
 			return False
+
+
+class GlobalSuccessNoRandom(object):
+
+	def eval(self, ms, w, mh, voc, strategy, context=[]):
+		if ms == mh and ms in voc.get_known_meanings(w):
+			return True
+		else:
+			return False

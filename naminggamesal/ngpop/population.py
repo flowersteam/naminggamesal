@@ -222,24 +222,47 @@ class Population(object):
 			print str(self._agentlist[i])
 
 
-	def draw(self, draw_type=None, fig=None):
+	def draw(self, draw_type=None, fig=None,write=True):
 		if fig is None:
 			fig = plt.figure()
 
 		plt.figure(fig.number)
-		
+
 		def color_of_node(m):
-			return (random.random(),random.random(),random.random())
+			nag = 0
+			for ag in self._agentlist:
+				if m in ag._vocabulary.get_known_meanings():
+					nag += 1
+				ag._vocabulary.del_cache()
+			val = nag/float(len(self._agentlist))
+			if val == 0:
+				return (1,0,0)
+			elif val == 1.:
+				return (0,1,0)
+			else:
+				return (1-val,1-val,1)
+			#return (random.random(),random.random(),random.random())
 
 
 		G = self.env.meaning_graph
-		pos = nx.spring_layout(G)
+		pos = self.env.meaning_graph_pos#nx.spring_layout(G)
 		node_list = G.nodes()
 		node_color = []
 		labels = {}
 		for m in node_list:
 			labels[m] = str(m)
-			node_color.append(color_of_node(m))
+			col = color_of_node(m)
+			node_color.append(col)
+			G.node[m]['viz'] = {'color':{'r':int(col[0]*255),'g':int(col[1]*255),'b':int(col[2]*255),'a':int(0.8*255)}}
 
-		nx.draw_networkx_nodes(G,pos,nodelist=node_list,node_color=node_color,alpha=0.8)
-		nx.draw_networkx_edges(G,pos)#,width=1.0,alpha=0.5)
+		#plt.clf()
+		#plt.ion()
+		#plt.axes('off')
+		art1 = nx.draw_networkx_edges(G,pos)#,width=1.0,alpha=0.5)
+		art2 = nx.draw_networkx_nodes(G,pos,nodelist=node_list,node_color=node_color,alpha=0.8)
+
+		if write:
+			nx.write_gexf(G,'test.gexf')
+
+		return G
+
