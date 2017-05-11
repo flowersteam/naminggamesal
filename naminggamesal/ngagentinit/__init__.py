@@ -3,7 +3,7 @@ import random
 import numpy as np
 from importlib import import_module
 
-#####Classe de base
+
 agent_init_class={
 	'agent_init':'agent_init.AgentInit',
 	'own_words':'own_conventions.OwnWordsInit',
