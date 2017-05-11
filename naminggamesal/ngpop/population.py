@@ -14,6 +14,7 @@ from ..nginter import get_interaction
 from ..ngtopology import get_topology
 from ..ngenv import get_environment
 from ..ngagentpicking import get_agentpick
+from ..ngagentinit import get_agent_init
 from ..ngevol import get_evolution
 
 import networkx as nx
@@ -21,7 +22,7 @@ import networkx as nx
 
 class Population(object):
 
-	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent, evolution_cfg={'evolution_type':'idle'}, agentpick_cfg={'agentpick_type':'random_pick'}, sensor_cfg=None, env_cfg=None,topology_cfg={'topology_type':'full_graph'}):
+	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent, agent_init_cfg={'agent_init_type':'nothing'}, evolution_cfg={'evolution_type':'idle'}, agentpick_cfg={'agentpick_type':'random_pick'}, sensor_cfg=None, env_cfg=None,topology_cfg={'topology_type':'full_graph'}):
 		self._size = 0
 		self._voc_cfg = voc_cfg
 		if 'M' in voc_cfg.keys():
@@ -31,6 +32,8 @@ class Population(object):
 			self._M = voc_cfg['subvoc_cfg']['M']
 			self._W = voc_cfg['subvoc_cfg']['W']
 		self._strat_cfg = strat_cfg
+		self._agent_init_cfg = agent_init_cfg
+		self.agent_init = get_agent_init(**agent_init_cfg)
 		self._agentpick_cfg = agentpick_cfg
 		self.agent_pick = get_agentpick(**agentpick_cfg)
 		self._sensor_cfg = sensor_cfg
@@ -86,7 +89,9 @@ class Population(object):
 			strat_cfg = self._strat_cfg
 		if sensor_cfg is None:
 			sensor_cfg = self._sensor_cfg
-		agent = Agent(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id, env=self.env)
+		new_cfg = self.agent_init.modify_cfg(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id, env=self.env)
+		agent = Agent(**new_cfg)
+		self.agent_init.modify_agent(agent)
 		self.add_agent(agent)
 
 	def get_index_from_id(self, agent_id):

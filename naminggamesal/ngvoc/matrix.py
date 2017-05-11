@@ -25,7 +25,7 @@ class VocMatrix(BaseVocabulary):
 		self._content=np.matrix(np.zeros((self._M,self._W)))
 		if start == 'completed':
 			self.complete_empty()
-
+			
 	@del_cache
 	def fill(self):
 		for i in range(0,self._M):
@@ -175,7 +175,10 @@ class VocMatrix(BaseVocabulary):
 		return m
 
 	def get_new_unknown_w(self):
-		if not len(self.get_known_words()) == self._W:
+		if hasattr(self,'next_word'):
+			w = self.next_word
+			delattr(self,'next_word')
+		elif not len(self.get_known_words()) == self._W:
 			w = random.choice(self.get_unknown_words())
 		else:
 			#print "tried to get new w but all are known"
