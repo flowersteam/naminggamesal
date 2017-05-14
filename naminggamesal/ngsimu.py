@@ -203,6 +203,8 @@ class Experiment(object):
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def continue_exp(self,dT=None):
+		if not self._T:
+			self.add_pop(Population(**pop_cfg),0)
 		if dT is None:
 			dT = self.stepfun(self._T[-1])
 		self.continue_exp_until(self._T[-1]+dT)
