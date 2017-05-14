@@ -447,7 +447,7 @@ class Experiment(ngsimu.Experiment):
 
 	def continue_exp(self,dT=None, autocommit=True):
 		if not self._T:
-			self.add_pop(ngsimu.Population(**pop_cfg),0)
+			self.add_pop(ngsimu.Population(**self._pop_cfg),0)
 		if dT is None:
 			dT = self.stepfun(self._T[-1])
 		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit)
