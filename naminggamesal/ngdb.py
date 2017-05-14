@@ -325,18 +325,26 @@ class NamingGamesDB(object):
 			raise
 		tempmodiftup = self.cursor.fetchone()
 		if not tempmodiftup:
+			if not exp._exec_time:
+				exec_time = -1
+			else:
+				exec_time = exp._exec_time[-1]
+			if not exp._T:
+				T = -1
+			else:
+				T = exp._T[-1]
 			self.cursor.execute("INSERT INTO main_table VALUES(?,?,?,?,?,?,?,?)", (\
 				exp.uuid, \
 				exp.init_time, \
 				exp.modif_time, \
-				exp._exec_time[-1], \
+				exec_time, \
 				json.dumps({'pop_cfg':exp._pop_cfg, 'step':exp._time_step}, sort_keys=True), \
 		#		exp._voctype, \
 		#		exp._strat["strattype"], \
 		#		exp._M, \
 		#		exp._W, \
 		#		exp._nbagent, \
-				exp._T[-1], \
+				T, \
 				exp._time_step, \
 				binary,))
 		#elif tempmodiftup[0]<exp.modif_time:

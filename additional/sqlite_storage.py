@@ -65,7 +65,20 @@ def add_data_conn(cursor,filepath,data,label):
 				+"Population_object BLOB)")
 	cursor.execute("INSERT INTO main_table VALUES (?,?)",(label,sql.Binary(lz_data)))
 
-
+def init_db(filepath):
+	try:
+		os.makedirs(os.path.dirname(filepath))
+	except OSError as exc:
+		if exc.errno == errno.EEXIST and os.path.isdir(os.path.dirname(filepath)):
+			pass
+		else:
+			raise
+	conn = sql.connect(filepath)
+	with conn:
+		cursor = conn.cursor()
+		cursor.execute("CREATE TABLE IF NOT EXISTS main_table("\
+				+"T INT, "\
+				+"Population_object BLOB)")
 
 def read_data_conn(cursor,filepath,label=None):
 	if not os.path.isfile(filepath):#

@@ -26,8 +26,12 @@ class Poplist(object):
 		#if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Old Policy: if both compressed and uncompressed versions present, erase uncompressed
 			#os.remove(self.filepath)
 		self.pop = None
+		self.init_db()
 		#self.conn = sqlite3.connect(self.filepath)
 		#self.cursor = self.conn.cursor()
+
+	def init_db(self):
+		init_db(filepath=self.filepath)
 
 	def append(self,pop,T,priority=None):
 		if priority is None:
@@ -81,7 +85,7 @@ class Experiment(object):
 		self._pop_cfg = pop_cfg
 		self.uuid = str(uuid.uuid1())
 		self._poplist = Poplist('data/' + self.uuid + '.db')
-		self.add_pop(Population(**pop_cfg),0)
+		#self.add_pop(Population(**pop_cfg),0)
 		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.reconstruct_info = []
@@ -183,6 +187,8 @@ class Experiment(object):
 		return "T: "+str(self._T[-1])+"\n"+str(self._poplist.get(self._T[-1]))
 
 	def continue_exp_until(self,T):
+		if not self._T:
+			self.add_pop(Population(**pop_cfg),0)
 		temptmax = self._T[-1]
 		start_time = time.clock() - self._exec_time[-1]
 		while (temptmax + self.stepfun(temptmax) <= T) :
