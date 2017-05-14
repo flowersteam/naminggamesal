@@ -12,7 +12,7 @@ from .ngpop import Population
 from . import ngmeth
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
-from additional.sqlite_storage import add_data,read_data,xz_compress,xz_decompress
+from additional.sqlite_storage import add_data,read_data,xz_compress,xz_decompress,init_db
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
