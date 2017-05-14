@@ -2,7 +2,7 @@ import copy
 
 class AgentInit(object):
 
-	def __init__(self,agent_init_type):
+	def __init__(self):
 		pass
 
 	def modify_cfg(self, **ag_cfg):
