@@ -22,7 +22,7 @@ import networkx as nx
 
 class Population(object):
 
-	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent, agent_init_cfg={'agent_init_type':'nothing'}, evolution_cfg={'evolution_type':'idle'}, agentpick_cfg={'agentpick_type':'random_pick'}, sensor_cfg=None, env_cfg=None,topology_cfg={'topology_type':'full_graph'}):
+	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent, agent_init_cfg={'agent_init_type':'agent_init'}, evolution_cfg={'evolution_type':'idle'}, agentpick_cfg={'agentpick_type':'random_pick'}, sensor_cfg=None, env_cfg=None,topology_cfg={'topology_type':'full_graph'}):
 		self._size = 0
 		self._voc_cfg = voc_cfg
 		if 'M' in voc_cfg.keys():
