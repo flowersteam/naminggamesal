@@ -316,6 +316,14 @@ class NamingGamesDB(object):
 
 	def commit(self,exp):
 		binary=sql.Binary(lzo.compress(cPickle.dumps(exp,cPickle.HIGHEST_PROTOCOL)))
+		if not exp._exec_time:
+			exec_time = -1
+		else:
+			exec_time = exp._exec_time[-1]
+		if not exp._T:
+			T = -1
+		else:
+			T = exp._T[-1]
 		try:
 			self.cursor.execute("SELECT Tmax FROM main_table WHERE Id=\'"+exp.uuid+"\'")
 		except:
@@ -325,14 +333,7 @@ class NamingGamesDB(object):
 			raise
 		tempmodiftup = self.cursor.fetchone()
 		if not tempmodiftup:
-			if not exp._exec_time:
-				exec_time = -1
-			else:
-				exec_time = exp._exec_time[-1]
-			if not exp._T:
-				T = -1
-			else:
-				T = exp._T[-1]
+
 			self.cursor.execute("INSERT INTO main_table VALUES(?,?,?,?,?,?,?,?)", (\
 				exp.uuid, \
 				exp.init_time, \
@@ -348,11 +349,11 @@ class NamingGamesDB(object):
 				exp._time_step, \
 				binary,))
 		#elif tempmodiftup[0]<exp.modif_time:
-		elif tempmodiftup[0]<exp._T[-1]:
+		elif tempmodiftup[0]<T:
 			self.cursor.execute("UPDATE main_table SET "\
 				+"Modif_Time=\'"+str(exp.modif_time)+"\', "\
-				+"Exec_Time=\'"+str(exp._exec_time[-1])+"\', "\
-				+"Tmax=\'"+str(exp._T[-1])+"\', "\
+				+"Exec_Time=\'"+str(exec_time)+"\', "\
+				+"Tmax=\'"+str(T)+"\', "\
 				+"step=\'"+str(exp._time_step)+"\', "\
 				+"Experiment_object=? WHERE Id=\'"+str(exp.uuid)+"\'",(binary,))
 		self.connection.commit()
