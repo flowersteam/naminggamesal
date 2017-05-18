@@ -49,6 +49,8 @@ strat_class={
 	'last_result':'last_result.StratLastResult',
 	'omniscient':'omniscient.StratOmniscient',
 
+	'tsrmax':'tsrmax.StratTSRMax',
+
 	#'betadecrease':'beta_decrease.BetaDecreaseStrat'
 }
 

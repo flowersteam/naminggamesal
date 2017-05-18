@@ -5,3 +5,7 @@ importlib
 seaborn
 matplotlib
 intervaltree
+backports.lzma
+python-lzo
+sqlitebck
+networkx
