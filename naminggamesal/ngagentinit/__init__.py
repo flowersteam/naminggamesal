@@ -7,6 +7,7 @@ from importlib import import_module
 agent_init_class={
 	'agent_init':'agent_init.AgentInit',
 	'own_words':'own_conventions.OwnWordsInit',
+	'converged':'converged.Converged',
 }
 
 def get_agent_init(agent_init_type='agent_init', **agent_init_cfg2):

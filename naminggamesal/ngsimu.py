@@ -5,6 +5,8 @@ import uuid
 import sqlite3
 import os
 
+import gexf
+
 from copy import deepcopy
 import cPickle
 
@@ -16,6 +18,8 @@ from additional.sqlite_storage import add_data,read_data,xz_compress,xz_decompre
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import numpy as np
 
 import subprocess
 
@@ -318,7 +322,52 @@ class Experiment(object):
 
 
 	def animate(self,animation_type=None):
-		for t in self._T:
+		pop = self._poplist.get(T=0)
+		gexf_elt = gexf.Gexf('William Schueller','Naming Games AL')
+		G = gexf_elt.addGraph('undirected','dynamic','meaning space exploration')
+
+		def color_of_node(pop,m):
+			nag = 0
+			for ag in pop._agentlist:
+				if m in ag._vocabulary.get_known_meanings():
+					nag += 1
+				ag._vocabulary.del_cache()
+			val = nag/float(len(pop._agentlist))
+			if val == 0:
+				return (1,0,0)
+			elif val == 1.:
+				return (0,1,0)
+			else:
+				return (1-val,1-val,1)
+
+		pop = self._poplist.get(T=0)
+		mG = pop.env.meaning_graph
+		node_list = mG.nodes()
+		edge_list = mG.edges()
+		for m in node_list:
+			G.addNode(m,m)
+		e_id = 0
+		for e in edge_list:
+			G.addEdge(e_id,*e)
+			e_id += 1
+		id_col = G.addNodeAttribute('node_color','',mode='dynamic',type='string',force_id='color')
+		id_col2 = G.addNodeAttribute('colorfloat','',mode='dynamic',type='float')
+		for t_index in range(len(self._T)-1):
+			t = self._T[t_index+1]
+			t_m = self._T[t_index]
+			lt = np.log(self._T[t_index+1])
+			lt_m = np.log(self._T[t_index])
 			pop = self._poplist.get(T=t)
-			G = pop.draw(write=False)
-			num = str(t)
+
+			for m in node_list:
+				col = color_of_node(pop,m)
+				color = str(colors.rgb2hex(col))
+				#color = str(col)
+				#color = str(col[0])
+				G._nodes[m].addAttribute(id=id_col,value=color)#,start=str(float(t_m)),end=str(float(t)))
+				G._nodes[m].addAttribute(id=id_col2,value=str(col[0]*255),start=str(float(lt_m)),end=str(float(lt)))
+		with open("helloworld.gexf","w") as output_file:
+			output_file.write("<?xml version='1.0' encoding='utf-8'?>\n")
+			gexf_elt.write(output_file)
+		raise IOError
+
