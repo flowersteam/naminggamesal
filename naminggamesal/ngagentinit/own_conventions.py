@@ -8,6 +8,6 @@ class OwnWordsInit(AgentInit):
 		else:
 			self.W_l = W_l
 
-	def modify_agent(self,agent):
+	def modify_agent(self,agent,pop_init=False):
 		if self.W_l:
 			agent._vocabulary.next_word = self.W_l.pop(0)

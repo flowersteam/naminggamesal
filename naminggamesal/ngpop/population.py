@@ -52,7 +52,7 @@ class Population(object):
 		self._past = []
 		self._agentlist = []
 		for i in range(nbagent):
-			self.add_new_agent(agent_id=None, strat_cfg=strat_cfg, voc_cfg=voc_cfg, sensor_cfg=sensor_cfg)
+			self.add_new_agent(agent_id=None, strat_cfg=strat_cfg, voc_cfg=voc_cfg, sensor_cfg=sensor_cfg, pop_init=True)
 		self._topology = get_topology(pop=self,**topology_cfg)
 
 
@@ -82,16 +82,16 @@ class Population(object):
 			tempid=max(tempid,self._agentlist[i].get_id())
 		return tempid
 
-	def add_new_agent(self, voc_cfg=None, strat_cfg=None, sensor_cfg=None, agent_id=None):
+	def add_new_agent(self, voc_cfg=None, strat_cfg=None, sensor_cfg=None, agent_id=None, pop_init=False):
 		if voc_cfg is None:
 			voc_cfg = self._voc_cfg
 		if strat_cfg is None:
 			strat_cfg = self._strat_cfg
 		if sensor_cfg is None:
 			sensor_cfg = self._sensor_cfg
-		new_cfg = self.agent_init.modify_cfg(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id, env=self.env)
+		new_cfg = self.agent_init.modify_cfg(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id, env=self.env,pop_init=pop_init)
 		agent = Agent(**new_cfg)
-		self.agent_init.modify_agent(agent)
+		self.agent_init.modify_agent(agent,pop_init=pop_init)
 		self.add_agent(agent)
 
 	def get_index_from_id(self, agent_id):
