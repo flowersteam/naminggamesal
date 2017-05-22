@@ -1526,6 +1526,30 @@ FUNC = conv_time
 graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
 custom_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
+#########block_time##########
+
+def block_time(exp,X=0,**kwargs):
+	Nd_gr = exp.db.get_graph(exp.uuid, method='N_d')#exp.graph(method='srtheo')
+	Nd = Nd_gr._Y[0]
+	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')#exp.graph(method='srtheo')
+	Nm = Nm_gr._Y[0]
+	M = N_meanings_max(exp._poplist.get_last())
+	for i in range(len(sr)):
+		if Nm[i] == M and Nd == M:
+			return [Nd_gr._X[0][i]]
+	return [np.nan]
+
+def block_time_max(exp):
+	return exp._T[-1]
+
+def block_time_min(exp):
+	return 0
+
+FUNC = block_time
+
+graphconfig = {"ymin":block_time_min,"ymax":block_time_max}
+custom_block_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
 #########max_N_d_time##########
 
 def max_N_d_time(exp,X=0,thresh=1.,**kwargs):

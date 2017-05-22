@@ -340,6 +340,14 @@ class Experiment(object):
 			else:
 				return (1-val,1-val,1)
 
+		def transform_color(col_val):
+			if col_val == 0:
+				return 0
+			elif col_val == 1.:
+				return 1
+			elif 0 < col_val < 1.:
+				return 0.5 + col_val*0.3
+
 		pop = self._poplist.get(T=0)
 		mG = pop.env.meaning_graph
 		node_list = mG.nodes()
@@ -352,20 +360,23 @@ class Experiment(object):
 			e_id += 1
 		id_col = G.addNodeAttribute('node_color','',mode='dynamic',type='string',force_id='color')
 		id_col2 = G.addNodeAttribute('colorfloat','',mode='dynamic',type='float')
+		id_col3 = G.addNodeAttribute('4color','',mode='dynamic',type='float')
 		for t_index in range(len(self._T)-1):
 			t = self._T[t_index+1]
 			t_m = self._T[t_index]
 			lt = np.log(self._T[t_index+1])
 			lt_m = np.log(self._T[t_index])
 			pop = self._poplist.get(T=t)
-
+			t1 = t_m
+			t2 = t
 			for m in node_list:
 				col = color_of_node(pop,m)
 				color = str(colors.rgb2hex(col))
 				#color = str(col)
 				#color = str(col[0])
 				G._nodes[m].addAttribute(id=id_col,value=color)#,start=str(float(t_m)),end=str(float(t)))
-				G._nodes[m].addAttribute(id=id_col2,value=str(col[0]*255),start=str(float(lt_m)),end=str(float(lt)))
+				G._nodes[m].addAttribute(id=id_col2,value=str(col[0]*255),start=str(float(t1)),end=str(float(t2)))
+				G._nodes[m].addAttribute(id=id_col3,value=str(transform_color(1-col[0])*255),start=str(float(t1)),end=str(float(t2)))
 		with open("helloworld.gexf","w") as output_file:
 			output_file.write("<?xml version='1.0' encoding='utf-8'?>\n")
 			gexf_elt.write(output_file)
