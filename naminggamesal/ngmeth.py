@@ -128,6 +128,42 @@ FUNC=new_entropy
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":new_entropy_min}#,"ymax":new_entropy_max}
 custom_new_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+#########entropy_time_scale##########
+
+def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,**kwargs):
+	if mem is None:
+		mem = agent._memory
+		if voc is None:
+			voc = agent._vocabulary
+	entr = 0
+
+	if m is None:
+		mat = mem['interaction_count_m']
+	else:
+		mat = mem['interaction_count_m'][m,:]
+	entr +=  scipy.special.entr(mat).sum()
+
+	if w is None:
+		mat = mem['interaction_count_w']
+	else:
+		mat = mem['interaction_count_w'][:,w]
+	entr +=  scipy.special.entr(mat).sum()
+
+	return entr
+
+
+
+
+#def entropy_time_scale_max(pop):
+#	return 1
+
+def entropy_time_scale_min(pop):
+	return 0
+
+FUNC=entropy_time_scale
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":entropy_time_scale_min}#,"ymax":entropy_time_scale_max}
+custom_entropy_time_scale=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 #########new_entropy_success##########
 
 def new_entropy_success(agent=None,mem=None,voc=None,**kwargs):
@@ -1047,7 +1083,7 @@ custom_cat_agreement=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########srtheo##########
 
-def srtheo(pop,**kwargs):
+def srtheo(pop, m=None, **kwargs):
 	fail=0
 	succ=0
 	for i in range(100):
@@ -1055,15 +1091,18 @@ def srtheo(pop,**kwargs):
 		agent2_id = pop.pick_hearer(agent1_id)
 		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
 		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
-		ms = agent1._vocabulary.get_random_m()
+		if m is None:
+			ms = agent1._vocabulary.get_random_m()
+		else:
+			ms = m
 		w = agent1._vocabulary.get_random_known_w(m=ms)
 		mh = agent2._vocabulary.get_random_known_m(w=w)
-		agent1._vocabulary.del_cache()
-		agent2._vocabulary.del_cache()
 		if agent2.eval_success(ms=ms, w=w, mh=mh):
 			succ += 1
 		else:
 			fail += 1
+		agent1._vocabulary.del_cache()
+		agent2._vocabulary.del_cache()
 	return succ/float(succ+fail)
 
 def srtheo_max(pop):
@@ -1842,23 +1881,57 @@ def edgevalue_distrib(pop,**kwargs):
 #==================
 
 
-def srtheo_voc(voc1,voc2,role='both'):
+def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=True,renorm_fact=None,role='both'):
 	ans = 0.
 	if role == 'both' or role == 'hearer':
 		m1 = copy.deepcopy(voc1)
-		m2 = copy.deepcopy(voc2)
-		m1 = m1 / np.linalg.norm(m1, axis=0, ord=1,keepdims=True)
-		m2 = m2 / np.linalg.norm(m2, axis=1, ord=1,keepdims=True)
+		if voc2 is not None:
+			m2 = copy.deepcopy(voc2)
+		else:
+			m2 = copy.deepcopy(voc2_m)
+
+		if m is not None:
+			m2 = m2[m,:]
+			m1 = m1[m,:]
+		if w is not None:
+			m1 = m1[:,w]
+			m2 = m2[:,w]
+
+		if renorm:
+			if reform_fact is None:
+				m1 = m1 / np.linalg.norm(m1, axis=0, ord=1,keepdims=True)
+				m2 = m2 / np.linalg.norm(m2, axis=1, ord=1,keepdims=True)
+			else:
+				m1 = m1 / renorm_fact
+				m2 = m2 / renorm_fact
 		mult = np.multiply(m1,m2)
 		ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
 	if role == 'both' or role == 'speaker':
 		m1 = copy.deepcopy(voc1)
-		m2 = copy.deepcopy(voc2)
-		m1 = m1 / np.linalg.norm(m1, axis=1, ord=1,keepdims=True)
-		m2 = m2 / np.linalg.norm(m2, axis=0, ord=1,keepdims=True)
+		if voc2 is not None:
+			m2 = copy.deepcopy(voc2)
+		else:
+			m2 = copy.deepcopy(voc2_w)
+
+		if m is not None:
+			m2 = m2[m,:]
+			m1 = m1[m,:]
+		if w is not None:
+			m1 = m1[:,w]
+			m2 = m2[:,w]
+
+		if renorm:
+			if reform_fact is None:
+				m1 = m1 / np.linalg.norm(m1, axis=1, ord=1,keepdims=True)
+				m2 = m2 / np.linalg.norm(m2, axis=0, ord=1,keepdims=True)
+			else:
+				m1 = m1 / renorm_fact
+				m2 = m2 / renorm_fact
 		mult = np.multiply(m1,m2)
 		ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
 	if role == 'both':
 		return ans/2.
 	else:
 		return ans
+
+#==================

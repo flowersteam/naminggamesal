@@ -174,3 +174,67 @@ class TimeDecreaseSuccessCountPerMWMP(TimeWeightedSuccessCountPerMWMP):
 			mem["success_mw"][m1, w] = previous_val[0]*self.factor + 1.
 		else:
 			mem["fail_mw"][m1, w] = previous_val[1]*self.factor + 1.
+
+
+class InteractionCounts(MemoryPolicy):
+
+	def __init__(self,mem_type,time_scale=100,epsilon=0.01):
+		MemoryPolicy.__init__(self,mem_type=mem_type)
+		self.time_scale = time_scale
+		if time_scale == 0.:
+			self.factor = 0.
+		else:
+			self.factor = np.exp(1./self.time_scale)
+		self.epsilon = epsilon
+		self.valmax = 1
+
+
+	def init_memory(self,mem,voc):
+		assert not hasattr(mem,'interact_count_m')
+		assert not hasattr(mem,'interact_count_w')
+		mem['interact_count_m'] = np.zeros((voc._M,voc._W))
+		mem['interact_count_w'] = np.zeros((voc._M,voc._W))
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		m1 = ms
+		for a in [mem["interact_count_m"][m,:],mem["interact_count_w"][:,w]]:
+			a *= self.factor
+			a[:] = np.where(a>self.epsilon,a,0.)
+			if hasattr(a,'eliminate_zeros'):
+				a.eliminate_zeros()
+		mem['interact_count_w'][m1,w] += 1.-self.factor
+		mem['interact_count_m'][m1,w] += 1.-self.factor
+
+	def change_time_scale(self,new_time_scale):
+		self.time_scale = new_time_scale
+		if time_scale == 0.:
+			self.factor = 0.
+		else:
+			self.factor = np.exp(1./self.time_scale)
+
+
+class InteractionCountsSlidingWindow(InteractionCounts):
+
+	def __init__(self,mem_type,time_scale=100):
+		MemoryPolicy.__init__(self,mem_type=mem_type)
+		self.time_scale = time_scale
+		self.valmax = self.time_scale
+
+	def init_memory(self,mem,voc):
+		InteractionCounts.init_memory(self,mem,voc)
+		assert not hasattr(mem,'past_interactions_sliding_window')
+		mem['past_interactions_sliding_window'] = []
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		mem['past_interactions_sliding_window'].append((ms,w))
+		mem['interact_count_w'][ms,w] += 1.
+		mem['interact_count_m'][ms,w] += 1.
+		while len(mem['past_interactions_sliding_window'])>self.time_scale:
+			m0,w0 = mem['past_interactions_sliding_window'].pop(0)
+			mem['interact_count_w'][m0,w0] -= 1.
+			mem['interact_count_m'][m0,w0] -= 1.
+
+	def change_time_scale(self,new_time_scale):
+		self.time_scale = new_time_scale
+		self.valmax = self.time_scale
+

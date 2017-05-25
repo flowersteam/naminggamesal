@@ -12,7 +12,9 @@ mempolicy_class={
 'timeweighted_successcount_permw':'memory_policies.TimeWeightedSuccessCountPerMWMP',
 'timedecrease_successcount_permw':'memory_policies.TimeDecreaseSuccessCountPerMWMP',
 'timedecrease_successcount_perm':'memory_policies.TimeDecreaseSuccessCountPerMMP',
-'lastresult':'memory_policies.LastResultMP'
+'lastresult':'memory_policies.LastResultMP',
+'interaction_counts':'memory_policies.InteractionCounts'
+'interaction_counts_sliding_window':'memory_policies.InteractionCountsSlidingWindow'
 }
 
 def get_memory(memory_policies,voc=None):

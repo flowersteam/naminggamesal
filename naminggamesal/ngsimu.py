@@ -321,7 +321,7 @@ class Experiment(object):
 
 
 
-	def animate(self,animation_type=None):
+	def export_graph(self,filename=None):
 		pop = self._poplist.get(T=0)
 		gexf_elt = gexf.Gexf('William Schueller','Naming Games AL')
 		G = gexf_elt.addGraph('undirected','dynamic','meaning space exploration')
@@ -361,6 +361,7 @@ class Experiment(object):
 		id_col = G.addNodeAttribute('node_color','',mode='dynamic',type='string',force_id='color')
 		id_col2 = G.addNodeAttribute('colorfloat','',mode='dynamic',type='float')
 		id_col3 = G.addNodeAttribute('4color','',mode='dynamic',type='float')
+		id_col4 = G.addNodeAttribute('srtheo','',mode='dynamic',type='float')
 		for t_index in range(len(self._T)-1):
 			t = self._T[t_index+1]
 			t_m = self._T[t_index]
@@ -371,14 +372,19 @@ class Experiment(object):
 			t2 = t
 			for m in node_list:
 				col = color_of_node(pop,m)
+				colsrtheo = ngmeth.srtheo(pop=pop,m=m)
 				color = str(colors.rgb2hex(col))
 				#color = str(col)
 				#color = str(col[0])
 				G._nodes[m].addAttribute(id=id_col,value=color)#,start=str(float(t_m)),end=str(float(t)))
-				G._nodes[m].addAttribute(id=id_col2,value=str(col[0]*255),start=str(float(t1)),end=str(float(t2)))
-				G._nodes[m].addAttribute(id=id_col3,value=str(transform_color(1-col[0])*255),start=str(float(t1)),end=str(float(t2)))
-		with open("helloworld.gexf","w") as output_file:
+				G._nodes[m].addAttribute(id=id_col2,value=str(1-col[0]),start=str(float(t1)),end=str(float(t2)))
+				G._nodes[m].addAttribute(id=id_col3,value=str(transform_color(1-col[0])),start=str(float(t1)),end=str(float(t2)))
+				G._nodes[m].addAttribute(id=id_col4,value=str(colsrtheo),start=str(float(t1)),end=str(float(t2)))
+		if filename is None:
+			filename = str(uuid.uuid1())
+		if len(filename)<5 or filename[-5:]!='.gexf':
+			filename = filename + '.gexf'
+		with open(filename,"w") as output_file:
 			output_file.write("<?xml version='1.0' encoding='utf-8'?>\n")
 			gexf_elt.write(output_file)
-		raise IOError
 
