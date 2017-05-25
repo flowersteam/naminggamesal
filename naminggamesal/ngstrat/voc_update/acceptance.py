@@ -115,7 +115,7 @@ class AcceptanceTSMax(AcceptancePolicy):
 			role = self.role
 		return ngmeth.srtheo_voc(voc1,pop_voc,role=role) <= ngmeth.srtheo_voc(voc2,pop_voc,role=role)
 
-class AcceptanceTSMax_new(AcceptancePolicy):
+class AcceptanceTSMaxNew(AcceptancePolicy):
 
 	def __init__(self,mem_policy={'mem_type':'interaction_counts'},role='both',**cfg2):
 		AcceptancePolicy.__init__(self,**cfg2)

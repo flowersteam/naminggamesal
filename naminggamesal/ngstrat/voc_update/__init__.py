@@ -29,6 +29,7 @@ vu_class={
 	'acceptance_beta':'acceptance.AcceptanceBeta',
 	'acceptance_betadecrease':'acceptance.AcceptanceBetaDecrease',
 	'acceptance_tsmax':'acceptance.AcceptanceTSMax',
+	'acceptance_tsmax_new':'acceptance.AcceptanceTSMaxNew',
 	'acceptance_entropy':'acceptance.AcceptanceEntropy',
 	'acceptance_entropybeta':'acceptance.AcceptanceEntropyBeta',
 	'acceptance_vocrelatedentropy':'acceptance.AcceptanceVocRelatedEntropy',
