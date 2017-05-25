@@ -201,8 +201,9 @@ class InteractionCounts(MemoryPolicy):
 			a[:] = np.where(a>self.epsilon,a,0.)
 			if hasattr(a,'eliminate_zeros'):
 				a.eliminate_zeros()
-		mem['interact_count_w'][ms,w] += 1.-self.factor
-		mem['interact_count_m'][ms,w] += 1.-self.factor
+		if self.factor > 0:
+			mem['interact_count_w'][ms,w] += 1.-self.factor
+			mem['interact_count_m'][ms,w] += 1.-self.factor
 
 	def change_time_scale(self,new_time_scale):
 		self.time_scale = new_time_scale
@@ -224,13 +225,14 @@ class InteractionCountsSlidingWindow(InteractionCounts):
 		mem['past_interactions_sliding_window'] = []
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
-		mem['past_interactions_sliding_window'].append((ms,w,1./self.time_scale))
-		mem['interact_count_w'][ms,w] += 1./self.time_scale
-		mem['interact_count_m'][ms,w] += 1./self.time_scale
+		if self.time_scale > 0:
+			mem['past_interactions_sliding_window'].append((ms,w,1./self.time_scale))
+			mem['interact_count_w'][ms,w] += 1./self.time_scale
+			mem['interact_count_m'][ms,w] += 1./self.time_scale
 		while len(mem['past_interactions_sliding_window'])>self.time_scale:
 			m0,w0,val = mem['past_interactions_sliding_window'].pop(0)
-			mem['interact_count_w'][m0,w0] -= val
-			mem['interact_count_m'][m0,w0] -= val
+			mem['interact_count_w'][m0,w0] = max(mem['interact_count_w'][m0,w0] - val , 0)
+			mem['interact_count_m'][m0,w0] = max(mem['interact_count_m'][m0,w0] - val , 0)
 
 	def change_time_scale(self,new_time_scale):
 		self.time_scale = new_time_scale
