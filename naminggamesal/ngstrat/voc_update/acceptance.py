@@ -124,8 +124,8 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
 		mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
-		pop_voc_m = mem_new['interaction_counts_m']
-		pop_voc_w = mem_new['interaction_counts_w']
+		pop_voc_m = mem_new['interact_count_m']
+		pop_voc_w = mem_new['interact_count_w']
 		voc1 = copy.deepcopy(voc._content)
 		voc_new = copy.deepcopy(voc)
 		if role == 'hearer':
