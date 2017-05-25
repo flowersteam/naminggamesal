@@ -178,13 +178,13 @@ class TimeDecreaseSuccessCountPerMWMP(TimeWeightedSuccessCountPerMWMP):
 
 class InteractionCounts(MemoryPolicy):
 
-	def __init__(self,mem_type,time_scale=100,epsilon=0.01):
+	def __init__(self,mem_type,time_scale=100,epsilon=0.):
 		MemoryPolicy.__init__(self,mem_type=mem_type)
 		self.time_scale = time_scale
 		if time_scale == 0.:
 			self.factor = 0.
 		else:
-			self.factor = np.exp(1./self.time_scale)
+			self.factor = np.exp(-1./self.time_scale)
 		self.epsilon = epsilon
 		self.valmax = 1
 
