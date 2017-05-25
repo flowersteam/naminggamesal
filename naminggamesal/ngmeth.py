@@ -1921,7 +1921,7 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=True,
 			m2 = m2[:,w]
 
 		if renorm:
-			if reform_fact is None:
+			if renorm_fact is None:
 				m1 = m1 / np.linalg.norm(m1, axis=1, ord=1,keepdims=True)
 				m2 = m2 / np.linalg.norm(m2, axis=0, ord=1,keepdims=True)
 			else:
