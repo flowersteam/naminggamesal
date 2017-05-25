@@ -196,14 +196,13 @@ class InteractionCounts(MemoryPolicy):
 		mem['interact_count_w'] = np.zeros((voc._M,voc._W))
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
-		m1 = ms
-		for a in [mem["interact_count_m"][m,:],mem["interact_count_w"][:,w]]:
+		for a in [mem["interact_count_m"][ms,:],mem["interact_count_w"][:,w]]:
 			a *= self.factor
 			a[:] = np.where(a>self.epsilon,a,0.)
 			if hasattr(a,'eliminate_zeros'):
 				a.eliminate_zeros()
-		mem['interact_count_w'][m1,w] += 1.-self.factor
-		mem['interact_count_m'][m1,w] += 1.-self.factor
+		mem['interact_count_w'][ms,w] += 1.-self.factor
+		mem['interact_count_m'][ms,w] += 1.-self.factor
 
 	def change_time_scale(self,new_time_scale):
 		self.time_scale = new_time_scale
