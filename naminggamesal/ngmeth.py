@@ -1573,7 +1573,7 @@ def block_time(exp,X=0,**kwargs):
 	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')#exp.graph(method='srtheo')
 	Nm = Nm_gr._Y[0]
 	M = N_meanings_max(exp._poplist.get_last())
-	for i in range(len(sr)):
+	for i in range(len(Nd)):
 		if Nm[i] == M and Nd == M:
 			return [Nd_gr._X[0][i]]
 	return [np.nan]
