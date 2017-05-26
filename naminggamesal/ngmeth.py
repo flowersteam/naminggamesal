@@ -138,9 +138,9 @@ def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kw
 	entr = 0
 
 	if m is None:
-		mat = mem['interaction_count_m']
+		mat = mem['interact_count_m']
 	else:
-		mat = mem['interaction_count_m'][m,:]
+		mat = mem['interact_count_m'][m,:]
 	sumvec = mat.sum(axis=1)
 	deltavec = (valmax - sumvec)/len(voc.get_known_words())
 	mat += deltavec
@@ -148,9 +148,9 @@ def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kw
 	entr +=  scipy.special.entr(mat).sum()
 
 	if w is None:
-		mat = mem['interaction_count_w']
+		mat = mem['interact_count_w']
 	else:
-		mat = mem['interaction_count_w'][:,w]
+		mat = mem['interact_count_w'][:,w]
 	sumvec = mat.sum(axis=0)
 	deltavec = (valmax - sumvec)/len(voc.get_known_meanings())
 	mat += deltavec
