@@ -1627,6 +1627,22 @@ FUNC = conv_time_plus_srtheo
 
 graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
 custom_conv_time_plus_srtheo =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+#########srtheo_and_block_time##########
+
+def srtheo_and_block_time(exp,X=0,thresh=1.,**kwargs):
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')
+	bt_gr = exp.db.get_graph(exp.uuid, method='block_time')
+	bt_val = bt_gr._Y[0][0]
+	for i in range(sr_gr._X[0]):
+		if sr_gr._X[0][i] = bt_val:
+			sr_val = sr_gr._Y[i]
+			return (-sr_val,bt_val)
+
+
+FUNC = srtheo_and_block_time
+
+graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
+custom_srtheo_and_block_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########partial_conv_time##########
 
