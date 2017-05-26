@@ -131,6 +131,8 @@ custom_new_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 #########entropy_time_scale##########
 
 def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kwargs):
+	if not hasattr(mem,'interact_count_m'):
+		return 0.
 	if mem is None:
 		mem = agent._memory
 		if voc is None:
@@ -142,7 +144,11 @@ def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kw
 	else:
 		mat = mem['interact_count_m'][m,:]
 	sumvec = mat.sum(axis=1)
-	deltavec = (valmax - sumvec)/len(voc.get_known_words())
+	if voc is None:
+		KW =  mem['interact_count_m'].shape[1]
+	else:
+		KW = len(voc.get_known_words())
+	deltavec = (valmax - sumvec)/KW
 	mat += deltavec
 
 	entr +=  scipy.special.entr(mat).sum()
@@ -152,7 +158,11 @@ def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kw
 	else:
 		mat = mem['interact_count_w'][:,w]
 	sumvec = mat.sum(axis=0)
-	deltavec = (valmax - sumvec)/len(voc.get_known_meanings())
+	if voc is None:
+		KM =  mem['interact_count_m'].shape[0]
+	else:
+		KM = len(voc.get_known_meanings())
+	deltavec = (valmax - sumvec)/KM
 	mat += deltavec
 	entr +=  scipy.special.entr(mat).sum()
 
