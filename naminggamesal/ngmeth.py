@@ -130,7 +130,7 @@ graphconfig={"ymin":new_entropy_min}#,"ymax":new_entropy_max}
 custom_new_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 #########entropy_time_scale##########
 
-def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,**kwargs):
+def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kwargs):
 	if mem is None:
 		mem = agent._memory
 		if voc is None:
@@ -141,12 +141,19 @@ def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,**kwargs):
 		mat = mem['interaction_count_m']
 	else:
 		mat = mem['interaction_count_m'][m,:]
+	sumvec = mat.sum(axis=1)
+	deltavec = (valmax - sumvec)/len(voc.get_known_words())
+	mat += deltavec
+
 	entr +=  scipy.special.entr(mat).sum()
 
 	if w is None:
 		mat = mem['interaction_count_w']
 	else:
 		mat = mem['interaction_count_w'][:,w]
+	sumvec = mat.sum(axis=0)
+	deltavec = (valmax - sumvec)/len(voc.get_known_meanings())
+	mat += deltavec
 	entr +=  scipy.special.entr(mat).sum()
 
 	return entr
