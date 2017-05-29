@@ -504,6 +504,43 @@ FUNC=N_w_per_m_agentmax
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":N_w_per_m_agentmax_min}#,"ymax":N_w_per_m_max}
 custom_N_w_per_m_agentmax=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+#########N_m_per_w##########
+
+def N_m_per_w(agent,**kwargs):
+	if not agent._vocabulary.get_known_words():
+		return 0
+	else:
+		return Nlink(agent)/len(agent._vocabulary.get_known_words())
+
+def N_m_per_w_max(pop):
+	return 1
+
+def N_m_per_w_min(pop):
+	return 0
+
+FUNC=N_m_per_w
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_m_per_w_min}#,"ymax":N_m_per_w_max}
+custom_N_m_per_w=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########N_m_per_w_agentmax##########
+
+def N_m_per_w_agentmax(agent,**kwargs):
+	if not agent._vocabulary.get_known_words():
+		return 0
+	else:
+		return max([len(agent._vocabulary.get_known_meanings(w=w)) for w in agent._vocabulary.get_known_words()])
+
+def N_m_per_w_agentmax_max(pop):
+	return 1
+
+def N_m_per_w_agentmax_min(pop):
+	return 0
+
+FUNC=N_m_per_w_agentmax
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_m_per_w_agentmax_min}#,"ymax":N_m_per_w_max}
+custom_N_m_per_w_agentmax=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
 #########cat_synonymy##########
