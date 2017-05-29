@@ -135,7 +135,7 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 		voc2 = voc_new._content
 		if self.role != 'local':
 			role = self.role
-		return ngmeth.srtheo_voc(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= ngmeth.srtheo_voc(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
+		return ngmeth.srtheo_voc(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role,renorm=False) <= ngmeth.srtheo_voc(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role,renorm=False)
 
 class AcceptanceVocRelatedEntropy(AcceptancePolicy):
 

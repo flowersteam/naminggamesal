@@ -1914,7 +1914,7 @@ def edgevalue_distrib(pop,**kwargs):
 #==================
 
 
-def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=True,renorm_fact=None,role='both'):
+def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False,renorm_fact=None,role='both'):
 	ans = 0.
 	if role == 'both' or role == 'hearer':
 		m1 = copy.deepcopy(voc1)
@@ -1931,10 +1931,10 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=True,
 			m2 = m2[:,w]
 
 		if renorm:
-			if renorm_fact is None:
+			if renorm_fact is None: # !!!!! TODO: Deal with div by zero
 				m1 = m1 / np.linalg.norm(m1, axis=0, ord=1,keepdims=True)
 				m2 = m2 / np.linalg.norm(m2, axis=1, ord=1,keepdims=True)
-			else:
+			else:# !!!!! TODO: Deal with div by zero
 				m1 = m1 / renorm_fact
 				m2 = m2 / renorm_fact
 		mult = np.multiply(m1,m2)
@@ -1954,11 +1954,11 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=True,
 			m2 = m2[:,w]
 
 		if renorm:
-			if renorm_fact is None:
+			if renorm_fact is None:# !!!!! TODO: Deal with div by zero
 				m1 = m1 / np.linalg.norm(m1, axis=1, ord=1,keepdims=True)
 				m2 = m2 / np.linalg.norm(m2, axis=0, ord=1,keepdims=True)
 			else:
-				m1 = m1 / renorm_fact
+				m1 = m1 / renorm_fact# !!!!! TODO: Deal with div by zero
 				m2 = m2 / renorm_fact
 		mult = np.multiply(m1,m2)
 		ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
