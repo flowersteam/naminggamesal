@@ -19,7 +19,8 @@ voc_class={
 	"dok_matrix":"matrix.VocDOKMatrix",
 	"graph":"graph.VocGraph",
 	"graph_ba":"graph.BarabasiAlbertVocGraph",
-	'category':'category.VocCategory'
+	'category':'category.VocCategory',
+	'2dictdict':'2dictdict.Voc2DictDict',
 }
 
 

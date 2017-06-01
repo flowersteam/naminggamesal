@@ -542,6 +542,70 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":N_m_per_w_agentmax_min}#,"ymax":N_m_per_w_max}
 custom_N_m_per_w_agentmax=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
+#########homonymy_simple##########
+
+def homonymy_simple(agent,**kwargs):
+	return Nlink(agent)-N_meanings(agent)
+
+def homonymy_simple_max(pop):
+	return 1
+
+def homonymy_simple_min(pop):
+	return 0
+
+FUNC=homonymy_simple
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":homonymy_simple_min}#,"ymax":N_m_per_w_max}
+custom_homonymy_simple=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########homonymy##########
+
+def homonymy(agent,**kwargs):
+	return sum([ scipy.special.binom(len(agent._vocabulary.get_known_meanings(w=w)),2) for w in agent._vocabulary.get_known_words()])
+
+def homonymy_max(pop):
+	return 1
+
+def homonymy_min(pop):
+	return 0
+
+FUNC=homonymy
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":homonymy_min}#,"ymax":N_m_per_w_max}
+custom_homonymy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########synonymy_simple##########
+
+def synonymy_simple(agent,**kwargs):
+	return Nlink(agent)-N_words(agent)
+
+def synonymy_simple_max(pop):
+	return 1
+
+def synonymy_simple_min(pop):
+	return 0
+
+FUNC=synonymy_simple
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":synonymy_simple_min}#,"ymax":N_m_per_w_max}
+custom_synonymy_simple=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########synonymy##########
+
+def synonymy(agent,**kwargs):
+	return sum([ scipy.special.binom(len(agent._vocabulary.get_known_words(m=m)),2) for m in agent._vocabulary.get_known_meanings()])
+
+def synonymy_max(pop):
+	return 1
+
+def synonymy_min(pop):
+	return 0
+
+FUNC=synonymy
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":synonymy_min}#,"ymax":N_m_per_w_max}
+custom_synonymy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
 
 #########cat_synonymy##########
 
