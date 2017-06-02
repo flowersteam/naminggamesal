@@ -131,12 +131,12 @@ custom_new_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 #########entropy_time_scale##########
 
 def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kwargs):
-	if not hasattr(mem,'interact_count_m'):
-		return 0.
 	if mem is None:
 		mem = agent._memory
 		if voc is None:
 			voc = agent._vocabulary
+	if not hasattr(mem,'interact_count_m'):
+		return 0.
 	entr = 0
 
 	if m is None:
