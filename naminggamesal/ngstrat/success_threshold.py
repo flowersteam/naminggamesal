@@ -18,7 +18,7 @@ class StratSuccessThreshold(StratNaive):
 
 	def pick_m(self,voc,mem,context):
 		test1 = self.get_success_rate_over_known_meanings(voc,mem)>self.threshold_explo
-		test2 = len(voc.get_known_meanings())==voc._M
+		test2 = len(voc.get_known_meanings())==voc.get_M()
 		test3 = len(voc.get_known_meanings())==0
 		if (test1 or test3) and (not test2):
 			m = voc.get_new_unknown_m()
@@ -96,7 +96,7 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 	def pick_m(self, voc, mem, context):
 		ratelist = self.get_success_rates(voc, mem)
 		KM = voc.get_known_meanings()
-		if (np.mean(ratelist)>self.threshold_explo and len(KM)<voc._M) or len(KM) == 0 :
+		if (np.mean(ratelist)>self.threshold_explo and len(KM)<voc.get_M()) or len(KM) == 0 :
 			return voc.get_new_unknown_m()
 		tempmin = 1
 		for m in range(0,len(KM)):
@@ -117,7 +117,7 @@ class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 		threshold = self.threshold_explo
 		KM = voc.get_known_meanings()
 		if (np.mean(ratelist)>self.threshold_explo) or len(KM) == 0 : #and len(KM)<voc._M
-			if len(KM) == voc._M:
+			if len(KM) == voc.get_M():
 				threshold = 1
 			else:
 				return voc.get_new_unknown_m()
@@ -181,7 +181,7 @@ class StratSuccessThresholdEpirob(StratNaive):
 
 	def pick_m(self,voc,mem,context):
 		test1 = self.get_bestscores_mean(voc,mem) > self.threshold_explo
-		test2 = len(voc.get_known_meanings()) == voc._M
+		test2 = len(voc.get_known_meanings()) == voc.get_M()
 		test3 = len(voc.get_known_meanings()) == 0
 		test4 = random.random() < self.proba_new_m
 		test5 = random.random() < self.proba_2

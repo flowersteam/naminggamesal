@@ -102,6 +102,8 @@ class AcceptanceTSMax(AcceptancePolicy):
 		self.role = role
 
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
+		if not hasattr(voc,'_content_m'):
+			raise ValueError('Acceptance policy TSMax not implemented for this type of vocabulary')
 		mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
 		pop_voc = mem_new['success_mw'] + mem_new['fail_mw']
 		voc1 = copy.deepcopy(voc._content)
@@ -115,6 +117,7 @@ class AcceptanceTSMax(AcceptancePolicy):
 			role = self.role
 		return ngmeth.srtheo_voc(voc1,pop_voc,role=role) <= ngmeth.srtheo_voc(voc2,pop_voc,role=role)
 
+
 class AcceptanceTSMaxNew(AcceptancePolicy):
 
 	def __init__(self,mem_policy={'mem_type':'interaction_counts'},role='both',**cfg2):
@@ -124,18 +127,37 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
 		mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
-		pop_voc_m = mem_new['interact_count_m']
-		pop_voc_w = mem_new['interact_count_w']
-		voc1 = copy.deepcopy(voc._content)
-		voc_new = copy.deepcopy(voc)
-		if role == 'hearer':
-			self.subvu.update_hearer(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
-		elif role == 'speaker':
-			self.subvu.update_speaker(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
-		voc2 = voc_new._content
-		if self.role != 'local':
-			role = self.role
-		return ngmeth.srtheo_voc(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role,renorm=False) <= ngmeth.srtheo_voc(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role,renorm=False)
+		if hasattr(voc,'_content'):
+			pop_voc_m = mem_new['interact_count_m']
+			pop_voc_w = mem_new['interact_count_w']
+			voc1 = copy.deepcopy(voc._content)
+			voc_new = copy.deepcopy(voc)
+			if role == 'hearer':
+				self.subvu.update_hearer(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
+			elif role == 'speaker':
+				self.subvu.update_speaker(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
+			voc2 = voc_new._content
+			if self.role != 'local':
+				role = self.role
+			return ngmeth.srtheo_voc(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role,renorm=False) <= ngmeth.srtheo_voc(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role,renorm=False)
+		else:
+			pop_voc = mem_new['interact_count_voc']
+			if hasattr(voc,'get_alterable_shallow_copy'):
+				voc_new = voc.get_alterable_shallow_copy()
+			else:
+				voc_new = copy.deepcopy(voc)
+			if role == 'hearer':
+				self.subvu.update_hearer(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
+			elif role == 'speaker':
+				self.subvu.update_speaker(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
+			if self.role != 'local':
+				role = self.role
+			return ngmeth.srtheo_voc(voc,voc2=pop_voc,role=role,renorm=False) <= ngmeth.srtheo_voc(voc_new,voc2=pop_voc,role=role,renorm=False)
+
+
+
+
+
 
 class AcceptanceVocRelatedEntropy(AcceptancePolicy):
 
@@ -224,7 +246,10 @@ class AcceptanceVocRelatedEntropyBeta(AcceptanceEntropyBeta):
 
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
 		entropy_func = getattr(ngmeth,self.entropy_func)
-		voc_new = copy.deepcopy(voc)
+		if hasattr(voc,'get_alterable_shallow_copy'):
+			voc_new = voc.get_alterable_shallow_copy()
+		else:
+			voc_new = copy.deepcopy(voc)
 		mem_new = copy.deepcopy(mem)
 		if role == 'hearer':
 			self.subvu.update_hearer(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)

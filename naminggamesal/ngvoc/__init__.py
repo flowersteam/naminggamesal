@@ -92,4 +92,11 @@ class BaseVocabulary(object):
 	def finish_update(self):
 		self.del_cache()
 
+	#@del_cache
+	def discover_meanings(self,m_list):
+		pass
+
+	#@del_cache
+	def discover_words(self,w_list):
+		pass
 

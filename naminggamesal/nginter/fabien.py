@@ -29,7 +29,7 @@ def proba_info_shared(agent1, agent2, alpha = 1.):        #based on information 
 	empty = 1.-(ngmeth.tempentropy(agent1._M-m_empty, agent1._W-m_empty)/ngmeth.tempentropy(agent1._M, agent1._W))
 	if empty == 1:
 		return alpha
-	return shared 
+	return shared
 
 def proba_info_relativeshared(agent1, agent2, alpha = 1.):        #based on information measure
 	mat_shared = np.multiply(agent1._vocabulary.get_content(), agent2._vocabulary.get_content())
@@ -72,6 +72,8 @@ class FabienInteraction(Interaction):
 		if not simulated:
 			speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
+			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh)
+			pop.env.update_agent(hearer,ms=ms,w=w,mh=mh)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id]
 		else:
 			return [ms,w,mh,bool_succ,speaker._id,hearer._id]

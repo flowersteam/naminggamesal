@@ -17,7 +17,7 @@ class StratLastResult(StratNaive):
 			self.memory_policies.append(mp)
 
 	def pick_m(self,voc,mem, context=[]):
-		test2=len(voc.get_known_meanings())==voc._M
+		test2=len(voc.get_known_meanings())==voc.get_M()
 		test3=len(voc.get_known_meanings())==0
 		#if (mem["result"] or test3) and (not test2):
 		if mem["result"]:
@@ -27,7 +27,7 @@ class StratLastResult(StratNaive):
 		return m
 
 	def hearer_pick_m(self,voc,mem,context=[]):
-		test2=len(voc.get_known_meanings())==voc._M
+		test2=len(voc.get_known_meanings())==voc.get_M()
 		test3=len(voc.get_known_meanings())==0
 		#if (mem["result"] or test3) and (not test2):
 		if mem["result"]:

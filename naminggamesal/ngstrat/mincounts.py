@@ -50,7 +50,7 @@ class StratMinCounts(StratNaive):
 
 	def pick_m(self, voc, mem, context):
 		counts = self.get_success_counts(voc, mem)
-		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc._M and min(counts)>self.mincounts):
+		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc.get_M() and min(counts)>self.mincounts):
 			return voc.get_new_unknown_m()
 		KM = voc.get_known_meanings()
 		tempmin = min(counts)
@@ -67,7 +67,7 @@ class StratMinCountsWiseMax(StratMinCounts):
 	def pick_m(self, voc, mem, context):
 		counts = self.get_success_counts(voc, mem)
 		mincounts = self.mincounts
-		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc._M and min(counts)>self.mincounts):
+		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc.get_M() and min(counts)>self.mincounts):
 			return voc.get_new_unknown_m()
 		KM = voc.get_known_meanings()
 		tempmax = 0
@@ -92,7 +92,7 @@ class StratMinCountsBasic(StratMinCounts):
 	def pick_m(self, voc, mem, context):
 		counts = self.get_success_counts(voc, mem)
 		mincounts = self.mincounts
-		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc._M and min(counts)>self.mincounts):
+		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc.get_M() and min(counts)>self.mincounts):
 			return voc.get_new_unknown_m()
 		KM = voc.get_known_meanings()
 		return random.choice(KM)

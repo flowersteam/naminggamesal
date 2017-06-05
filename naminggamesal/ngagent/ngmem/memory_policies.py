@@ -190,20 +190,38 @@ class InteractionCounts(MemoryPolicy):
 
 
 	def init_memory(self,mem,voc):
-		assert not hasattr(mem,'interact_count_m')
-		assert not hasattr(mem,'interact_count_w')
-		mem['interact_count_m'] = np.zeros((voc._M,voc._W))
-		mem['interact_count_w'] = np.zeros((voc._M,voc._W))
+		if hasattr(voc,'_content'):
+			assert not hasattr(mem,'interact_count_m')
+			assert not hasattr(mem,'interact_count_w')
+			mem['interact_count_m'] = np.zeros((voc._M,voc._W))
+			mem['interact_count_w'] = np.zeros((voc._M,voc._W))
+		else:
+			assert not hasattr(mem,'interact_count_voc')
+			mem['interact_count_voc'] = voc.__class__(start='empty')
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
-		for a in [mem["interact_count_m"][ms,:],mem["interact_count_w"][:,w]]:
-			a *= self.factor
-			a[:] = np.where(a>self.epsilon,a,0.)
-			if hasattr(a,'eliminate_zeros'):
-				a.eliminate_zeros()
-		if self.factor > 0:
-			mem['interact_count_w'][ms,w] += 1.-self.factor
-			mem['interact_count_m'][ms,w] += 1.-self.factor
+		if hasattr(voc,'_content'):
+			for a in [mem["interact_count_m"][ms,:],mem["interact_count_w"][:,w]]:
+				a *= self.factor
+				a[:] = np.where(a>self.epsilon,a,0.)
+				if hasattr(a,'eliminate_zeros'):
+					a.eliminate_zeros()
+			if self.factor > 0:
+				mem['interact_count_w'][ms,w] += 1.-self.factor
+				mem['interact_count_m'][ms,w] += 1.-self.factor
+		else:
+			if ms in mem['interact_count_voc'].get_known_meanings():
+				for w1 in mem['interact_count_voc']._content_m[ms].keys():
+					mem['interact_count_voc']._content_m[ms][w1] *= self.factor
+					if mem['interact_count_voc']._content_m[ms][w1] == 0:
+						mem['interact_count_voc'].rm(ms,w1,content_type='m')
+			if w in mem['interact_count_voc'].get_known_words():
+				for m1 in mem['interact_count_voc']._content_w[w].keys():
+					mem['interact_count_voc']._content_w[w][m1] *= self.factor
+					if mem['interact_count_voc']._content_w[w][m1] == 0:
+						mem['interact_count_voc'].rm(m1,w,content_type='w')
+			mem['interact_count_voc'].add(ms,w,val=1.-self.factor,content_type='both')
+
 
 	def change_time_scale(self,new_time_scale):
 		self.time_scale = new_time_scale
@@ -227,12 +245,57 @@ class InteractionCountsSlidingWindow(InteractionCounts):
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if self.time_scale > 0:
 			mem['past_interactions_sliding_window'].append((ms,w,1./self.time_scale))
-			mem['interact_count_w'][ms,w] += 1./self.time_scale
-			mem['interact_count_m'][ms,w] += 1./self.time_scale
+			if hasattr(voc,'_content'):
+				mem['interact_count_w'][ms,w] += 1./self.time_scale
+				mem['interact_count_m'][ms,w] += 1./self.time_scale
+			else:
+				mem['interact_count_voc'].add_value(ms,w,1./self.time_scale,content_type='both')
+
 		while len(mem['past_interactions_sliding_window'])>self.time_scale:
 			m0,w0,val = mem['past_interactions_sliding_window'].pop(0)
-			mem['interact_count_w'][m0,w0] = max(mem['interact_count_w'][m0,w0] - val , 0)
-			mem['interact_count_m'][m0,w0] = max(mem['interact_count_m'][m0,w0] - val , 0)
+			if hasattr(voc,'_content'):
+				mem['interact_count_w'][m0,w0] = max(mem['interact_count_w'][m0,w0] - val , 0)
+				mem['interact_count_m'][m0,w0] = max(mem['interact_count_m'][m0,w0] - val , 0)
+			else:
+				mem['interact_count_voc'].add_value(m0,w0,-val,content_type='both')
+
+	def change_time_scale(self,new_time_scale):
+		self.time_scale = new_time_scale
+
+
+class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
+
+	def init_memory(self,mem,voc):
+		InteractionCounts.init_memory(self,mem,voc)
+		assert not hasattr(mem,'past_interactions_sliding_window_local')
+		mem['past_interactions_sliding_window_local'] = {'m':{},'w':{}}
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		if self.time_scale > 0:
+			if not ms in mem['past_interactions_sliding_window_local']['m'].keys():
+				mem['past_interactions_sliding_window_local']['m'][ms] = []
+			if not w in mem['past_interactions_sliding_window_local']['w'].keys():
+				mem['past_interactions_sliding_window_local']['w'][w] = []
+			mem['past_interactions_sliding_window_local']['m'][ms].append((w,1./self.time_scale))
+			mem['past_interactions_sliding_window_local']['w'][w].append((ms,1./self.time_scale))
+			if hasattr(voc,'_content'):
+				mem['interact_count_w'][ms,w] += 1./self.time_scale
+				mem['interact_count_m'][ms,w] += 1./self.time_scale
+			else:
+				mem['interact_count_voc'].add_value(ms,w,1./self.time_scale,content_type='both')
+
+		while len(mem['past_interactions_sliding_window_local'])>self.time_scale:
+			w0,valw = mem['past_interactions_sliding_window_local']['m'][ms].pop(0)
+			m0,valm = mem['past_interactions_sliding_window_local']['w'][w].pop(0)
+			if hasattr(voc,'_content'):
+				mem['interact_count_w'][m0,w0] = max(mem['interact_count_w'][m0,w0] - valw , 0)
+				mem['interact_count_m'][m0,w0] = max(mem['interact_count_m'][m0,w0] - valm , 0)
+			else:
+				mem['interact_count_voc'].add_value(ms,w0,-valm,content_type='m')
+				mem['interact_count_voc'].add_value(m0,w,-valw,content_type='w')
+		if self.time_scale == 0:
+			del mem['past_interactions_sliding_window_local']['m'][ms]
+			del mem['past_interactions_sliding_window_local']['w'][w]
 
 	def change_time_scale(self,new_time_scale):
 		self.time_scale = new_time_scale

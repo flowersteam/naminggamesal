@@ -4,6 +4,7 @@ import copy
 class Converged(AgentInit):
 
 	def modify_agent(self,agent, pop_init=False):
+		AgentInit.modify_agent(self,agent=agent,pop_init=pop_init)
 		if not hasattr(self,'converged_voc'):
 			agent._vocabulary.complete_empty()
 			self.converged_voc = copy.deepcopy(agent._vocabulary)

@@ -9,20 +9,9 @@ env_class={
 	'image_hue':'imagehue.ImageHueEnv',
 	'hue_distrib':'imagehue.HueDistribEnv',
 	'graphenv':'graphenv.GraphEnv',
+	'simple':'simple.SimpleEnv',
 }
 
-def get_environment(env_type=None, **env_cfg2):
-	if env_type is None:
-		return None
-	tempenv = env_type
-	if tempenv in env_class.keys():
-		tempenv = env_class[tempenv]
-	templist = tempenv.split('.')
-	temppath = '.'.join(templist[:-1])
-	tempclass = templist[-1]
-	_tempmod = import_module('.'+temppath,package=__name__)
-	tempenv = getattr(_tempmod,tempclass)(**env_cfg2)
-	return tempenv
 
 
 #class Singleton(type):
@@ -48,3 +37,30 @@ class Environment(object):
 	def get_element(self):
 		return random.choice(self.elements)
 
+	def update_agent(self,agent,ms,w,mh=None,context=[]):
+		pass
+
+	def init_agent(self,agent):
+		pass
+
+	def get_M(self):
+		return 0
+
+	def get_W(self):
+		return 0
+
+
+
+
+def get_environment(env_type=None, **env_cfg2):
+	if env_type is None:
+		return Environment()
+	tempenv = env_type
+	if tempenv in env_class.keys():
+		tempenv = env_class[tempenv]
+	templist = tempenv.split('.')
+	temppath = '.'.join(templist[:-1])
+	tempclass = templist[-1]
+	_tempmod = import_module('.'+temppath,package=__name__)
+	tempenv = getattr(_tempmod,tempclass)(**env_cfg2)
+	return tempenv

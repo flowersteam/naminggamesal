@@ -16,6 +16,8 @@ class SpeakersChoice(Interaction):
 		if not simulated:
 			speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
+			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh)
+			pop.env.update_agent(hearer,ms=ms,w=w,mh=mh)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
 		else:
 			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
@@ -34,6 +36,8 @@ class SpeakersChoiceEpirob(Interaction):
 			if speaker._vocabulary.get_known_meanings() or random.random()<0.001:
 				speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 				hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
+				pop.env.update_agent(speaker,ms=ms,w=w,mh=mh)
+				pop.env.update_agent(hearer,ms=ms,w=w,mh=mh)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
 		else:
 			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
@@ -55,6 +59,8 @@ class SpeakersChoiceOmniscient(Interaction):
 			speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			if bool_succ or pop.finalvoc.get_known_words(m=ms)[0] not in hearer._vocabulary.get_known_words(m=ms):
 				hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
+				pop.env.update_agent(hearer,ms=ms,w=w,mh=mh)
+			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
 		else:
 			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]

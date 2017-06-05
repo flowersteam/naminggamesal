@@ -8,5 +8,5 @@ class AgentInit(object):
 	def modify_cfg(self, pop_init=False, **ag_cfg):
 		return copy.deepcopy(ag_cfg)
 
-	def modify_agent(self,agent, pop_init=False):
-		pass
+	def modify_agent(self,agent, pop, pop_init=False):
+		pop.env.init_agent(agent)

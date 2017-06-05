@@ -27,7 +27,7 @@ class StratNaive(BaseStrategy):
 		return w
 
 	def pick_m(self,voc,mem,context=[]):
-		m = random.randint(0,voc.get_M()-1)
+		m = voc.get_random_m()# randint(0,voc.get_M()-1)
 		return m
 
 	def hearer_pick_m(self,voc,mem,context=[]):

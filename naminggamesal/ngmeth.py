@@ -39,12 +39,18 @@ def pop_ize(func):
 #########Nlink##########
 
 def Nlink(agent,**kwargs):
-	tempmat = copy.deepcopy(agent.get_vocabulary_content())
-	tempmat[tempmat>0] = 1
-	return np.sum(tempmat)
+	if hasattr(agent._vocabulary,'_content'):
+		tempmat = copy.deepcopy(agent.get_vocabulary_content())
+		tempmat[tempmat>0] = 1
+		return np.sum(tempmat)
+	else:
+		ans = 0
+		for m in agent._vocabulary.get_known_meanings():
+			ans += len(agent._vocabulary.get_known_words(m=m))
+		return ans
 
 def Nlink_max(pop):
-	return pop._M * pop._W
+	return pop.get_M() * pop.get_W()
 
 def Nlink_min(pop):
 	return 0
@@ -135,38 +141,64 @@ def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kw
 		mem = agent._memory
 		if voc is None:
 			voc = agent._vocabulary
-	if not hasattr(mem,'interact_count_m'):
-		return 0.
-	entr = 0
+	if 'interact_count_m' in mem.keys():
+		entr = 0
 
-	if m is None:
-		mat = mem['interact_count_m']
-	else:
-		mat = mem['interact_count_m'][m,:]
-	sumvec = mat.sum(axis=1)
-	if voc is None:
-		KW =  mem['interact_count_m'].shape[1]
-	else:
-		KW = len(voc.get_known_words())
-	deltavec = (valmax - sumvec)/KW
-	mat += deltavec
+		if m is None:
+			mat = mem['interact_count_m']
+		else:
+			mat = mem['interact_count_m'][m,:]
+		sumvec = mat.sum(axis=1)
+		if voc is None:
+			KW =  mem['interact_count_m'].shape[1]
+		else:
+			KW = voc.get_W()#len(voc.get_known_words())
+		deltavec = (valmax - sumvec)/KW
+		mat += deltavec
 
-	entr +=  scipy.special.entr(mat).sum()
+		entr +=  scipy.special.entr(mat).sum()
 
-	if w is None:
-		mat = mem['interact_count_w']
-	else:
-		mat = mem['interact_count_w'][:,w]
-	sumvec = mat.sum(axis=0)
-	if voc is None:
-		KM =  mem['interact_count_m'].shape[0]
-	else:
-		KM = len(voc.get_known_meanings())
-	deltavec = (valmax - sumvec)/KM
-	mat += deltavec
-	entr +=  scipy.special.entr(mat).sum()
+		if w is None:
+			mat = mem['interact_count_w']
+		else:
+			mat = mem['interact_count_w'][:,w]
+		sumvec = mat.sum(axis=0)
+		if voc is None:
+			KM =  mem['interact_count_m'].shape[0]
+		else:
+			KM = voc.get_M()
+		deltavec = (valmax - sumvec)/KM
+		mat += deltavec
+		entr +=  scipy.special.entr(mat).sum()
 
-	return entr
+		return entr
+	elif 'interact_count_voc' in mem.keys():
+		pop_voc = mem['interact_count_voc']
+		for m in pop_voc.get_known_meanings():
+			temp_vec = []
+			for w in pop_voc.get_known_words(m=m):
+				temp_vec.append(pop_voc.get_value(m,w))
+			temp_ndarray = np.ndarray(temp_vec)
+			sumvec = temp_ndarray.sum()
+			delta = (1.-sumvec)/pop_voc.get_W()
+			temp_ndarray += delta
+			entr += scipy.special.entr(temp_ndarray).sum()
+			entr += (pop_voc.get_W()-len(temp_vec))*scipy.special.entr(delta)
+		for w in pop_voc.get_known_words():
+			temp_vec = []
+			for m in pop_voc.get_known_meanings(w=w):
+				temp_vec.append(pop_voc.get_value(m,w,content_type='w'))
+			temp_ndarray = np.ndarray(temp_vec)
+			sumvec = temp_ndarray.sum()
+			delta = (1.-sumvec)/pop_voc.get_M()
+			temp_ndarray += delta
+			entr += scipy.special.entr(temp_ndarray).sum()
+			entr += (pop_voc.get_M()-len(temp_vec))*scipy.special.entr(delta)
+
+		return entr
+
+	else:
+		return 0
 
 
 
@@ -343,8 +375,8 @@ custom_new_entropy_success_rate=custom_func.CustomFunc(FUNC_BIS,"agent",**graphc
 #########transinformation##########
 
 def voc_transinf(voc):
-	M = voc._M
-	W = voc._W
+	M = voc.get_M()
+	W = voc.get_W()
 	KM = voc.get_known_meanings()
 	Mtransinf = len(KM)*np.log2(W)
 	for m in KM:
@@ -356,7 +388,7 @@ def transinformation(agent,**kwargs):
 	return voc_transinf(voc)
 
 def transinformation_max(pop):
-	return np.log2(pop._W)
+	return np.log2(pop.get_W())
 
 def transinformation_min(pop):
 	return 0
@@ -435,8 +467,8 @@ def N_words(agent,**kwargs):
 		return len(agent._vocabulary.get_known_words())
 
 def N_words_max(pop):
-	if hasattr(pop._agentlist[0]._vocabulary,'_W'):
-		return pop._agentlist[0]._vocabulary._W
+	if hasattr(pop._agentlist[0]._vocabulary,'get_W'):
+		return pop._agentlist[0]._vocabulary.get_W()
 	else:
 		return None
 
@@ -454,8 +486,8 @@ def N_meanings(agent,**kwargs):
 	return len(agent._vocabulary.get_known_meanings())
 
 def N_meanings_max(pop):
-	if hasattr(pop._agentlist[0]._vocabulary,'_M'):
-		return pop._agentlist[0]._vocabulary._M
+	if hasattr(pop._agentlist[0]._vocabulary,'get_M'):
+		return pop._agentlist[0]._vocabulary.get_M()
 	else:
 		return None
 
@@ -473,7 +505,7 @@ def N_w_per_m(agent,**kwargs):
 	if not agent._vocabulary.get_known_meanings():
 		return 0
 	else:
-		return Nlink(agent)/len(agent._vocabulary.get_known_meanings())
+		return float(Nlink(agent))/len(agent._vocabulary.get_known_meanings())
 
 def N_w_per_m_max(pop):
 	return 1
@@ -510,7 +542,7 @@ def N_m_per_w(agent,**kwargs):
 	if not agent._vocabulary.get_known_words():
 		return 0
 	else:
-		return Nlink(agent)/len(agent._vocabulary.get_known_words())
+		return float(Nlink(agent))/len(agent._vocabulary.get_known_words())
 
 def N_m_per_w_max(pop):
 	return 1
@@ -699,10 +731,10 @@ def tempentropy(MM,WW):
 
 def entropy(agent,**kwargs):
 	m=len(agent._vocabulary.get_known_meanings())
-	return tempentropy(agent._M-m,agent._W-m)
+	return tempentropy(agent._vocabulary.get_M()-m,agent._vocabulary.get_W()-m)
 
 def entropy_max(pop):
-	return tempentropy(pop._M,pop._W)
+	return tempentropy(pop.get_M(),pop.get_W())
 
 def entropy_min(pop):
 	return 0
@@ -741,14 +773,23 @@ custom_entropy_moyen_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig
 #########N_d##########
 
 def N_d(pop,**kwargs):
-	tempmat = np.matrix(np.zeros((pop._M,pop._W)))
-	for agent in pop._agentlist:
-		tempmat += agent._vocabulary._content
-	tempmat[tempmat>0] = 1
-	return np.sum(tempmat)
+	if hasattr(pop._agentlist[0]._vocabulary,'_content'):
+		tempmat = np.matrix(np.zeros((pop.get_M(),pop.get_W())))
+		for agent in pop._agentlist:
+			tempmat += agent._vocabulary._content
+		tempmat[tempmat>0] = 1
+		return np.sum(tempmat)
+	else:
+		d_set = []
+		for ag in pop._agentlist:
+			for m in ag._vocabulary.get_known_meanings():
+				for w in ag._vocabulary.get_known_words(m=m):
+					if (m,w) not in d_set:
+						d_set.append((m,w))
+		return len(d_set)
 
 def N_d_max(pop):
-	return pop._M*pop._W
+	return pop.get_M()*pop.get_W()
 
 def N_d_min(pop):
 	return 0
@@ -760,14 +801,25 @@ custom_N_d=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########N_d_m##########
 
 def N_d_m(pop,**kwargs):
-	tempmat = np.matrix(np.zeros((pop._M,pop._W)))
-	for agent in pop._agentlist:
-		tempmat += agent._vocabulary._content
-	tempmat[tempmat>0] = 1
-	return np.sum(tempmat[0,:])
+	if hasattr(pop._agentlist[0]._vocabulary,'_content'):
+		tempmat = np.matrix(np.zeros((pop.get_M(),pop.get_W())))
+		for agent in pop._agentlist:
+			tempmat += agent._vocabulary._content
+		tempmat[tempmat>0] = 1
+		return np.sum(tempmat[0,:])
+	else:
+		d_set = []
+		for ag in pop._agentlist:
+			if ag._vocabulary.get_known_meanings():
+				m = ag._vocabulary.get_known_meanings()[0]
+				for w in ag._vocabulary.get_known_words(m=m):
+					if (m,w) not in d_set:
+						d_set.append((m,w))
+		return len(d_set)
+
 
 def N_d_m_max(pop):
-	return pop._W
+	return pop.get_W()
 
 def N_d_m_min(pop):
 	return 0
@@ -779,14 +831,24 @@ custom_N_d_m=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########N_d_m_ag##########
 
 def N_d_m_ag(pop,**kwargs):
-	tempmat = np.matrix(np.zeros((pop._M,pop._W)))
-	agent = pop._agentlist[0]
-	tempmat += agent._vocabulary._content
-	tempmat[tempmat>0] = 1
-	return np.sum(tempmat[0,:])
+	if hasattr(pop._agentlist[0]._vocabulary,'_content'):
+		tempmat = np.matrix(np.zeros((pop.get_M(),pop.get_W())))
+		agent = pop._agentlist[0]
+		tempmat += agent._vocabulary._content
+		tempmat[tempmat>0] = 1
+		return np.sum(tempmat[0,:])
+	else:
+		d_set = []
+		ag = pop._agentlist[0]
+		if ag._vocabulary.get_known_meanings():
+			m = ag._vocabulary.get_known_meanings()[0]
+			for w in ag._vocabulary.get_known_words(m=m):
+				if (m,w) not in d_set:
+					d_set.append((m,w))
+		return len(d_set)
 
 def N_d_m_ag_max(pop):
-	return pop._W
+	return pop.get_W()
 
 def N_d_m_ag_min(pop):
 	return 0
@@ -798,14 +860,27 @@ custom_N_d_m_ag=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########Nlinksurs##########
 
 def Nlinksurs(pop,**kwargs):
-	tempmat=np.matrix(np.ones((pop._M,pop._W)))
-	for agent in pop._agentlist:
-		tempmat=np.multiply(tempmat,agent._vocabulary.get_content())
-		tempmat[tempmat>0] = 1
-	return np.sum(tempmat)
+	if hasattr(pop._agentlist[0]._vocabulary,'_content'):
+		tempmat=np.matrix(np.ones((pop.get_M(),pop.get_W())))
+		for agent in pop._agentlist:
+			tempmat=np.multiply(tempmat,agent._vocabulary.get_content())
+			tempmat[tempmat>0] = 1
+		return np.sum(tempmat)
+	else:
+		d_set = []
+		ag = pop._agentlist[0]
+		for m in ag._vocabulary.get_known_meanings():
+			for w in ag._vocabulary.get_known_words(m=m):
+				if (m,w) not in d_set:
+					d_set.append((m,w))
+		for ag in pop._agentlist:
+			for (m,w) in [(m1,w1) for (m1,w1) in d_set]:#list comprehension because d_set modified on the fly
+				if m not in ag._vocabulary.get_known_meanings() or w not in ag._vocabulary.get_known_words(m=m):
+					d_set.remove((m,w))
+		return len(d_set)
 
 def Nlinksurs_max(pop):
-	return pop._M
+	return pop.get_M()
 
 def Nlinksurs_min(pop):
 	return 0
@@ -818,17 +893,35 @@ custom_Nlinksurs=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 def Nlinksurs_couples(pop,**kwargs):
 	tempvalues = []
-	for j in range(100):
-		agent1_id=pop.pick_speaker()
-		agent2_id=pop.pick_hearer(agent1_id)
-		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
-		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
-		tempm = np.linalg.matrix_rank(np.multiply(agent1.get_vocabulary_content(),agent2.get_vocabulary_content()))
-		tempvalues.append(tempm)
-	return np.mean(tempvalues)
+	if hasattr(pop._agentlist[0]._vocabulary,'_content'):
+		for j in range(100):
+			agent1_id=pop.pick_speaker()
+			agent2_id=pop.pick_hearer(agent1_id)
+			agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
+			agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
+			tempm = np.linalg.matrix_rank(np.multiply(agent1.get_vocabulary_content(),agent2.get_vocabulary_content()))
+			tempvalues.append(tempm)
+		return np.mean(tempvalues)
+	else:
+		for j in range(100):
+			d_set = []
+			agent1_id=pop.pick_speaker()
+			agent2_id=pop.pick_hearer(agent1_id)
+			agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
+			agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
+			for m in agent1._vocabulary.get_known_meanings():
+				for w in ag._vocabulary.get_known_words(m=m):
+					if (m,w) not in d_set:
+						d_set.append((m,w))
+			for (m,w) in [(m1,w1) for (m1,w1) in d_set]:#list comprehension because d_set modified on the fly
+				if m not in agent2._vocabulary.get_known_meanings() or w not in agent2._vocabulary.get_known_words(m=m):
+					d_set.remove((m,w))
+			tempvalues.append(len(d_set))
+		return np.mean(tempvalues)
+
 
 def Nlinksurs_couples_max(pop):
-	return pop._M
+	return pop.get_M()
 
 def Nlinksurs_couples_min(pop):
 	return 0
@@ -841,10 +934,10 @@ custom_Nlinksurs_couples=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 def entropypop(pop,**kwargs):
 	m=Nlinksurs(pop)
-	return tempentropy(pop._M-m,pop._W-m)
+	return tempentropy(pop.get_M()-m,pop.get_W()-m)
 
 def entropypop_max(pop):
-	return tempentropy(pop._M,pop._W)
+	return tempentropy(pop.get_M(),pop.get_W())
 
 def entropypop_min(pop):
 	return 0
@@ -873,6 +966,8 @@ custom_entropypop_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########entropycouplesold##########
 
 def entropycouples_old(pop,**kwargs):
+	if not hasattr(pop._agentlist[0]._vocabulary,'_content'):
+		raise ValueError('this measure is not implemented for this type of vocabulary')
 	tempvalues=[]
 	for j in range(100):
 		agent1_id=pop.pick_speaker()
@@ -883,8 +978,8 @@ def entropycouples_old(pop,**kwargs):
 			voc1=agent1._vocabulary.get_content()
 			voc2=agent2._vocabulary.get_content()
 			tempm=0
-			for m in range(pop._M):
-				for w in range(pop._W):
+			for m in range(pop.get_M()):
+				for w in range(pop.get_W()):
 					test1= voc1[m,w] and voc2[m,w]
 					test1=test1 and agent1._vocabulary.get_known_meanings(w)==[m]
 					test1=test1 and agent2._vocabulary.get_known_meanings(w)==[m]
@@ -895,11 +990,11 @@ def entropycouples_old(pop,**kwargs):
 		else:
 			tempmat=np.multiply(agent1._vocabulary.get_content(),agent2._vocabulary.get_content())
 			tempm=np.sum(tempmat)
-		tempvalues.append(tempentropy(pop._M-tempm,pop._W-tempm))
+		tempvalues.append(tempentropy(pop.get_M()-tempm,pop.get_W()-tempm))
 	return np.mean(tempvalues)
 
 def entropycouples_old_max(pop):
-	return tempentropy(pop._M,pop._W)
+	return tempentropy(pop.get_M(),pop.get_W())
 
 def entropycouples_old_min(pop):
 	return 0
@@ -1108,6 +1203,8 @@ custom_actual_successrate=custom_func.CustomFunc(FUNC,"population",**graphconfig
 #########entropycouples##########
 
 def entropycouples(pop,**kwargs):
+	if not hasattr(pop._agentlist[0]._vocabulary,'_content'):
+		raise ValueError('this measure is not implemented for this type of vocabulary')
 	tempvalues=[]
 	for j in range(100):
 		agent1_id=pop.pick_speaker()
@@ -1115,11 +1212,11 @@ def entropycouples(pop,**kwargs):
 		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
 		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
 		tempm = np.linalg.matrix_rank(np.multiply(agent1.get_vocabulary_content(),agent2.get_vocabulary_content()))
-		tempvalues.append(tempentropy(pop._M-tempm,pop._W-tempm))
+		tempvalues.append(tempentropy(pop.get_M()-tempm,pop.get_W()-tempm))
 	return np.mean(tempvalues)
 
 def entropycouples_max(pop):
-	return tempentropy(pop._M,pop._W)
+	return tempentropy(pop.get_M(),pop.get_W())
 
 def entropycouples_min(pop):
 	return 0
@@ -1290,10 +1387,10 @@ custom_srtheo_cat=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 ###############""srtheo as used in epirob08 paper#############
 def srtheo2(pop,**kwargs):
-	C = np.zeros((pop._W,pop._M))
-	best_scores = np.zeros((pop._M,pop._size))
+	C = np.zeros((pop.get_W(),pop.get_M()))
+	best_scores = np.zeros((pop.get_M(),pop._size))
 	for ag in range(len(pop._agentlist)):
-		for m in range(pop._M):
+		for m in range(pop.get_M()):
 			try:
 				best_scores[m,ag] = np.amax(pop._agentlist[ag]._vocabulary.get_row(m))
 			except TypeError:
@@ -1304,7 +1401,7 @@ def srtheo2(pop,**kwargs):
 				best_scores[m,ag] = max(pop._agentlist[ag]._vocabulary.get_row(m))
 	n_meanings_used = 0
 	for a in range(pop._size):
-		for meaning in range(pop._M):
+		for meaning in range(pop.get_M()):
 			score = best_scores[meaning,a]
 			if score > 0:
 				n_meanings_used += 1
@@ -1316,16 +1413,16 @@ def srtheo2(pop,**kwargs):
 	n_meanings_used = n_meanings_used/float(pop._size)
 
 	n_words_used = 0
-	D = np.zeros((pop._W,pop._M))
-	best_scores = np.zeros((pop._W,pop._size))
+	D = np.zeros((pop.get_W(),pop.get_M()))
+	best_scores = np.zeros((pop.get_W(),pop._size))
 	for ag in range(len(pop._agentlist)):
-		for w in range(pop._W):
+		for w in range(pop.get_W()):
 			try:
 				best_scores[w,ag] = np.amax(pop._agentlist[ag]._vocabulary.get_column(w))
 			except TypeError:
 				best_scores[m,ag] = max(pop._agentlist[ag]._vocabulary.get_column(w))
 	for a in range(pop._size):
-		for word in range(pop._W):
+		for word in range(pop.get_W()):
 			score = best_scores[word,a]
 			if score > 0:
 				n_words_used += 1
@@ -1336,7 +1433,7 @@ def srtheo2(pop,**kwargs):
 	D = D/float(pop._size)
 	n_words_used = n_words_used/float(pop._size)
 
-	return sum(sum(np.multiply(C,D)))/float(pop._M)
+	return sum(sum(np.multiply(C,D)))/float(pop.get_M())
 
 
 def srtheo2_max(pop):
@@ -1351,17 +1448,17 @@ custom_srtheo2=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 ###############""srtheo as used in epirob08 paper#############
 def srtheo3(pop,**kwargs):
-	C = np.zeros((pop._W,pop._M))
-	best_scores = np.zeros((pop._M,pop._size))
+	C = np.zeros((pop.get_W(),pop.get_M()))
+	best_scores = np.zeros((pop.get_M(),pop._size))
 	for ag in range(len(pop._agentlist)):
-		for m in range(pop._M):
+		for m in range(pop.get_M()):
 			try:
 				best_scores[m,ag] = np.amax(pop._agentlist[ag]._vocabulary.get_row(m))
 			except TypeError:
 				best_scores[m,ag] = max(pop._agentlist[ag]._vocabulary.get_row(m))
 	n_meanings_used = 0
 	for a in range(pop._size):
-		for meaning in range(pop._M):
+		for meaning in range(pop.get_M()):
 			score = best_scores[meaning,a]
 			if score > 0:
 				n_meanings_used += 1
@@ -1374,17 +1471,17 @@ def srtheo3(pop,**kwargs):
 	C = C/float(pop._size)
 	n_meanings_used = n_meanings_used/float(pop._size)
 
-	D = np.zeros((pop._W,pop._M))
-	best_scores = np.zeros((pop._W,pop._size))
+	D = np.zeros((pop.get_W(),pop.get_M()))
+	best_scores = np.zeros((pop.get_W(),pop._size))
 	for ag in range(len(pop._agentlist)):
-		for w in range(pop._W):
+		for w in range(pop.get_W()):
 			try:
 				best_scores[w,ag] = np.amax(pop._agentlist[ag]._vocabulary.get_column(w))
 			except TypeError:
 				best_scores[m,ag] = max(pop._agentlist[ag]._vocabulary.get_column(w))
 	n_words_used = 0
 	for a in range(pop._size):
-		for word in range(pop._W):
+		for word in range(pop.get_W()):
 			score = best_scores[word,a]
 			if score > 0:
 				n_words_used += 1
@@ -1397,7 +1494,7 @@ def srtheo3(pop,**kwargs):
 	D = D/float(pop._size)
 	n_words_used = n_words_used/float(pop._size)
 
-	return sum(sum(np.multiply(C,D)))/float(pop._M)
+	return sum(sum(np.multiply(C,D)))/float(pop.get_M())
 
 
 def srtheo3_max(pop):
@@ -1413,22 +1510,24 @@ custom_srtheo3=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########entropydistrib##########
 
 def entropydistrib(pop,**kwargs):
-	tempmat=np.matrix(np.zeros((pop._M,pop._W)))
+	if not hasattr(pop._agentlist[0]._vocabulary,'_content'):
+		raise ValueError('this measure is not implemented for this type of vocabulary')
+	tempmat=np.matrix(np.zeros((pop.get_M(),pop.get_W())))
 	for ag in pop._agentlist:
 		tempmat=tempmat+ag._vocabulary.get_content()
 	ans=0
-	for m in range(pop._M):
+	for m in range(pop.get_M()):
 		temp=pop._size
-		for w in range(pop._W):
+		for w in range(pop.get_W()):
 			temp=temp-tempmat[m,w]
-		for w in range(pop._W):
-			tempmat[m,w]=(tempmat[m,w]+temp/pop._W)/pop._size
+		for w in range(pop.get_W()):
+			tempmat[m,w]=(tempmat[m,w]+temp/pop.get_W())/pop._size
 			if tempmat[m,w]!=0:
 				ans-=tempmat[m,w]*np.log2(tempmat[m,w])
 	return ans
 
 def entropydistrib_max(pop):
-	return pop._M*np.log2(pop._W)
+	return pop.get_M()*np.log2(pop.get_W())
 
 def entropydistrib_min(pop):
 	return 0
@@ -1975,10 +2074,12 @@ def decvec_full_teach(M,W):
 #NETWORKX TOOLS
 
 def build_nx_graph(agent_list):
+	if not hasattr(pop._agentlist[0]._vocabulary,'_content'):
+		raise ValueError('this measure is not implemented for this type of vocabulary')
 	G = nx.Graph()
 	for ag in agent_list:
 		tempm = np.sum(ag._vocabulary.get_content())
-		G.add_node(ag._id,size=1.-(tempentropy(ag._M-tempm, ag._W-tempm)/tempentropy(ag._M, ag._W)))
+		G.add_node(ag._id,size=1.-(tempentropy(ag._vocabulary.get_M()-tempm, ag._vocabulary.get_W()-tempm)/tempentropy(ag._vocabulary.get_M(), ag._vocabulary.get_W())))
 	list_length = len(agent_list)
 	for i in range(list_length):
 		agent1 = agent_list[i]
@@ -1986,7 +2087,7 @@ def build_nx_graph(agent_list):
 			agent2 = agent_list[j]
 			tempmat = np.multiply(agent1._vocabulary.get_content(), agent2._vocabulary.get_content())
 			tempm = np.sum(tempmat)
-			weight = 1.-(tempentropy(agent1._M-tempm, agent1._W-tempm)/tempentropy(agent1._M, agent1._W))
+			weight = 1.-(tempentropy(agent1._vocabulary.get_M()-tempm, agent1._vocabulary.get_W()-tempm)/tempentropy(agent1._vocabulary.get_M(), agent1._vocabulary.get_W()))
 			if weight != 0:
 				G.add_edge(agent1._id,agent2._id,weight=weight)
 	return G
@@ -2017,52 +2118,104 @@ def edgevalue_distrib(pop,**kwargs):
 
 def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False,renorm_fact=None,role='both'):
 	ans = 0.
-	if role == 'both' or role == 'hearer':
-		m1 = copy.deepcopy(voc1)
-		if voc2 is not None:
-			m2 = copy.deepcopy(voc2)
-		else:
-			m2 = copy.deepcopy(voc2_m)
-
-		if m is not None:
-			m2 = m2[m,:]
-			m1 = m1[m,:]
-		if w is not None:
-			m1 = m1[:,w]
-			m2 = m2[:,w]
-
-		if renorm:
-			if renorm_fact is None: # !!!!! TODO: Deal with div by zero
-				m1 = m1 / np.linalg.norm(m1, axis=0, ord=1,keepdims=True)
-				m2 = m2 / np.linalg.norm(m2, axis=1, ord=1,keepdims=True)
-			else:# !!!!! TODO: Deal with div by zero
-				m1 = m1 / renorm_fact
-				m2 = m2 / renorm_fact
-		mult = np.multiply(m1,m2)
-		ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
-	if role == 'both' or role == 'speaker':
-		m1 = copy.deepcopy(voc1)
-		if voc2 is not None:
-			m2 = copy.deepcopy(voc2)
-		else:
-			m2 = copy.deepcopy(voc2_w)
-
-		if m is not None:
-			m2 = m2[m,:]
-			m1 = m1[m,:]
-		if w is not None:
-			m1 = m1[:,w]
-			m2 = m2[:,w]
-
-		if renorm:
-			if renorm_fact is None:# !!!!! TODO: Deal with div by zero
-				m1 = m1 / np.linalg.norm(m1, axis=1, ord=1,keepdims=True)
-				m2 = m2 / np.linalg.norm(m2, axis=0, ord=1,keepdims=True)
+	if not hasattr(voc1,'_content_m'):
+		if role == 'both' or role == 'hearer':
+			m1 = copy.deepcopy(voc1)
+			if voc2 is not None:
+				m2 = copy.deepcopy(voc2)
 			else:
-				m1 = m1 / renorm_fact# !!!!! TODO: Deal with div by zero
-				m2 = m2 / renorm_fact
-		mult = np.multiply(m1,m2)
-		ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
+				m2 = copy.deepcopy(voc2_m)
+
+			if m is not None:
+				m2 = m2[m,:]
+				m1 = m1[m,:]
+			if w is not None:
+				m1 = m1[:,w]
+				m2 = m2[:,w]
+
+			if renorm:
+				if renorm_fact is None: # !!!!! TODO: Deal with div by zero
+					m1 = m1 / np.linalg.norm(m1, axis=0, ord=1,keepdims=True)
+					m2 = m2 / np.linalg.norm(m2, axis=1, ord=1,keepdims=True)
+				else:# !!!!! TODO: Deal with div by zero
+					m1 = m1 / renorm_fact
+					m2 = m2 / renorm_fact
+			mult = np.multiply(m1,m2)
+			ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
+		if role == 'both' or role == 'speaker':
+			m1 = copy.deepcopy(voc1)
+			if voc2 is not None:
+				m2 = copy.deepcopy(voc2)
+			else:
+				m2 = copy.deepcopy(voc2_w)
+
+			if m is not None:
+				m2 = m2[m,:]
+				m1 = m1[m,:]
+			if w is not None:
+				m1 = m1[:,w]
+				m2 = m2[:,w]
+
+			if renorm:
+				if renorm_fact is None:# !!!!! TODO: Deal with div by zero
+					m1 = m1 / np.linalg.norm(m1, axis=1, ord=1,keepdims=True)
+					m2 = m2 / np.linalg.norm(m2, axis=0, ord=1,keepdims=True)
+				else:
+					m1 = m1 / renorm_fact# !!!!! TODO: Deal with div by zero
+					m2 = m2 / renorm_fact
+			mult = np.multiply(m1,m2)
+			ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
+	else:
+		if role == 'both' or role == 'speaker':
+			if m is not None and w is not None:
+				try:
+					ans += voc1._content_m[m][w] * voc2._content_w[w][m]
+				except KeyError:
+					pass
+			elif m is not None and m in voc1._content_m.keys():
+				for w1 in voc1._content_m[m].keys():
+					try:
+						ans += voc1._content_m[m][w1] * voc2._content_w[w1][m]
+					except KeyError:
+						pass
+			elif w is not None and w in voc2._content_w.keys():
+				for m1 in voc2._content_w[w].keys():
+					try:
+						ans += voc1._content_m[m1][w] * voc2._content_w[w][m1]
+					except KeyError:
+						pass
+			else:
+				for m1 in voc1._content_m.keys():
+					for w1 in voc1._content_m[m1].keys():
+						try:
+							ans += voc1._content_m[m1][w1] * voc2._content_w[w1][m1]
+						except KeyError:
+							pass
+		if role == 'both' or role == 'hearer':
+			if m is not None and w is not None:
+				try:
+					ans += voc2._content_m[m][w] * voc1._content_w[w][m]
+				except KeyError:
+					pass
+			elif m is not None and m in voc2._content_m.keys():
+				for w1 in voc2._content_m[m].keys():
+					try:
+						ans += voc2._content_m[m][w1] * voc1._content_w[w1][m]
+					except KeyError:
+						pass
+			elif w is not None and w in voc1._content_w.keys():
+				for m1 in voc1._content_w[w].keys():
+					try:
+						ans += voc2._content_m[m1][w] * voc1._content_w[w][m1]
+					except KeyError:
+						pass
+			else:
+				for m1 in voc2._content_m.keys():
+					for w1 in voc2._content_m[m1].keys():
+						try:
+							ans += voc2._content_m[m1][w1] * voc1._content_w[w1][m1]
+						except KeyError:
+							pass
 	if role == 'both':
 		return ans/2.
 	else:
