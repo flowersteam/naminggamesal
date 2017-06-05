@@ -82,7 +82,7 @@ class Voc2DictDict(BaseVocabulary):
 			self.rm(m,w,content_type=content_type)
 		else:
 			if content_type == 'm':
-				if m not in self.get_known_meanings():
+				if m not in self._content_m.keys():#self.get_known_meanings():
 					self._content_m[m] = {}
 				self._content_m[m][w] = val
 				if m in self.unknown_meanings:
@@ -90,7 +90,7 @@ class Voc2DictDict(BaseVocabulary):
 				if w in self.unknown_words:
 					self.unknown_words.remove(w)
 			elif content_type == 'w':
-				if w not in self.get_known_words():
+				if w not in self._content_w.keys():#self.get_known_words():
 					self._content_w[w] = {}
 				self._content_w[w][m] = val
 				if m in self.unknown_meanings:
@@ -291,11 +291,13 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 	def rm(self,m,w,content_type='both'):
 		if content_type == 'm':
 			if (m in self.original_voc._content_m.keys() and w in self.original_voc._content_m[m].keys()):
-				self.rm_list['m'].append((m,w))
+				if (m,w) not in self.rm_list['m']:
+					self.rm_list['m'].append((m,w))
 			Voc2DictDict.rm(self,m=m,w=w,content_type='m')
 		elif content_type == 'w':
 			if (w in self.original_voc._content_w.keys() and m in self.original_voc._content_w[w].keys()):
-				self.rm_list['w'].append((m,w))
+				if (m,w) not in self.rm_list['w']:
+					self.rm_list['w'].append((m,w))
 			Voc2DictDict.rm(self,m=m,w=w,content_type='w')
 		elif content_type == 'both':
 			self.rm(m=m,w=w,content_type='m')
@@ -324,7 +326,7 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 		if content_type in ['both','w']:
 			if (m,w) in self.rm_list['w']:
 				self.rm_list['w'].remove((m,w))
-		Voc2DictDict.add(m=m,w=w,val=val,context=context,content_type=content_type)
+		Voc2DictDict.add(self,m=m,w=w,val=val,context=context,content_type=content_type)
 
 
 	def get_KM(self):
@@ -333,16 +335,18 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 	def get_KW(self):
 		return len(self.get_known_words())#could do better by storing explicitly which values are in both self._content_x and self.original_voc._content_x
 
-	@voc_cache
+	#@voc_cache
 	def get_known_words(self,m=None,option=None):
 		local = Voc2DictDict.get_known_words(self,m=m,option=option)
 		orig = self.original_voc.get_known_words(m=m,option=option)
-		return list(set(local)+set(orig))
+		return list(set(local) | set(orig))
 	
 
-	@voc_cache
+	#@voc_cache
 	def get_known_meanings(self,w=None,option=None):
 		local = Voc2DictDict.get_known_meanings(self,w=w,option=option)
 		orig = self.original_voc.get_known_meanings(w=w,option=option)
-		return list(set(local)+set(orig))
+		print 'local:',local
+		print 'orig:',orig
+		return list(set(local) | set(orig))
 
