@@ -30,23 +30,31 @@ class Poplist(object):
 		#if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Old Policy: if both compressed and uncompressed versions present, erase uncompressed
 			#os.remove(self.filepath)
 		self.pop = None
-		self.init_db()
+		#self.init_db()
+		self.init_done = False
 		#self.conn = sqlite3.connect(self.filepath)
 		#self.cursor = self.conn.cursor()
 
 	def init_db(self):
 		init_db(filepath=self.filepath)
+		self.init_done = True
 
 	def append(self,pop,T,priority=None):
 		if priority is None:
 			priority = self.priority
+		if hasattr(self,'init_done') and not self.init_done:
+			self.init_db()
 		add_data(filepath=self.filepath,data=pop,label=T,priority=priority)
+		self.T_last = T
 		#add_data_conn(cursor=self.cursor,data=pop,label=T)
 
 	def get(self,T,priority=None):
 		if priority is None:
 			priority = self.priority
-		return read_data(filepath=self.filepath,label=T,priority=priority)
+		if hasattr(self,'T_last') and T == self.T_last:
+			return self.get_last()
+		else:
+			return read_data(filepath=self.filepath,label=T,priority=priority)
 		#return read_data_conn(cursor=self.cursor,label=T)
 
 	def get_last(self):
@@ -77,11 +85,9 @@ class Poplist(object):
 		#self.conn = sqlite3.connect(self.filepath)
 		#self.cursor = self.conn.cursor()
 
-
-
 class Experiment(object):
 
-	def __init__(self, pop_cfg, step=1):
+	def __init__(self, pop_cfg, step=1, no_storage=False):
 		self._time_step = step
 		self.define_stepfun()
 		self._T = []
@@ -93,6 +99,7 @@ class Experiment(object):
 		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.reconstruct_info = []
+		self.no_storage = no_storage
 
 	def compress(self,rm=True):
 		self._poplist.compress(rm=rm)
@@ -188,7 +195,7 @@ class Experiment(object):
 
 
 	def __str__(self):
-		return "T: "+str(self._T[-1])+"\n"+str(self._poplist.get(self._T[-1]))
+		return "T: "+str(self._T[-1])+"\n"+str(self._poplist.get_last())
 
 	def continue_exp_until(self,T):
 		if not self._T:
@@ -214,7 +221,10 @@ class Experiment(object):
 		self.continue_exp_until(self._T[-1]+dT)
 
 	def add_pop(self,pop,T,exec_time=0):
-		self._poplist.append(pop,T)
+		if (not hasattr(self,'no_storage')) or (not self.no_storage):
+			self._poplist.append(pop,T)
+		else:
+			self._poplist.T_last = T
 		self._T.append(T)
 		self._exec_time.append(exec_time)
 

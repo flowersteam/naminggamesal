@@ -1729,6 +1729,7 @@ graphconfig = {"ymin":max_mem_min}#,"ymax":max_mem_max}
 custom_max_mem_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 
+
 #########max_N_d##########
 
 def max_N_d(exp,X=0,**kwargs):
@@ -1791,7 +1792,7 @@ def block_time(exp,X=0,**kwargs):
 	Nm = Nm_gr._Y[0]
 	M = N_meanings_max(exp._poplist.get_last())
 	for i in range(len(Nd)):
-		if Nm[i] == M and Nd == M:
+		if Nm[i] == M and Nd[i] == M:
 			return [Nd_gr._X[0][i]]
 	return [np.nan]
 
@@ -1805,6 +1806,32 @@ FUNC = block_time
 
 graphconfig = {"ymin":block_time_min,"ymax":block_time_max}
 custom_block_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########homonymy_block##########
+
+def homonymy_block(exp,X=0,**kwargs):
+	Nd_gr = exp.db.get_graph(exp.uuid, method='N_d')#exp.graph(method='srtheo')
+	Nd = Nd_gr._Y[0]
+	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')#exp.graph(method='srtheo')
+	Nm = Nm_gr._Y[0]
+	hom_gr = exp.db.get_graph(exp.uuid, method='homonymy')#exp.graph(method='srtheo')
+	hom = hom_gr._Y[0]
+	M = N_meanings_max(exp._poplist.get_last())
+	if Nm[-1] == M and Nd[-1] == M:
+		return [hom_gr._Y[0][-1]]
+	else:
+		return [np.nan]
+
+def homonymy_block_max(exp):
+	return exp._T[-1]
+
+def homonymy_block_min(exp):
+	return 0
+
+FUNC = homonymy_block
+
+graphconfig = {"ymin":homonymy_block_min,"ymax":homonymy_block_max}
+custom_homonymy_block =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########max_N_d_time##########
 
@@ -2116,8 +2143,10 @@ def edgevalue_distrib(pop,**kwargs):
 #==================
 
 
-def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False,renorm_fact=None,role='both'):
+def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False,renorm_fact=None,role='both',extend=False):
 	ans = 0.
+	if extend:
+		ans += srtheo_voc(voc1,voc2=voc2,voc2_m=voc2_m,voc2_w=voc2_w,m=None,w=None,renorm=renorm,renorm_fact=renorm_fact,role=role,extend=False)
 	if not hasattr(voc1,'_content_m'):
 		if role == 'both' or role == 'hearer':
 			m1 = copy.deepcopy(voc1)
@@ -2167,53 +2196,56 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False
 			ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
 	else:
 		if role == 'both' or role == 'speaker':
-			if m is not None and w is not None:
-				try:
-					ans += voc1._content_m[m][w] * voc2._content_w[w][m]
-				except KeyError:
-					pass
-			elif m is not None and m in voc1._content_m.keys():
-				for w1 in voc1._content_m[m].keys():
-					try:
-						ans += voc1._content_m[m][w1] * voc2._content_w[w1][m]
-					except KeyError:
-						pass
-			elif w is not None and w in voc2._content_w.keys():
-				for m1 in voc2._content_w[w].keys():
-					try:
-						ans += voc1._content_m[m1][w] * voc2._content_w[w][m1]
-					except KeyError:
-						pass
-			else:
-				for m1 in voc1._content_m.keys():
-					for w1 in voc1._content_m[m1].keys():
+			#if m is not None and w is not None:
+				#try:
+				#	ans += voc1._content_m[m][w] * voc2._content_w[w][m]
+				#except KeyError:
+				#	pass
+
+			if m is not None or w is not None:
+				if m is not None and m in voc1.get_known_meanings():#voc1._content_m.keys():
+					for w1 in voc1.get_known_words(m=m):#voc1._content_m[m].keys():
 						try:
-							ans += voc1._content_m[m1][w1] * voc2._content_w[w1][m1]
+							ans += voc1.get_value(m,w1,content_type='m') * voc2.get_value(m,w1,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
+						except KeyError:
+							pass
+				elif w is not None and w in voc2.get_known_words(): #voc2._content_w.keys():
+					for m1 in voc2.get_known_meanings(w=w): #voc2._content_w[w].keys():
+						try:
+							ans += voc1.get_value(m1,w,content_type='m') * voc2.get_value(m1,w,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
+						except KeyError:
+							pass
+			else:
+				for m1 in voc1.get_known_meanings():
+					for w1 in voc1.get_known_words(m=m1):
+						try:
+							ans += voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
 						except KeyError:
 							pass
 		if role == 'both' or role == 'hearer':
-			if m is not None and w is not None:
-				try:
-					ans += voc2._content_m[m][w] * voc1._content_w[w][m]
-				except KeyError:
-					pass
-			elif m is not None and m in voc2._content_m.keys():
-				for w1 in voc2._content_m[m].keys():
-					try:
-						ans += voc2._content_m[m][w1] * voc1._content_w[w1][m]
-					except KeyError:
-						pass
-			elif w is not None and w in voc1._content_w.keys():
-				for m1 in voc1._content_w[w].keys():
-					try:
-						ans += voc2._content_m[m1][w] * voc1._content_w[w][m1]
-					except KeyError:
-						pass
-			else:
-				for m1 in voc2._content_m.keys():
-					for w1 in voc2._content_m[m1].keys():
+			#if m is not None and w is not None:
+				#try:
+				#	ans += voc2._content_m[m][w] * voc1._content_w[w][m]
+				#except KeyError:
+				#	pass
+			if m is not None or w is not None:
+				if m is not None and m in voc2.get_known_meanings():#voc1._content_m.keys():
+					for w1 in voc2.get_known_words(m=m):#voc1._content_m[m].keys():
 						try:
-							ans += voc2._content_m[m1][w1] * voc1._content_w[w1][m1]
+							ans += voc2.get_value(m,w1,content_type='m') * voc1.get_value(m,w1,content_type='w')/float(voc2.get_M()) #/float(len(voc1.get_known_words(m=m))*len(voc2.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
+						except KeyError:
+							pass
+				elif w is not None and w in voc1.get_known_words(): #voc2._content_w.keys():
+					for m1 in voc1.get_known_meanings(w=w): #voc2._content_w[w].keys():
+						try:
+							ans += voc2.get_value(m1,w,content_type='m') * voc1.get_value(m1,w,content_type='w')/float(voc2.get_M())#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
+						except KeyError:
+							pass
+			else:
+				for m1 in voc1.get_known_meanings():
+					for w1 in voc2.get_known_words(m=m1):
+						try:
+							ans += voc2.get_value(m1,w1,content_type='m') * voc1.get_value(m1,w1,content_type='w')/float(voc2.get_M())#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w1)))
 						except KeyError:
 							pass
 	if role == 'both':

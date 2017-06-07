@@ -38,7 +38,10 @@ class Memory(collections.MutableMapping):
 	def __init__(self, memory_policies, voc=None):
 		self.store = dict()
 		self.memory_policies = []
+		self.mpclasses = []
 		for mp in memory_policies:
+			assert mp['mem_type'] not in self.mpclasses
+			self.mpclasses.append(mp['mem_type'])
 			self.memory_policies.append(get_memory_policy(**mp))
 		self.init_memory(voc=voc)
 

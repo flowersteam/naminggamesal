@@ -150,6 +150,7 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 				self.subvu.update_hearer(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
 			elif role == 'speaker':
 				self.subvu.update_speaker(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
+
 			if self.role != 'local':
 				role = self.role
 			return ngmeth.srtheo_voc(voc,voc2=pop_voc,role=role,renorm=False) <= ngmeth.srtheo_voc(voc_new,voc2=pop_voc,role=role,renorm=False)

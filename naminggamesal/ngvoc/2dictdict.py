@@ -30,12 +30,12 @@ class Voc2DictDict(BaseVocabulary):
 		if start == 'completed':
 			self.complete_empty()
 
-	@del_cache
+	#@del_cache
 	def complete_empty(self):
 		assert len(self.get_known_meanings()) == 0
 		print "complete_empty not implemented yet"
 
-	@del_cache
+	#@del_cache
 	def empty(self):
 		m_list = self.get_accessible_meanings()
 		w_list = self.get_accessible_words()
@@ -44,7 +44,7 @@ class Voc2DictDict(BaseVocabulary):
 		self.unknown_meanings = m_list
 		self.unknown_words = w_list
 
-	@voc_cache
+	#@voc_cache
 	def exists(self,m,w):
 		if self.get_value(m,w,content_type='m') > 0 or self.get_value(m,w,content_type='w') > 0:
 			return 1
@@ -70,13 +70,13 @@ class Voc2DictDict(BaseVocabulary):
 		else:
 			raise ValueError('unknown content type:'+str(content_type))
 
-	@voc_cache
+	#@voc_cache
 	def get_size(self):
 		return [self.get_M(),self.get_W()]
 		#return [len(self.get_accessible_meanings()),len(self.get_accessible_words())]
 
 
-	@del_cache
+	#@del_cache
 	def add(self,m,w,val=1,context=[],content_type='both'):
 		if val <= 0:
 			self.rm(m,w,content_type=content_type)
@@ -114,7 +114,7 @@ class Voc2DictDict(BaseVocabulary):
 			val_fin = max(0,val_init+val)
 			self.add(m,w,val_fin,content_type='w')
 
-	@del_cache
+	#@del_cache
 	def rm(self,m,w,content_type='both'):
 		if content_type == 'm':
 			if m in self._content_m.keys() and w in self._content_m[m].keys():
@@ -144,7 +144,7 @@ class Voc2DictDict(BaseVocabulary):
 			if i!=m:
 				self.rm(i,w,content_type=content_type)
 
-	@voc_cache
+	#@voc_cache
 	def get_known_words(self,m=None,option=None):
 		if m is None:
 			return self._content_w.keys()
@@ -165,7 +165,7 @@ class Voc2DictDict(BaseVocabulary):
 			#elif option == 'minofmaxw':
 			#elif option == 'minofmaxm':
 
-	@voc_cache
+	#@voc_cache
 	def get_known_meanings(self,w=None,option=None):
 		if w is None:
 			return self._content_m.keys()
@@ -272,6 +272,7 @@ class Voc2DictDict(BaseVocabulary):
 		return len(self._content_w)
 
 	def get_alterable_shallow_copy(self):
+		#return copy.deepcopy(self)
 		return AlterableShallowCopyVoc2DictDict(voc=self)
 
 	#def inherit_from: to split a meaning or a word
@@ -287,6 +288,10 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 		self.rm_list = {'m':[],'w':[]}
 		self.unknown_words = self.original_voc.unknown_words[:] #shallow copies of lists
 		self.unknown_meanings = self.original_voc.unknown_meanings[:]
+
+
+	def empty(self):
+		raise Exception('Emptying shallow copy not implemented')
 
 	def rm(self,m,w,content_type='both'):
 		if content_type == 'm':
@@ -307,25 +312,26 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 
 	def get_value(self,m,w,content_type='m'):
 		if (m,w) in self.rm_list[content_type]:
-			return 0
+			return 0.
 		else:
 			try:
 				if content_type == 'm':
 					return self._content_m[m][w]
 				elif content_type == 'w':
-					return self._content_w[m][w]
+					return self._content_w[w][m]
 				else:
 					raise ValueError('unknown content type:'+str(content_type))
 			except KeyError:
-				self.original_voc.get_value(m,w,content_type)
+				return self.original_voc.get_value(m,w,content_type)
 
 	def add(self,m,w,val=1,context=[],content_type='both'):
-		if content_type in ['both','m']:
-			if (m,w) in self.rm_list['m']:
-				self.rm_list['m'].remove((m,w))
-		if content_type in ['both','w']:
-			if (m,w) in self.rm_list['w']:
-				self.rm_list['w'].remove((m,w))
+		if val > 0:
+			if content_type in ['both','m']:
+				if (m,w) in self.rm_list['m']:
+					self.rm_list['m'].remove((m,w))
+			if content_type in ['both','w']:
+				if (m,w) in self.rm_list['w']:
+					self.rm_list['w'].remove((m,w))
 		Voc2DictDict.add(self,m=m,w=w,val=val,context=context,content_type=content_type)
 
 
@@ -346,7 +352,5 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 	def get_known_meanings(self,w=None,option=None):
 		local = Voc2DictDict.get_known_meanings(self,w=w,option=option)
 		orig = self.original_voc.get_known_meanings(w=w,option=option)
-		print 'local:',local
-		print 'orig:',orig
 		return list(set(local) | set(orig))
 
