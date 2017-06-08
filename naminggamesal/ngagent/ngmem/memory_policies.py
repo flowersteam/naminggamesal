@@ -284,23 +284,24 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 			else:
 				mem['interact_count_voc'].add_value(ms,w,1./self.time_scale,content_type='both')
 
-		while len(mem['past_interactions_sliding_window_local']['m'][ms])>self.time_scale:
+		while ms in mem['past_interactions_sliding_window_local']['m'].keys() and len(mem['past_interactions_sliding_window_local']['m'][ms])>self.time_scale:
 			w0,valm = mem['past_interactions_sliding_window_local']['m'][ms].pop(0)
 			if hasattr(voc,'_content'):
 				mem['interact_count_m'][ms,w0] = max(mem['interact_count_m'][ms,w0] - valm , 0)
 			else:
 				mem['interact_count_voc'].add_value(ms,w0,-valm,content_type='m')
-		if self.time_scale == 0:
-			del mem['past_interactions_sliding_window_local']['m'][ms]
 
-		while len(mem['past_interactions_sliding_window_local']['w'][w])>self.time_scale:
+		while w in mem['past_interactions_sliding_window_local']['w'].keys() and len(mem['past_interactions_sliding_window_local']['w'][w])>self.time_scale:
 			m0,valw = mem['past_interactions_sliding_window_local']['w'][w].pop(0)
 			if hasattr(voc,'_content'):
 				mem['interact_count_w'][m0,w] = max(mem['interact_count_w'][m0,w] - valw , 0)
 			else:
 				mem['interact_count_voc'].add_value(m0,w,-valw,content_type='w')
+
 		if self.time_scale == 0:
+			del mem['past_interactions_sliding_window_local']['m'][ms]
 			del mem['past_interactions_sliding_window_local']['w'][w]
+
 
 	def change_time_scale(self,new_time_scale):
 		self.time_scale = new_time_scale
