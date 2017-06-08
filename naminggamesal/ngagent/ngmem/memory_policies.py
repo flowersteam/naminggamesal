@@ -299,8 +299,10 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 				mem['interact_count_voc'].add_value(m0,w,-valw,content_type='w')
 
 		if self.time_scale == 0:
-			del mem['past_interactions_sliding_window_local']['m'][ms]
-			del mem['past_interactions_sliding_window_local']['w'][w]
+			if ms in mem['past_interactions_sliding_window_local']['m'].keys():
+				del mem['past_interactions_sliding_window_local']['m'][ms]
+			if w in mem['past_interactions_sliding_window_local']['w'].keys():
+				del mem['past_interactions_sliding_window_local']['w'][w]
 
 
 	def change_time_scale(self,new_time_scale):
