@@ -9,4 +9,5 @@ class AgentInit(object):
 		return copy.deepcopy(ag_cfg)
 
 	def modify_agent(self,agent, pop, pop_init=False):
-		pop.env.init_agent(agent)
+		if hasattr(pop.env,'init_agent'):
+			pop.env.init_agent(agent)
