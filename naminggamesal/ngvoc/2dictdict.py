@@ -15,11 +15,13 @@ from . import voc_cache, del_cache
 
 class Voc2DictDict(BaseVocabulary):
 
-	def __init__(self, start='empty',**voc_cfg2):
+	def __init__(self, start='empty', **voc_cfg2):
 		#self._M = M
 		#self._W = W
 		self.unknown_meanings = []
 		self.unknown_words = []
+		#if valmax1:
+		#	self.valmax = 1.
 		#self._size = [self._M,self._W]
 		#M = voc_cfg2['M']
 		#W = voc_cfg2['W']
@@ -30,12 +32,12 @@ class Voc2DictDict(BaseVocabulary):
 		if start == 'completed':
 			self.complete_empty()
 
-	#@del_cache
+	@del_cache
 	def complete_empty(self):
 		assert len(self.get_known_meanings()) == 0
 		print "complete_empty not implemented yet"
 
-	#@del_cache
+	@del_cache
 	def empty(self):
 		m_list = self.get_accessible_meanings()
 		w_list = self.get_accessible_words()
@@ -44,7 +46,7 @@ class Voc2DictDict(BaseVocabulary):
 		self.unknown_meanings = m_list
 		self.unknown_words = w_list
 
-	#@voc_cache
+	@voc_cache
 	def exists(self,m,w):
 		if self.get_value(m,w,content_type='m') > 0 or self.get_value(m,w,content_type='w') > 0:
 			return 1
@@ -70,14 +72,18 @@ class Voc2DictDict(BaseVocabulary):
 		else:
 			raise ValueError('unknown content type:'+str(content_type))
 
-	#@voc_cache
+	@voc_cache
 	def get_size(self):
 		return [self.get_M(),self.get_W()]
 		#return [len(self.get_accessible_meanings()),len(self.get_accessible_words())]
 
 
-	#@del_cache
+	@del_cache
 	def add(self,m,w,val=1,context=[],content_type='both'):
+		assert m in self.get_accessible_meanings()
+		assert w in self.get_accessible_words()
+		#if hasattr(self,'valmax') and val > self.valmax:
+		#	val = self.valmax
 		if val <= 0:
 			self.rm(m,w,content_type=content_type)
 		else:
@@ -87,14 +93,14 @@ class Voc2DictDict(BaseVocabulary):
 				self._content_m[m][w] = val
 				if m in self.unknown_meanings:
 					self.unknown_meanings.remove(m)
-				if w in self.unknown_words:
-					self.unknown_words.remove(w)
+				#if w in self.unknown_words:
+				#	self.unknown_words.remove(w)
 			elif content_type == 'w':
 				if w not in self._content_w.keys():#self.get_known_words():
 					self._content_w[w] = {}
 				self._content_w[w][m] = val
-				if m in self.unknown_meanings:
-					self.unknown_meanings.remove(m)
+				#if m in self.unknown_meanings:
+				#	self.unknown_meanings.remove(m)
 				if w in self.unknown_words:
 					self.unknown_words.remove(w)
 			elif content_type == 'both':
@@ -114,8 +120,20 @@ class Voc2DictDict(BaseVocabulary):
 			val_fin = max(0,val_init+val)
 			self.add(m,w,val_fin,content_type='w')
 
-	#@del_cache
+	def multiply_value(self,m,w,val=1,context=[],content_type='both'):
+		if content_type in ['m','both']:
+			val_init = self.get_value(m,w,content_type='m')
+			val_fin = max(0,val_init*val)
+			self.add(m,w,val_fin,content_type='m')
+		if content_type in ['w','both']:
+			val_init = self.get_value(m,w,content_type='w')
+			val_fin = max(0,val_init*val)
+			self.add(m,w,val_fin,content_type='w')
+
+	@del_cache
 	def rm(self,m,w,content_type='both'):
+		assert m in self.get_accessible_meanings()
+		assert w in self.get_accessible_words()
 		if content_type == 'm':
 			if m in self._content_m.keys() and w in self._content_m[m].keys():
 				del self._content_m[m][w]
@@ -144,7 +162,7 @@ class Voc2DictDict(BaseVocabulary):
 			if i!=m:
 				self.rm(i,w,content_type=content_type)
 
-	#@voc_cache
+	@voc_cache
 	def get_known_words(self,m=None,option=None):
 		if m is None:
 			return self._content_w.keys()
@@ -165,7 +183,7 @@ class Voc2DictDict(BaseVocabulary):
 			#elif option == 'minofmaxw':
 			#elif option == 'minofmaxm':
 
-	#@voc_cache
+	@voc_cache
 	def get_known_meanings(self,w=None,option=None):
 		if w is None:
 			return self._content_m.keys()
@@ -291,6 +309,7 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 
 
 	def empty(self):
+		#change original_voc to an empty one, and empty as well features of self?
 		raise Exception('Emptying shallow copy not implemented')
 
 	def rm(self,m,w,content_type='both'):
@@ -346,7 +365,7 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 		local = Voc2DictDict.get_known_words(self,m=m,option=option)
 		orig = self.original_voc.get_known_words(m=m,option=option)
 		return list(set(local) | set(orig))
-	
+
 
 	#@voc_cache
 	def get_known_meanings(self,w=None,option=None):

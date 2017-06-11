@@ -1330,6 +1330,21 @@ FUNC=srtheo
 graphconfig={"ymin":srtheo_min,"ymax":srtheo_max}
 custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+#########srtheo_local##########
+
+def srtheo_local(pop, m=None, **kwargs):
+	ans = 0
+	for ag in pop._agentlist:
+		if hasattr(ag._vocabulary,'_content'):
+			ans += srtheo_voc(ag._vocabulary._content,voc2_m=ag._memory['interact_count_m'],voc2_w=ag._memory['interact_count_w'])
+		else:
+			ans += srtheo_voc(ag._vocabulary,voc2=ag._memory['interact_count_voc'])
+	return ans/float(len(pop._agentlist))
+
+FUNC=srtheo_local
+graphconfig={"ymin":srtheo_min,"ymax":srtheo_max}
+custom_srtheo_local=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
 #########srtheo_cat##########
 from .ngstrat.naive import StratNaiveCategoryPlosOne
 strat_srtheo_cat = StratNaiveCategoryPlosOne()
@@ -1830,7 +1845,7 @@ def homonymy_block_min(exp):
 
 FUNC = homonymy_block
 
-graphconfig = {"ymin":homonymy_block_min,"ymax":homonymy_block_max}
+graphconfig = {"ymin":homonymy_block_min}#,"ymax":homonymy_block_max}
 custom_homonymy_block =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########max_N_d_time##########
@@ -2155,9 +2170,9 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False
 			else:
 				m2 = copy.deepcopy(voc2_m)
 
-			if m is not None:
-				m2 = m2[m,:]
-				m1 = m1[m,:]
+			#if m is not None:
+			#	m2 = m2[m,:]
+			#	m1 = m1[m,:]
 			if w is not None:
 				m1 = m1[:,w]
 				m2 = m2[:,w]
@@ -2181,9 +2196,9 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False
 			if m is not None:
 				m2 = m2[m,:]
 				m1 = m1[m,:]
-			if w is not None:
-				m1 = m1[:,w]
-				m2 = m2[:,w]
+			#if w is not None:
+			#	m1 = m1[:,w]
+			#	m2 = m2[:,w]
 
 			if renorm:
 				if renorm_fact is None:# !!!!! TODO: Deal with div by zero
@@ -2203,21 +2218,21 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False
 				#	pass
 
 			if m is not None or w is not None:
-				if m is not None and m in voc1.get_known_meanings():#voc1._content_m.keys():
-					for w1 in voc1.get_known_words(m=m):#voc1._content_m[m].keys():
+				if m is not None and m in voc1.get_known_meanings(option=None):#voc1._content_m.keys():
+					for w1 in voc1.get_known_words(m=m,option=None):#voc1._content_m[m].keys():
 						try:
 							ans += voc1.get_value(m,w1,content_type='m') * voc2.get_value(m,w1,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
 						except KeyError:
 							pass
-				elif w is not None and w in voc2.get_known_words(): #voc2._content_w.keys():
-					for m1 in voc2.get_known_meanings(w=w): #voc2._content_w[w].keys():
-						try:
-							ans += voc1.get_value(m1,w,content_type='m') * voc2.get_value(m1,w,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
-						except KeyError:
-							pass
+				#elif w is not None and w in voc2.get_known_words(option=None): #voc2._content_w.keys():
+				#	for m1 in voc2.get_known_meanings(w=w,option=None): #voc2._content_w[w].keys():
+				#		try:
+				#			ans += voc1.get_value(m1,w,content_type='m') * voc2.get_value(m1,w,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
+				#		except KeyError:
+				#			pass
 			else:
-				for m1 in voc1.get_known_meanings():
-					for w1 in voc1.get_known_words(m=m1):
+				for m1 in voc1.get_known_meanings(option=None):
+					for w1 in voc1.get_known_words(m=m1,option=None):
 						try:
 							ans += voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
 						except KeyError:
@@ -2229,21 +2244,21 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False
 				#except KeyError:
 				#	pass
 			if m is not None or w is not None:
-				if m is not None and m in voc2.get_known_meanings():#voc1._content_m.keys():
-					for w1 in voc2.get_known_words(m=m):#voc1._content_m[m].keys():
-						try:
-							ans += voc2.get_value(m,w1,content_type='m') * voc1.get_value(m,w1,content_type='w')/float(voc2.get_M()) #/float(len(voc1.get_known_words(m=m))*len(voc2.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
-						except KeyError:
-							pass
-				elif w is not None and w in voc1.get_known_words(): #voc2._content_w.keys():
-					for m1 in voc1.get_known_meanings(w=w): #voc2._content_w[w].keys():
+				#if m is not None and m in voc2.get_known_meanings(option=None):#voc1._content_m.keys():
+				#	for w1 in voc2.get_known_words(m=m,option=None):#voc1._content_m[m].keys():
+				#		try:
+				#			ans += voc2.get_value(m,w1,content_type='m') * voc1.get_value(m,w1,content_type='w')/float(voc2.get_M()) #HYPOTH: M is the same for both vocabularies...
+				#		except KeyError:
+				#			pass
+				elif w is not None and w in voc1.get_known_words(option=None): #voc2._content_w.keys():
+					for m1 in voc1.get_known_meanings(w=w,option=None): #voc2._content_w[w].keys():
 						try:
 							ans += voc2.get_value(m1,w,content_type='m') * voc1.get_value(m1,w,content_type='w')/float(voc2.get_M())#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
 						except KeyError:
 							pass
 			else:
-				for m1 in voc1.get_known_meanings():
-					for w1 in voc2.get_known_words(m=m1):
+				for m1 in voc1.get_known_meanings(option=None):
+					for w1 in voc2.get_known_words(m=m1,option=None):
 						try:
 							ans += voc2.get_value(m1,w1,content_type='m') * voc1.get_value(m1,w1,content_type='w')/float(voc2.get_M())#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w1)))
 						except KeyError:

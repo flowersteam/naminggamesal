@@ -85,8 +85,12 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 		fail_sum = 0
 		ratelist = []
 		for m in voc.get_known_meanings():
-			succ_sum = mem["success_m"][m]
-			fail_sum = mem["fail_m"][m]
+			try:
+				succ_sum = mem["success_m"][m]
+				fail_sum = mem["fail_m"][m]
+			except KeyError:
+				succ_sum = 0
+				fail_sum = 0
 			if succ_sum!=0:
 				ratelist.append(succ_sum/float(fail_sum+succ_sum))
 			else:

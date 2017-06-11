@@ -44,22 +44,34 @@ class LastResultMP(MemoryPolicy):
 
 class SuccessCountPerMMP(MemoryPolicy):
 
+
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if role=='speaker':
 			m1=ms
 		else:
 			m1=ms#mh justification: getting information from the other's vocabulary for the hearer
 		if bool_succ:
-			mem["success_m"][m1]+=1
+			try:
+				mem["success_m"][m1] += 1
+			except KeyError:
+				mem["success_m"][m1] = 1
 		else:
-			mem["fail_m"][m1]+=1
+			try:
+				mem["fail_m"][m1] += 1
+			except KeyError:
+				mem["fail_m"][m1] = 1
 
 	def init_memory(self,mem,voc):
-
 		assert not hasattr(mem,'success_m')
 		assert not hasattr(mem,'fail_m')
-		mem["success_m"] = np.zeros(voc._M)#[0]*voc._M
-		mem["fail_m"] = np.zeros(voc._M)#[0]*voc._M
+		if hasattr(voc,'_content'):
+			mem["success_m"] = np.zeros(voc.get_M())#[0]*voc._M
+			mem["fail_m"] = np.zeros(voc.get_M())#[0]*voc._M
+		else:
+			mem["success_m"] = dict()
+			mem["fail_m"] = dict()
+
+
 
 class TimeDecreaseSuccessCountPerMMP(SuccessCountPerMMP):
 
@@ -76,18 +88,20 @@ class TimeDecreaseSuccessCountPerMMP(SuccessCountPerMMP):
 			m1=ms
 		else:
 			m1=ms#mh justification: getting information from the other's vocabulary for the hearer
-		for a in [mem["success_m"][m1],mem["fail_m"][m1]]:
-			a *= self.factor
-		if bool_succ:
-			mem["success_m"][m1]+=1
-		else:
-			mem["fail_m"][m1]+=1
+		if m1 in mem["success_m"].keys():
+			for a in [mem["success_m"][m1],mem["fail_m"][m1]]:
+				a *= self.factor
 
-	def init_memory(self,mem,voc):
-		assert not hasattr(mem,'success_m')
-		assert not hasattr(mem,'fail_m')
-		mem["success_m"] = np.zeros(voc._M)#[0]*voc._M
-		mem["fail_m"] = np.zeros(voc._M)#[0]*voc._M
+		if bool_succ:
+			try:
+				mem["success_m"][m1] += 1
+			except KeyError:
+				mem["success_m"][m1] = 1
+		else:
+			try:
+				mem["fail_m"][m1] += 1
+			except KeyError:
+				mem["fail_m"][m1] = 1
 
 
 
@@ -202,25 +216,30 @@ class InteractionCounts(MemoryPolicy):
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if hasattr(voc,'_content'):
 			for a in [mem["interact_count_m"][ms,:],mem["interact_count_w"][:,w]]:
-				a *= self.factor
+				a *= float(self.factor)
 				a[:] = np.where(a>self.epsilon,a,0.)
 				if hasattr(a,'eliminate_zeros'):
 					a.eliminate_zeros()
-			if self.factor > 0:
+			if self.time_scale > 0.:
 				mem['interact_count_w'][ms,w] += 1.-self.factor
 				mem['interact_count_m'][ms,w] += 1.-self.factor
 		else:
 			if ms in mem['interact_count_voc'].get_known_meanings():
-				for w1 in mem['interact_count_voc']._content_m[ms].keys():
-					mem['interact_count_voc']._content_m[ms][w1] *= self.factor
-					if mem['interact_count_voc']._content_m[ms][w1] == 0:
-						mem['interact_count_voc'].rm(ms,w1,content_type='m')
+				for w1 in mem['interact_count_voc'].get_known_words(m=ms):#_content_m[ms].keys():
+					temp_val = mem['interact_count_voc'].get_value(ms,w1,content_type='m')
+					mem['interact_count_voc'].add(m=ms,w=w1,content_type='m',val=temp_val*self.factor)
+					#mem['interact_count_voc']._content_m[ms][w1] *= float(self.factor)
+					#if mem['interact_count_voc'].get_value(ms,w1,content_type='m') == 0: #_content_m[ms][w1] == 0:
+					#	mem['interact_count_voc'].rm(ms,w1,content_type='m')
 			if w in mem['interact_count_voc'].get_known_words():
-				for m1 in mem['interact_count_voc']._content_w[w].keys():
-					mem['interact_count_voc']._content_w[w][m1] *= self.factor
-					if mem['interact_count_voc']._content_w[w][m1] == 0:
-						mem['interact_count_voc'].rm(m1,w,content_type='w')
-			mem['interact_count_voc'].add(ms,w,val=1.-self.factor,content_type='both')
+				for m1 in mem['interact_count_voc'].get_known_meanings(w=w):#_content_w[w].keys():
+					temp_val = mem['interact_count_voc'].get_value(m1,w,content_type='w')
+					mem['interact_count_voc'].add(m=m1,w=w,content_type='w',val=temp_val*self.factor)
+					#mem['interact_count_voc']._content_w[w][m1] *= float(self.factor)#USE ADD OR EQUIVALENT!!! Otherwise may not be treated well with some aspects of the voc
+					#if mem['interact_count_voc'].get_value(m1,w,content_type='w') == 0: #._content_w[w][m1] == 0:
+					#	mem['interact_count_voc'].rm(m1,w,content_type='w')
+			if self.time_scale > 0.:
+				mem['interact_count_voc'].add_value(ms,w,val=1.-self.factor,content_type='both')
 
 
 	def change_time_scale(self,new_time_scale):

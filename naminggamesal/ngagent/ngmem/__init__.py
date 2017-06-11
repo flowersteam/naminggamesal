@@ -82,6 +82,9 @@ class MemoryPolicy(object):
 	def __init__(self,mem_type):
 		self.mem_type = mem_type
 
+	def __eq__(self,other):
+		return self.mem_type == other.mem_type
+
 	def init_memory(self,mem,voc):
 		pass
 

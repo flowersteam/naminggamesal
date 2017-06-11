@@ -25,7 +25,7 @@ class Agent(object):
 		self.memory_policies = memory_policies
 		if hasattr(self._strategy,'memory_policies'):
 			for mp in self._strategy.memory_policies:
-				if mp not in self.memory_policies:
+				if not [mmp for mmp in self.memory_policies if mmp == mp]:
 					self.memory_policies.append(mp)
 		if sensor_cfg is not None:
 			self._sensoryapparatus = ngsensor.get_sensor(**sensor_cfg)
@@ -33,7 +33,6 @@ class Agent(object):
 		if hasattr(self._vocabulary,'_M'):
 			self._M = self._vocabulary._M
 			self._W = self._vocabulary._W
-
 		self.init_memory()
 		self.fail = 0
 		self.success = 0
