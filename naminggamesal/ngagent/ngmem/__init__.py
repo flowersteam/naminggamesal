@@ -70,8 +70,18 @@ class Memory(collections.MutableMapping):
 		if voc is not None:
 			voc.finish_update()
 
-	def simulated_update_memory(self,ms,w,mh,voc,role,bool_succ,context=[]):
-		fake_mem = copy.deepcopy(self)
+	def simulated_update_memory(self,ms,w,mh,voc,role,bool_succ,context=[],allow_alterableshallow=True):
+		if allow_alterableshallow:
+			fake_mem = Memory(memory_policies=[])
+			fake_mem.mpclasses = copy.deepcopy(self.mpclasses)
+			fake_mem.memory_policies = copy.deepcopy(self.memory_policies)
+			for k in self.store.keys():
+				if hasattr(self.store[k],'get_alterable_shallow_copy'):
+					fake_mem[k] = self.store[k].get_alterable_shallow_copy()
+				else:
+					fake_mem[k] = copy.deepcopy(self.store[k])
+		else:
+			fake_mem = copy.deepcopy(self)
 		fake_mem.update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
 		return fake_mem
 

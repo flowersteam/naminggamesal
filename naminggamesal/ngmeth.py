@@ -2158,10 +2158,8 @@ def edgevalue_distrib(pop,**kwargs):
 #==================
 
 
-def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False,renorm_fact=None,role='both',extend=False):
+def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both'):
 	ans = 0.
-	if extend:
-		ans += srtheo_voc(voc1,voc2=voc2,voc2_m=voc2_m,voc2_w=voc2_w,m=None,w=None,renorm=renorm,renorm_fact=renorm_fact,role=role,extend=False)
 	if not hasattr(voc1,'_content_m'):
 		if role == 'both' or role == 'hearer':
 			m1 = copy.deepcopy(voc1)
@@ -2177,13 +2175,13 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False
 				m1 = m1[:,w]
 				m2 = m2[:,w]
 
-			if renorm:
-				if renorm_fact is None: # !!!!! TODO: Deal with div by zero
-					m1 = m1 / np.linalg.norm(m1, axis=0, ord=1,keepdims=True)
-					m2 = m2 / np.linalg.norm(m2, axis=1, ord=1,keepdims=True)
-				else:# !!!!! TODO: Deal with div by zero
-					m1 = m1 / renorm_fact
-					m2 = m2 / renorm_fact
+#			if renorm:
+#				if renorm_fact is None: # !!!!! TODO: Deal with div by zero
+#					m1 = m1 / np.linalg.norm(m1, axis=0, ord=1,keepdims=True)
+#					m2 = m2 / np.linalg.norm(m2, axis=1, ord=1,keepdims=True)
+#				else:# !!!!! TODO: Deal with div by zero
+#					m1 = m1 / renorm_fact
+#					m2 = m2 / renorm_fact
 			mult = np.multiply(m1,m2)
 			ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
 		if role == 'both' or role == 'speaker':
@@ -2200,13 +2198,13 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False
 			#	m1 = m1[:,w]
 			#	m2 = m2[:,w]
 
-			if renorm:
-				if renorm_fact is None:# !!!!! TODO: Deal with div by zero
-					m1 = m1 / np.linalg.norm(m1, axis=1, ord=1,keepdims=True)
-					m2 = m2 / np.linalg.norm(m2, axis=0, ord=1,keepdims=True)
-				else:
-					m1 = m1 / renorm_fact# !!!!! TODO: Deal with div by zero
-					m2 = m2 / renorm_fact
+#			if renorm:
+#				if renorm_fact is None:# !!!!! TODO: Deal with div by zero
+#					m1 = m1 / np.linalg.norm(m1, axis=1, ord=1,keepdims=True)
+#					m2 = m2 / np.linalg.norm(m2, axis=0, ord=1,keepdims=True)
+#				else:
+#					m1 = m1 / renorm_fact# !!!!! TODO: Deal with div by zero
+#					m2 = m2 / renorm_fact
 			mult = np.multiply(m1,m2)
 			ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
 	else:
@@ -2217,7 +2215,7 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False
 				#except KeyError:
 				#	pass
 
-			if m is not None or w is not None:
+			if m is not None:# or w is not None:
 				if m is not None and m in voc1.get_known_meanings(option=None):#voc1._content_m.keys():
 					for w1 in voc1.get_known_words(m=m,option=None):#voc1._content_m[m].keys():
 						try:
@@ -2243,21 +2241,23 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,renorm=False
 				#	ans += voc2._content_m[m][w] * voc1._content_w[w][m]
 				#except KeyError:
 				#	pass
-			if m is not None or w is not None:
+			if w is not None:# or m is not None:
 				#if m is not None and m in voc2.get_known_meanings(option=None):#voc1._content_m.keys():
 				#	for w1 in voc2.get_known_words(m=m,option=None):#voc1._content_m[m].keys():
 				#		try:
 				#			ans += voc2.get_value(m,w1,content_type='m') * voc1.get_value(m,w1,content_type='w')/float(voc2.get_M()) #HYPOTH: M is the same for both vocabularies...
 				#		except KeyError:
 				#			pass
-				elif w is not None and w in voc1.get_known_words(option=None): #voc2._content_w.keys():
+
+				#if uncomment previous part, change following if by elif
+				if w is not None and w in voc1.get_known_words(option=None): #voc2._content_w.keys():
 					for m1 in voc1.get_known_meanings(w=w,option=None): #voc2._content_w[w].keys():
 						try:
 							ans += voc2.get_value(m1,w,content_type='m') * voc1.get_value(m1,w,content_type='w')/float(voc2.get_M())#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
 						except KeyError:
 							pass
 			else:
-				for m1 in voc1.get_known_meanings(option=None):
+				for m1 in voc2.get_known_meanings(option=None):
 					for w1 in voc2.get_known_words(m=m1,option=None):
 						try:
 							ans += voc2.get_value(m1,w1,content_type='m') * voc1.get_value(m1,w1,content_type='w')/float(voc2.get_M())#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w1)))

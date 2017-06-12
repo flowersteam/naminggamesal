@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from importlib import import_module
+import copy
 
 from .success import get_success
 from .voc_update import get_voc_update
@@ -64,7 +65,7 @@ def get_strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg
 		while r>p:
 			p += strat_cfg2['proba'][i+1]
 			i += 1
-		return Strategy(**strat_cfg2['cfg_list'][i])
+		return get_strategy(**strat_cfg2['cfg_list'][i])
 	if tempstr in strat_class.keys():
 		tempstr = strat_class[tempstr]
 	templist = tempstr.split('.')
@@ -80,13 +81,13 @@ class BaseStrategy(object):
 		#for key, value in strat_cfg2.iteritems():
 		#	setattr(self, key, value)
 		self.voc_update = get_voc_update(**vu_cfg)
-		self.memory_policies = memory_policies
+		self.memory_policies = copy.deepcopy(memory_policies)
 		if 'successcount' not in [mp['mem_type'] for mp in self.memory_policies]:
 			self.memory_policies.append({'mem_type':'successcount'})
 		if hasattr(self.voc_update,'memory_policies'):
 			for mp in self.voc_update.memory_policies:
 				if sum([ (mp['mem_type'] not in mmpp['mem_type']) for mmpp in self.memory_policies]):
-					self.memory_policies.append(mp)
+					self.memory_policies.append(copy.deepcopy(mp))
 		self.success = get_success(**success_cfg)
 
 	def update_speaker(self, ms, w, mh, voc, mem, bool_succ, context=[]):
