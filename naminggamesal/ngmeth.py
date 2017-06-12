@@ -2168,9 +2168,9 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 			else:
 				m2 = copy.deepcopy(voc2_m)
 
-			#if m is not None:
-			#	m2 = m2[m,:]
-			#	m1 = m1[m,:]
+			if m is not None:
+				m2 = m2[m,:]
+				m1 = m1[m,:]
 			if w is not None:
 				m1 = m1[:,w]
 				m2 = m2[:,w]
@@ -2194,9 +2194,9 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 			if m is not None:
 				m2 = m2[m,:]
 				m1 = m1[m,:]
-			#if w is not None:
-			#	m1 = m1[:,w]
-			#	m2 = m2[:,w]
+			if w is not None:
+				m1 = m1[:,w]
+				m2 = m2[:,w]
 
 #			if renorm:
 #				if renorm_fact is None:# !!!!! TODO: Deal with div by zero
@@ -2215,8 +2215,8 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 				#except KeyError:
 				#	pass
 
-			if m is not None:# or w is not None:
-				if m is not None and m in voc1.get_known_meanings(option=None):#voc1._content_m.keys():
+			if m is not None and w is None:# or w is not None:
+				if m in voc1.get_known_meanings(option=None):#voc1._content_m.keys():
 					for w1 in voc1.get_known_words(m=m,option=None):#voc1._content_m[m].keys():
 						try:
 							ans += voc1.get_value(m,w1,content_type='m') * voc2.get_value(m,w1,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
@@ -2228,6 +2228,17 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 				#			ans += voc1.get_value(m1,w,content_type='m') * voc2.get_value(m1,w,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
 				#		except KeyError:
 				#			pass
+			elif m is not None and w is not None:
+				try:
+					ans += voc1.get_value(m,w,content_type='m') * voc2.get_value(m,w,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
+				except KeyError:
+					pass
+			elif m is None and w is not None:
+				for m1 in voc1.get_known_meanings(w=w,option=None):
+					try:
+						ans += voc1.get_value(m1,w,content_type='m') * voc2.get_value(m1,w,content_type='w')/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
+					except KeyError:
+						pass
 			else:
 				for m1 in voc1.get_known_meanings(option=None):
 					for w1 in voc1.get_known_words(m=m1,option=None):
@@ -2241,7 +2252,7 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 				#	ans += voc2._content_m[m][w] * voc1._content_w[w][m]
 				#except KeyError:
 				#	pass
-			if w is not None:# or m is not None:
+			if w is not None and m is None:# or m is not None:
 				#if m is not None and m in voc2.get_known_meanings(option=None):#voc1._content_m.keys():
 				#	for w1 in voc2.get_known_words(m=m,option=None):#voc1._content_m[m].keys():
 				#		try:
@@ -2250,12 +2261,23 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 				#			pass
 
 				#if uncomment previous part, change following if by elif
-				if w is not None and w in voc1.get_known_words(option=None): #voc2._content_w.keys():
+				if w in voc1.get_known_words(option=None): #voc2._content_w.keys():
 					for m1 in voc1.get_known_meanings(w=w,option=None): #voc2._content_w[w].keys():
 						try:
 							ans += voc2.get_value(m1,w,content_type='m') * voc1.get_value(m1,w,content_type='w')/float(voc2.get_M())#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
 						except KeyError:
 							pass
+			elif w is not None and m is not None:
+				try:
+					ans += voc2.get_value(m,w,content_type='m') * voc1.get_value(m,w,content_type='w')/float(voc2.get_M())
+				except KeyError:
+					pass
+			elif w is None and m is not None:
+				for w1 in voc2.get_known_words(m=m,option=None):
+					try:
+						ans += voc2.get_value(m,w1,content_type='m') * voc1.get_value(m,w1,content_type='w')/float(voc2.get_M())
+					except KeyError:
+						pass
 			else:
 				for m1 in voc2.get_known_meanings(option=None):
 					for w1 in voc2.get_known_words(m=m1,option=None):

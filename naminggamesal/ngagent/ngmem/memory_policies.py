@@ -42,6 +42,15 @@ class LastResultMP(MemoryPolicy):
 		assert not hasattr(mem,'result')
 		mem["result"]=1
 
+class ProbaSuccessIncrease(MemoryPolicy):#!! only a cache
+
+	#def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+	#	m_rm_list = list(  set([ms]) | set(voc.get_known_meanings(w=w)) ) not removing here because voc is already updated, hence lists of ms and ws to be removed are not always known
+
+	def init_memory(self,mem,voc):
+		assert not hasattr(mem,'proba_of_success_increase')
+		mem['proba_of_success_increase'] = dict()
+
 class SuccessCountPerMMP(MemoryPolicy):
 
 

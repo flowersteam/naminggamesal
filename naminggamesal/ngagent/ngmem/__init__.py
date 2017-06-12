@@ -16,6 +16,7 @@ mempolicy_class={
 'interaction_counts':'memory_policies.InteractionCounts',
 'interaction_counts_sliding_window':'memory_policies.InteractionCountsSlidingWindow',
 'interaction_counts_sliding_window_local':'memory_policies.InteractionCountsSlidingWindowLocal',
+'proba_of_success_increase':'memory_policies.ProbaSuccessIncrease',
 }
 
 def get_memory(memory_policies,voc=None):

@@ -22,7 +22,7 @@ class Agent(object):
 			self._id = agent_id;
 		self._vocabulary = ngvoc.get_vocabulary(env=env,**voc_cfg)
 		self._strategy = ngstrat.get_strategy(**strat_cfg)
-		self.memory_policies = memory_policies
+		self.memory_policies = deepcopy(memory_policies)
 		if hasattr(self._strategy,'memory_policies'):
 			for mp in self._strategy.memory_policies:
 				if not [mmp for mmp in self.memory_policies if mmp == mp]:
