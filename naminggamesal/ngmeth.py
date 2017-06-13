@@ -1334,11 +1334,12 @@ custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 def srtheo_local(pop, m=None, **kwargs):
 	ans = 0
-	for ag in pop._agentlist:
-		if hasattr(ag._vocabulary,'_content'):
-			ans += srtheo_voc(ag._vocabulary._content,voc2_m=ag._memory['interact_count_m'],voc2_w=ag._memory['interact_count_w'])
-		else:
-			ans += srtheo_voc(ag._vocabulary,voc2=ag._memory['interact_count_voc'])
+	if 'interact_count_m' in pop._agentlist[0]._memory.keys() or 'interact_count_voc' in pop._agentlist[0]._memory.keys():
+		for ag in pop._agentlist:
+			if hasattr(ag._vocabulary,'_content'):
+				ans += srtheo_voc(ag._vocabulary._content,voc2_m=ag._memory['interact_count_m'],voc2_w=ag._memory['interact_count_w'])
+			else:
+				ans += srtheo_voc(ag._vocabulary,voc2=ag._memory['interact_count_voc'])
 	return ans/float(len(pop._agentlist))
 
 FUNC=srtheo_local
