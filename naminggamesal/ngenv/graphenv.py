@@ -23,18 +23,28 @@ class GraphEnv(Environment):
 		m_list = self.meaning_graph.neighbors(ms)+[ms]
 		agent._vocabulary.discover_meanings(m_list=m_list)
 		#agent._vocabulary.discover_words(m_list=w_list)
+		for mem_key in agent._memory.keys():
+			if hasattr(agent._memory[mem_key],'discover_meanings'):
+				agent._memory[mem_key].discover_meanings(m_list=m_list)
 
 	def init_agent(self,agent):
 		agent._vocabulary.discover_meanings(m_list=self.core_meanings)
 		agent._vocabulary.discover_words(w_list=range(self.W))
+		for mem_key in agent._memory.keys():
+			if hasattr(agent._memory[mem_key],'discover_meanings'):
+				agent._memory[mem_key].discover_meanings(m_list=self.core_meanings)
+			if hasattr(agent._memory[mem_key],'discover_words'):
+				agent._memory[mem_key].discover_words(w_list=range(self.W))
 
 
 class GraphEnvSuccessExplore(GraphEnv):
 
 	def update_agent(self,agent,ms,w,mh,context=[]):
-		if srtheo_local(agent) >= 1.:
+		if srtheo_local(agent,m=ms) >= 1.:
 			GraphEnv.update_agent(agent=agent,ms=ms,w=w,mh=mh,context=context)
 		else:
 			agent._vocabulary.discover_meanings(m_list=[ms])
-
+			for mem_key in agent._memory.keys():
+				if hasattr(agent._memory[mem_key],'discover_meanings'):
+					agent._memory[mem_key].discover_meanings(m_list=[ms])
 

@@ -830,8 +830,9 @@ def srtheo_local_max(pop):
 
 
 FUNC = srtheo_local
+FUNC_BIS=pop_ize(FUNC)
 graphconfig = {"ymin":srtheo_local_min,"ymax":srtheo_local_max}
-custom_srtheo_local = custom_func.CustomFunc(FUNC,"agent",**graphconfig)
+custom_srtheo_local = custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 #########entropy##########
 
