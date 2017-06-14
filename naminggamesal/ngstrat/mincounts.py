@@ -43,8 +43,14 @@ class StratMinCounts(StratNaive):
 		fail_sum=0
 		countlist=[]
 		for m in voc.get_known_meanings():
-			succ_sum=mem["success_m"][m]
-			fail_sum=mem["fail_m"][m]
+			try:
+				succ_sum=mem["success_m"][m]
+			except KeyError:
+				succ_sum = 0
+			try:
+				fail_sum=mem["fail_m"][m]
+			except KeyError:
+				fail_sum = 0
 			countlist.append(succ_sum)
 		return countlist
 
