@@ -41,7 +41,7 @@ class GraphEnvSuccessExplore(GraphEnv):
 
 	def update_agent(self,agent,ms,w,mh,context=[]):
 		if srtheo_local(agent,m=ms) >= 1.:
-			GraphEnv.update_agent(agent=agent,ms=ms,w=w,mh=mh,context=context)
+			GraphEnv.update_agent(self,agent=agent,ms=ms,w=w,mh=mh,context=context)
 		else:
 			agent._vocabulary.discover_meanings(m_list=[ms])
 			for mem_key in agent._memory.keys():

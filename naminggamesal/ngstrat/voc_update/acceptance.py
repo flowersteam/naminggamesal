@@ -70,7 +70,7 @@ class AcceptanceEntropy(AcceptancePolicy):
 
 	def __init__(self,mem_policy={'mem_type':'successcount_permw'},entropy_func='new_entropy',**cfg2):
 		AcceptancePolicy.__init__(self,**cfg2)
-		self.memory_policies.append(mem_policy)
+		self.memory_policies.append(copy.deepcopy(mem_policy))
 		self.entropy_func = entropy_func
 
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
@@ -98,7 +98,7 @@ class AcceptanceTSMax(AcceptancePolicy):
 
 	def __init__(self,mem_policy={'mem_type':'successcount_permw'},role='both',**cfg2):
 		AcceptancePolicy.__init__(self,**cfg2)
-		self.memory_policies.append(mem_policy)
+		self.memory_policies.append(copy.deepcopy(mem_policy))
 		self.role = role
 
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
@@ -122,7 +122,7 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 
 	def __init__(self,mem_policy={'mem_type':'interaction_counts'},role='both',**cfg2):
 		AcceptancePolicy.__init__(self,**cfg2)
-		self.memory_policies.append(mem_policy)
+		self.memory_policies.append(copy.deepcopy(mem_policy))
 		self.role = role
 
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
@@ -166,7 +166,7 @@ class AcceptanceVocRelatedEntropy(AcceptancePolicy):
 	def __init__(self,mem_policy=None):
 		VocUpdate.__init__(self)
 		if mem_policy is not None:
-			self.memory_policies.append(mem_policy)
+			self.memory_policies.append(copy.deepcopy(mem_policy))
 
 	def test(self,voc,mem,m,w,axis):
 		if axis == 1:

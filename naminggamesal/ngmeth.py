@@ -2076,7 +2076,7 @@ custom_partial_conv_time_threshold = custom_func.CustomFunc(FUNC,"exp",**graphco
 #########exec_time_total##########
 
 def exec_time_total(exp,X=0,**kwargs):
-	return exp._exec_time[-1]
+	return [exp._exec_time[-1]]
 
 
 FUNC = exec_time_total

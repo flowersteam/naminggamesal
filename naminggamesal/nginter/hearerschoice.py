@@ -13,10 +13,10 @@ class HearersChoice(Interaction):
 		bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh)
 		bool_newconv = (mh not in hearer._vocabulary.get_known_meanings())
 		if not simulated:
-			speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
-			hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh)
 			pop.env.update_agent(hearer,ms=ms,w=w,mh=mh)
+			speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
+			hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
 		else:
 			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
@@ -34,10 +34,10 @@ class HearersChoiceEpirob(Interaction):
 		bool_newconv = (mh not in hearer._vocabulary.get_known_meanings())
 		if not simulated:
 			if speaker._vocabulary.get_known_meanings() or random.random()<0.001:
-				speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
-				hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 				pop.env.update_agent(speaker,ms=ms,w=w,mh=mh)
 				pop.env.update_agent(hearer,ms=ms,w=w,mh=mh)
+				speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
+				hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
 		else:
 			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
