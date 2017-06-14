@@ -257,10 +257,12 @@ class Voc2DictDict(BaseVocabulary):
 			w = self.get_random_known_w()
 		return w
 
+	@del_cache
 	def discover_meanings(self,m_list):
 		m_list_bis = [m for m in m_list if m not in self.get_known_meanings()+self.unknown_meanings]
 		self.unknown_meanings += m_list_bis
 
+	@del_cache
 	def discover_words(self,w_list):
 		w_list_bis = [w for w in w_list if w not in self.get_known_words()+self.unknown_words]
 		self.unknown_words += w_list_bis

@@ -17,6 +17,7 @@ class GraphEnv(Environment):
 		if W is None:
 			W = len(self.meaning_graph.nodes())
 		self.W = W
+		self.M = len(self.meaning_graph.nodes())
 
 
 	def update_agent(self,agent,ms,w,mh,context=[]):

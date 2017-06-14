@@ -467,7 +467,9 @@ def N_words(agent,**kwargs):
 		return len(agent._vocabulary.get_known_words())
 
 def N_words_max(pop):
-	if hasattr(pop._agentlist[0]._vocabulary,'get_W'):
+	if hasattr(pop.env,'W'):
+		return pop.env.W
+	elif hasattr(pop._agentlist[0]._vocabulary,'get_W'):
 		return pop._agentlist[0]._vocabulary.get_W()
 	else:
 		return None
@@ -486,7 +488,9 @@ def N_meanings(agent,**kwargs):
 	return len(agent._vocabulary.get_known_meanings())
 
 def N_meanings_max(pop):
-	if hasattr(pop._agentlist[0]._vocabulary,'get_M'):
+	if hasattr(pop.env,'M'):
+		return pop.env.M
+	elif hasattr(pop._agentlist[0]._vocabulary,'get_M'):
 		return pop._agentlist[0]._vocabulary.get_M()
 	else:
 		return None
