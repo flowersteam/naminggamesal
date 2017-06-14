@@ -9,6 +9,7 @@ env_class={
 	'image_hue':'imagehue.ImageHueEnv',
 	'hue_distrib':'imagehue.HueDistribEnv',
 	'graphenv':'graphenv.GraphEnv',
+	'graphenv_successexplore':'graphenv.GraphEnvSuccessExplore',
 	'simple':'simple.SimpleEnv',
 }
 

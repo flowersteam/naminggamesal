@@ -720,6 +720,118 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":dist_threshold_min,"ymax":dist_threshold_max}
 custom_dist_threshold=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
+#########N_accessible_meanings##########
+
+def N_accessible_meanings(agent,**kwargs):
+	return agent._vocabulary.get_M()
+
+def N_accessible_meanings_min(pop):
+	return 0
+
+FUNC=N_accessible_meanings
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_accessible_meanings_min}#,"ymax":N_accessible_meanings_max}
+custom_N_accessible_meanings=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########N_unknown_meanings##########
+
+def N_unknown_meanings(agent,**kwargs):
+	return len(agent._vocabulary.get_unknown_meanings())
+
+def N_unknown_meanings_min(pop):
+	return 0
+
+FUNC=N_unknown_meanings
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_unknown_meanings_min}#,"ymax":N_unknown_meanings_max}
+custom_N_unknown_meanings=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########N_unknown_words##########
+
+def N_unknown_words(agent,**kwargs):
+	return len(agent._vocabulary.get_unknown_words())
+
+def N_unknown_words_min(pop):
+	return 0
+
+FUNC=N_unknown_words
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_unknown_words_min}#,"ymax":N_unknown_words_max}
+custom_N_unknown_words=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########N_accessible_words##########
+
+def N_accessible_words(agent,**kwargs):
+	return agent._vocabulary.get_W()
+
+def N_accessible_words_min(pop):
+	return 0
+
+FUNC=N_accessible_words
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_accessible_words_min}#,"ymax":N_accessible_words_max}
+custom_N_accessible_words=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########N_exploring_words##########
+
+def N_exploring_words(agent,**kwargs):
+	ans = 0.
+	for w in agent._vocabulary.get_known_words():
+		if 0 < srtheo_local(agent=agent,w=w) < 1:
+			ans += 1.
+	return ans
+
+def N_exploring_words_min(pop):
+	return 0
+
+FUNC=N_exploring_words
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_exploring_words_min}#,"ymax":N_accessible_words_max}
+custom_N_exploring_words=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########N_exploring_meanings##########
+
+def N_exploring_meanings(agent,**kwargs):
+	ans = 0.
+	for m in agent._vocabulary.get_known_meanings():
+		if 0 < srtheo_local(agent=agent,m=m) < 1:
+			ans += 1.
+	return ans
+
+def N_exploring_meanings_min(pop):
+	return 0
+
+FUNC=N_exploring_meanings
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":N_exploring_meanings_min}#,"ymax":N_accessible_meanings_max}
+custom_N_exploring_meanings=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########srtheo_local##########
+
+def srtheo_local(agent, m=None, w=None, **kwargs):
+	ag = agent
+	if 'interact_count_m' in ag._memory.keys() or 'interact_count_voc' in ag._memory.keys():
+	#if 'interact_count_m' in pop._agentlist[0]._memory.keys() or 'interact_count_voc' in pop._agentlist[0]._memory.keys():
+		#for ag in pop._agentlist:
+		if hasattr(ag._vocabulary,'_content'):
+			return srtheo_voc(ag._vocabulary._content, m=m, w=w, voc2_m=ag._memory['interact_count_m'],voc2_w=ag._memory['interact_count_w'])
+		else:
+			return srtheo_voc(ag._vocabulary, m=m, w=w, voc2=ag._memory['interact_count_voc'])
+	else:
+		return 0
+
+def srtheo_local_min(pop):
+	return 0
+
+def srtheo_local_max(pop):
+	return 1.
+
+
+FUNC = srtheo_local
+graphconfig = {"ymin":srtheo_local_min,"ymax":srtheo_local_max}
+custom_srtheo_local = custom_func.CustomFunc(FUNC,"agent",**graphconfig)
 
 #########entropy##########
 
@@ -1241,6 +1353,22 @@ FUNC=entropycouples_norm
 graphconfig={"ymin":entropycouples_norm_min,"ymax":entropycouples_norm_max}
 custom_entropycouples_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
+#########exec_time##########
+
+
+def exec_time(pop,**kwargs):
+	if hasattr(pop,'_exec_time'):
+		return pop._exec_time
+	else:
+		return 0
+
+def exec_time_min(pop):
+	return 0
+
+FUNC=exec_time
+graphconfig={"ymin":exec_time_min}
+custom_exec_time=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
 #########cat_agreement##########
 
 def cat_agreement(pop,**kwargs):
@@ -1329,22 +1457,6 @@ def srtheo_min(pop):
 FUNC=srtheo
 graphconfig={"ymin":srtheo_min,"ymax":srtheo_max}
 custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
-
-#########srtheo_local##########
-
-def srtheo_local(pop, m=None, **kwargs):
-	ans = 0
-	if 'interact_count_m' in pop._agentlist[0]._memory.keys() or 'interact_count_voc' in pop._agentlist[0]._memory.keys():
-		for ag in pop._agentlist:
-			if hasattr(ag._vocabulary,'_content'):
-				ans += srtheo_voc(ag._vocabulary._content,voc2_m=ag._memory['interact_count_m'],voc2_w=ag._memory['interact_count_w'])
-			else:
-				ans += srtheo_voc(ag._vocabulary,voc2=ag._memory['interact_count_voc'])
-	return ans/float(len(pop._agentlist))
-
-FUNC=srtheo_local
-graphconfig={"ymin":srtheo_min,"ymax":srtheo_max}
-custom_srtheo_local=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########srtheo_cat##########
 from .ngstrat.naive import StratNaiveCategoryPlosOne
@@ -1960,10 +2072,26 @@ custom_partial_conv_time_threshold = custom_func.CustomFunc(FUNC,"exp",**graphco
 
 ################################################################
 
+#########exec_time_total##########
+
+def exec_time_total(exp,X=0,**kwargs):
+	return exp._exec_time[-1]
+
+
+FUNC = exec_time_total
+
+def exec_time_total_min(exp):
+	return 0
+
+graphconfig = {"ymin":exec_time_total_min}
+custom_exec_time_total = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+################################################################
 
 
 
-################  AUTRES    ####################################
+
+################  OTHER    ####################################
 
 def m_limit_theorique(M,W):
 	return (-((M+W-1.)/2.)+math.sqrt((M+W-1.)**2/4.+2.*M*W))/2.

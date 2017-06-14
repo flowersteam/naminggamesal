@@ -22,7 +22,7 @@ class StratTSRMax(StratNaive):
 
 	def pick_m(self,voc,mem,context):
 		m_list = []
-		
+
 		m_explo = None
 		if len(voc.get_unknown_meanings())>0:
 			m_explo = voc.get_new_unknown_m()
@@ -58,7 +58,7 @@ class StratTSRMax(StratNaive):
 						self.update_speaker(m1, w, m1, voc_success, mem, bool_succ=True, context=context)
 						mem_success = mem.simulated_update_memory(ms=m1,w=w,mh=m1,voc=voc_success,role='speaker',bool_succ=True,context=context)
 												#global_mat_2 = mem_success['success_mw']+mem_success['fail_mw']
-	
+
 						global_mat_2_m = mem_success['interact_count_m']
 						global_mat_2_w = mem_success['interact_count_w']
 												#dS_success = srtheo_voc(voc_success._content,global_mat_2) - srtheo_voc(voc._content,global_mat)
@@ -89,7 +89,7 @@ class StratTSRMax(StratNaive):
 						else:
 							dS_fail = srtheo_voc(voc_fail._content,voc2_w=global_mat_2_w,voc2_m=global_mat_2_m) - srtheo_voc(voc._content,voc2_w=global_mat_w,voc2_m=global_mat_m)
 						val += p_success * dS_success + p_fail * dS_fail
-	
+
 	#				r = random.random()
 	#				if r < 1./1:
 	#					if m1 == m_explo:
@@ -97,7 +97,7 @@ class StratTSRMax(StratNaive):
 	#					print val,p_success,dS_success,dS_fail
 	#					print srtheo_voc(voc_success._content,voc2_w=global_mat_2_w,voc2_m=global_mat_2_m), srtheo_voc(voc._content,voc2_w=global_mat_w,voc2_m=global_mat_m)
 					if m1 == m_explo:
-	
+
 						adj_poss_increase = 1.
 						#factor = voc.get_M()/(voc.get_M()+adj_poss_increase)
 						factor = 1.
@@ -141,7 +141,7 @@ class StratTSRMax(StratNaive):
 						self.update_speaker(m1, w, m1, voc_success, mem, bool_succ=True, context=context)
 						mem_success = mem.simulated_update_memory(ms=m1,w=w,mh=m1,voc=voc_success,role='speaker',bool_succ=True,context=context)
 												#global_mat_2 = mem_success['success_mw']+mem_success['fail_mw']
-	
+
 						global_mat_2 = mem_success['interact_count_voc']
 												#dS_success = srtheo_voc(voc_success._content,global_mat_2) - srtheo_voc(voc._content,global_mat)
 						if self.efficient_computing:
@@ -179,7 +179,7 @@ class StratTSRMax(StratNaive):
 	#
 	#					print  srtheo_voc(voc_success,voc2=global_mat_2) , srtheo_voc(voc,voc2=global_mat)
 					if m1 == m_explo:
-	
+
 						adj_poss_increase = 1.
 						#factor = voc.get_M()/(voc.get_M()+adj_poss_increase)
 						factor = 1.

@@ -33,6 +33,7 @@ class Population(object):
 		self._env_cfg = env_cfg
 		self._interaction = get_interaction(**interact_cfg)
 		self._evolution = get_evolution(**evolution_cfg)
+		self._exec_time = 0.
 		if env_cfg is None:
 			self.env = None
 		else:

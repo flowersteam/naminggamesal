@@ -221,6 +221,7 @@ class Experiment(object):
 		self.continue_exp_until(self._T[-1]+dT)
 
 	def add_pop(self,pop,T,exec_time=0):
+		pop._exec_time = exec_time
 		if (not hasattr(self,'no_storage')) or (not self.no_storage):
 			self._poplist.append(pop,T)
 		else:
