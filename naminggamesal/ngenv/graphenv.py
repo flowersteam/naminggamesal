@@ -19,7 +19,7 @@ class GraphEnv(Environment):
 		self.W = W
 
 
-	def update_agent(self,agent,ms=ms,w=w,mh=mh,context=[]):
+	def update_agent(self,agent,ms,w,mh,context=[]):
 		m_list = self.meaning_graph.neighbors(ms)+[ms]
 		agent._vocabulary.discover_meanings(m_list=m_list)
 		#agent._vocabulary.discover_words(m_list=w_list)
@@ -31,7 +31,7 @@ class GraphEnv(Environment):
 
 class GraphEnvSuccessExplore(GraphEnv):
 
-	def update_agent(self,agent,ms=ms,w=w,mh=mh,context=[]):
+	def update_agent(self,agent,ms,w,mh,context=[]):
 		if srtheo_local(agent) >= 1.:
 			GraphEnv.update_agent(agent=agent,ms=ms,w=w,mh=mh,context=context)
 		else:
