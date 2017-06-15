@@ -21,6 +21,28 @@ class StratTSRMax(StratNaive):
 		self.efficient_computing = efficient_computing
 
 	def pick_m(self,voc,mem,context):
+
+		m_list = self.get_mval_list(voc=voc,mem=mem,context=context)
+		val_max = None
+		for key,value in m_list:
+			if val_max is None or value > val_max:
+				val_max = value
+				m = key
+		if 'proba_of_success_increase' in mem.keys():
+			m_rm_list = set([m])
+			for w2 in voc.get_known_words(m=m):
+				m_rm_list = m_rm_list | set(voc.get_known_meanings(w=w2))
+			for m2 in m_rm_list:
+				if m2 in mem['proba_of_success_increase'].keys():
+					del mem['proba_of_success_increase'][m2]
+		return m
+
+
+	def hearer_pick_m(self,voc,mem,context):
+		return self.pick_m(voc, mem,context)
+
+
+	def get_mval_list(self,voc,mem,context):
 		m_list = []
 
 		m_explo = None
@@ -65,7 +87,7 @@ class StratTSRMax(StratNaive):
 						if self.efficient_computing:
 							dS_success = 0
 							for m_loop in list(set(voc.get_known_meanings(w=w))|set([m1])):
-								dS_success += 0.5 * (srtheo_voc(voc_success._content,m=m_loop,voc2_w=global_mat_2_w,voc2_m=global_mat_2_m,role='speaker') - srtheo_voc(voc._content,m=m_loop,voc2_w=global_mat_w,voc2_m=global_mat_m,role='speaker'))
+								dS_success += 0.5 * (srtheo_voc(voc_success._content,m=m_loop,voc2_w=global_mat_2_w,voc2_m=global_mat_2_m,role='speaker')/(voc_success.get_M()) - srtheo_voc(voc._content,m=m_loop,voc2_w=global_mat_w,voc2_m=global_mat_m,role='speaker')/(voc.get_M()))
 							for w_loop in list(set(voc.get_known_words(m=m1))|set([w])):
 								dS_success += 0.5 * (srtheo_voc(voc_success._content,w=w_loop,voc2_w=global_mat_2_w,voc2_m=global_mat_2_m,role='hearer') - srtheo_voc(voc._content,w=w_loop,voc2_w=global_mat_w,voc2_m=global_mat_m,role='hearer'))
 						else:
@@ -83,7 +105,7 @@ class StratTSRMax(StratNaive):
 						if self.efficient_computing:
 							dS_fail = 0
 							for m_loop in list(set(voc.get_known_meanings(w=w))|set([m1])):
-								dS_fail += 0.5 * (srtheo_voc(voc_fail._content,m=m_loop,voc2_w=global_mat_2_w,voc2_m=global_mat_2_m,role='speaker') - srtheo_voc(voc._content,m=m_loop,voc2_w=global_mat_w,voc2_m=global_mat_m,role='speaker'))
+								dS_fail += 0.5 * (srtheo_voc(voc_fail._content,m=m_loop,voc2_w=global_mat_2_w,voc2_m=global_mat_2_m,role='speaker')/(voc_fail.get_M()) - srtheo_voc(voc._content,m=m_loop,voc2_w=global_mat_w,voc2_m=global_mat_m,role='speaker')/(voc.get_M()))
 							for w_loop in list(set(voc.get_known_words(m=m1))|set([w])):
 								dS_fail += 0.5 * (srtheo_voc(voc_fail._content,w=w_loop,voc2_w=global_mat_2_w,voc2_m=global_mat_2_m,role='hearer') - srtheo_voc(voc._content,w=w_loop,voc2_w=global_mat_w,voc2_m=global_mat_m,role='hearer'))
 						else:
@@ -147,7 +169,7 @@ class StratTSRMax(StratNaive):
 						if self.efficient_computing:
 							dS_success = 0
 							for m_loop in list(set(voc.get_known_meanings(w=w))|set([m1])):
-								dS_success += 0.5 * (srtheo_voc(voc_success,m=m_loop,voc2=global_mat_2,role='speaker') - srtheo_voc(voc,m=m_loop,voc2=global_mat,role='speaker'))
+								dS_success += 0.5 * (srtheo_voc(voc_success,m=m_loop,voc2=global_mat_2,role='speaker')/(voc_success.get_M()) - srtheo_voc(voc,m=m_loop,voc2=global_mat,role='speaker')/(voc.get_M()))
 							for w_loop in list(set(voc.get_known_words(m=m1))|set([w])):
 								dS_success += 0.5 * (srtheo_voc(voc_success,w=w_loop,voc2=global_mat_2,role='hearer') - srtheo_voc(voc,w=w_loop,voc2=global_mat,role='hearer'))
 						else:
@@ -165,7 +187,7 @@ class StratTSRMax(StratNaive):
 						if self.efficient_computing:
 							dS_fail = 0
 							for m_loop in list(set(voc.get_known_meanings(w=w))|set([m1])):
-								dS_fail += 0.5 * (srtheo_voc(voc_fail,m=m_loop,voc2=global_mat_2,role='speaker') - srtheo_voc(voc,m=m_loop,voc2=global_mat,role='speaker'))
+								dS_fail += 0.5 * (srtheo_voc(voc_fail,m=m_loop,voc2=global_mat_2,role='speaker')/(voc_fail.get_M()) - srtheo_voc(voc,m=m_loop,voc2=global_mat,role='speaker')/(voc.get_M()))
 							for w_loop in list(set(voc.get_known_words(m=m1))|set([w])):
 								dS_fail += 0.5 * (srtheo_voc(voc_fail,w=w_loop,voc2=global_mat_2,role='hearer') - srtheo_voc(voc,w=w_loop,voc2=global_mat,role='hearer'))
 						else:
@@ -195,19 +217,3 @@ class StratTSRMax(StratNaive):
 	#
 	#				m_list.append((m_explo,mem_val))
 
-		val_max = None
-		for key,value in m_list:
-			if val_max is None or value > val_max:
-				val_max = value
-				m = key
-		if 'proba_of_success_increase' in mem.keys():
-			m_rm_list = set([m])
-			for w2 in voc.get_known_words(m=m):
-				m_rm_list = m_rm_list | set(voc.get_known_meanings(w=w2))
-			for m2 in m_rm_list:
-				if m2 in mem['proba_of_success_increase'].keys():
-					del mem['proba_of_success_increase'][m2]
-		return m
-
-	def hearer_pick_m(self,voc,mem,context):
-		return self.pick_m(voc, mem,context)
