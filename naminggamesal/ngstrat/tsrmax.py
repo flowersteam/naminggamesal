@@ -217,3 +217,4 @@ class StratTSRMax(StratNaive):
 	#
 	#				m_list.append((m_explo,mem_val))
 
+		return m_list
