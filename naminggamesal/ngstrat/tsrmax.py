@@ -24,10 +24,17 @@ class StratTSRMax(StratNaive):
 
 		m_list = self.get_mval_list(voc=voc,mem=mem,context=context)
 		val_max = None
+
 		for key,value in m_list:
 			if val_max is None or value > val_max:
 				val_max = value
-				m = key
+		max_list = []
+		for key,value in m_list:
+			if val == val_max:
+				max_list.append(key)
+
+		m = random.choice(max_list)
+
 		if 'proba_of_success_increase' in mem.keys():
 			m_rm_list = set([m])
 			for w2 in voc.get_known_words(m=m):
@@ -216,5 +223,25 @@ class StratTSRMax(StratNaive):
 	#				mem_explo = mem.simulated_update_memory(ms=m_explo,w=w_explo,mh=m_explo,voc=voc,role='speaker',bool_succ=False,context=context)
 	#
 	#				m_list.append((m_explo,mem_val))
+
+		return m_list
+
+
+class StratTSRMaxMAB(StratTSRMax):
+
+	def __init__(self, vu_cfg, efficient_computing=True, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=True,**strat_cfg2):
+		StratTSRMax.__init__(self, vu_cfg=copy.deepcopy(vu_cfg), efficient_computing=efficient_computing, mem_type=mem_type,time_scale=time_scale,cache=cache, **copy.deepcopy(strat_cfg2))
+		#add mem bandit
+
+	def get_mval_list(self,voc,mem,context):
+		m_list = []
+		if len(voc.get_unknown_meanings())>0:
+			m_explo = voc.get_new_unknown_m()
+			val_explo = np.random.beta(mem['bandit']['arms']['arm_explo'][0],mem['bandit']['arms']['arm_explo'][1])
+			m_list.append((m_explo,val_explo))
+
+		for m in mem['bandit']['arms']['others'].keys():
+			val = np.random.beta(mem['bandit']['arms']['others'][m][0],mem['bandit']['arms']['others'][m][1])
+			m_list.append((m,val))
 
 		return m_list

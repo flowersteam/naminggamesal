@@ -13,8 +13,8 @@ class CategoryGameSpeakersChoice(Interaction):
 		mh = hearer.guess_m(w,ct)
 		bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh, context=ct)
 		if not simulated:
-			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh,context=ct)
-			pop.env.update_agent(hearer,ms=ms,w=w,mh=mh,context=ct)
+			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh,context=ct,bool_succ=bool_succ)
+			pop.env.update_agent(hearer,ms=ms,w=w,mh=mh,context=ct,bool_succ=bool_succ)
 			speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ,context=ct)
 			hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ,context=ct)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,ct]
@@ -30,8 +30,8 @@ class CategoryGameHearersChoice(Interaction):
 		mh = hearer.guess_m(w,ct)
 		bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh, context=ct)
 		if not simulated:
-			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh,context=ct)
-			pop.env.update_agent(hearer,ms=ms,w=w,mh=mh,context=ct)
+			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh,context=ct,bool_succ=bool_succ)
+			pop.env.update_agent(hearer,ms=ms,w=w,mh=mh,context=ct,bool_succ=bool_succ)
 			speaker.update_speaker(ms=ms,w=w,mh=mh,bool_succ=bool_succ,context=ct)
 			hearer.update_hearer(ms=ms,w=w,mh=mh,bool_succ=bool_succ,context=ct)
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,ct]

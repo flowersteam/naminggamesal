@@ -10,6 +10,7 @@ env_class={
 	'hue_distrib':'imagehue.HueDistribEnv',
 	'graphenv':'graphenv.GraphEnv',
 	'graphenv_successexplore':'graphenv.GraphEnvSuccessExplore',
+	'graphenv_onesuccessexplore':'graphenv.GraphEnvOneSuccessExplore',
 	'simple':'simple.SimpleEnv',
 }
 
@@ -38,7 +39,7 @@ class Environment(object):
 	def get_element(self):
 		return random.choice(self.elements)
 
-	def update_agent(self,agent,ms,w,mh=None,context=[]):
+	def update_agent(self,agent,ms,w,mh=None,context=[],bool_succ=False):
 		pass
 
 	def init_agent(self,agent):

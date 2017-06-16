@@ -799,7 +799,7 @@ custom_N_exploring_words=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 def N_exploring_meanings(agent,**kwargs):
 	ans = 0.
 	for m in agent._vocabulary.get_known_meanings():
-		if 0 < srtheo_local(agent=agent,m=m) < 1:
+		if srtheo_local(agent=agent,m=m) < 1.:
 			ans += 1.
 	return ans
 
@@ -2352,10 +2352,11 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 			if m is not None and w is None:# or w is not None:
 				if m in voc1.get_known_meanings(option=None):#voc1._content_m.keys():
 					for w1 in voc1.get_known_words(m=m,option=None):#voc1._content_m[m].keys():
-						try:
+						#try:
+						if len(voc1.get_known_words(m=m)):
 							ans += voc1.get_value(m,w1,content_type='m') * voc2.get_value(m,w1,content_type='w')/(float(len(voc1.get_known_words(m=m))))#/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
-						except KeyError:
-							pass
+						#except ZeroDivisionError :
+						#	pass
 				#elif w is not None and w in voc2.get_known_words(option=None): #voc2._content_w.keys():
 				#	for m1 in voc2.get_known_meanings(w=w,option=None): #voc2._content_w[w].keys():
 				#		try:
@@ -2363,23 +2364,26 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 				#		except KeyError:
 				#			pass
 			elif m is not None and w is not None:
-				try:
+				#try:
+				if len(voc1.get_known_words(m=m)):
 					ans += voc1.get_value(m,w,content_type='m') * voc2.get_value(m,w,content_type='w')/(float(len(voc1.get_known_words(m=m))))#/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
-				except KeyError:
-					pass
+				#except ZeroDivisionError :
+				#	pass
 			elif m is None and w is not None:
 				for m1 in voc1.get_known_meanings(w=w,option=None):
-					try:
+					#try:
+					if len(voc1.get_known_words(m=m1)) and voc1.get_M():
 						ans += voc1.get_value(m1,w,content_type='m') * voc2.get_value(m1,w,content_type='w')/(float(len(voc1.get_known_words(m=m1)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
-					except KeyError:
-						pass
+					#except KeyError,ZeroDivisionError :
+					#	pass
 			else:
 				for m1 in voc1.get_known_meanings(option=None):
 					for w1 in voc1.get_known_words(m=m1,option=None):
-						try:
+						#try:
+						if len(voc1.get_known_words(m=m)) and voc1.get_M():
 							ans += voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/(float(len(voc1.get_known_words(m=m)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
-						except KeyError:
-							pass
+						#except ZeroDivisionError :
+						#	pass
 		if role == 'both' or role == 'hearer':
 			#if m is not None and w is not None:
 				#try:
@@ -2397,28 +2401,32 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 				#if uncomment previous part, change following if by elif
 				if w in voc1.get_known_words(option=None): #voc2._content_w.keys():
 					for m1 in voc1.get_known_meanings(w=w,option=None): #voc2._content_w[w].keys():
-						try:
+						#try:
+						if len(voc1.get_known_meanings(w=w)) and voc2.get_M():
 							ans += voc2.get_value(m1,w,content_type='m') * voc1.get_value(m1,w,content_type='w')/(float(len(voc1.get_known_meanings(w=w)))*float(voc2.get_M()))#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
-						except KeyError:
-							pass
+						#except ZeroDivisionError :
+						#	pass
 			elif w is not None and m is not None:
-				try:
+				#try:
+				if len(voc1.get_known_meanings(w=w)):
 					ans += voc2.get_value(m,w,content_type='m') * voc1.get_value(m,w,content_type='w')/(float(len(voc1.get_known_meanings(w=w))))#/float(voc2.get_M())
-				except KeyError:
-					pass
+				#except ZeroDivisionError :
+				#	pass
 			elif w is None and m is not None:
 				for w1 in voc2.get_known_words(m=m,option=None):
-					try:
+					#try:
+					if len(voc1.get_known_meanings(w=w1)):
 						ans += voc2.get_value(m,w1,content_type='m') * voc1.get_value(m,w1,content_type='w')/(float(len(voc1.get_known_meanings(w=w1))))#/float(voc2.get_M())
-					except KeyError:
-						pass
+					#except ZeroDivisionError :
+					#	pass
 			else:
 				for m1 in voc2.get_known_meanings(option=None):
 					for w1 in voc2.get_known_words(m=m1,option=None):
-						try:
+						#try:
+						if len(voc1.get_known_meanings(w=w1)) and voc2.get_M():
 							ans += voc2.get_value(m1,w1,content_type='m') * voc1.get_value(m1,w1,content_type='w')/(float(len(voc1.get_known_meanings(w=w1)))*float(voc2.get_M()))#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w1)))
-						except KeyError:
-							pass
+						#except ZeroDivisionError :
+						#	pass
 	if role == 'both':
 		return ans/2.
 	else:
