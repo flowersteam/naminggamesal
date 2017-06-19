@@ -13,8 +13,8 @@ class StratTSRMax(StratNaive):
 	def __init__(self, vu_cfg, efficient_computing=True, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=True,**strat_cfg2):
 		StratNaive.__init__(self,vu_cfg=vu_cfg, **copy.deepcopy(strat_cfg2))
 		mp = {'mem_type':mem_type,'time_scale':time_scale}
-		assert 'interaction_count' not in [ mmpp['mem_type'][:17] for mmpp in self.memory_policies]
-		self.memory_policies.append(mp)
+		if 'interaction_count' not in [ mmpp['mem_type'][:17] for mmpp in self.memory_policies]:
+			self.memory_policies.append(mp)
 		if cache:
 			assert 'proba_of_success_increase' not in [ mmpp['mem_type'][:25] for mmpp in self.memory_policies]
 			self.memory_policies.append({'mem_type':'proba_of_success_increase'})
@@ -30,7 +30,7 @@ class StratTSRMax(StratNaive):
 				val_max = value
 		max_list = []
 		for key,value in m_list:
-			if val == val_max:
+			if value == val_max:
 				max_list.append(key)
 
 		m = random.choice(max_list)
@@ -231,7 +231,9 @@ class StratTSRMaxMAB(StratTSRMax):
 
 	def __init__(self, vu_cfg, efficient_computing=True, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=True,**strat_cfg2):
 		StratTSRMax.__init__(self, vu_cfg=copy.deepcopy(vu_cfg), efficient_computing=efficient_computing, mem_type=mem_type,time_scale=time_scale,cache=cache, **copy.deepcopy(strat_cfg2))
-		#add mem bandit
+		mp = {'mem_type':'bandit'}
+		if 'bandit' not in [ mmpp['mem_type'][:6] for mmpp in self.memory_policies]:
+			self.memory_policies.append(mp)
 
 	def get_mval_list(self,voc,mem,context):
 		m_list = []

@@ -1,6 +1,7 @@
 from . import MemoryPolicy
 import numpy as np
 import copy
+from ...ngmeth import srtheo_voc
 
 class SuccessMatrixMP(MemoryPolicy):
 
@@ -348,13 +349,18 @@ class BetaMAB(MemoryPolicy):
 		assert not 'bandit' in mem.keys()
 		mem['bandit'] = {'arms':{'arm_explo':[1,1],'others':{}},'old_rewards':0.}
 
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+
+	def val_update(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if hasattr(voc,'_content'):
 			new_val = srtheo_voc(voc,voc2_m=mem['interact_count_m'],voc2_w=mem['interact_count_w'])
 		else:
 			new_val = srtheo_voc(voc,voc2=mem['interact_count_voc'])
-		delta_reward = new_val - mem['bandit']['old_rewards']
+		delta_reward = 0.5* ( 1 + new_val - mem['bandit']['old_rewards']) # value between -1 and 1 becomes between 0 and 1
 		mem['bandit']['old_rewards'] = new_val
+		return delta_reward
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		delta_reward = self.val_update(ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ,context=context)
 		for m in voc.get_unknown_meanings():
 			if m in mem['bandit']['arms']['others'].keys():
 				del mem['bandit']['arms']['others'][m]
@@ -365,3 +371,13 @@ class BetaMAB(MemoryPolicy):
 		else:
 			mem['bandit']['arms']['others'][ms][0] += delta_reward
 			mem['bandit']['arms']['others'][ms][1] += 1. - delta_reward
+
+
+
+class SuccessMAB(BetaMAB):
+
+	def val_update(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		if bool_succ:
+			return 1
+		else:
+			return 0

@@ -51,8 +51,9 @@ strat_class={
 	'omniscient':'omniscient.StratOmniscient',
 
 	'tsrmax':'tsrmax.StratTSRMax',
+	'tsrmax_mab':'tsrmax.StratTSRMaxMAB',
 
-	#'betadecrease':'beta_decrease.BetaDecreaseStrat'
+	'user':'user.StratUser',
 }
 
 def get_strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, **strat_cfg2):

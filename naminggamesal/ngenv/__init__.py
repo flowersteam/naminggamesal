@@ -11,6 +11,7 @@ env_class={
 	'graphenv':'graphenv.GraphEnv',
 	'graphenv_successexplore':'graphenv.GraphEnvSuccessExplore',
 	'graphenv_onesuccessexplore':'graphenv.GraphEnvOneSuccessExplore',
+	'graphenv_severalsuccessexplore':'graphenv.GraphEnvSeveralSuccessExplore',
 	'simple':'simple.SimpleEnv',
 }
 

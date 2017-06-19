@@ -1916,6 +1916,39 @@ FUNC = conv_time
 graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
 custom_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
+#########conv_time2##########
+
+def conv_time2(exp,X=0,thresh=1.,**kwargs):
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
+	sr = sr_gr._Y[0]
+	for i in range(len(sr)):
+		if sr[i] >= thresh:
+			return [sr_gr._X[0][i]]
+	return [np.nan]
+
+	Nd_gr = exp.db.get_graph(exp.uuid, method='N_d')#exp.graph(method='srtheo')
+	Nd = Nd_gr._Y[0]
+	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')#exp.graph(method='srtheo')
+	Nm = Nm_gr._Y[0]
+	Nw_gr = exp.db.get_graph(exp.uuid, method='N_words')#exp.graph(method='srtheo')
+	Nw = Nw_gr._Y[0]
+	M = N_meanings_max(exp._poplist.get_last())
+	for i in range(len(Nd)):
+		if Nm[i] == M and Nd[i] == M and Nw[i] == M:
+			return [Nd_gr._X[0][i]]
+	return [np.nan]
+
+def conv_time2_max(exp):
+	return exp._T[-1]
+
+def conv_time2_min(exp):
+	return 0
+
+FUNC = conv_time2
+
+graphconfig = {"ymin":conv_time2_min,"ymax":conv_time2_max}
+custom_conv_time2 =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
 #########block_time##########
 
 def block_time(exp,X=0,**kwargs):
@@ -2013,13 +2046,31 @@ def srtheo_and_block_time(exp,X=0,thresh=1.,**kwargs):
 	for i in range(sr_gr._X[0]):
 		if sr_gr._X[0][i] == bt_val:
 			sr_val = sr_gr._Y[i]
-			return (-sr_val,bt_val)
+			return [(-sr_val,bt_val)]
 
 
 FUNC = srtheo_and_block_time
 
 graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
 custom_srtheo_and_block_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+#########conv_time2_Nm_srtheo##########
+
+def conv_time2_Nm_srtheo(exp,X=0,thresh=1.,**kwargs):
+	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')
+	ct2_gr = exp.db.get_graph(exp.uuid, method='conv_time2')
+	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')
+	ct_val = ct_gr._Y[0][0]
+	for i in range(sr_gr._X[0]):
+		if sr_gr._X[0][i] == ct_val:
+			sr_val = sr_gr._Y[i]
+			Nm = Nm_gr._Y[i]
+			return [(ct_val,-Nm,-sr_val)]
+
+
+FUNC = conv_time2_Nm_srtheo
+
+graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
+custom_conv_time2_Nm_srtheo =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########partial_conv_time##########
 
