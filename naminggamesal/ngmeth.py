@@ -2059,7 +2059,7 @@ def conv_time2_Nm_srtheo(exp,X=0,thresh=1.,**kwargs):
 	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')
 	ct2_gr = exp.db.get_graph(exp.uuid, method='conv_time2')
 	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')
-	ct_val = ct_gr._Y[0][0]
+	ct_val = ct2_gr._Y[0][0]
 	for i in range(sr_gr._X[0]):
 		if sr_gr._X[0][i] == ct_val:
 			sr_val = sr_gr._Y[i]
