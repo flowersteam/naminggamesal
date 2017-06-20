@@ -1919,13 +1919,6 @@ custom_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time2##########
 
 def conv_time2(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
-	sr = sr_gr._Y[0]
-	for i in range(len(sr)):
-		if sr[i] >= thresh:
-			return [sr_gr._X[0][i]]
-	return [np.nan]
-
 	Nd_gr = exp.db.get_graph(exp.uuid, method='N_d')#exp.graph(method='srtheo')
 	Nd = Nd_gr._Y[0]
 	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')#exp.graph(method='srtheo')
@@ -2040,13 +2033,17 @@ custom_conv_time_plus_srtheo =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########srtheo_and_block_time##########
 
 def srtheo_and_block_time(exp,X=0,thresh=1.,**kwargs):
+	sr_val = -1
 	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')
 	bt_gr = exp.db.get_graph(exp.uuid, method='block_time')
 	bt_val = bt_gr._Y[0][0]
 	for i in range(len(sr_gr._X[0])):
 		if sr_gr._X[0][i] == bt_val:
 			sr_val = sr_gr._Y[0][i]
-			return [(-sr_val,bt_val)]
+			break
+	if sr_val == -1:
+		sr_val = sr_gr._Y[0][-1]
+	return [(-sr_val,bt_val)]
 
 
 FUNC = srtheo_and_block_time
@@ -2056,15 +2053,20 @@ custom_srtheo_and_block_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time2_Nm_srtheo##########
 
 def conv_time2_Nm_srtheo(exp,X=0,thresh=1.,**kwargs):
+	sr_val = -1
 	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')
 	ct2_gr = exp.db.get_graph(exp.uuid, method='conv_time2')
 	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')
-	ct_val = ct2_gr._Y[0][0]
+	ct_val = ct2_gr._Y[0][-1]
 	for i in range(len(sr_gr._X[0])):
 		if sr_gr._X[0][i] == ct_val:
 			sr_val = sr_gr._Y[0][i]
 			Nm = Nm_gr._Y[0][i]
-			return [(ct_val,-Nm,-sr_val)]
+			break
+	if sr_val == -1:
+		sr_val =  sr_gr._Y[0][-1]
+		Nm = Nm_gr._Y[0][-1]
+	return [(ct_val,-Nm,-sr_val)]
 
 
 FUNC = conv_time2_Nm_srtheo
