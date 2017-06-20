@@ -61,7 +61,7 @@ class GraphEnvSeveralSuccessExplore(GraphEnvSuccessExplore):
 
 	def __init__(self, nb_success=10, *args, **kwargs):
 		self.nb_success = nb_success
-		GraphEnvSuccessExplore.__init__(*args,**kwargs)
+		GraphEnvSuccessExplore.__init__(self,*args,**kwargs)
 
 	def test(self,agent,ms,w,mh,bool_succ,context=[]):
 		val = agent._memory['success_m'][ms]

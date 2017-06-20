@@ -42,9 +42,11 @@ class Memory(collections.MutableMapping):
 		self.memory_policies = []
 		self.mpclasses = []
 		for mp in memory_policies:
-			assert mp['mem_type'] not in self.mpclasses
-			self.mpclasses.append(mp['mem_type'])
-			self.memory_policies.append(get_memory_policy(**mp))
+			if mp['mem_type'] not in self.mpclasses:
+				self.mpclasses.append(mp['mem_type'])
+				self.memory_policies.append(get_memory_policy(**mp))
+			else:
+				print mp['mem_type'],'already in memory policies, not appending'
 		self.init_memory(voc=voc)
 
 	def __getitem__(self, key):

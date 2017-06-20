@@ -100,3 +100,9 @@ class BaseVocabulary(object):
 	def discover_words(self,w_list):
 		pass
 
+	def get_accessible_meanings(self):
+		return self.get_known_meanings()+self.get_unknown_meanings()
+	
+	def get_accessible_words(self):
+		return self.get_known_words()+self.get_unknown_words()
+
