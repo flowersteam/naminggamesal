@@ -2045,7 +2045,7 @@ def srtheo_and_block_time(exp,X=0,thresh=1.,**kwargs):
 	bt_val = bt_gr._Y[0][0]
 	for i in range(len(sr_gr._X[0])):
 		if sr_gr._X[0][i] == bt_val:
-			sr_val = sr_gr._Y[i]
+			sr_val = sr_gr._Y[0][i]
 			return [(-sr_val,bt_val)]
 
 
@@ -2062,8 +2062,8 @@ def conv_time2_Nm_srtheo(exp,X=0,thresh=1.,**kwargs):
 	ct_val = ct2_gr._Y[0][0]
 	for i in range(len(sr_gr._X[0])):
 		if sr_gr._X[0][i] == ct_val:
-			sr_val = sr_gr._Y[i]
-			Nm = Nm_gr._Y[i]
+			sr_val = sr_gr._Y[0][i]
+			Nm = Nm_gr._Y[0][i]
 			return [(ct_val,-Nm,-sr_val)]
 
 
