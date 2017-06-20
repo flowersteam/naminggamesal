@@ -64,7 +64,10 @@ class GraphEnvSeveralSuccessExplore(GraphEnvSuccessExplore):
 		GraphEnvSuccessExplore.__init__(self,*args,**kwargs)
 
 	def test(self,agent,ms,w,mh,bool_succ,context=[]):
-		val = agent._memory['success_m'][ms]
+		if ms in agent._memory['success_m'].keys()
+			val = agent._memory['success_m'][ms]
+		else:
+			val = 0
 		if bool_succ:
 			val += 1
 		if val >= self.nb_success:
