@@ -8,6 +8,9 @@ import copy
 ##########
 class SpeakersChoice(Interaction):
 	def interact(self, speaker, hearer, pop,simulated=False):
+		if not simulated:
+			speaker.warn(role='speaker')
+			hearer.warn(role='hearer')
 		ms = speaker.pick_m()
 		w = speaker.pick_w(ms)
 		mh = hearer.guess_m(w)
@@ -24,6 +27,9 @@ class SpeakersChoice(Interaction):
 
 class SpeakersChoiceEpirob(Interaction):
 	def interact(self, speaker, hearer, pop,simulated=False):
+		if not simulated:
+			speaker.warn(role='speaker')
+			hearer.warn(role='hearer')
 		ms = speaker.pick_m()
 		w = speaker.pick_w(ms)
 		if hearer._vocabulary.get_known_meanings(w):
@@ -47,6 +53,9 @@ class SpeakersChoiceEpirob(Interaction):
 
 class SpeakersChoiceOmniscient(Interaction):
 	def interact(self, speaker, hearer, pop,simulated=False):
+		if not simulated:
+			speaker.warn(role='speaker')
+			hearer.warn(role='hearer')
 		if not hasattr(pop,'finalvoc'):
 			speaker._vocabulary.complete_empty()
 			pop.finalvoc = copy.deepcopy(speaker._vocabulary)

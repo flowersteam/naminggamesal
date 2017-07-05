@@ -104,7 +104,7 @@ class Agent(object):
 		return self._strategy.pick_context(voc=self._vocabulary,mem=self._memory,context_gen=self._sensoryapparatus.context_gen(env=env, diff=diff, size=size))
 
 
-
-
+	def warn(self,role):
+		pass
 
 

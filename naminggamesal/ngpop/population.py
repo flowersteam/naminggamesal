@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import uuid
 import copy
 
-from ..ngagent import Agent
+from ..ngagent import get_agent
 from ..nginter import get_interaction
 from ..ngtopology import get_topology
 from ..ngenv import get_environment
@@ -103,7 +103,7 @@ class Population(object):
 		if sensor_cfg is None:
 			sensor_cfg = self._sensor_cfg
 		new_cfg = self.agent_init.modify_cfg(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id, env=self.env,pop_init=pop_init)
-		agent = Agent(**new_cfg)
+		agent = get_agent(**new_cfg)
 		self.agent_init.modify_agent(agent,pop=self,pop_init=pop_init)
 		self.add_agent(agent)
 

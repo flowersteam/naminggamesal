@@ -13,6 +13,7 @@ env_class={
 	'graphenv_onesuccessexplore':'graphenv.GraphEnvOneSuccessExplore',
 	'graphenv_severalsuccessexplore':'graphenv.GraphEnvSeveralSuccessExplore',
 	'simple':'simple.SimpleEnv',
+	'simple_realwords':'simple.SimpleEnvRealWords',
 }
 
 

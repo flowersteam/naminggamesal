@@ -7,7 +7,9 @@ import numpy as np
 ##########
 class Omniscient(Interaction):
 	def interact(self, speaker, hearer, pop,simulated=False):
-
+		if not simulated:
+			speaker.warn(role='speaker')
+			hearer.warn(role='hearer')
 		matrix_pop = pop.get_content()
 		#matrix_hearer = hearer.get_vocabulary_content()
 		#speaker._memory.update({'pop':matrix_pop,'hearer':matrix_hearer})

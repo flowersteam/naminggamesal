@@ -7,6 +7,9 @@ import numpy as np
 ##########
 class CategoryGameSpeakersChoice(Interaction):
 	def interact(self, speaker, hearer, pop,simulated=False):
+		if not simulated:
+			speaker.warn(role='speaker')
+			hearer.warn(role='hearer')
 		ct = speaker.pick_context(env=pop.env, size=2)
 		ms = speaker.pick_m(context=ct)
 		w = speaker.pick_w(ms)
@@ -24,6 +27,9 @@ class CategoryGameSpeakersChoice(Interaction):
 ##########
 class CategoryGameHearersChoice(Interaction):
 	def interact(self, speaker, hearer, pop,simulated=False):
+		if not simulated:
+			speaker.warn(role='speaker')
+			hearer.warn(role='hearer')
 		ct = hearer.pick_context(env=pop.env, size=2)
 		ms = speaker.pick_m(context=ct)
 		w = speaker.pick_w(ms)

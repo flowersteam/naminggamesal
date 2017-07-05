@@ -65,6 +65,9 @@ class FabienInteraction(Interaction):
 			self.base_interact(speaker=speaker, hearer=hearer, pop=pop,simulated=simulated)
 
 	def base_interact(self, speaker, hearer, pop,simulated=False):
+		if not simulated:
+			speaker.warn(role='speaker')
+			hearer.warn(role='hearer')
 		ms = speaker.pick_m()
 		w =  speaker.pick_w(ms)
 		mh = hearer.guess_m(w)

@@ -7,6 +7,9 @@ import numpy as np
 ##########
 class HearersChoice(Interaction):
 	def interact(self, speaker, hearer, pop,simulated=False):
+		if not simulated:
+			speaker.warn(role='speaker')
+			hearer.warn(role='hearer')
 		ms = hearer.hearer_pick_m()
 		w =  speaker.pick_w(ms)
 		mh = hearer.guess_m(w)
@@ -24,6 +27,9 @@ class HearersChoice(Interaction):
 
 class HearersChoiceEpirob(Interaction):
 	def interact(self, speaker, hearer, pop,simulated=False):
+		if not simulated:
+			speaker.warn(role='speaker')
+			hearer.warn(role='hearer')
 		ms = hearer.hearer_pick_m()
 		w = speaker.pick_w(ms)
 		if hearer._vocabulary.get_known_meanings(w):

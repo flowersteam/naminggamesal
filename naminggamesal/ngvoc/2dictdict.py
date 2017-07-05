@@ -175,11 +175,11 @@ class Voc2DictDict(BaseVocabulary):
 			elif option == 'max':
 				val_list = self._content_m[m].items()
 				val_max = max([v1 for w1,v1 in val_list])
-				return [w1 for w1,v1 in val_list if v1 == val_max]
+				return sorted([w1 for w1,v1 in val_list if v1 == val_max])
 			elif option == 'min':
 				val_list = self._content_m[m].items()
 				val_min = min([v1 for w1,v1 in val_list])
-				return [w1 for w1,v1 in val_list if v1 == val_min]
+				return sorted([w1 for w1,v1 in val_list if v1 == val_min])
 			#elif option == 'minofmaxw':
 			#elif option == 'minofmaxm':
 
@@ -196,11 +196,11 @@ class Voc2DictDict(BaseVocabulary):
 			elif option == 'max':
 				val_list = self._content_w[w].items()
 				val_max = max([v1 for m1,v1 in val_list])
-				return [m1 for m1,v1 in val_list if v1 == val_max]
+				return sorted([m1 for m1,v1 in val_list if v1 == val_max])
 			elif option == 'min':
 				val_list = self._content_w[w].items()
 				val_min = min([v1 for m1,v1 in val_list])
-				return [m1 for m1,v1 in val_list if v1 == val_min]
+				return sorted([m1 for m1,v1 in val_list if v1 == val_min])
 			#elif option == 'minofmaxw':
 			#elif option == 'minofmaxm':
 
@@ -229,11 +229,19 @@ class Voc2DictDict(BaseVocabulary):
 
 	@voc_cache
 	def get_accessible_meanings(self):
-		return list(self.get_known_meanings())+list(self.unknown_meanings)
+		l = list(self.get_known_meanings())+list(self.unknown_meanings)
+		try:
+			return sorted(l)
+		except:
+			return l
 
 	@voc_cache
 	def get_accessible_words(self):
-		return list(self.get_known_words())+list(self.unknown_words)
+		l = list(self.get_known_words())+list(self.unknown_words)
+		try:
+			return sorted(l)
+		except:
+			return l
 
 	def get_random_m(self):
 		return random.choice(self.get_accessible_meanings()) #random from known+explored+adjacent_possible
@@ -268,10 +276,20 @@ class Voc2DictDict(BaseVocabulary):
 		self.unknown_words += w_list_bis
 
 	def get_unknown_meanings(self):
+		try:
+			list.sort(self.unknown_meanings)
+		except:
+			pass
 		return self.unknown_meanings
 
 	def get_unknown_words(self):
+
+		try:
+			list.sort(self.unknown_words)
+		except:
+			pass
 		return self.unknown_words
+
 
 	def get_M(self):
 		return self.get_UM()+self.get_KM()

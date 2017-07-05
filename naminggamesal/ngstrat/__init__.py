@@ -73,7 +73,9 @@ def get_strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg
 	temppath = '.'.join(templist[:-1])
 	tempclass = templist[-1]
 	_tempmod = import_module('.'+temppath,package=__name__)
-	return getattr(_tempmod,tempclass)(vu_cfg=vu_cfg, success_cfg=success_cfg, **strat_cfg2)
+	strat = getattr(_tempmod,tempclass)(vu_cfg=vu_cfg, success_cfg=success_cfg, **strat_cfg2)
+	strat.strat_type = strat_type
+	return strat
 
 
 class BaseStrategy(object):
