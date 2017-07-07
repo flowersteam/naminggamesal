@@ -141,8 +141,8 @@ def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kw
 		mem = agent._memory
 		if voc is None:
 			voc = agent._vocabulary
+	entr = 0.
 	if 'interact_count_m' in mem.keys():
-		entr = 0
 
 		if m is None:
 			mat = mem['interact_count_m']
