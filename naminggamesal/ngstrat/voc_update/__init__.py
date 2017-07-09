@@ -18,6 +18,7 @@ vu_class={
 	'minimalbeta':'minimal.MinimalBeta',
 
 	'BLIS':'lateral_inhib.BasicLateralInhibition',
+	'BLISsynonly':'lateral_inhib.BLISSynOnly',
 	'BLIS_epirob':'lateral_inhib.BLISEpirob',
 	'BLIS_heareronly':'lateral_inhib.BasicLateralInhibitionHearerOnly',
 	'BLIS_heareronlyfailure':'lateral_inhib.BasicLateralInhibitionHearerOnlyFailure',
