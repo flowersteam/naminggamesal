@@ -39,10 +39,13 @@ class StratNaiveMemBased(StratNaive):
 	def guess_m(self,w,voc,mem,context=[]):
 		if w in voc.get_known_words():
 			m_list = voc.get_known_meanings(w=w,option=None)
-			p_list = [ mem['interact_count_voc'].get_value(m=m1,w=w,role='hearer') for m1 in m_list]
-			p = np.ndarray(p_list)
-			p = p/p.sum()
-			m = np.random.choice(m_list,p=p)
+			if 'interact_count_voc' in mem.keys():
+				p_list = [ mem['interact_count_voc'].get_value(m=m1,w=w,content_type='w') for m1 in m_list]
+				p = np.asarray(p_list)
+				p = p/p.sum()
+				m = np.random.choice(m_list,p=p)
+			else:
+				m = np.random.choice(m_list)
 		elif voc.get_unknown_meanings():
 			m = voc.get_new_unknown_m()
 		else:
@@ -52,10 +55,13 @@ class StratNaiveMemBased(StratNaive):
 	def pick_w(self,m,voc,mem,context=[]):
 		if m in voc.get_known_meanings():
 			w_list = voc.get_known_words(m=m,option=None)
-			p_list = [ mem['interact_count_voc'].get_value(m=m,w=w1,role='speaker') for w1 in w_list]
-			p = np.ndarray(p_list)
-			p = p/p.sum()
-			w = np.random.choice(w_list,p=p)
+			if 'interact_count_voc' in mem.keys():
+				p_list = [ mem['interact_count_voc'].get_value(m=m,w=w1,content_type='m') for w1 in w_list]
+				p = np.asarray(p_list)
+				p = p/p.sum()
+				w = np.random.choice(w_list,p=p)
+			else:
+				w = np.random.choice(w_list)
 		elif voc.get_unknown_words():
 			w = voc.get_new_unknown_w()
 		else:

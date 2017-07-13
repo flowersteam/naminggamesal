@@ -2493,12 +2493,12 @@ def srtheo_voc_membased(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,rol
 	voc1_temp = copy.deepcopy(voc1)
 	for m1 in voc1_temp.get_known_meanings():
 		for w1 in voc1_temp.get_known_words(m=m1):
-			val_temp = voc2.get_value(m=m1,w=w1,role='speaker')
-			voc1_temp.add(m=m1,w=w1,val=val_temp,role='speaker')
+			val_temp = voc2.get_value(m=m1,w=w1,content_type='m')
+			voc1_temp.add(m=m1,w=w1,val=val_temp,content_type='m')
 
 	for w1 in voc1_temp.get_known_words():
 		for m1 in voc1_temp.get_known_meanings(w=w1):
-			val_temp = voc2.get_value(m=m1,w=w1,role='hearer')
-			voc1_temp.add(m=m1,w=w1,val=val_temp,role='hearer')
+			val_temp = voc2.get_value(m=m1,w=w1,content_type='w')
+			voc1_temp.add(m=m1,w=w1,val=val_temp,content_type='w')
 
-	return srtheo_voc(voc1=voc1_temp,voc2=voc2,voc2_m=voc2_m,voc2_w=voc2_w,m=m,w=w,role=role):
+	return srtheo_voc(voc1=voc1_temp,voc2=voc2,voc2_m=voc2_m,voc2_w=voc2_w,m=m,w=w,role=role)
