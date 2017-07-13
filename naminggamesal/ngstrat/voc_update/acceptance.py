@@ -157,7 +157,38 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 
 
 
+class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 
+
+	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
+		mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
+		if hasattr(voc,'_content'):
+			pop_voc_m = mem_new['interact_count_m']
+			pop_voc_w = mem_new['interact_count_w']
+			voc1 = copy.deepcopy(voc._content)
+			voc_new = copy.deepcopy(voc)
+			if role == 'hearer':
+				self.subvu.update_hearer(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
+			elif role == 'speaker':
+				self.subvu.update_speaker(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
+			voc2 = voc_new._content
+			if self.role != 'local':
+				role = self.role
+			return ngmeth.srtheo_voc_membased(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= ngmeth.srtheo_voc_membased(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
+		else:
+			pop_voc = mem_new['interact_count_voc']
+			if hasattr(voc,'get_alterable_shallow_copy'):
+				voc_new = voc.get_alterable_shallow_copy()
+			else:
+				voc_new = copy.deepcopy(voc)
+			if role == 'hearer':
+				self.subvu.update_hearer(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
+			elif role == 'speaker':
+				self.subvu.update_speaker(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
+
+			if self.role != 'local':
+				role = self.role
+			return ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role) <= ngmeth.srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
 
 
 class AcceptanceVocRelatedEntropy(AcceptancePolicy):

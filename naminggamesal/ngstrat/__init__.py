@@ -14,6 +14,7 @@ sns.set(rc={'image.cmap': 'Purples_r'})
 #####Classe de base
 strat_class={
 	'naive':'naive.StratNaive',
+	'naive_membased':'naive.StratNaiveMemBased',
 	'naive_category':'naive.StratNaiveCategory',
 	'naive_category_pone':'naive.StratNaiveCategoryPlosOne',
 

@@ -88,6 +88,29 @@ class MinimalSynOnly(VocUpdate):
 		voc.finish_update()
 
 
+class MinimalSynOnlyMemBased(VocUpdate):
+
+	def update_hearer(self,ms,w,mh,voc,mem,bool_succ, context=[]):
+		mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,bool_succ=bool_succ, context=context)
+		val_sp =  mem_new['interact_count_voc'].get_value(m=ms,w=w,role='speaker')
+		val_hr =  mem_new['interact_count_voc'].get_value(m=ms,w=w,role='hearer')
+		voc.add(ms,w,val=val_sp,context=context,role='speaker')
+		voc.add(ms,w,val=val_hr,context=context,role='hearer')
+		if bool_succ:
+			voc.rm_syn(ms,w)
+		voc.finish_update()
+
+	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
+		mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,bool_succ=bool_succ, context=context)
+		val_sp =  mem_new['interact_count_voc'].get_value(m=ms,w=w,role='speaker')
+		val_hr =  mem_new['interact_count_voc'].get_value(m=ms,w=w,role='hearer')
+		voc.add(ms,w,val=val_sp,context=context,role='speaker')
+		voc.add(ms,w,val=val_hr,context=context,role='hearer')
+		if bool_succ:
+			voc.rm_syn(ms,w)
+		voc.finish_update()
+
+
 class MinimalPOne(VocUpdate):
 
 	def update_hearer(self,ms,w,mh,voc,mem,bool_succ, context=[]):

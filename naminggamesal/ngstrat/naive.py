@@ -34,6 +34,42 @@ class StratNaive(BaseStrategy):
 		m = self.pick_m(voc,mem,context)
 		return m
 
+class StratNaiveMemBased(StratNaive):
+
+	def guess_m(self,w,voc,mem,context=[]):
+		if w in voc.get_known_words():
+			m_list = voc.get_known_meanings(w=w,option=None)
+			p_list = [ mem['interact_count_voc'].get_value(m=m1,w=w,role='hearer') for m1 in m_list]
+			p = np.ndarray(p_list)
+			p = p/p.sum()
+			m = np.random.choice(m_list,p=p)
+		elif voc.get_unknown_meanings():
+			m = voc.get_new_unknown_m()
+		else:
+			m = voc.get_random_known_m(option='min')
+		return m
+
+	def pick_w(self,m,voc,mem,context=[]):
+		if m in voc.get_known_meanings():
+			w_list = voc.get_known_words(m=m,option=None)
+			p_list = [ mem['interact_count_voc'].get_value(m=m,w=w1,role='speaker') for w1 in w_list]
+			p = np.ndarray(p_list)
+			p = p/p.sum()
+			w = np.random.choice(w_list,p=p)
+		elif voc.get_unknown_words():
+			w = voc.get_new_unknown_w()
+		else:
+			w = voc.get_random_known_w(option='min')
+		return w
+
+	def pick_m(self,voc,mem,context=[]):
+		m = voc.get_random_m()# randint(0,voc.get_M()-1)
+		return m
+
+	def hearer_pick_m(self,voc,mem,context=[]):
+		m = self.pick_m(voc,mem,context)
+		return m
+
 ######## FOR CATEGORY GAME ############
 class StratNaiveCategory(BaseStrategy):
 

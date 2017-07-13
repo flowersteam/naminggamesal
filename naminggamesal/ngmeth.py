@@ -2488,3 +2488,17 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 #may still be a problem for w not None, especially for hearer case
 
 #==================
+
+def srtheo_voc_membased(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both'):
+	voc1_temp = copy.deepcopy(voc1)
+	for m1 in voc1_temp.get_known_meanings():
+		for w1 in voc1_temp.get_known_words(m=m1):
+			val_temp = voc2.get_value(m=m1,w=w1,role='speaker')
+			voc1_temp.add(m=m1,w=w1,val=val_temp,role='speaker')
+
+	for w1 in voc1_temp.get_known_words():
+		for m1 in voc1_temp.get_known_meanings(w=w1):
+			val_temp = voc2.get_value(m=m1,w=w1,role='hearer')
+			voc1_temp.add(m=m1,w=w1,val=val_temp,role='hearer')
+
+	return srtheo_voc(voc1=voc1_temp,voc2=voc2,voc2_m=voc2_m,voc2_w=voc2_w,m=m,w=w,role=role):
