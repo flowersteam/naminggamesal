@@ -43,7 +43,10 @@ class StratNaiveMemBased(StratNaive):
 				p_list = [ mem['interact_count_voc'].get_value(m=m1,w=w,content_type='w') for m1 in m_list]
 				p = np.asarray(p_list)
 				p = p/p.sum()
-				m = np.random.choice(m_list,p=p)
+				if p.sum() != 1:
+					m = np.random.choice(m_list)
+				else:
+					m = np.random.choice(m_list,p=p)
 			else:
 				m = np.random.choice(m_list)
 		elif voc.get_unknown_meanings():
@@ -59,7 +62,10 @@ class StratNaiveMemBased(StratNaive):
 				p_list = [ mem['interact_count_voc'].get_value(m=m,w=w1,content_type='m') for w1 in w_list]
 				p = np.asarray(p_list)
 				p = p/p.sum()
-				w = np.random.choice(w_list,p=p)
+				if p.sum() != 1:
+					w = np.random.choice(w_list)
+				else:
+					w = np.random.choice(w_list,p=p)
 			else:
 				w = np.random.choice(w_list)
 		elif voc.get_unknown_words():
