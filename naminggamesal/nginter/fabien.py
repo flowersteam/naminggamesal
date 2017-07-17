@@ -59,7 +59,7 @@ class FabienInteraction(Interaction):
 			self.alpha = 1.
 
 
-	def interact(self, speaker, hearer, pop,simulated=False):
+	def interact(self, speaker, hearer, pop, current_game_info,simulated=False):
 		r = random.random()
 		if self.proba_func(speaker, hearer, self.alpha) > r:
 			self.base_interact(speaker=speaker, hearer=hearer, pop=pop,simulated=simulated)

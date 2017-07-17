@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import uuid
 import copy
+import json
 
 from ..ngagent import get_agent
 from ..nginter import get_interaction
@@ -22,7 +23,7 @@ import networkx as nx
 
 class Population(object):
 
-	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent, agent_init_cfg={'agent_init_type':'agent_init'}, evolution_cfg={'evolution_type':'idle'}, agentpick_cfg={'agentpick_type':'random_pick'}, sensor_cfg=None, env_cfg=None,topology_cfg={'topology_type':'full_graph'}):
+	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent, agent_init_cfg={'agent_init_type':'agent_init'}, evolution_cfg={'evolution_type':'idle'}, agentpick_cfg={'agentpick_type':'random_pick'}, sensor_cfg=None, env_cfg=None,topology_cfg={'topology_type':'full_graph'},xp_uuid=None):
 		self._size = 0
 		self._strat_cfg = strat_cfg
 		self._agent_init_cfg = agent_init_cfg
@@ -34,6 +35,8 @@ class Population(object):
 		self._interaction = get_interaction(**interact_cfg)
 		self._evolution = get_evolution(**evolution_cfg)
 		self._exec_time = 0.
+		self.xp_uuid = xp_uuid
+		self.uuid = str(uuid.uuid1())
 		if env_cfg is None:
 			self.env = None
 		else:
@@ -131,13 +134,34 @@ class Population(object):
 		return self.agent_pick.pick_hearer(speaker,self).get_id()
 
 	def play_game(self, steps, **kwargs):
-		for i in range(0,steps):
-			self._evolution.step(pop=self)
-			speaker = self.agent_pick.pick_speaker(pop=self)
-			speaker_id = speaker.get_id()
-			hearer = self.agent_pick.pick_hearer(speaker,pop=self)
-			hearer_id = hearer.get_id()
-			self._interaction.interact(speaker=speaker, hearer=hearer, pop=self)
+		#if not hasattr(self,'current_game_info'):
+
+		filename = self.get_current_info_filename()
+		if os.path.isfile(filename):
+			with open(filename,'r') as f:
+				current_game_info = json.loads(f.read())
+			os.remove(filename)
+		else:
+			self.current_game_info = {}
+		try:
+			for i in range(0,steps):
+				self._evolution.step(pop=self)
+				if 'speaker_id' not in current_game_info.keys():
+					speaker = self.agent_pick.pick_speaker(pop=self)
+					speaker_id = speaker.get_id()
+					current_game_info['speaker_id'] = speaker_id
+				else:
+					speaker_id = current_game_info['speaker_id']
+					speaker = self._agentlist[self.get_index_from_id(speaker_id)]
+
+				if 'hearer_id' not in current_game_info.keys():
+					hearer = self.agent_pick.pick_hearer(speaker,pop=self)
+					hearer_id = hearer.get_id()
+					current_game_info['hearer_id'] = hearer_id
+				else:
+					hearer_id = current_game_info['hearer_id']
+					hearer = self._agentlist[self.get_index_from_id(hearer_id)]
+				self._interaction.interact(speaker=speaker, hearer=hearer, pop=self, current_game_info=self.current_game_info)
 #			tempmw=speaker.pick_mw()
 #			ms=tempmw[0]
 #			w=tempmw[1]
@@ -150,8 +174,23 @@ class Population(object):
 #				hearer.fail+=1
 #			speaker.update_speaker(ms,w,mh)
 #			hearer.update_hearer(ms,w,mh)
-			self._lastgameinfo = self._interaction._last_info
-			self._past = self._past[-99:]+[copy.deepcopy(self._lastgameinfo)]
+				self._lastgameinfo = self._interaction._last_info
+				self._past = self._past[-99:]+[copy.deepcopy(self._lastgameinfo)]
+				self.current_game_info = {}
+		except IOError,e:
+			if e == 'User intervention needed':
+				with open(filename,'w') as f:
+					if not os.path.isdir(os.path.basedir(f)):
+						os.makedirs(os.path.basedir(f))
+					f.write(json.dumps(current_game_info))
+			raise
+
+	def get_current_info_filename(self):
+		if hasattr(self,'xp_uuid') and self.xp_uuid is not None:
+			uuid_str = self.xp_uuid
+		else:
+			uuid_str = self.uuid
+		return './data/current_game_info/'+ uuid_str + '.txt'
 
 	def get_lastgameinfo(self):
 		return self._lastgameinfo

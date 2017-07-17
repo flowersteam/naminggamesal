@@ -2,7 +2,6 @@
 from . import BaseStrategy
 import random
 import numpy as np
-from intervaltree import IntervalTree, Interval
 
 		#####################################NAIVE STRATEGY########################################
 class StratUser(BaseStrategy):
@@ -49,4 +48,21 @@ class StratUser(BaseStrategy):
 			print 'Not in possible choices, reasking'
 			return self.get_choice_from_list(possible_choices=possible_choices)
 			#raise IOError('not in possible choices')
+
+class StratUserNonInteractive(BaseStrategy):
+
+	def guess_m(self,w,voc,mem,context=[]):
+		possible_choices = voc.get_accessible_meanings()
+		return self.get_choice_from_list(possible_choices)
+
+	def pick_w(self,m,voc,mem,context=[]):
+		possible_choices = voc.get_accessible_words()
+		return self.get_choice_from_list(possible_choices)
+
+	def pick_m(self,voc,mem,context=[]):
+		possible_choices = voc.get_accessible_meanings()
+		return self.get_choice_from_list(possible_choices)
+
+	def get_choice_from_list(self,possible_choices):
+		raise IOError('User intervention needed')
 

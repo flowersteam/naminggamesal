@@ -6,7 +6,7 @@ import numpy as np
 
 ##########
 class Omniscient(Interaction):
-	def interact(self, speaker, hearer, pop,simulated=False):
+	def interact(self, speaker, hearer, pop, current_game_info,simulated=False):
 		if not simulated:
 			speaker.warn(role='speaker')
 			hearer.warn(role='hearer')

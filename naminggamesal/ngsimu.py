@@ -92,8 +92,9 @@ class Experiment(object):
 		self.define_stepfun()
 		self._T = []
 		self._exec_time=[]
-		self._pop_cfg = pop_cfg
 		self.uuid = str(uuid.uuid1())
+		self._pop_cfg = pop_cfg
+		self._pop_cfg['xp_uuid'] = self.uuid		
 		self._poplist = Poplist('data/' + self.uuid + '.db')
 		#self.add_pop(Population(**pop_cfg),0)
 		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())

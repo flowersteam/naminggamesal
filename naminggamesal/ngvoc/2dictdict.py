@@ -205,6 +205,13 @@ class Voc2DictDict(BaseVocabulary):
 			#elif option == 'minofmaxm':
 
 
+	@voc_cache
+	def get_known_meanings_weights(self,w):
+		return self._content_w[w].items()
+	
+	@voc_cache
+	def get_known_words_weights(self,m):
+		return self._content_m[m].items()
 
 	def diagnostic(self):
 		print self._cache
