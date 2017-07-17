@@ -120,10 +120,11 @@ class AcceptanceTSMax(AcceptancePolicy):
 
 class AcceptanceTSMaxNew(AcceptancePolicy):
 
-	def __init__(self,mem_policy={'mem_type':'interaction_counts'},role='both',**cfg2):
+	def __init__(self,mem_policy={'mem_type':'interaction_counts'},role='both', beta=None,**cfg2):
 		AcceptancePolicy.__init__(self,**cfg2)
 		self.memory_policies.append(copy.deepcopy(mem_policy))
 		self.role = role
+		self.beta = beta
 
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
 		mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
@@ -139,6 +140,8 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 			voc2 = voc_new._content
 			if self.role != 'local':
 				role = self.role
+			if beta is not None:
+				print 'deprecated'
 			return ngmeth.srtheo_voc(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= ngmeth.srtheo_voc(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
 		else:
 			pop_voc = mem_new['interact_count_voc']
@@ -153,9 +156,16 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 
 			if self.role != 'local':
 				role = self.role
-			return ngmeth.srtheo_voc(voc,voc2=pop_voc,role=role) <= ngmeth.srtheo_voc(voc_new,voc2=pop_voc,role=role)
-
-
+			if beta is None:
+				return ngmeth.srtheo_voc(voc,voc2=pop_voc,role=role) <= ngmeth.srtheo_voc(voc_new,voc2=pop_voc,role=role)
+			else:
+				#v_ref = ngmeth.srtheo_voc(voc,voc2=mem['interact_count_voc'],role=role)
+				v_new = ngmeth.srtheo_voc(voc,voc2=pop_voc,role=role)
+				v_update = ngmeth.srtheo_voc(voc_new,voc2=pop_voc,role=role)
+				p_1 = np.exp(beta*v_new)
+				p_2 = np.exp(beta*v_update)
+				r = random.random()
+				return r >= p_1/(p_1+p_2)
 
 class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 
@@ -174,6 +184,8 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 			voc2 = voc_new._content
 			if self.role != 'local':
 				role = self.role
+			if beta is not None:
+				print 'deprecated'
 			return ngmeth.srtheo_voc_membased(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= ngmeth.srtheo_voc_membased(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
 		else:
 			pop_voc = mem_new['interact_count_voc']
@@ -188,7 +200,17 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 
 			if self.role != 'local':
 				role = self.role
-			return ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role) <= ngmeth.srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
+			if beta is None:
+				return ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role) <= ngmeth.srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
+			else:
+				#v_ref = ngmeth.srtheo_voc(voc,voc2=mem['interact_count_voc'],role=role)
+				v_new = ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role)
+				v_update = ngmeth.srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
+				p_1 = np.exp(beta*v_new)
+				p_2 = np.exp(beta*v_update)
+				r = random.random()
+				return r >= p_1/(p_1+p_2)
+
 
 
 class AcceptanceVocRelatedEntropy(AcceptancePolicy):

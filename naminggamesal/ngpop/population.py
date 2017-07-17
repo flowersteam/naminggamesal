@@ -146,20 +146,20 @@ class Population(object):
 		try:
 			for i in range(0,steps):
 				self._evolution.step(pop=self)
-				if 'speaker_id' not in current_game_info.keys():
+				if 'speaker_id' not in self.current_game_info.keys():
 					speaker = self.agent_pick.pick_speaker(pop=self)
 					speaker_id = speaker.get_id()
-					current_game_info['speaker_id'] = speaker_id
+					self.current_game_info['speaker_id'] = speaker_id
 				else:
-					speaker_id = current_game_info['speaker_id']
+					speaker_id = self.current_game_info['speaker_id']
 					speaker = self._agentlist[self.get_index_from_id(speaker_id)]
 
-				if 'hearer_id' not in current_game_info.keys():
+				if 'hearer_id' not in self.current_game_info.keys():
 					hearer = self.agent_pick.pick_hearer(speaker,pop=self)
 					hearer_id = hearer.get_id()
-					current_game_info['hearer_id'] = hearer_id
+					self.current_game_info['hearer_id'] = hearer_id
 				else:
-					hearer_id = current_game_info['hearer_id']
+					hearer_id = self.current_game_info['hearer_id']
 					hearer = self._agentlist[self.get_index_from_id(hearer_id)]
 				self._interaction.interact(speaker=speaker, hearer=hearer, pop=self, current_game_info=self.current_game_info)
 #			tempmw=speaker.pick_mw()
