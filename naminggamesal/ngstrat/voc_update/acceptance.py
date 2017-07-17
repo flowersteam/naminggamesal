@@ -140,7 +140,7 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 			voc2 = voc_new._content
 			if self.role != 'local':
 				role = self.role
-			if beta is not None:
+			if self.beta is not None:
 				print 'deprecated'
 			return ngmeth.srtheo_voc(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= ngmeth.srtheo_voc(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
 		else:
@@ -156,14 +156,14 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 
 			if self.role != 'local':
 				role = self.role
-			if beta is None:
+			if self.beta is None:
 				return ngmeth.srtheo_voc(voc,voc2=pop_voc,role=role) <= ngmeth.srtheo_voc(voc_new,voc2=pop_voc,role=role)
 			else:
 				#v_ref = ngmeth.srtheo_voc(voc,voc2=mem['interact_count_voc'],role=role)
 				v_new = ngmeth.srtheo_voc(voc,voc2=pop_voc,role=role)
 				v_update = ngmeth.srtheo_voc(voc_new,voc2=pop_voc,role=role)
-				p_1 = np.exp(beta*v_new)
-				p_2 = np.exp(beta*v_update)
+				p_1 = np.exp(self.beta*v_new)
+				p_2 = np.exp(self.beta*v_update)
 				r = random.random()
 				return r >= p_1/(p_1+p_2)
 
@@ -184,7 +184,7 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 			voc2 = voc_new._content
 			if self.role != 'local':
 				role = self.role
-			if beta is not None:
+			if self.beta is not None:
 				print 'deprecated'
 			return ngmeth.srtheo_voc_membased(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= ngmeth.srtheo_voc_membased(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
 		else:
@@ -200,14 +200,14 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 
 			if self.role != 'local':
 				role = self.role
-			if beta is None:
+			if self.beta is None:
 				return ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role) <= ngmeth.srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
 			else:
 				#v_ref = ngmeth.srtheo_voc(voc,voc2=mem['interact_count_voc'],role=role)
 				v_new = ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role)
 				v_update = ngmeth.srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
-				p_1 = np.exp(beta*v_new)
-				p_2 = np.exp(beta*v_update)
+				p_1 = np.exp(self.beta*v_new)
+				p_2 = np.exp(self.beta*v_update)
 				r = random.random()
 				return r >= p_1/(p_1+p_2)
 
