@@ -9,6 +9,7 @@ agent_init_class={
 	'own_words':'own_conventions.OwnWordsInit',
 	'converged':'converged.Converged',
 	'oneuser':'oneuser.OneUser',
+	'oneuser_noninteractive':'oneuser.OneUserNonInteractive',
 }
 
 def get_agent_init(agent_init_type='agent_init', **agent_init_cfg2):

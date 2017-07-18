@@ -55,6 +55,7 @@ strat_class={
 	'tsrmax_mab':'tsrmax.StratTSRMaxMAB',
 
 	'user':'user.StratUser',
+	'user_noninteractive':'user.StratUserNonInteractive',
 }
 
 def get_strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, **strat_cfg2):

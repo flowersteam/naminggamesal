@@ -139,7 +139,7 @@ class Population(object):
 		filename = self.get_current_info_filename()
 		if os.path.isfile(filename):
 			with open(filename,'r') as f:
-				current_game_info = json.loads(f.read())
+				self.current_game_info = json.loads(f.read())
 			os.remove(filename)
 		else:
 			self.current_game_info = {}
@@ -177,12 +177,12 @@ class Population(object):
 				self._lastgameinfo = self._interaction._last_info
 				self._past = self._past[-99:]+[copy.deepcopy(self._lastgameinfo)]
 				self.current_game_info = {}
-		except IOError,e:
-			if e == 'User intervention needed':
+		except IOError as e:
+			if str(e) == 'User intervention needed':
+				if not os.path.isdir(os.path.dirname(filename)):
+					os.makedirs(os.path.dirname(filename))
 				with open(filename,'w') as f:
-					if not os.path.isdir(os.path.basedir(f)):
-						os.makedirs(os.path.basedir(f))
-					f.write(json.dumps(current_game_info))
+					f.write(json.dumps(self.current_game_info))
 			raise
 
 	def get_current_info_filename(self):
