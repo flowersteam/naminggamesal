@@ -208,10 +208,18 @@ class Voc2DictDict(BaseVocabulary):
 	@voc_cache
 	def get_known_meanings_weights(self,w):
 		return self._content_w[w].items()
-	
+
 	@voc_cache
 	def get_known_words_weights(self,m):
 		return self._content_m[m].items()
+
+	@voc_cache
+	def get_known_meanings_weights_values(self,w):
+		return self._content_w[w].values()
+
+	@voc_cache
+	def get_known_words_weights_values(self,m):
+		return self._content_m[m].values()
 
 	def diagnostic(self):
 		print self._cache

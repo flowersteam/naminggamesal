@@ -2407,7 +2407,7 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 					for w1 in voc1.get_known_words(m=m,option=None):#voc1._content_m[m].keys():
 						#try:
 						if len(voc1.get_known_words(m=m)):
-							ans += voc1.get_value(m,w1,content_type='m') * voc2.get_value(m,w1,content_type='w')/(float(sum(voc1.get_known_words_weights(m=m))))#/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
+							ans += voc1.get_value(m,w1,content_type='m') * voc2.get_value(m,w1,content_type='w')/(float(sum(voc1.get_known_words_weights_values(m=m))))#/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
 						#except ZeroDivisionError :
 						#	pass
 				#elif w is not None and w in voc2.get_known_words(option=None): #voc2._content_w.keys():
@@ -2419,14 +2419,14 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 			elif m is not None and w is not None:
 				#try:
 				if len(voc1.get_known_words(m=m)):
-					ans += voc1.get_value(m,w,content_type='m') * voc2.get_value(m,w,content_type='w')/(float(sum(voc1.get_known_words_weights(m=m))))#/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
+					ans += voc1.get_value(m,w,content_type='m') * voc2.get_value(m,w,content_type='w')/(float(sum(voc1.get_known_words_weights_values(m=m))))#/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
 				#except ZeroDivisionError :
 				#	pass
 			elif m is None and w is not None:
 				for m1 in voc1.get_known_meanings(w=w,option=None):
 					#try:
 					if len(voc1.get_known_words(m=m1)) and voc1.get_M():
-						ans += voc1.get_value(m1,w,content_type='m') * voc2.get_value(m1,w,content_type='w')/(float(sum(voc1.get_known_words_weights(m=m1)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
+						ans += voc1.get_value(m1,w,content_type='m') * voc2.get_value(m1,w,content_type='w')/(float(sum(voc1.get_known_words_weights_values(m=m1)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
 					#except KeyError,ZeroDivisionError :
 					#	pass
 			else:
@@ -2434,7 +2434,7 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 					for w1 in voc1.get_known_words(m=m1,option=None):
 						#try:
 						if len(voc1.get_known_words(m=m1)) and voc1.get_M():
-							ans += voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/(float(sum(voc1.get_known_words_weights(m=m1)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
+							ans += voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/(float(sum(voc1.get_known_words_weights_values(m=m1)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
 						#except ZeroDivisionError :
 						#	pass
 		if role == 'both' or role == 'hearer':
@@ -2456,20 +2456,20 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 					for m1 in voc1.get_known_meanings(w=w,option=None): #voc2._content_w[w].keys():
 						#try:
 						if len(voc1.get_known_meanings(w=w)) and voc2.get_M():
-							ans += voc2.get_value(m1,w,content_type='m') * voc1.get_value(m1,w,content_type='w')/(float(sum(voc1.get_known_meanings_weights(w=w)))*float(voc2.get_M()))#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
+							ans += voc2.get_value(m1,w,content_type='m') * voc1.get_value(m1,w,content_type='w')/(float(sum(voc1.get_known_meanings_weights_values(w=w)))*float(voc2.get_M()))#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
 						#except ZeroDivisionError :
 						#	pass
 			elif w is not None and m is not None:
 				#try:
 				if len(voc1.get_known_meanings(w=w)):
-					ans += voc2.get_value(m,w,content_type='m') * voc1.get_value(m,w,content_type='w')/(float(sum(voc1.get_known_meanings_weights(w=w))))#/float(voc2.get_M())
+					ans += voc2.get_value(m,w,content_type='m') * voc1.get_value(m,w,content_type='w')/(float(sum(voc1.get_known_meanings_weights_values(w=w))))#/float(voc2.get_M())
 				#except ZeroDivisionError :
 				#	pass
 			elif w is None and m is not None:
 				for w1 in voc2.get_known_words(m=m,option=None):
 					#try:
 					if len(voc1.get_known_meanings(w=w1)):
-						ans += voc2.get_value(m,w1,content_type='m') * voc1.get_value(m,w1,content_type='w')/(float(sum(voc1.get_known_meanings_weights(w=w1))))#/float(voc2.get_M())
+						ans += voc2.get_value(m,w1,content_type='m') * voc1.get_value(m,w1,content_type='w')/(float(sum(voc1.get_known_meanings_weights_values(w=w1))))#/float(voc2.get_M())
 					#except ZeroDivisionError :
 					#	pass
 			else:
@@ -2477,7 +2477,7 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 					for w1 in voc2.get_known_words(m=m1,option=None):
 						#try:
 						if len(voc1.get_known_meanings(w=w1)) and voc2.get_M():
-							ans += voc2.get_value(m1,w1,content_type='m') * voc1.get_value(m1,w1,content_type='w')/(float(sum(voc1.get_known_meanings_weights(w=w1)))*float(voc2.get_M()))#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w1)))
+							ans += voc2.get_value(m1,w1,content_type='m') * voc1.get_value(m1,w1,content_type='w')/(float(sum(voc1.get_known_meanings_weights_values(w=w1)))*float(voc2.get_M()))#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w1)))
 						#except ZeroDivisionError :
 						#	pass
 	if role == 'both':
@@ -2494,11 +2494,13 @@ def srtheo_voc_membased(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,rol
 	for m1 in voc1_temp.get_known_meanings():
 		for w1 in voc1_temp.get_known_words(m=m1):
 			val_temp = voc2.get_value(m=m1,w=w1,content_type='m')
+			val_temp = max(val_temp, 0.000001)
 			voc1_temp.add(m=m1,w=w1,val=val_temp,content_type='m')
 
 	for w1 in voc1_temp.get_known_words():
 		for m1 in voc1_temp.get_known_meanings(w=w1):
 			val_temp = voc2.get_value(m=m1,w=w1,content_type='w')
+			val_temp = max(val_temp, 0.000001)
 			voc1_temp.add(m=m1,w=w1,val=val_temp,content_type='w')
 
 	return srtheo_voc(voc1=voc1_temp,voc2=voc2,voc2_m=voc2_m,voc2_w=voc2_w,m=m,w=w,role=role)
