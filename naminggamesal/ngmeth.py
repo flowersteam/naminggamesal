@@ -2433,8 +2433,8 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 				for m1 in voc1.get_known_meanings(option=None):
 					for w1 in voc1.get_known_words(m=m1,option=None):
 						#try:
-						if len(voc1.get_known_words(m=m)) and voc1.get_M():
-							ans += voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/(float(sum(voc1.get_known_words_weights(m=m)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
+						if len(voc1.get_known_words(m=m1)) and voc1.get_M():
+							ans += voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/(float(sum(voc1.get_known_words_weights(m=m1)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
 						#except ZeroDivisionError :
 						#	pass
 		if role == 'both' or role == 'hearer':
