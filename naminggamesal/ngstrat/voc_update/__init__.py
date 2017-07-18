@@ -2,6 +2,7 @@
 import random
 import numpy as np
 from importlib import import_module
+import copy
 
 #####Classe de base
 vu_class={
@@ -50,8 +51,8 @@ def get_voc_update(vu_type='imitation', **vu_cfg2):
 	return getattr(_tempmod,tempclass)(**vu_cfg2)
 
 class VocUpdate(object):
-	def __init__(self):
-		self.memory_policies = []
+	def __init__(self,memory_policies=[]):
+		self.memory_policies = copy.deepcopy(memory_policies)
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
 		voc.finish_update()
