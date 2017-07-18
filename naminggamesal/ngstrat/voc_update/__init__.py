@@ -51,8 +51,10 @@ def get_voc_update(vu_type='imitation', **vu_cfg2):
 	return getattr(_tempmod,tempclass)(**vu_cfg2)
 
 class VocUpdate(object):
-	def __init__(self,memory_policies=[]):
+	def __init__(self,memory_policies=[],mem_policy=None):
 		self.memory_policies = copy.deepcopy(memory_policies)
+		if mem_policy is not None:
+			self.memory_policies.append(mem_policy)
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
 		voc.finish_update()
