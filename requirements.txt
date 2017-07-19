@@ -9,3 +9,5 @@ backports.lzma
 python-lzo
 sqlitebck
 networkx
+lxml
+pygexf
