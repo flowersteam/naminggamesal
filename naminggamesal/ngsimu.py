@@ -94,7 +94,7 @@ class Experiment(object):
 		self._exec_time=[]
 		self.uuid = str(uuid.uuid1())
 		self._pop_cfg = pop_cfg
-		self._pop_cfg['xp_uuid'] = self.uuid		
+		#self._pop_cfg['xp_uuid'] = self.uuid
 		self._poplist = Poplist('data/' + self.uuid + '.db')
 		#self.add_pop(Population(**pop_cfg),0)
 		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
@@ -200,7 +200,7 @@ class Experiment(object):
 
 	def continue_exp_until(self,T):
 		if not self._T:
-			self.add_pop(Population(**self._pop_cfg),0)
+			self.add_pop(Population(xp_uuid=self.uuid,**self._pop_cfg),0)
 		temptmax = self._T[-1]
 		start_time = time.clock() - self._exec_time[-1]
 		while (temptmax + self.stepfun(temptmax) <= T) :

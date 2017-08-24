@@ -18,7 +18,8 @@ interaction_class={
 	'omniscient':'omniscient.Omniscient',
 	'category_game':'category_game.CategoryGameSpeakersChoice',
 	'category_game_speakerschoice':'category_game.CategoryGameSpeakersChoice',
-	'category_game_hearerschoice':'category_game.CategoryGameHearersChoice'
+	'category_game_hearerschoice':'category_game.CategoryGameHearersChoice',
+	'meaning_exploration':'meaning_exploration.MeaningExploration',
 }
 
 def get_interaction(interact_type='speakerschoice', **interact_cfg2):

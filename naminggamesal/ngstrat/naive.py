@@ -42,11 +42,12 @@ class StratNaiveMemBased(StratNaive):
 			if 'interact_count_voc' in mem.keys():
 				p_list = [ mem['interact_count_voc'].get_value(m=m1,w=w,content_type='w') for m1 in m_list]
 				p = np.asarray(p_list)
-				p = p/p.sum()
-				if p.sum() != 1:
+				if p.sum() == 0:
 					m = np.random.choice(m_list)
+					print "got only 0s as association values when looking for known meanings of a given word"		
+					print p			
 				else:
-					m = np.random.choice(m_list,p=p)
+					m = np.random.choice(m_list,p=p/p.sum())
 			else:
 				m = np.random.choice(m_list)
 		elif voc.get_unknown_meanings():

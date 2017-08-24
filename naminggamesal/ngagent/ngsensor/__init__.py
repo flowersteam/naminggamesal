@@ -23,7 +23,7 @@ class SensoryApparatus(object):
 	def __init__(self):
 		pass
 
-	def perceive(self, input_signal):
+	def perceive(self, input_signal, env=None):
 		return input_signal
 
 	def discriminable(self, input_sig1, input_sig2):

@@ -107,4 +107,5 @@ class Agent(object):
 	def warn(self,role):
 		pass
 
-
+	def perceive(self,input_signal,env=None):
+		self._sensoryapparatus.perceive(input_signal=input_signal,env=env)
