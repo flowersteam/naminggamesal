@@ -216,7 +216,7 @@ class Experiment(object):
 
 	def continue_exp(self,dT=None):
 		if not self._T:
-			self.add_pop(Population(**self._pop_cfg),0)
+			self.add_pop(Population(xp_uuid=self.uuid,**self._pop_cfg),0)
 		if dT is None:
 			dT = self.stepfun(self._T[-1])
 		self.continue_exp_until(self._T[-1]+dT)
