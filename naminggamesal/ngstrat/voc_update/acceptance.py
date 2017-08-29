@@ -204,9 +204,9 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 				return ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role) <= ngmeth.srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
 			else:
 				#v_ref = ngmeth.srtheo_voc(voc,voc2=mem['interact_count_voc'],role=role)
-				v_new = ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role)
+				v_old = ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role)
 				v_update = ngmeth.srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
-				p_1 = np.exp(self.beta*v_new)
+				p_1 = np.exp(self.beta*v_old)
 				p_2 = np.exp(self.beta*v_update)
 				r = random.random()
 				return r >= p_1/(p_1+p_2)
