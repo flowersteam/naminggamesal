@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
+import sys
 import os
-import sqlite3 as sql
+import sqlite3
 import sqlitebck
+import psycopg2
 import time
 import lzo
 import cPickle
@@ -18,6 +20,7 @@ from . import ngmeth
 from . import ngsimu
 
 from weakref import WeakSet
+
 
 class NamingGamesDB(object):
 
@@ -39,61 +42,92 @@ class NamingGamesDB(object):
 		else:
 			return ()
 
-	def __init__(self,path=None,do_not_close=False):
+	def __init__(self,db_type = 'psycopg2', name=None, conn_info=None,do_not_close=False):
 		if not hasattr(self,'uuid'):
+			self.db_type = db_type
+			self.sql = sys.modules[db_type]
 			self.do_not_close = do_not_close
 			self.uuid = str(uuid.uuid1())
-			if not path:
-				path='naminggames.db'
-			self.dbpath = path
-			self.name = os.path.basename(path)
+			if db_type == 'sqlite3':
+				if conn_info is None:
+					if name:
+						self.conn_info = name + '.db'
+					else:
+						self.conn_info = 'naminggames.db'
+				else:
+					self.conn_info = conn_info
+				self.blob_str = 'BLOB'
+				self.int_str = 'INT'
+				self.float_str = 'INT'
+				self.var = '?'
+				self.dbpath = self.conn_info
+				if name is not None:
+					self.name = name
+				else:
+					self.name = os.path.basename(self.conn_info)
+			elif db_type == 'psycopg2':
+				if conn_info is None:
+					self.conn_info = "host='localhost' dbname='naminggames' user='naminggames' password='naminggames'"
+				else:
+					self.conn_info = conn_info
+				self.int_str = 'BIGINT'
+				self.float_str = 'FLOAT'
+				self.blob_str = 'BYTEA'
+				self.var = '%s'
+				self.dbpath = self.conn_info#TODO: separate dbpath and conn_info?
+				if name is not None:
+					assert ' dbname=' not in self.conn_info
+					self.conn_info = self.conn_info + ' dbname='+name
+					self.name = name
+				else:
+					self.name = self.conn_info.split("dbname='",1)[1].split("'",1)[0]
 			try:
-				self.connection = sql.connect(self.dbpath)
+				self.connection = self.sql.connect(self.conn_info)
 			except Exception as e:
 				#raise
-				raise Exception(self.dbpath)
+				raise Exception(self.conn_info)
 			self.cursor = self.connection.cursor()
 			self.cursor.execute("CREATE TABLE IF NOT EXISTS main_table("\
 					+"Id TEXT, "\
-					+"Creation_Time INT, "\
-					+"Modif_Time INT, "\
-					+"Exec_Time INT, "\
+					+"Creation_Time " + self.int_str + ", "\
+					+"Modif_Time " + self.int_str + ", "\
+					+"Exec_Time " + self.float_str + ", "\
 					+"Config TEXT, "\
-					+"Tmax INT, "\
-					+"step INT, "\
-					+"Experiment_object BLOB)")
+					+"Tmax " + self.int_str + ", "\
+					+"step " + self.int_str + ", "\
+					+"Experiment_object " + self.blob_str + ")")
 			self.cursor.execute("CREATE TABLE IF NOT EXISTS computed_data_table("\
 					+"Id TEXT, "\
-					+"Creation_Time INT, "\
-					+"Modif_Time INT, "\
+					+"Creation_Time " + self.int_str + ", "\
+					+"Modif_Time " + self.int_str + ", "\
 					+"Expe_config TEXT, "\
 					+"Function TEXT, "\
-					+"Time_max INT, "\
-					+"Custom_Graph BLOB)")
+					+"Time_max " + self.int_str + ", "\
+					+"Custom_Graph " + self.blob_str + ")")
 			self.connection.commit()
 
 	def execute(self,command):
 		self.cursor.execute(command)
 
 	def reconnect(self,RAM_only=False):
-		if RAM_only:
-			self.connection = sql.connect('file:' + self.uuid + '?mode=memory&cache=shared',uri=True)#':memory:'
+		if RAM_only and self.db_type == 'sqlite3':
+			self.connection = self.sql.connect('file:' + self.uuid + '?mode=memory&cache=shared',uri=True)#':memory:'
 			self.cursor = self.connection.cursor()
 		else:
 			try:
-				self.connection = sql.connect(self.dbpath)
-			except sql.OperationalError:
-				self.connection = sql.connect(self.name)
+				self.connection = self.sql.connect(self.dbpath)
+			except self.sql.OperationalError:
+				self.connection = self.sql.connect(self.name)
 			self.cursor = self.connection.cursor()
 
 
 
 	def move_to_RAM(self):
-		if not hasattr(self,'old_conn'):
+		if not hasattr(self,'old_conn') and self.db_type == 'sqlite3':
 			self.connection.commit()
 			self.old_conn = self.connection
 			self.old_cur = self.cursor
-			self.connection = sql.connect(':memory:')#'file:' + self.uuid + '?mode=memory&cache=shared',uri=True)
+			self.connection = self.sql.connect(':memory:')#'file:' + self.uuid + '?mode=memory&cache=shared',uri=True)
 			self.cursor = self.connection.cursor()
 			sqlitebck.copy(self.old_conn,self.connection)
 
@@ -149,26 +183,26 @@ class NamingGamesDB(object):
 	def export(self, other_db, id_list=None, methods=[],graph_only=False):
 		if id_list is None:
 			id_list = self.get_id_list()
-		#with sql.connect(other_db.dbpath, isolation_level=None):
-		other_cursor = other_db.cursor #sql.connect(other_db.dbpath, isolation_level=None).cursor()
+		#with self.sql.connect(other_db.dbpath, isolation_level=None):
+		other_cursor = other_db.cursor #self.sql.connect(other_db.dbpath, isolation_level=None).cursor()
 		for xp_uuid in id_list:
 			if not graph_only:
 				self.cursor.execute("SELECT * FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
 				xp_data = self.cursor.fetchone()
 				if not xp_uuid in other_db.get_id_list():
-					other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
+					other_cursor.execute("INSERT INTO main_table VALUES (" + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + ")",(xp_data))
 				elif self.get_param(xp_uuid=xp_uuid, param='Tmax') > other_db.get_param(xp_uuid=xp_uuid, param='Tmax'):
 					other_cursor.execute("DELETE FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
-					other_cursor.execute("INSERT INTO main_table VALUES (?,?,?,?,?,?,?,?)",(xp_data))
+					other_cursor.execute("INSERT INTO main_table VALUES (" + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + ")",(xp_data))
 			for method in methods:
 				if self.data_exists(xp_uuid=xp_uuid, method=method):
 					self.cursor.execute("SELECT * FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function= \'"+method+"\'")
 					gr_data = self.cursor.fetchone()
 					if not other_db.data_exists(xp_uuid=xp_uuid, method=method):
-						other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
+						other_cursor.execute("INSERT INTO computed_data_table VALUES (" + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + ")",(gr_data))
 					elif self.get_param(xp_uuid=xp_uuid, method=method, param='Time_max') > other_db.get_param(xp_uuid=xp_uuid, method=method, param='Time_max'):
 						other_cursor.execute("DELETE FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function= \'"+method+"\'")
-						other_cursor.execute("INSERT INTO computed_data_table VALUES (?,?,?,?,?,?,?)",(gr_data))
+						other_cursor.execute("INSERT INTO computed_data_table VALUES (" + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + ")",(gr_data))
 		other_db.connection.commit()
 
 	def delete(self, id_list, graph_only=False, xp_only=False, met=''):
@@ -315,7 +349,7 @@ class NamingGamesDB(object):
 		return Experiment(database=self,**xp_cfg)
 
 	def commit(self,exp):
-		binary=sql.Binary(lzo.compress(cPickle.dumps(exp,cPickle.HIGHEST_PROTOCOL)))
+		binary=self.sql.Binary(lzo.compress(cPickle.dumps(exp,cPickle.HIGHEST_PROTOCOL)))
 		if not exp._exec_time:
 			exec_time = -1
 		else:
@@ -334,7 +368,7 @@ class NamingGamesDB(object):
 		tempmodiftup = self.cursor.fetchone()
 		if not tempmodiftup:
 
-			self.cursor.execute("INSERT INTO main_table VALUES(?,?,?,?,?,?,?,?)", (\
+			self.cursor.execute("INSERT INTO main_table VALUES(" + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + ")", (\
 				exp.uuid, \
 				exp.init_time, \
 				exp.modif_time, \
@@ -355,7 +389,7 @@ class NamingGamesDB(object):
 				+"Exec_Time=\'"+str(exec_time)+"\', "\
 				+"Tmax=\'"+str(T)+"\', "\
 				+"step=\'"+str(exp._time_step)+"\', "\
-				+"Experiment_object=? WHERE Id=\'"+str(exp.uuid)+"\'",(binary,))
+				+"Experiment_object=" + self.var + " WHERE Id=\'"+str(exp.uuid)+"\'",(binary,))
 		self.connection.commit()
 
 	def commit_data(self,exp,graph,method):
@@ -366,8 +400,8 @@ class NamingGamesDB(object):
 		if not tempmodiftup:
 			if not graph._X[0][0] == 0 and self.data_exists(xp_uuid=exp.uuid,method=method):
 				graph.complete_with(self.get_graph(exp.uuid,graph,method))
-			binary=sql.Binary(lzo.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
-			self.cursor.execute("INSERT INTO computed_data_table VALUES(?,?,?,?,?,?,?)", (\
+			binary=self.sql.Binary(lzo.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
+			self.cursor.execute("INSERT INTO computed_data_table VALUES(" + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + ")", (\
 				exp.uuid, \
 				graph.init_time, \
 				graph.modif_time, \
@@ -376,11 +410,11 @@ class NamingGamesDB(object):
 				graph._X[0][-1], \
 				binary,))
 		elif tempmodiftup[0]!=graph.modif_time and graph._X[0][-1]>tempmodiftup2[0]:
-			binary=sql.Binary(lzo.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
+			binary=self.sql.Binary(lzo.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
 			self.cursor.execute("UPDATE computed_data_table SET "\
 				+"Modif_Time=\'"+str(graph.modif_time)+"\', "\
 				+"Time_max=\'"+str(graph._X[0][-1])+"\', "\
-				+"Custom_Graph=? WHERE Id=\'"+str(exp.uuid)+"\' AND Function=\'"+method+"\'",(binary,))
+				+"Custom_Graph=" + self.var + " WHERE Id=\'"+str(exp.uuid)+"\' AND Function=\'"+method+"\'",(binary,))
 		self.connection.commit()
 
 	def data_exists(self,xp_uuid,method):
@@ -395,6 +429,7 @@ class NamingGamesDB(object):
 
 	def __getstate__(self):
 		out_dict = self.__dict__.copy()
+		del out_dict['sql']
 		if hasattr(self,'connection'):
 			self.connection.commit()
 			del out_dict['cursor']
@@ -410,7 +445,8 @@ class NamingGamesDB(object):
 			self.__dict__.update(in_dict)
 		else:
 			delattr(self,'just_retrieved')
-		#self.connection = sql.connect(self.dbpath)
+		self.sql = sys.modules[self.db_type]
+		#self.connection = self.sql.connect(self.dbpath)
 		#self.cursor = self.connection.cursor()
 
 

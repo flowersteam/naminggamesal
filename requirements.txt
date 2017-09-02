@@ -11,3 +11,4 @@ sqlitebck
 networkx
 lxml
 pygexf
+psycopg2
