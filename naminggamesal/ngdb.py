@@ -42,7 +42,7 @@ class NamingGamesDB(object):
 		else:
 			return ()
 
-	def __init__(self,db_type = 'psycopg2', name=None, conn_info=None,do_not_close=False):
+	def __init__(self,db_type = 'sqlite3', name=None, conn_info=None,do_not_close=False):
 		if not hasattr(self,'uuid'):
 			self.db_type = db_type
 			self.sql = sys.modules[db_type]
