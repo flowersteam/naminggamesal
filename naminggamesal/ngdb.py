@@ -42,7 +42,7 @@ class NamingGamesDB(object):
 		else:
 			return ()
 
-	def __init__(self,db_type = 'sqlite3', name=None, conn_info=None,do_not_close=False):
+	def __init__(self, conn_info=None, db_type = 'sqlite3', name=None, do_not_close=False):
 		if not hasattr(self,'uuid'):
 			self.db_type = db_type
 			self.sql = sys.modules[db_type]
@@ -475,8 +475,9 @@ class Experiment(ngsimu.Experiment):
 			raise Exception('Computation needed')
 		try:
 			super(Experiment,self).continue_exp_until(T)
-		except:
-			print self.uuid
+		except Exception as e:
+			if e.args[0] != 'User intervention needed':
+				print self.uuid
 			raise
 		if autocommit:
 			self.commit_to_db()
