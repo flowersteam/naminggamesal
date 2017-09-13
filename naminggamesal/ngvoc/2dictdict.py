@@ -53,6 +53,29 @@ class Voc2DictDict(BaseVocabulary):
 		else:
 			return 0
 
+
+
+	def __eq__(self,other):
+		if isinstance(other, self.__class__):
+			if set(self.get_known_words()) != set(other.get_known_words()):
+				return False
+			else:
+				for w in self.get_known_words():
+					if set(self.get_known_meanings(w=w)) != set(other.get_known_meanings(w=w)):
+						return False
+			if set(self.get_known_meanings()) != set(other.get_known_meanings()):
+				return False
+			else:
+				for m in self.get_known_meanings():
+					if set(self.get_known_words(m=m)) != set(other.get_known_words(m=m)):
+						return False
+			return True
+		else:
+			return False
+
+	def __ne__(self, other):
+		return not self.__eq__(other)
+
 	def get_value(self,m,w,content_type='m'):
 		try:
 			if content_type == 'm':

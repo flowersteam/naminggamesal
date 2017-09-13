@@ -182,6 +182,8 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 			elif role == 'speaker':
 				self.subvu.update_speaker(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
 			voc2 = voc_new._content
+			if voc2 == voc1:
+				return True
 			if self.role != 'local':
 				role = self.role
 			if self.beta is not None:
@@ -193,6 +195,8 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 				voc_new = voc.get_alterable_shallow_copy()
 			else:
 				voc_new = copy.deepcopy(voc)
+			if voc_new == voc:
+				return True
 			if role == 'hearer':
 				self.subvu.update_hearer(ms=ms,w=w,mh=mh,voc=voc_new,mem=mem_new,bool_succ=bool_succ, context=context)
 			elif role == 'speaker':
