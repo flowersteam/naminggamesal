@@ -352,8 +352,8 @@ class Voc2DictDict(BaseVocabulary):
 		return len(self._content_w)
 
 	def get_alterable_shallow_copy(self):
-		return copy.deepcopy(self)
-		#return AlterableShallowCopyVoc2DictDict(voc=self)
+		#return copy.deepcopy(self)
+		return AlterableShallowCopyVoc2DictDict(voc=self)
 
 	#def inherit_from: to split a meaning or a word
 
