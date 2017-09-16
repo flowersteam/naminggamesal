@@ -185,7 +185,7 @@ class Voc2DictDict(BaseVocabulary):
 			if i!=m:
 				self.rm(i,w,content_type=content_type)
 
-	@voc_cache
+	#@voc_cache
 	def get_known_words(self,m=None,option=None):
 		if m is None:
 			return self._content_w.keys()
@@ -196,17 +196,19 @@ class Voc2DictDict(BaseVocabulary):
 				except KeyError:
 					return []
 			elif option == 'max':
-				val_list = self._content_m[m].items()
-				val_max = max([v1 for w1,v1 in val_list])
-				return sorted([w1 for w1,v1 in val_list if v1 == val_max])
+				val_list = self._content_m[m].values()
+				item_list = self._content_m[m].items()
+				val_max = max(val_list)
+				return sorted([w1 for w1,v1 in item_list if v1 == val_max])
 			elif option == 'min':
-				val_list = self._content_m[m].items()
-				val_min = min([v1 for w1,v1 in val_list])
-				return sorted([w1 for w1,v1 in val_list if v1 == val_min])
+				val_list = self._content_m[m].values()
+				item_list = self._content_m[m].items()
+				val_min = min(val_list)
+				return sorted([w1 for w1,v1 in item_list if v1 == val_min])
 			#elif option == 'minofmaxw':
 			#elif option == 'minofmaxm':
 
-	@voc_cache
+	#@voc_cache
 	def get_known_meanings(self,w=None,option=None):
 		if w is None:
 			return self._content_m.keys()
@@ -217,30 +219,32 @@ class Voc2DictDict(BaseVocabulary):
 				except KeyError:
 					return []
 			elif option == 'max':
-				val_list = self._content_w[w].items()
-				val_max = max([v1 for m1,v1 in val_list])
-				return sorted([m1 for m1,v1 in val_list if v1 == val_max])
+				val_list = self._content_w[w].values()
+				item_list = self._content_w[w].items()
+				val_max = max(val_list)
+				return sorted([m1 for m1,v1 in item_list if v1 == val_max])
 			elif option == 'min':
-				val_list = self._content_w[w].items()
-				val_min = min([v1 for m1,v1 in val_list])
-				return sorted([m1 for m1,v1 in val_list if v1 == val_min])
+				val_list = self._content_w[w].values()
+				item_list = self._content_w[w].items()
+				val_min = min(val_list)
+				return sorted([m1 for m1,v1 in item_list if v1 == val_min])
 			#elif option == 'minofmaxw':
 			#elif option == 'minofmaxm':
 
 
-	@voc_cache
+	#@voc_cache
 	def get_known_meanings_weights(self,w):
 		return self._content_w[w].items()
 
-	@voc_cache
+	#@voc_cache
 	def get_known_words_weights(self,m):
 		return self._content_m[m].items()
 
-	@voc_cache
+	#@voc_cache
 	def get_known_meanings_weights_values(self,w):
 		return self._content_w[w].values()
 
-	@voc_cache
+	#@voc_cache
 	def get_known_words_weights_values(self,m):
 		return self._content_m[m].values()
 
@@ -265,7 +269,7 @@ class Voc2DictDict(BaseVocabulary):
 		return w
 
 
-	@voc_cache
+	#@voc_cache
 	def get_accessible_meanings(self):
 		l = list(self.get_known_meanings())+list(self.unknown_meanings)
 		try:
@@ -273,7 +277,7 @@ class Voc2DictDict(BaseVocabulary):
 		except:
 			return l
 
-	@voc_cache
+	#@voc_cache
 	def get_accessible_words(self):
 		l = list(self.get_known_words())+list(self.unknown_words)
 		try:
@@ -422,12 +426,14 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 	def get_known_words(self,m=None,option=None):
 		local = Voc2DictDict.get_known_words(self,m=m,option=option)
 		orig = self.original_voc.get_known_words(m=m,option=option)
-		return list(set(local) | set(orig))
+		#return list(set(local) | set(orig))
+		return list(set(local + orig))
 
 
 	#@voc_cache
 	def get_known_meanings(self,w=None,option=None):
 		local = Voc2DictDict.get_known_meanings(self,w=w,option=option)
 		orig = self.original_voc.get_known_meanings(w=w,option=option)
-		return list(set(local) | set(orig))
+		#return list(set(local) | set(orig))
+		return list(set(local + orig))
 

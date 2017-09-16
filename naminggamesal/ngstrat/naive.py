@@ -44,8 +44,8 @@ class StratNaiveMemBased(StratNaive):
 				p = np.asarray(p_list)
 				if p.sum() == 0:
 					m = np.random.choice(m_list)
-					print "got only 0s as association values when looking for known meanings of a given word"		
-					print p			
+					#print "got only 0s as association values when looking for known meanings of a given word"		
+					#print p			
 				else:
 					m = np.random.choice(m_list,p=p/p.sum())
 			else:

@@ -2490,7 +2490,10 @@ def srtheo_voc(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both')
 #==================
 
 def srtheo_voc_membased(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both'):
-	voc1_temp = copy.deepcopy(voc1)
+	if hasattr(voc1,'get_alterable_shallow_copy'):
+		voc1_temp = voc1.get_alterable_shallow_copy()
+	else:
+		voc1_temp = copy.deepcopy(voc1)
 	for m1 in voc1_temp.get_known_meanings():
 		for w1 in voc1_temp.get_known_words(m=m1):
 			val_temp = voc2.get_value(m=m1,w=w1,content_type='m')
@@ -2504,3 +2507,6 @@ def srtheo_voc_membased(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,rol
 			voc1_temp.add(m=m1,w=w1,val=val_temp,content_type='w')
 
 	return srtheo_voc(voc1=voc1_temp,voc2=voc2,voc2_m=voc2_m,voc2_w=voc2_w,m=m,w=w,role=role)
+
+#import pyximport; pyximport.install()
+#from .cngmeth import srtheo_voc_membased
