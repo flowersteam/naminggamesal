@@ -1,5 +1,6 @@
 from .ngmeth import srtheo_voc
 import copy
+from libcpp.vector cimport vector
 
 def srtheo_voc_membased(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both'):
 	if hasattr(voc1,'get_alterable_shallow_copy'):
@@ -8,6 +9,7 @@ def srtheo_voc_membased(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,rol
 		voc1_temp = copy.deepcopy(voc1)
 	cdef int i_m1,i_w1
 	cdef int KM,KW
+	cdef vector l_KM,l_KW
 	l_KM = voc1_temp.get_known_meanings()
 	KM = len(l_KM)
 	for i_m1 in range(KM) :

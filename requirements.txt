@@ -12,3 +12,4 @@ networkx
 lxml
 pygexf
 psycopg2
+cython

@@ -4,6 +4,7 @@ import re
 import sys
 
 from setuptools import setup, find_packages
+from Cython.Build import cythonize
 
 def version():
     with open('naminggamesal/_version.py') as f:
@@ -17,9 +18,11 @@ setup(name='naminggamesal',
       version=version(),
       packages=find_packages(),
       install_requires=[requirements()],
+      setup_requires=['cython', ],
       author='William Schueller',
       author_email='william.schueller@gmail.com',
       description='Using Active Learning in Naming Games',
       url='https://github.com/flowersteam/naminggamesal',
       license='GNU AFFERO GENERAL PUBLIC LICENSE Version 3',
+      ext_modules = cythonize(['naminggamesal/cngmeth.pyx','naminggamesal/ngvoc/c2dictdict.pyx']),
       )
