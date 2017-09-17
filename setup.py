@@ -4,15 +4,20 @@ import re
 import sys
 
 from setuptools import setup, find_packages
-from Cython.Build import cythonize
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    import pip
+    pip.main(['install', 'Cython'])
+    from Cython.Build import cythonize
 
 def version():
     with open('naminggamesal/_version.py') as f:
         return re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", f.read()).group(1)
 
 def requirements():
-  with open('requirements.txt') as f:
-    return f.readlines()
+    with open('requirements.txt') as f:
+        return f.readlines()
 
 setup(name='naminggamesal',
       version=version(),
