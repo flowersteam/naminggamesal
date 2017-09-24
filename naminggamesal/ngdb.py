@@ -28,13 +28,19 @@ class NamingGamesDB(object):
 		if "instances" not in cls.__dict__:
 			cls.instances = WeakSet()
 		if inst_uuid is not None:
-			for inst in cls.instances:
-				if hasattr(inst,'uuid') and inst_uuid == inst.uuid:
-					inst.just_retrieved = True
-					return inst
-		instance = object.__new__(cls, *args, **kwargs)
-		cls.instances.add(instance)
-		return instance
+			inst_list = [inst for inst in cls.instances if hasattr(inst,'uuid') and inst_uuid == inst.uuid]
+			if inst_list:
+				inst = inst_list[0]
+				inst.just_retrieved = True
+				return inst
+			else:
+				instance = object.__new__(cls, *args, **kwargs)
+				cls.instances.add(instance)
+				return instance
+		else:
+			instance = object.__new__(cls, *args, **kwargs)
+			cls.instances.add(instance)
+			return instance
 
 	def __getnewargs__(self):
 		if hasattr(self,'uuid'):
@@ -42,12 +48,23 @@ class NamingGamesDB(object):
 		else:
 			return ()
 
-	def __init__(self, conn_info=None, db_type = 'sqlite3', name=None, do_not_close=False):
+	def change_uuid(self,new_uuid):
+		if self.uuid != new_uuid:
+			inst_list = [inst for inst in self.__class__.instances if hasattr(inst,'uuid') and new_uuid == inst.uuid]
+			if inst_list:
+				raise ValueError('UUID already taken for active database:\n'+str(new_uuid)+'\n')
+			else:
+				self.uuid = new_uuid
+
+	def __init__(self, conn_info=None, db_type = 'sqlite3', name=None, do_not_close=False, db_uuid=None):
 		if not hasattr(self,'uuid'):
 			self.db_type = db_type
 			self.sql = sys.modules[db_type]
 			self.do_not_close = do_not_close
-			self.uuid = str(uuid.uuid1())
+			if db_uuid is None:
+				self.uuid = str(uuid.uuid1())
+			else:
+				self.uuid = db_uuid
 			if db_type == 'sqlite3':
 				if conn_info is None:
 					if name:
