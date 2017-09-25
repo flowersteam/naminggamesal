@@ -26,7 +26,7 @@ class NamingGamesDB(object):
 
 	def __new__(cls, inst_uuid=None, *args, **kwargs):
 		if "instances" not in cls.__dict__:
-			cls.instances = WeakSet()
+			cls.instances = set()#WeakSet()
 		if inst_uuid is not None:
 			inst_list = [inst for inst in cls.instances if hasattr(inst,'uuid') and inst_uuid == inst.uuid]
 			if inst_list:
