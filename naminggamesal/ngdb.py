@@ -7,7 +7,10 @@ import sqlitebck
 import psycopg2
 import time
 import lzo
-import cPickle
+try:
+	import cPickle
+except ImportError:
+	import pickle as cPickle
 import json
 from copy import deepcopy
 import random
@@ -493,7 +496,7 @@ class Experiment(ngsimu.Experiment):
 		try:
 			super(Experiment,self).continue_exp_until(T)
 		except Exception as e:
-			if e.args[0] != 'User intervention needed':
+			if len(e.args) == 0 or e.args[0] != 'User intervention needed':
 				print self.uuid
 			raise
 		if autocommit:

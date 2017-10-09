@@ -8,7 +8,10 @@ import os
 import gexf
 
 from copy import deepcopy
-import cPickle
+try:
+	import cPickle
+except ImportError:
+	import pickle as cPickle
 
 from .ngpop import Population
 from . import ngmeth

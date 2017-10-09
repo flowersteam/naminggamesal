@@ -11,36 +11,41 @@ class SpeakersChoice(Interaction):
 		if not simulated:
 			speaker.warn(role='speaker')
 			hearer.warn(role='hearer')
-
+		print speaker._vocabulary._content_m
 		if 'ms' not in current_game_info.keys():
 			ms = speaker.pick_m()
 			current_game_info['ms'] = ms
 		else:
-			ms = current_game_info['ms'] 
+			ms = current_game_info['ms']
+		print speaker._vocabulary._content_m
 
 		if 'w' not in current_game_info.keys():
 			w = speaker.pick_w(ms)
 			current_game_info['w'] = w
 		else:
-			w = current_game_info['w'] 
+			w = current_game_info['w']
+		print speaker._vocabulary._content_m
 
 		if 'mh' not in current_game_info.keys():
 			mh = hearer.guess_m(w)
 			current_game_info['mh'] = mh
 		else:
-			mh = current_game_info['mh'] 
+			mh = current_game_info['mh']
+		print speaker._vocabulary._content_m
 
 		if 'bool_succ' not in current_game_info.keys():
 			bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh)
 			current_game_info['bool_succ'] = bool_succ
 		else:
-			bool_succ = current_game_info['bool_succ'] 
+			bool_succ = current_game_info['bool_succ']
+		print speaker._vocabulary._content_m
 
 		if 'bool_newconv' not in current_game_info.keys():
 			bool_newconv = (ms not in speaker._vocabulary.get_known_meanings())
 			current_game_info['bool_newconv'] = bool_newconv
 		else:
-			bool_newconv = current_game_info['bool_newconv'] 
+			bool_newconv = current_game_info['bool_newconv']
+		print speaker._vocabulary._content_m
 
 		if not simulated:
 			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh,bool_succ=bool_succ)
@@ -50,6 +55,7 @@ class SpeakersChoice(Interaction):
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
 		else:
 			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
+		print speaker._vocabulary._content_m
 
 class SpeakersChoiceEpirob(Interaction):
 	def interact(self, speaker, hearer, pop, current_game_info,simulated=False):

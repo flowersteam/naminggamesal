@@ -20,7 +20,8 @@ voc_class={
 	"graph":"graph.VocGraph",
 	"graph_ba":"graph.BarabasiAlbertVocGraph",
 	'category':'category.VocCategory',
-	'2dictdict':'2dictdict.Voc2DictDict',
+	'2dictdict':'twodictdict.Voc2DictDict',
+	'pandas':'pd_df.VocPandas',
 }
 
 

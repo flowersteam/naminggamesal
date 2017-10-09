@@ -1830,6 +1830,23 @@ custom_interactions_per_agent =custom_func.CustomFunc(FUNC,"time",**graphconfig)
 
 
 
+#########product_maxmem_convtime##########
+
+def product_maxmem_convtime(exp,X=0,**kwargs):
+
+	max_mem_val = exp.db.get_graph(exp.uuid, method='max_mem')._Y[0][0]
+	conv_time_val = exp.db.get_graph(exp.uuid, method='conv_time')._Y[0][0]
+	return [max_mem_val*conv_time_val]
+
+def product_maxmem_convtime_min(exp):
+	return 0
+
+FUNC = product_maxmem_convtime
+
+graphconfig = {"ymin":product_maxmem_convtime_min}#,"ymax":product_maxmem_convtime_max}
+custom_product_maxmem_convtime =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+
 #########max_mem##########
 
 def max_mem(exp,X=0,**kwargs):

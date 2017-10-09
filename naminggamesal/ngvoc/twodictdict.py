@@ -15,22 +15,34 @@ from . import voc_cache, del_cache
 
 class Voc2DictDict(BaseVocabulary):
 
+
 	def __init__(self, start='empty', **voc_cfg2):
 		#self._M = M
 		#self._W = W
 		self.unknown_meanings = []
 		self.unknown_words = []
+		self.accessible_meanings = []
+		self.accessible_words = []
 		#if valmax1:
 		#	self.valmax = 1.
 		#self._size = [self._M,self._W]
 		#M = voc_cfg2['M']
 		#W = voc_cfg2['W']
 		BaseVocabulary.__init__(self,**voc_cfg2)
-		self._content_m = {}
-		self._content_w = {}
 
+		self._content_m = self.init_empty_content()
+		self._content_w = self.init_empty_content()
+		
 		if start == 'completed':
 			self.complete_empty()
+
+	def fill(self):
+		for m in self.get_accessible_meanings():
+			for w in self.get_accessible_words():
+				self.add(m,w)
+
+	def init_empty_content(self):
+		return {}
 
 	@del_cache
 	def complete_empty(self):
@@ -41,8 +53,8 @@ class Voc2DictDict(BaseVocabulary):
 	def empty(self):
 		m_list = self.get_accessible_meanings()
 		w_list = self.get_accessible_words()
-		self.content_m = {}
-		self.content_w = {}
+		self._content_m = self.init_empty_content()
+		self._content_w = self.init_empty_content()
 		self.unknown_meanings = m_list
 		self.unknown_words = w_list
 
@@ -271,7 +283,7 @@ class Voc2DictDict(BaseVocabulary):
 
 	#@voc_cache
 	def get_accessible_meanings(self):
-		l = list(self.get_known_meanings())+list(self.unknown_meanings)
+		l = self.accessible_meanings#list(self.get_known_meanings())+list(self.unknown_meanings)
 		try:
 			return sorted(l)
 		except:
@@ -279,7 +291,7 @@ class Voc2DictDict(BaseVocabulary):
 
 	#@voc_cache
 	def get_accessible_words(self):
-		l = list(self.get_known_words())+list(self.unknown_words)
+		l = self.accessible_words#list(self.get_known_words())+list(self.unknown_words)
 		try:
 			return sorted(l)
 		except:
@@ -309,13 +321,15 @@ class Voc2DictDict(BaseVocabulary):
 
 	@del_cache
 	def discover_meanings(self,m_list):
-		m_list_bis = [m for m in m_list if m not in self.get_known_meanings()+self.unknown_meanings]
+		m_list_bis = [m for m in m_list if m not in self.get_accessible_meanings()]#known_meanings()+self.unknown_meanings]
 		self.unknown_meanings += m_list_bis
+		self.accessible_meanings += m_list_bis
 
 	@del_cache
 	def discover_words(self,w_list):
-		w_list_bis = [w for w in w_list if w not in self.get_known_words()+self.unknown_words]
+		w_list_bis = [w for w in w_list if w not in self.get_accessible_words()]#known_words()+self.unknown_words]
 		self.unknown_words += w_list_bis
+		self.accessible_words += w_list_bis
 
 	def get_unknown_meanings(self):
 		try:

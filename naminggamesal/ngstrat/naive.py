@@ -18,6 +18,9 @@ class StratNaive(BaseStrategy):
 		return m
 
 	def pick_w(self,m,voc,mem,context=[]):
+		print voc._content_m,'pick_w'
+		print voc.get_known_meanings()
+		print voc._content_m,'pick_w'
 		if m in voc.get_known_meanings():
 			w = voc.get_random_known_w(m=m)
 		elif voc.get_unknown_words():
@@ -44,8 +47,8 @@ class StratNaiveMemBased(StratNaive):
 				p = np.asarray(p_list)
 				if p.sum() == 0:
 					m = np.random.choice(m_list)
-					#print "got only 0s as association values when looking for known meanings of a given word"		
-					#print p			
+					#print "got only 0s as association values when looking for known meanings of a given word"
+					#print p
 				else:
 					m = np.random.choice(m_list,p=p/p.sum())
 			else:

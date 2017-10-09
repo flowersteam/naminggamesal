@@ -1,7 +1,10 @@
 import lzo
 import os
 import errno
-import cPickle
+try:
+	import cPickle
+except ImportError:
+	import pickle as cPickle
 import sqlite3 as sql
 import backports.lzma as lzma
 import bz2
