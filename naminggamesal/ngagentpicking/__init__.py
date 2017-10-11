@@ -15,7 +15,7 @@ agentpick_class={
 
 def get_agentpick(agentpick_type='random_pick', **agentpick_cfg2):
 	tempap = agentpick_type
-	if tempap in agentpick_class.keys():
+	if tempap in list(agentpick_class.keys()):
 		tempap = agentpick_class[tempap]
 	templist = tempap.split('.')
 	temppath = '.'.join(templist[:-1])
@@ -29,7 +29,7 @@ class AgentPick(object):
 
 	def __init__(self, **agentpick_cfg2):
 		self._last_info = None
-		for key, value in agentpick_cfg2.iteritems():
+		for key, value in agentpick_cfg2.items():
 			setattr(self, key, value)
 
 	def get_agentpicktype(self):

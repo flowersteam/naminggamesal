@@ -6,7 +6,7 @@ from ...ngmeth import srtheo_voc
 class SuccessMatrixMP(MemoryPolicy):
 
 	def init_memory(self,mem,voc):
-		assert not 'success_matrix' in mem.keys()
+		assert not 'success_matrix' in list(mem.keys())
 		mem['success_matrix'] = np.zeros((self.nb_boxes,self.nb_boxes,2))
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
@@ -20,7 +20,7 @@ class SuccessMatrixMP(MemoryPolicy):
 class PastInterMP(MemoryPolicy):
 
 	def init_memory(self,mem,voc):
-		assert not 'past_interactions' in mem.keys()
+		assert not 'past_interactions' in list(mem.keys())
 		mem['past_interactions'] = []
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
@@ -41,7 +41,7 @@ class LastResultMP(MemoryPolicy):
 
 	def init_memory(self,mem,voc):
 
-		assert not 'result' in mem.keys()
+		assert not 'result' in list(mem.keys())
 		mem["result"]=1
 
 class ProbaSuccessIncrease(MemoryPolicy):#!! only a cache
@@ -50,7 +50,7 @@ class ProbaSuccessIncrease(MemoryPolicy):#!! only a cache
 	#	m_rm_list = list(  set([ms]) | set(voc.get_known_meanings(w=w)) ) not removing here because voc is already updated, hence lists of ms and ws to be removed are not always known
 
 	def init_memory(self,mem,voc):
-		assert not 'proba_of_success_increase' in mem.keys()
+		assert not 'proba_of_success_increase' in list(mem.keys())
 		mem['proba_of_success_increase'] = dict()
 
 class SuccessCountPerMMP(MemoryPolicy):
@@ -73,8 +73,8 @@ class SuccessCountPerMMP(MemoryPolicy):
 				mem["fail_m"][m1] = 1
 
 	def init_memory(self,mem,voc):
-		assert not 'success_m' in mem.keys()
-		assert not 'fail_m' in mem.keys()
+		assert not 'success_m' in list(mem.keys())
+		assert not 'fail_m' in list(mem.keys())
 		if hasattr(voc,'_content'):
 			mem["success_m"] = np.zeros(voc.get_M())#[0]*voc._M
 			mem["fail_m"] = np.zeros(voc.get_M())#[0]*voc._M
@@ -119,8 +119,8 @@ class TimeDecreaseSuccessCountPerMMP(SuccessCountPerMMP):
 class SuccessCountPerMWMP(MemoryPolicy):
 	def init_memory(self,mem,voc):
 
-		assert not 'success_mw' in mem.keys()
-		assert not 'fail_mw' in mem.keys()
+		assert not 'success_mw' in list(mem.keys())
+		assert not 'fail_mw' in list(mem.keys())
 		mem["success_mw"] = np.zeros((voc._M, voc._W))
 		mem["fail_mw"] = np.zeros((voc._M, voc._W))
 
@@ -137,8 +137,8 @@ class SuccessCountPerMWMP(MemoryPolicy):
 class SuccessCountMP(MemoryPolicy):
 
 	def init_memory(self,mem,voc):
-		assert not 'success' in mem.keys()
-		assert not 'fail' in mem.keys()
+		assert not 'success' in list(mem.keys())
+		assert not 'fail' in list(mem.keys())
 		mem['success'] = 0
 		mem['fail'] = 0
 
@@ -216,12 +216,12 @@ class InteractionCounts(MemoryPolicy):
 
 	def init_memory(self,mem,voc):
 		if hasattr(voc,'_content'):
-			assert not 'interact_count_m' in mem.keys()
-			assert not 'interact_count_w' in mem.keys()
+			assert not 'interact_count_m' in list(mem.keys())
+			assert not 'interact_count_w' in list(mem.keys())
 			mem['interact_count_m'] = np.zeros((voc._M,voc._W))
 			mem['interact_count_w'] = np.zeros((voc._M,voc._W))
 		else:
-			assert not 'interact_count_voc' in mem.keys()
+			assert not 'interact_count_voc' in list(mem.keys())
 			mem['interact_count_voc'] = voc.__class__(start='empty')
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
@@ -269,7 +269,7 @@ class InteractionCountsSlidingWindow(InteractionCounts):
 
 	def init_memory(self,mem,voc):
 		InteractionCounts.init_memory(self,mem,voc)
-		assert not 'past_interactions_sliding_window' in mem.keys()
+		assert not 'past_interactions_sliding_window' in list(mem.keys())
 		mem['past_interactions_sliding_window'] = []
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
@@ -297,14 +297,14 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 
 	def init_memory(self,mem,voc):
 		InteractionCounts.init_memory(self,mem,voc)
-		assert not 'past_interactions_sliding_window_local' in mem.keys()
+		assert not 'past_interactions_sliding_window_local' in list(mem.keys())
 		mem['past_interactions_sliding_window_local'] = {'m':{},'w':{}}
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if self.time_scale > 0:
-			if not ms in mem['past_interactions_sliding_window_local']['m'].keys():
+			if not ms in list(mem['past_interactions_sliding_window_local']['m'].keys()):
 				mem['past_interactions_sliding_window_local']['m'][ms] = []
-			if not w in mem['past_interactions_sliding_window_local']['w'].keys():
+			if not w in list(mem['past_interactions_sliding_window_local']['w'].keys()):
 				mem['past_interactions_sliding_window_local']['w'][w] = []
 			mem['past_interactions_sliding_window_local']['m'][ms].append((w,1./self.time_scale))
 			mem['past_interactions_sliding_window_local']['w'][w].append((ms,1./self.time_scale))
@@ -314,14 +314,14 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 			else:
 				mem['interact_count_voc'].add_value(ms,w,1./self.time_scale,content_type='both')
 
-		while ms in mem['past_interactions_sliding_window_local']['m'].keys() and len(mem['past_interactions_sliding_window_local']['m'][ms])>self.time_scale:
+		while ms in list(mem['past_interactions_sliding_window_local']['m'].keys()) and len(mem['past_interactions_sliding_window_local']['m'][ms])>self.time_scale:
 			w0,valm = mem['past_interactions_sliding_window_local']['m'][ms].pop(0)
 			if hasattr(voc,'_content'):
 				mem['interact_count_m'][ms,w0] = max(mem['interact_count_m'][ms,w0] - valm , 0)
 			else:
 				mem['interact_count_voc'].add_value(ms,w0,-valm,content_type='m')
 
-		while w in mem['past_interactions_sliding_window_local']['w'].keys() and len(mem['past_interactions_sliding_window_local']['w'][w])>self.time_scale:
+		while w in list(mem['past_interactions_sliding_window_local']['w'].keys()) and len(mem['past_interactions_sliding_window_local']['w'][w])>self.time_scale:
 			m0,valw = mem['past_interactions_sliding_window_local']['w'][w].pop(0)
 			if hasattr(voc,'_content'):
 				mem['interact_count_w'][m0,w] = max(mem['interact_count_w'][m0,w] - valw , 0)
@@ -329,9 +329,9 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 				mem['interact_count_voc'].add_value(m0,w,-valw,content_type='w')
 
 		if self.time_scale == 0:
-			if ms in mem['past_interactions_sliding_window_local']['m'].keys():
+			if ms in list(mem['past_interactions_sliding_window_local']['m'].keys()):
 				del mem['past_interactions_sliding_window_local']['m'][ms]
-			if w in mem['past_interactions_sliding_window_local']['w'].keys():
+			if w in list(mem['past_interactions_sliding_window_local']['w'].keys()):
 				del mem['past_interactions_sliding_window_local']['w'][w]
 
 
@@ -346,7 +346,7 @@ class BetaMAB(MemoryPolicy):
 
 	def init_memory(self,mem,voc):
 		MemoryPolicy.init_memory(self,mem,voc)
-		assert not 'bandit' in mem.keys()
+		assert not 'bandit' in list(mem.keys())
 		mem['bandit'] = {'arms':{'arm_explo':[1,1],'others':{}},'old_rewards':0.}
 
 
@@ -362,9 +362,9 @@ class BetaMAB(MemoryPolicy):
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		delta_reward = self.val_update(ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ,context=context)
 		for m in voc.get_unknown_meanings():
-			if m in mem['bandit']['arms']['others'].keys():
+			if m in list(mem['bandit']['arms']['others'].keys()):
 				del mem['bandit']['arms']['others'][m]
-		if ms not in mem['bandit']['arms']['others'].keys():
+		if ms not in list(mem['bandit']['arms']['others'].keys()):
 			mem['bandit']['arms']['arm_explo'][0] += delta_reward
 			mem['bandit']['arms']['arm_explo'][1] += 1. - delta_reward
 			mem['bandit']['arms']['others'][ms] = copy.deepcopy(mem['bandit']['arms']['arm_explo'])

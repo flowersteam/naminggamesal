@@ -25,7 +25,7 @@ def get_memory(memory_policies,voc=None):
 
 def get_memory_policy(mem_type,**mem_pol_cfg2):
 	tempstr = mem_type
-	if tempstr in mempolicy_class.keys():
+	if tempstr in list(mempolicy_class.keys()):
 		tempstr = mempolicy_class[tempstr]
 	templist = tempstr.split('.')
 	temppath = '.'.join(templist[:-1])
@@ -46,7 +46,7 @@ class Memory(collections.MutableMapping):
 				self.mpclasses.append(mp['mem_type'])
 				self.memory_policies.append(get_memory_policy(**mp))
 			else:
-				print mp['mem_type'],'already in memory policies, not appending'
+				print(mp['mem_type'],'already in memory policies, not appending')
 		self.init_memory(voc=voc)
 
 	def __getitem__(self, key):
@@ -79,7 +79,7 @@ class Memory(collections.MutableMapping):
 			fake_mem = Memory(memory_policies=[])
 			fake_mem.mpclasses = copy.deepcopy(self.mpclasses)
 			fake_mem.memory_policies = copy.deepcopy(self.memory_policies)
-			for k in self.store.keys():
+			for k in list(self.store.keys()):
 				if hasattr(self.store[k],'get_alterable_shallow_copy'):
 					fake_mem[k] = self.store[k].get_alterable_shallow_copy()
 				else:

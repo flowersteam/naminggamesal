@@ -11,7 +11,7 @@ sensor_class={
 
 def get_sensor(sensor_type='perfect', **sensor_cfg2):
 	tempstr = sensor_type
-	if tempstr in sensor_class.keys():
+	if tempstr in list(sensor_class.keys()):
 		tempstr = sensor_class[tempstr]
 	templist = tempstr.split('.')
 	temppath = '.'.join(templist[:-1])

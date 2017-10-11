@@ -4,7 +4,7 @@ class OwnWordsInit(AgentInit):
 
 	def __init__(self,W_l=None,W_range=None):
 		if W_l is None:
-			self.W_l = range(W_range)
+			self.W_l = list(range(W_range))
 		else:
 			self.W_l = W_l
 

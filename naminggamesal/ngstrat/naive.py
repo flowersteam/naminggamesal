@@ -18,9 +18,6 @@ class StratNaive(BaseStrategy):
 		return m
 
 	def pick_w(self,m,voc,mem,context=[]):
-		print voc._content_m,'pick_w'
-		print voc.get_known_meanings()
-		print voc._content_m,'pick_w'
 		if m in voc.get_known_meanings():
 			w = voc.get_random_known_w(m=m)
 		elif voc.get_unknown_words():

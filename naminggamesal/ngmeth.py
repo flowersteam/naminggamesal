@@ -1834,7 +1834,7 @@ custom_interactions_per_agent =custom_func.CustomFunc(FUNC,"time",**graphconfig)
 
 def product_maxmem_convtime(exp,X=0,**kwargs):
 
-	max_mem_val = exp.db.get_graph(exp.uuid, method='max_mem')._Y[0][0]
+	max_mem_val = exp.db.get_graph(exp.uuid, method='max_mem_conv')._Y[0][0]
 	conv_time_val = exp.db.get_graph(exp.uuid, method='conv_time')._Y[0][0]
 	return [max_mem_val*conv_time_val]
 

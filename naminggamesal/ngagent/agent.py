@@ -62,7 +62,7 @@ class Agent(object):
 		try:
 			return self._strategy.hearer_pick_m(self._vocabulary,self._memory,context=context)
 		except:
-			print self._strategy
+			print(self._strategy)
 			raise
 
 	def pick_new_m(self):

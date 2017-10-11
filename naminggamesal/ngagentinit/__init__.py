@@ -14,7 +14,7 @@ agent_init_class={
 
 def get_agent_init(agent_init_type='agent_init', **agent_init_cfg2):
 	tempap = agent_init_type
-	if tempap in agent_init_class.keys():
+	if tempap in list(agent_init_class.keys()):
 		tempap = agent_init_class[tempap]
 	templist = tempap.split('.')
 	temppath = '.'.join(templist[:-1])

@@ -18,7 +18,7 @@ def get_agent(agent_type=None, **agent_cfg2):
 	if agent_type is None:
 		return Agent(**agent_cfg2)
 	tempagent = agent_type
-	if tempagent in agent_class.keys():
+	if tempagent in list(agent_class.keys()):
 		tempagent = agent_class[tempagent]
 	templist = tempagent.split('.')
 	temppath = '.'.join(templist[:-1])
