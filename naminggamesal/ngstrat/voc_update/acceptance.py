@@ -141,7 +141,7 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 			if self.role != 'local':
 				role = self.role
 			if self.beta is not None:
-				print 'deprecated'
+				print('deprecated')
 			return ngmeth.srtheo_voc(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= ngmeth.srtheo_voc(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
 		else:
 			pop_voc = mem_new['interact_count_voc']
@@ -187,7 +187,7 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 			if self.role != 'local':
 				role = self.role
 			if self.beta is not None:
-				print 'deprecated'
+				print('deprecated')
 			return ngmeth.srtheo_voc_membased(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= ngmeth.srtheo_voc_membased(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
 		else:
 			pop_voc = mem_new['interact_count_voc']

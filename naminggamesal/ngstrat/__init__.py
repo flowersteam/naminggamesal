@@ -69,7 +69,7 @@ def get_strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg
 			p += strat_cfg2['proba'][i+1]
 			i += 1
 		return get_strategy(**strat_cfg2['cfg_list'][i])
-	if tempstr in strat_class.keys():
+	if tempstr in list(strat_class.keys()):
 		tempstr = strat_class[tempstr]
 	templist = tempstr.split('.')
 	temppath = '.'.join(templist[:-1])
@@ -118,9 +118,9 @@ class BaseStrategy(object):
 
 	def visual(self, voc, mem={}, vtype=None, iterr=100, mlist="all", wlist="all"):
 		if mlist=="all":
-			mlist=range(0,voc._M)
+			mlist=list(range(0,voc._M))
 		if wlist=="all":
-			wlist=range(0,voc._W)
+			wlist=list(range(0,voc._W))
 		if vtype=="pick_mw":
 			tempmat=np.matrix(np.zeros((voc._M,voc._W)))
 			for i in range(0,iterr):

@@ -8,9 +8,9 @@ import psycopg2
 import time
 import lzo
 try:
-	import cPickle
+	import cPickle as pickle
 except ImportError:
-	import pickle as cPickle
+	import pickle
 import json
 from copy import deepcopy
 import random
@@ -278,7 +278,7 @@ class NamingGamesDB(object):
 			if self.id_in_db(xp_uuid):
 				self.cursor.execute("SELECT Experiment_object FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
 				tempblob = self.cursor.fetchone()
-				tempexp = cPickle.loads(lzo.decompress(str(tempblob[0])))
+				tempexp = pickle.loads(lzo.decompress(str(tempblob[0])))
 				tempexp.db = self
 			else:
 				print("ID doesn't exist in DB")
@@ -311,7 +311,7 @@ class NamingGamesDB(object):
 	def get_graph(self,xp_uuid=None,xp_cfg=None,method="srtheo",tmin=0,tmax=None):
 		self.cursor.execute("SELECT Custom_Graph FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function=\'"+method+"\'")
 		tempblob = self.cursor.fetchone()
-		return cPickle.loads(lzo.decompress(str(tempblob[0])))
+		return pickle.loads(lzo.decompress(str(tempblob[0])))
 		#TODO: implement dealing with xp_cfg
 
 
@@ -369,7 +369,7 @@ class NamingGamesDB(object):
 		return Experiment(database=self,**xp_cfg)
 
 	def commit(self,exp):
-		binary=self.sql.Binary(lzo.compress(cPickle.dumps(exp,cPickle.HIGHEST_PROTOCOL)))
+		binary=self.sql.Binary(lzo.compress(pickle.dumps(exp,pickle.HIGHEST_PROTOCOL)))
 		if not exp._exec_time:
 			exec_time = -1
 		else:
@@ -381,9 +381,9 @@ class NamingGamesDB(object):
 		try:
 			self.cursor.execute("SELECT Tmax FROM main_table WHERE Id=\'"+exp.uuid+"\'")
 		except:
-			print exp.uuid
-			print self.dbpath
-			print os.getcwd()
+			print(exp.uuid)
+			print(self.dbpath)
+			print(os.getcwd())
 			raise
 		tempmodiftup = self.cursor.fetchone()
 		if not tempmodiftup:
@@ -420,7 +420,7 @@ class NamingGamesDB(object):
 		if not tempmodiftup:
 			if not graph._X[0][0] == 0 and self.data_exists(xp_uuid=exp.uuid,method=method):
 				graph.complete_with(self.get_graph(exp.uuid,graph,method))
-			binary=self.sql.Binary(lzo.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
+			binary=self.sql.Binary(lzo.compress(pickle.dumps(graph,pickle.HIGHEST_PROTOCOL)))
 			self.cursor.execute("INSERT INTO computed_data_table VALUES(" + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + "," + self.var + ")", (\
 				exp.uuid, \
 				graph.init_time, \
@@ -430,7 +430,7 @@ class NamingGamesDB(object):
 				graph._X[0][-1], \
 				binary,))
 		elif tempmodiftup[0]!=graph.modif_time and graph._X[0][-1]>tempmodiftup2[0]:
-			binary=self.sql.Binary(lzo.compress(cPickle.dumps(graph,cPickle.HIGHEST_PROTOCOL)))
+			binary=self.sql.Binary(lzo.compress(pickle.dumps(graph,pickle.HIGHEST_PROTOCOL)))
 			self.cursor.execute("UPDATE computed_data_table SET "\
 				+"Modif_Time=\'"+str(graph.modif_time)+"\', "\
 				+"Time_max=\'"+str(graph._X[0][-1])+"\', "\
@@ -497,7 +497,7 @@ class Experiment(ngsimu.Experiment):
 			super(Experiment,self).continue_exp_until(T)
 		except Exception as e:
 			if len(e.args) == 0 or e.args[0] != 'User intervention needed':
-				print self.uuid
+				print(self.uuid)
 			raise
 		if autocommit:
 			self.commit_to_db()

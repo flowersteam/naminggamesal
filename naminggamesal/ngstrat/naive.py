@@ -39,7 +39,7 @@ class StratNaiveMemBased(StratNaive):
 	def guess_m(self,w,voc,mem,context=[]):
 		if w in voc.get_known_words():
 			m_list = voc.get_known_meanings(w=w,option=None)
-			if 'interact_count_voc' in mem.keys():
+			if 'interact_count_voc' in list(mem.keys()):
 				p_list = [ mem['interact_count_voc'].get_value(m=m1,w=w,content_type='w') for m1 in m_list]
 				p = np.asarray(p_list)
 				if p.sum() == 0:
@@ -59,7 +59,7 @@ class StratNaiveMemBased(StratNaive):
 	def pick_w(self,m,voc,mem,context=[]):
 		if m in voc.get_known_meanings():
 			w_list = voc.get_known_words(m=m,option=None)
-			if 'interact_count_voc' in mem.keys():
+			if 'interact_count_voc' in list(mem.keys()):
 				p_list = [ mem['interact_count_voc'].get_value(m=m,w=w1,content_type='m') for w1 in w_list]
 				p = np.asarray(p_list)
 				p = p/p.sum()
@@ -87,7 +87,7 @@ class StratNaiveMemBased(StratNaive):
 class StratNaiveCategory(BaseStrategy):
 
 	def pick_context(self, voc, mem, context_gen):
-		return context_gen.next()
+		return next(context_gen)
 
 	def guess_m(self, w, voc, mem, context):
 		ml = []

@@ -40,16 +40,16 @@ class Population(object):
 		if env_cfg is None:
 			self.env = None
 		else:
-			if 'uuid_instance' not in self._env_cfg.keys():
+			if 'uuid_instance' not in list(self._env_cfg.keys()):
 				self.env_id = str(uuid.uuid1())
 			else:
 				self.env_id = self._env_cfg['uuid_instance']
 			self.env = get_environment(uuid_instance=self.env_id,**self._env_cfg)
 		self._voc_cfg = voc_cfg
-		if 'M' in voc_cfg.keys():
+		if 'M' in list(voc_cfg.keys()):
 			self._M = voc_cfg['M']
 			self._W = voc_cfg['W']
-		elif 'subvoc_cfg' in voc_cfg.keys() and 'M' in voc_cfg['subvoc_cfg'].keys():
+		elif 'subvoc_cfg' in list(voc_cfg.keys()) and 'M' in list(voc_cfg['subvoc_cfg'].keys()):
 			self._M = voc_cfg['subvoc_cfg']['M']
 			self._W = voc_cfg['subvoc_cfg']['W']
 		self._lastgameinfo = []
@@ -86,7 +86,7 @@ class Population(object):
 
 	def add_agent(self, agent):
 		if self.check_id(agent.get_id()) == 1:
-			print "WARNING: 2 agents with same identity"
+			print("WARNING: 2 agents with same identity")
 		self._agentlist.append(agent)
 		self._size+=1
 		if hasattr(self,'_topology'):
@@ -114,7 +114,7 @@ class Population(object):
 		for i in range (0,len(self._agentlist)):
 			if self._agentlist[i].get_id() == agent_id:
 				return i
-		print "id non existante"
+		print("id does not exist")
 
 	def rm_agent(self, agent_id=None):
 		if agent_id is None:
@@ -146,7 +146,7 @@ class Population(object):
 		try:
 			for i in range(0,steps):
 				self._evolution.step(pop=self)
-				if 'speaker_id' not in self.current_game_info.keys():
+				if 'speaker_id' not in list(self.current_game_info.keys()):
 					speaker = self.agent_pick.pick_speaker(pop=self)
 					speaker_id = speaker.get_id()
 					self.current_game_info['speaker_id'] = speaker_id
@@ -154,7 +154,7 @@ class Population(object):
 					speaker_id = self.current_game_info['speaker_id']
 					speaker = self._agentlist[self.get_index_from_id(speaker_id)]
 
-				if 'hearer_id' not in self.current_game_info.keys():
+				if 'hearer_id' not in list(self.current_game_info.keys()):
 					hearer = self.agent_pick.pick_hearer(speaker,pop=self)
 					hearer_id = hearer.get_id()
 					self.current_game_info['hearer_id'] = hearer_id
@@ -244,7 +244,7 @@ class Population(object):
 	def visual(self,vtype=None,ag_list=None):
 		tempstr = ""
 		if ag_list==None or ag_list=="all":
-			ag_list=range(0,len(self._agentlist))
+			ag_list=list(range(0,len(self._agentlist)))
 		if vtype==None:
 			tempstr += "nbagent: "+str(self._size)+"\n"
 			temprep=np.matrix(np.zeros((self.get_M(),self.get_W())))
@@ -258,7 +258,7 @@ class Population(object):
 			if vtype=="agents":
 				vtype=None
 			for i in ag_list:
-				print("Agent ID: "+str(self._agentlist[i].get_id())+"\n")
+				print(("Agent ID: "+str(self._agentlist[i].get_id())+"\n"))
 				self._agentlist[i].visual(vtype=vtype)
 				print("\n")
 
@@ -275,8 +275,8 @@ class Population(object):
 			return temprep
 		else:
 			i=self.get_index_from_id(args[0])
-			print "Agent ID: %s" %args
-			print str(self._agentlist[i])
+			print("Agent ID: %s" %args)
+			print(str(self._agentlist[i]))
 
 
 	def draw(self, draw_type=None, fig=None,write=True):

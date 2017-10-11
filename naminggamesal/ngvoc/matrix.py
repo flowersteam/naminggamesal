@@ -56,7 +56,7 @@ class VocMatrix(BaseVocabulary):
 		return self._size
 
 	def get_random_m(self):
-		return random.choice(range(self._M))
+		return random.choice(list(range(self._M)))
 
 	@del_cache
 	def add(self,m,w,val=1,context=[]):
@@ -163,8 +163,8 @@ class VocMatrix(BaseVocabulary):
 		return sorted(list(set(range(self._M)) - set(self.get_known_meanings(w=w, option=option))))
 
 	def diagnostic(self):
-		print self._cache
-		print self
+		print(self._cache)
+		print(self)
 
 	def get_new_unknown_m(self):
 		if not len(self.get_known_meanings()) == self._M:
@@ -370,7 +370,7 @@ class VocCSRMatrixImproved(VocCSRMatrix):
 
 
 	def convert_to_coo(self,copy=True):
-		if 'coo' not in self._cache.keys():
+		if 'coo' not in list(self._cache.keys()):
 			self._cache['coo'] = sparse.csr_matrix.tocoo(self._content)
 		return self._cache['coo']
 
@@ -415,13 +415,13 @@ class VocDOKMatrix(VocSparseMatrix):
 
 	def get_coords(self, mat, option=None):
 		if option is None:
-			coords = mat.keys()
+			coords = list(mat.keys())
 		elif option == 'min':
 			mat_min = min(mat.values())
-			coords = [k for k,v in mat.iteritems() if v == mat_min]
+			coords = [k for k,v in mat.items() if v == mat_min]
 		elif option == 'max':
 			mat_max = max(mat.values())
-			coords = [k for k,v in mat.iteritems() if v == mat_max]
+			coords = [k for k,v in mat.items() if v == mat_max]
 		return coords
 
 

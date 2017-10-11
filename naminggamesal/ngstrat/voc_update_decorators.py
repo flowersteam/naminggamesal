@@ -4,7 +4,7 @@ from . import BaseStrategy
 class DecoratorStrategy(object):
 	def __init__(self, strategy):
 		self._strategy = strategy
-		self.attributes = self.__dict__.keys() + ['__dict__'+'attributes', '__init__', '_strategy', '__getattr__', 'update_hearer', 'update_speaker']
+		self.attributes = list(self.__dict__.keys()) + ['__dict__'+'attributes', '__init__', '_strategy', '__getattr__', 'update_hearer', 'update_speaker']
 
 	def __getattr__(self, name):
 		if name not in self.attributes:

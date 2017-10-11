@@ -142,7 +142,7 @@ def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kw
 		if voc is None:
 			voc = agent._vocabulary
 	entr = 0.
-	if 'interact_count_m' in mem.keys():
+	if 'interact_count_m' in list(mem.keys()):
 
 		if m is None:
 			mat = mem['interact_count_m']
@@ -172,7 +172,7 @@ def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kw
 		entr +=  scipy.special.entr(mat).sum()
 
 		return entr
-	elif 'interact_count_voc' in mem.keys():
+	elif 'interact_count_voc' in list(mem.keys()):
 		pop_voc = mem['interact_count_voc']
 		for m in pop_voc.get_known_meanings():
 			temp_vec = []
@@ -402,7 +402,7 @@ custom_transinformation=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 def connex_components_per_word(agent,**kwargs):
 	if agent._vocabulary._content_decoding:
-		return sum([len(x) for x in agent._vocabulary._content_decoding.values()])/float(len(agent._vocabulary._content_decoding.keys()))
+		return sum([len(x) for x in list(agent._vocabulary._content_decoding.values())])/float(len(list(agent._vocabulary._content_decoding.keys())))
 	else:
 		return 0
 
@@ -440,7 +440,7 @@ def Ncat_semantic(agent,**kwargs):
 	data = None
 	for iv in sorted(agent._vocabulary._content_coding):
 		val = max([0]+list(iv.data.values()))
-		data1 = [w for w,v in iv.data.items() if v == val]
+		data1 = [w for w,v in list(iv.data.items()) if v == val]
 		if data != data1:
 			data = copy.copy(data1)
 			n += 1
@@ -462,7 +462,7 @@ custom_Ncat_semantic=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 def N_words(agent,**kwargs):
 	if hasattr(agent._vocabulary,'_content_decoding'):
-		return len(agent._vocabulary._content_decoding.keys())
+		return len(list(agent._vocabulary._content_decoding.keys()))
 	else:
 		return len(agent._vocabulary.get_known_words())
 
@@ -816,7 +816,7 @@ custom_N_exploring_meanings=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfi
 
 def srtheo_local(agent, m=None, w=None, **kwargs):
 	ag = agent
-	if 'interact_count_m' in ag._memory.keys() or 'interact_count_voc' in ag._memory.keys():
+	if 'interact_count_m' in list(ag._memory.keys()) or 'interact_count_voc' in list(ag._memory.keys()):
 	#if 'interact_count_m' in pop._agentlist[0]._memory.keys() or 'interact_count_voc' in pop._agentlist[0]._memory.keys():
 		#for ag in pop._agentlist:
 		if hasattr(ag._vocabulary,'_content'):
@@ -1183,7 +1183,7 @@ custom_relative_explo_rate=custom_func.CustomFunc(FUNC,"population",**graphconfi
 def N_words_pop(pop,**kwargs):
 	words = set()
 	for ag in pop._agentlist:
-		for w in ag._vocabulary._content_decoding.keys():
+		for w in list(ag._vocabulary._content_decoding.keys()):
 			words.add(w)
 	return len(words)
 
@@ -1204,7 +1204,7 @@ def N_words_ratio(pop,**kwargs):
 	words = set()
 	n = 0
 	for ag in pop._agentlist:
-		for w in ag._vocabulary._content_decoding.keys():
+		for w in list(ag._vocabulary._content_decoding.keys()):
 			words.add(w)
 			n += 1
 	if n:
@@ -1248,7 +1248,7 @@ def discrim_success(pop,**kwargs):
 	n = 0
 	for i in range(100):
 		agent = random.choice(pop._agentlist)
-		m1, m2 = agent._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2).next()
+		m1, m2 = next(agent._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2))
 		if agent._vocabulary.get_category(m1) != agent._vocabulary.get_category(m2):
 			n += 1
 		agent._vocabulary.del_cache()
@@ -1270,7 +1270,7 @@ def discrim_success_semantic(pop,**kwargs):
 	n = 0
 	for i in range(100):
 		agent = random.choice(pop._agentlist)
-		m1, m2 = agent._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2).next()
+		m1, m2 = next(agent._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2))
 		wl_1 = agent._vocabulary.get_known_words(m1,option='max')
 		wl_2 = agent._vocabulary.get_known_words(m2,option='max')
 		if wl_1 != wl_2:
@@ -1391,23 +1391,23 @@ def cat_agreement(pop,**kwargs):
 
 		for iv in agent1._vocabulary._content_coding:
 			val_max = max([0]+list(iv.data.values()))
-			wl = [w for w,v in iv.data.items() if v == val_max]
+			wl = [w for w,v in list(iv.data.items()) if v == val_max]
 			if wl:
 				ivt1.setdefault(wl[0], IntervalTree()).add(Interval(iv.begin,iv.end))
 		for iv in agent2._vocabulary._content_coding:
 			val_max = max([0]+list(iv.data.values()))
-			wl = [w for w,v in iv.data.items() if v == val_max]
+			wl = [w for w,v in list(iv.data.items()) if v == val_max]
 			if wl:
 				ivt2.setdefault(wl[0], IntervalTree()).add(Interval(iv.begin,iv.end))
 
-		for w in ivt1.keys():
+		for w in list(ivt1.keys()):
 			ivt1[w].merge_overlaps()
-		for w in ivt2.keys():
+		for w in list(ivt2.keys()):
 			ivt2[w].merge_overlaps()
 
 		ivt = IntervalTree()
-		for w in ivt1.keys():
-			if w in ivt2.keys():
+		for w in list(ivt1.keys()):
+			if w in list(ivt2.keys()):
 				for iv in ivt1[w]:
 					ivt2[w].slice(iv.end)
 					ivt2[w].slice(iv.begin)
@@ -1476,7 +1476,7 @@ def srtheo_cat(pop,**kwargs):
 		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 		v1 = agent1._vocabulary
 		v2 = agent2._vocabulary
-		ct = agent1._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2).next()
+		ct = next(agent1._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2))
 		#ms = random.choice(ct)
 		ms = strat_srtheo_cat.pick_m(v1,agent1._memory,ct)
 		w = strat_srtheo_cat.pick_w(ms,v1,agent1._memory,ct)
@@ -1527,10 +1527,10 @@ def srtheo2(pop,**kwargs):
 			try:
 				best_scores[m,ag] = np.amax(pop._agentlist[ag]._vocabulary.get_row(m))
 			except TypeError:
-				print 'e'
-				print pop._agentlist[ag]._vocabulary.get_row(m)
-				print max(pop._agentlist[ag]._vocabulary.get_row(m))
-				print 'e'
+				print('e')
+				print(pop._agentlist[ag]._vocabulary.get_row(m))
+				print(max(pop._agentlist[ag]._vocabulary.get_row(m)))
+				print('e')
 				best_scores[m,ag] = max(pop._agentlist[ag]._vocabulary.get_row(m))
 	n_meanings_used = 0
 	for a in range(pop._size):
@@ -1735,7 +1735,7 @@ def overlap_semantic(pop,**kwargs):
 		data = None
 		for iv in sorted(ag1._vocabulary._content_coding):
 			val = max([0]+list(iv.data.values()))
-			data1 = [w for w,v in iv.data.items() if v == val]
+			data1 = [w for w,v in list(iv.data.items()) if v == val]
 			if data != data1:
 				ivt1.append(iv.begin)
 				data = copy.copy(data1)
@@ -1744,7 +1744,7 @@ def overlap_semantic(pop,**kwargs):
 		data = None
 		for iv in sorted(ag2._vocabulary._content_coding):
 			val = max([0]+list(iv.data.values()))
-			data1 = [w for w,v in iv.data.items() if v == val]
+			data1 = [w for w,v in list(iv.data.items()) if v == val]
 			if data != data1:
 				ivt2.append(iv.begin)
 				data = copy.copy(data1)
@@ -2190,9 +2190,9 @@ def decvectest_from_MW(M,W):
 		dm=i-m0
 		pp=(M-i)/float(M)*(W-i)/float(W)
 		pm=i/float(M)*(i-1.)/float(W)
-		print pp
-		print pm
-		print " "
+		print(pp)
+		print(pm)
+		print(" ")
 		if pm<=pp:
 			decvec.append(1)
 		else:
@@ -2206,9 +2206,9 @@ def decvec2_from_MW(M,W):
 		dm=i-m0
 		pp=(M-i)/float(M)*(W-i)/float(W-dm)
 		pm=m0/float(M)*(m0-1.)/float(W-dm)
-		print pp
-		print pm
-		print " "
+		print(pp)
+		print(pm)
+		print(" ")
 		if pm<=pp:
 			decvec.append(1)
 			m0+=1
@@ -2347,11 +2347,11 @@ def edgevalue_distrib(pop,**kwargs):
 	dict_XY = {}
 	for ed in G.edges:
 		weight = ed['weight']
-		if weight in dict_XY.keys():
+		if weight in list(dict_XY.keys()):
 			dict_XY[weight] += 1
 		else:
 			dict_XY[weight] = 1
-	for key, value in dict_XY.items():
+	for key, value in list(dict_XY.items()):
 		X.append(key)
 		Y.append(value)
 	return custom_graph.CustomGraph(X=X,Y=Y)

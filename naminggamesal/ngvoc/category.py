@@ -31,7 +31,7 @@ class VocCategory(BaseVocabulary):
 
 	@voc_cache
 	def exists(self,m,w):
-		if w in self.get_category(m).data.keys():
+		if w in list(self.get_category(m).data.keys()):
 			return True
 		else:
 			return False
@@ -44,7 +44,7 @@ class VocCategory(BaseVocabulary):
 
 	@voc_cache
 	def get_W(self):
-		return self._content_decoding.keys()
+		return list(self._content_decoding.keys())
 
 	@voc_cache
 	def get_M(self):
@@ -66,19 +66,19 @@ class VocCategory(BaseVocabulary):
 		categ = self.get_category(m)
 		if iv_inf is not None:
 			w1 = self.get_new_unknown_w()
-			vals = [v for v in iv_inf.data.values()]
+			vals = [v for v in list(iv_inf.data.values())]
 			iv_inf.data[w1] = (1+max(vals+[1]))#/2.
 		if iv_sup is not None:
 			w2 = self.get_new_unknown_w()
-			vals = [v for v in iv_sup.data.values()]
+			vals = [v for v in list(iv_sup.data.values())]
 			iv_sup.data[w2] = (1+max(vals+[1]))#/2.
 		#if val > self.get_score(m,w):
 		if val == 2:
-			vals = [v for v in self.get_category(m).data.values()]
+			vals = [v for v in list(self.get_category(m).data.values())]
 			val = (1+max(vals+[1]))#/2.
 		categ.data[w] = val
 
-		if w not in self._content_decoding.keys():
+		if w not in list(self._content_decoding.keys()):
 			self._content_decoding[w] = IntervalTree()
 		self._content_decoding[w].add(Interval(categ.begin, categ.end))
 		self._content_decoding[w].merge_overlaps()
@@ -153,7 +153,7 @@ class VocCategory(BaseVocabulary):
 	def rm(self,m,w):
 		if w in self.get_known_words(m):
 			del self.get_category(m).data[w]
-		if w in self._content_decoding.keys():
+		if w in list(self._content_decoding.keys()):
 			self._content_decoding[w].chop(self.get_category(m).begin,self.get_category(m).end,self.datafunc_chopping)
 			if not self._content_decoding[w]:
 				del self._content_decoding[w]
@@ -186,13 +186,13 @@ class VocCategory(BaseVocabulary):
 	def get_known_words(self,m=None,option=None):
 		if m is None:
 			if option is None:
-				return self._content_decoding.keys()
+				return list(self._content_decoding.keys())
 		else:
 			if option is None:
 				return self.get_category(m).data
 			elif option == 'max':
 				val_max = max([0]+list(self.get_category(m).data.values()))
-				return [w for w,val in self.get_category(m).data.items() if val == val_max]
+				return [w for w,val in list(self.get_category(m).data.items()) if val == val_max]
 
 	@voc_cache
 	def get_known_meanings(self,w=None,option=None):
@@ -208,7 +208,7 @@ class VocCategory(BaseVocabulary):
 					begin = iv.end
 					data = self.get_known_words(m1,option='max')
 			return new_tree
-		elif w in self._content_decoding.keys():
+		elif w in list(self._content_decoding.keys()):
 			return self._content_decoding[w]
 		else:
 			return []
@@ -248,17 +248,17 @@ class VocCategory(BaseVocabulary):
 			else:
 				return self.get_random_element(self.get_known_meanings())
 		else:
-			if not w in self._content_decoding.keys() or not self._content_decoding[w]:
+			if not w in list(self._content_decoding.keys()) or not self._content_decoding[w]:
 				return self.get_random_m()
 			else:
 				return self.get_random_element(self._content_decoding[w])
 
 	def get_random_known_w(self,m=None,option=None):
 		if m is None:
-			if not self._content_decoding.keys():
+			if not list(self._content_decoding.keys()):
 				return self.get_new_unknown_w()
 			else:
-				return random.choice(self._content_decoding.keys())
+				return random.choice(list(self._content_decoding.keys()))
 		else:
 			if not self.get_category(m).data:
 				return self.get_new_unknown_w()
@@ -274,7 +274,7 @@ class VocCategory(BaseVocabulary):
 		for iv in sorted(self._content_coding):
 			list_perceptual.append(iv.begin)
 			val = max([0]+list(iv.data.values()))
-			data1 = [w for w,v in iv.data.items() if v == val]
+			data1 = [w for w,v in list(iv.data.items()) if v == val]
 			if data != data1:
 				list_semantic.append(iv.begin)
 				data = copy.copy(data1)

@@ -16,7 +16,7 @@ topology_class={
 
 def get_topology(topology_type='full_graph', **topology_cfg2):
 	temptp = topology_type
-	if temptp in topology_class.keys():
+	if temptp in list(topology_class.keys()):
 		temptp = topology_class[temptp]
 	templist = temptp.split('.')
 	temppath = '.'.join(templist[:-1])
@@ -30,7 +30,7 @@ class Topology(object):
 
 	def __init__(self, **topology_cfg2):
 		self._last_info = None
-		for key, value in topology_cfg2.iteritems():
+		for key, value in topology_cfg2.items():
 			setattr(self, key, value)
 
 	def get_topologytype(self):

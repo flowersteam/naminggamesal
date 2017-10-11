@@ -47,7 +47,7 @@ class Voc2DictDict(BaseVocabulary):
 	@del_cache
 	def complete_empty(self):
 		assert len(self.get_known_meanings()) == 0
-		print "complete_empty not implemented yet"
+		print("complete_empty not implemented yet")
 
 	@del_cache
 	def empty(self):
@@ -123,7 +123,7 @@ class Voc2DictDict(BaseVocabulary):
 			self.rm(m,w,content_type=content_type)
 		else:
 			if content_type == 'm':
-				if m not in self._content_m.keys():#self.get_known_meanings():
+				if m not in list(self._content_m.keys()):#self.get_known_meanings():
 					self._content_m[m] = {}
 				self._content_m[m][w] = val
 				if m in self.unknown_meanings:
@@ -131,7 +131,7 @@ class Voc2DictDict(BaseVocabulary):
 				#if w in self.unknown_words:
 				#	self.unknown_words.remove(w)
 			elif content_type == 'w':
-				if w not in self._content_w.keys():#self.get_known_words():
+				if w not in list(self._content_w.keys()):#self.get_known_words():
 					self._content_w[w] = {}
 				self._content_w[w][m] = val
 				#if m in self.unknown_meanings:
@@ -170,13 +170,13 @@ class Voc2DictDict(BaseVocabulary):
 		assert m in self.get_accessible_meanings()
 		assert w in self.get_accessible_words()
 		if content_type == 'm':
-			if m in self._content_m.keys() and w in self._content_m[m].keys():
+			if m in list(self._content_m.keys()) and w in list(self._content_m[m].keys()):
 				del self._content_m[m][w]
 				if self._content_m[m] == {}:
 					del self._content_m[m]
 					self.unknown_meanings.append(m)
 		elif content_type == 'w':
-			if w in self._content_w.keys() and m in self._content_w[w].keys():
+			if w in list(self._content_w.keys()) and m in list(self._content_w[w].keys()):
 				del self._content_w[w][m]
 				if self._content_w[w] == {}:
 					del self._content_w[w]
@@ -200,21 +200,21 @@ class Voc2DictDict(BaseVocabulary):
 	#@voc_cache
 	def get_known_words(self,m=None,option=None):
 		if m is None:
-			return self._content_w.keys()
+			return list(self._content_w.keys())
 		else:
 			if option is None:
 				try:
-					return self._content_m[m].keys()
+					return list(self._content_m[m].keys())
 				except KeyError:
 					return []
 			elif option == 'max':
-				val_list = self._content_m[m].values()
-				item_list = self._content_m[m].items()
+				val_list = list(self._content_m[m].values())
+				item_list = list(self._content_m[m].items())
 				val_max = max(val_list)
 				return sorted([w1 for w1,v1 in item_list if v1 == val_max])
 			elif option == 'min':
-				val_list = self._content_m[m].values()
-				item_list = self._content_m[m].items()
+				val_list = list(self._content_m[m].values())
+				item_list = list(self._content_m[m].items())
 				val_min = min(val_list)
 				return sorted([w1 for w1,v1 in item_list if v1 == val_min])
 			#elif option == 'minofmaxw':
@@ -223,21 +223,21 @@ class Voc2DictDict(BaseVocabulary):
 	#@voc_cache
 	def get_known_meanings(self,w=None,option=None):
 		if w is None:
-			return self._content_m.keys()
+			return list(self._content_m.keys())
 		else:
 			if option is None:
 				try:
-					return self._content_w[w].keys()
+					return list(self._content_w[w].keys())
 				except KeyError:
 					return []
 			elif option == 'max':
-				val_list = self._content_w[w].values()
-				item_list = self._content_w[w].items()
+				val_list = list(self._content_w[w].values())
+				item_list = list(self._content_w[w].items())
 				val_max = max(val_list)
 				return sorted([m1 for m1,v1 in item_list if v1 == val_max])
 			elif option == 'min':
-				val_list = self._content_w[w].values()
-				item_list = self._content_w[w].items()
+				val_list = list(self._content_w[w].values())
+				item_list = list(self._content_w[w].items())
 				val_min = min(val_list)
 				return sorted([m1 for m1,v1 in item_list if v1 == val_min])
 			#elif option == 'minofmaxw':
@@ -246,23 +246,23 @@ class Voc2DictDict(BaseVocabulary):
 
 	#@voc_cache
 	def get_known_meanings_weights(self,w):
-		return self._content_w[w].items()
+		return list(self._content_w[w].items())
 
 	#@voc_cache
 	def get_known_words_weights(self,m):
-		return self._content_m[m].items()
+		return list(self._content_m[m].items())
 
 	#@voc_cache
 	def get_known_meanings_weights_values(self,w):
-		return self._content_w[w].values()
+		return list(self._content_w[w].values())
 
 	#@voc_cache
 	def get_known_words_weights_values(self,m):
-		return self._content_m[m].values()
+		return list(self._content_m[m].values())
 
 	def diagnostic(self):
-		print self._cache
-		print self
+		print(self._cache)
+		print(self)
 
 	def get_random_known_m(self,w=None, option='max'):
 		if not len(self.get_known_meanings(w=w)) == 0:
@@ -390,12 +390,12 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 
 	def rm(self,m,w,content_type='both'):
 		if content_type == 'm':
-			if (m in self.original_voc._content_m.keys() and w in self.original_voc._content_m[m].keys()):
+			if (m in list(self.original_voc._content_m.keys()) and w in list(self.original_voc._content_m[m].keys())):
 				if (m,w) not in self.rm_list['m']:
 					self.rm_list['m'].append((m,w))
 			Voc2DictDict.rm(self,m=m,w=w,content_type='m')
 		elif content_type == 'w':
-			if (w in self.original_voc._content_w.keys() and m in self.original_voc._content_w[w].keys()):
+			if (w in list(self.original_voc._content_w.keys()) and m in list(self.original_voc._content_w[w].keys())):
 				if (m,w) not in self.rm_list['w']:
 					self.rm_list['w'].append((m,w))
 			Voc2DictDict.rm(self,m=m,w=w,content_type='w')

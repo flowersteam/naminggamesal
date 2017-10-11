@@ -9,9 +9,9 @@ import gexf
 
 from copy import deepcopy
 try:
-	import cPickle
+	import cPickle as pickle
 except ImportError:
-	import pickle as cPickle
+	import pickle
 
 from .ngpop import Population
 from . import ngmeth
@@ -304,7 +304,7 @@ class Experiment(object):
 			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
 		else:
 			print("Custom_func level doesn't exist or has an unknown value:")
-			print(tempfun.level)
+			print((tempfun.level))
 		if X:
 			tempgraph2=self.graph(method=X,tmin=tmin,tmax=tmax)
 			tempgraph=tempgraph.func_of(tempgraph2)

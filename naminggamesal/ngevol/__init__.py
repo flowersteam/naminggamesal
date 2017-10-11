@@ -18,7 +18,7 @@ def get_evolution(evolution_type='idle', **evolution_cfg2):
 		return Evolution(evolution_type='idle', **evolution_cfg2)
 	else:
 		tempevo = evolution_type
-		if tempevo in evolution_class.keys():
+		if tempevo in list(evolution_class.keys()):
 			tempevo = evolution_class[tempevo]
 		templist = tempevo.split('.')
 		temppath = '.'.join(templist[:-1])
@@ -32,7 +32,7 @@ class Evolution(object):
 
 	def __init__(self, **evolution_cfg2):
 		self._last_info = None
-		for key, value in evolution_cfg2.iteritems():
+		for key, value in evolution_cfg2.items():
 			setattr(self, key, value)
 
 	def get_evolutiontype(self):

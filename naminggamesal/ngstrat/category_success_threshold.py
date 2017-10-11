@@ -20,7 +20,7 @@ class CategorySuccessThresholdStrat(StratNaiveCategoryPlosOne): #For the moment 
 
 
 	def pick_context(self, voc, mem, context_gen):
-		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
+		ct_l = [next(context_gen) for i in range(self.nb_ctxt)]
 		coords = [self.get_coords(ct) for ct in ct_l]
 		cf_ab_min = 1
 		cf_be_max = 0
@@ -94,7 +94,7 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 			self.memory_policies.append(mp)
 
 	def pick_context(self, voc, mem, context_gen):
-		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
+		ct_l = [next(context_gen) for i in range(self.nb_ctxt)]
 		dist = [abs(ct[0]-ct[1]) for ct in ct_l]
 		thresh_dist = self.get_dist_threshold(voc,mem)
 		above = 1.
@@ -140,7 +140,7 @@ class CategoryDistanceSTStrat(CategorySuccessThresholdStrat):
 class DistSTStrict(CategoryDistanceSTStrat):
 
 	def pick_context(self, voc, mem, context_gen):
-		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
+		ct_l = [next(context_gen) for i in range(self.nb_ctxt)]
 		dist = [abs(ct[0]-ct[1]) for ct in ct_l]
 		thresh_dist = self.get_dist_threshold(voc,mem)
 		above = 1.
@@ -170,7 +170,7 @@ class DistSuccessGoal(CategoryDistanceSTStrat):
 		return np.exp(-abs(v1-v2)/float(self.d_ref))
 
 	def pick_context(self, voc, mem, context_gen):
-		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
+		ct_l = [next(context_gen) for i in range(self.nb_ctxt)]
 		s_rate = [self.success_rate(context=ct,past_inter=mem['past_interactions']) for ct in ct_l]
 		vals = [abs(sr-self.threshold) for sr in s_rate]
 		val = min(vals)
@@ -263,7 +263,7 @@ class DistSuccessSlope(DistSuccessGoal):
 		self.d_ref = d_ref
 
 	def pick_context(self, voc, mem, context_gen):
-		ct_l = [context_gen.next() for i in range(self.nb_ctxt)]
+		ct_l = [next(context_gen) for i in range(self.nb_ctxt)]
 		vals = [self.success_slope(context=ct,past_inter=mem['past_interactions']) for ct in ct_l]
 		val = max(vals)
 		return random.choice([ct_l[i] for i in range(len(ct_l)) if vals[i] == val])

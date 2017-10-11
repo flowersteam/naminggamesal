@@ -24,7 +24,7 @@ interaction_class={
 
 def get_interaction(interact_type='speakerschoice', **interact_cfg2):
 	tempint = interact_type
-	if tempint in interaction_class.keys():
+	if tempint in list(interaction_class.keys()):
 		tempint = interaction_class[tempint]
 	templist = tempint.split('.')
 	temppath = '.'.join(templist[:-1])
@@ -38,7 +38,7 @@ class Interaction(object):
 
 	def __init__(self, **interact_cfg2):
 		self._last_info = None
-		for key, value in interact_cfg2.iteritems():
+		for key, value in interact_cfg2.items():
 			setattr(self, key, value)
 
 	def get_interacttype(self):

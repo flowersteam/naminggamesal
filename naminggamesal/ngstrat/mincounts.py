@@ -11,7 +11,7 @@ class StratMinCounts(StratNaive):
 
 	def __init__(self, vu_cfg, mincounts=5 , **strat_cfg2):
 		super(StratMinCounts, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
-		if 'mincounts' not in strat_cfg2.keys():
+		if 'mincounts' not in list(strat_cfg2.keys()):
 			self.mincounts = mincounts
 		mp = {'mem_type':'successcount_perm'}
 		if mp not in self.memory_policies:

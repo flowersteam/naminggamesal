@@ -53,4 +53,3 @@ class SensoryApparatus(object):
 			yield self.pick_context(size=size, diff=diff, tries=tries, env=env)
 
 
-

@@ -11,31 +11,31 @@ class SpeakersChoice(Interaction):
 		if not simulated:
 			speaker.warn(role='speaker')
 			hearer.warn(role='hearer')
-		if 'ms' not in current_game_info.keys():
+		if 'ms' not in list(current_game_info.keys()):
 			ms = speaker.pick_m()
 			current_game_info['ms'] = ms
 		else:
 			ms = current_game_info['ms']
 
-		if 'w' not in current_game_info.keys():
+		if 'w' not in list(current_game_info.keys()):
 			w = speaker.pick_w(ms)
 			current_game_info['w'] = w
 		else:
 			w = current_game_info['w']
 
-		if 'mh' not in current_game_info.keys():
+		if 'mh' not in list(current_game_info.keys()):
 			mh = hearer.guess_m(w)
 			current_game_info['mh'] = mh
 		else:
 			mh = current_game_info['mh']
 
-		if 'bool_succ' not in current_game_info.keys():
+		if 'bool_succ' not in list(current_game_info.keys()):
 			bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh)
 			current_game_info['bool_succ'] = bool_succ
 		else:
 			bool_succ = current_game_info['bool_succ']
 
-		if 'bool_newconv' not in current_game_info.keys():
+		if 'bool_newconv' not in list(current_game_info.keys()):
 			bool_newconv = (ms not in speaker._vocabulary.get_known_meanings())
 			current_game_info['bool_newconv'] = bool_newconv
 		else:

@@ -7,7 +7,7 @@ class ImageHueEnv(Environment):
 	_envs = {}
 	def __init__(self, uuid_instance, files=[]):
 		self.elements = []
-		if uuid_instance in self._envs.keys():
+		if uuid_instance in list(self._envs.keys()):
 			self.__dict__ = self._envs[uuid_instance]
 		else:
 			self.uuid = uuid_instance

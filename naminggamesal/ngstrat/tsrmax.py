@@ -35,12 +35,12 @@ class StratTSRMax(StratNaive):
 
 		m = random.choice(max_list)
 
-		if 'proba_of_success_increase' in mem.keys():
+		if 'proba_of_success_increase' in list(mem.keys()):
 			m_rm_list = set([m])
 			for w2 in voc.get_known_words(m=m):
 				m_rm_list = m_rm_list | set(voc.get_known_meanings(w=w2))
 			for m2 in m_rm_list:
-				if m2 in mem['proba_of_success_increase'].keys():
+				if m2 in list(mem['proba_of_success_increase'].keys()):
 					del mem['proba_of_success_increase'][m2]
 		return m
 
@@ -64,7 +64,7 @@ class StratTSRMax(StratNaive):
 			global_mat_m = mem['interact_count_m']
 			global_mat_w = mem['interact_count_w']
 			for m1 in mm_list:
-				if 'proba_of_success_increase' in mem.keys() and m1 in mem['proba_of_success_increase'].keys():
+				if 'proba_of_success_increase' in list(mem.keys()) and m1 in list(mem['proba_of_success_increase'].keys()):
 					val_norm = mem['proba_of_success_increase'][m1]
 					m_list.append((m1,val_norm))
 				else:
@@ -133,7 +133,7 @@ class StratTSRMax(StratNaive):
 						m_list.append((m_explo,val*factor))
 					else:
 						m_list.append((m1,float(val)/len(voc.get_known_words(m=m1))))
-						if 'proba_of_success_increase' in mem.keys():
+						if 'proba_of_success_increase' in list(mem.keys()):
 							mem['proba_of_success_increase'][m1] = float(val)/len(voc.get_known_words(m=m1))
 	#			if len(voc.get_unknown_meanings())>0:
 	#				m_explo = voc.get_new_unknown_m()
@@ -151,7 +151,7 @@ class StratTSRMax(StratNaive):
 				#else:
 				#	mm_list = voc.get_known_meanings()
 			for m1 in mm_list:
-				if 'proba_of_success_increase' in mem.keys() and m1 in mem['proba_of_success_increase'].keys():
+				if 'proba_of_success_increase' in list(mem.keys()) and m1 in list(mem['proba_of_success_increase'].keys()):
 					val_norm = mem['proba_of_success_increase'][m1]
 					m_list.append((m1,val_norm))
 				else:
@@ -215,7 +215,7 @@ class StratTSRMax(StratNaive):
 						m_list.append((m_explo,val*factor))
 					else:
 						m_list.append((m1,val/len(voc.get_known_words(m=m1))))
-						if 'proba_of_success_increase' in mem.keys():
+						if 'proba_of_success_increase' in list(mem.keys()):
 							mem['proba_of_success_increase'][m1] = float(val)/len(voc.get_known_words(m=m1))
 	#			if len(voc.get_unknown_meanings())>0:
 	#				m_explo = voc.get_new_unknown_m()
@@ -242,7 +242,7 @@ class StratTSRMaxMAB(StratTSRMax):
 			val_explo = np.random.beta(mem['bandit']['arms']['arm_explo'][0],mem['bandit']['arms']['arm_explo'][1])
 			m_list.append((m_explo,val_explo))
 
-		for m in mem['bandit']['arms']['others'].keys():
+		for m in list(mem['bandit']['arms']['others'].keys()):
 			val = np.random.beta(mem['bandit']['arms']['others'][m][0],mem['bandit']['arms']['others'][m][1])
 			m_list.append((m,val))
 

@@ -14,4 +14,4 @@ class VocTest(VocMatrix):
 		self.key = testkey
 
 	def test(self):
-		print 'testkey:{}'.format(str(self.key))
+		print('testkey:{}'.format(str(self.key)))

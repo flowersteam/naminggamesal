@@ -42,7 +42,7 @@ vu_class={
 
 def get_voc_update(vu_type='imitation', **vu_cfg2):
 	tempstr = vu_type
-	if tempstr in vu_class.keys():
+	if tempstr in list(vu_class.keys()):
 		tempstr = vu_class[tempstr]
 	templist = tempstr.split('.')
 	temppath = '.'.join(templist[:-1])

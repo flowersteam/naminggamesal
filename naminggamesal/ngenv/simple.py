@@ -24,13 +24,13 @@ class SimpleEnv(Environment):
 		return self.W
 
 	def init_agent(self,agent):
-		agent._vocabulary.discover_meanings(m_list=range(self.M))
-		agent._vocabulary.discover_words(w_list=range(self.W))
-		for mem_key in agent._memory.keys():
+		agent._vocabulary.discover_meanings(m_list=list(range(self.M)))
+		agent._vocabulary.discover_words(w_list=list(range(self.W)))
+		for mem_key in list(agent._memory.keys()):
 			if hasattr(agent._memory[mem_key],'discover_meanings'):
-				agent._memory[mem_key].discover_meanings(m_list=range(self.M))
+				agent._memory[mem_key].discover_meanings(m_list=list(range(self.M)))
 			if hasattr(agent._memory[mem_key],'discover_words'):
-				agent._memory[mem_key].discover_words(w_list=range(self.W))
+				agent._memory[mem_key].discover_words(w_list=list(range(self.W)))
 
 
 class SimpleEnvRealWords(SimpleEnv):
@@ -48,10 +48,10 @@ class SimpleEnvRealWords(SimpleEnv):
 		return w
 
 	def init_agent(self,agent):
-		agent._vocabulary.discover_meanings(m_list=range(self.M))
+		agent._vocabulary.discover_meanings(m_list=list(range(self.M)))
 		agent._vocabulary.discover_words(w_list=self.w_list)
-		for mem_key in agent._memory.keys():
+		for mem_key in list(agent._memory.keys()):
 			if hasattr(agent._memory[mem_key],'discover_meanings'):
-				agent._memory[mem_key].discover_meanings(m_list=range(self.M))
+				agent._memory[mem_key].discover_meanings(m_list=list(range(self.M)))
 			if hasattr(agent._memory[mem_key],'discover_words'):
 				agent._memory[mem_key].discover_words(w_list=self.w_list)

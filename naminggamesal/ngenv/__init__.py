@@ -32,7 +32,7 @@ class Environment(object):
 	#__metaclass__ = Singleton
 	def __init__(self, uuid_instance, **env_cfg2):
 		self.uuid = uuid_instance
-		for key, value in env_cfg2.iteritems():
+		for key, value in env_cfg2.items():
 			setattr(self, key, value)
 
 	def get_envtype(self):
@@ -60,7 +60,7 @@ def get_environment(env_type=None, **env_cfg2):
 	if env_type is None:
 		return Environment()
 	tempenv = env_type
-	if tempenv in env_class.keys():
+	if tempenv in list(env_class.keys()):
 		tempenv = env_class[tempenv]
 	templist = tempenv.split('.')
 	temppath = '.'.join(templist[:-1])

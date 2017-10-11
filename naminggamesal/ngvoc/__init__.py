@@ -30,7 +30,7 @@ def voc_cache(tempfun):
 	def mod_fun(obj_self, *args, **kwargs):
 		#ans = tempfun(obj_self, *args, **kwargs)
 		#return ans
-		args_list = sorted([str(val) for val in list(args) + kwargs.values()])
+		args_list = sorted([str(val) for val in list(args) + list(kwargs.values())])
 		args_str = ''.join(args_list)
 		try:
 			return obj_self._cache[tempfun.__name__+args_str]
@@ -48,7 +48,7 @@ def del_cache(tempfun):
 
 def get_vocabulary(voc_type='matrix', **voc_cfg2):
 	tempstr = voc_type
-	if tempstr in voc_class.keys():
+	if tempstr in list(voc_class.keys()):
 		tempstr = voc_class[tempstr]
 	templist = tempstr.split('.')
 	temppath = '.'.join(templist[:-1])
