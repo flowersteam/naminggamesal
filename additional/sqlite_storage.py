@@ -2,9 +2,9 @@ import lzo
 import os
 import errno
 try:
-	import cPickle
+	import cPickle as pickle
 except ImportError:
-	import pickle as cPickle
+	import pickle
 import sqlite3 as sql
 import backports.lzma as lzma
 import bz2
@@ -15,7 +15,7 @@ from shutil import copyfileobj
 def add_data(filepath,data,label,priority='decompressed'):
 	if priority == 'compressed' and os.path.isfile(filepath+'.xz'):
 		xz_decompress(filepath+'.xz')
-	pickled_data = cPickle.dumps(data, cPickle.HIGHEST_PROTOCOL)
+	pickled_data = pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
 	lz_data = lzo.compress(pickled_data)
 	try:
 		os.makedirs(os.path.dirname(filepath))
@@ -50,11 +50,11 @@ def read_data(filepath,label=None,priority='decompressed'):
 		raise IOError('No row in database ' + str(filepath) + ' for label: '+str(label))
 	lz_data = blob[0]
 	pickled_data = lzo.decompress(lz_data)
-	data = cPickle.loads(pickled_data)
+	data = pickle.loads(pickled_data)
 	return data
 
 def add_data_conn(cursor,filepath,data,label):
-	pickled_data = cPickle.dumps(data, cPickle.HIGHEST_PROTOCOL)
+	pickled_data = pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
 	lz_data = lzo.compress(pickled_data)
 	try:
 		os.makedirs(os.path.dirname(filepath))
@@ -95,7 +95,7 @@ def read_data_conn(cursor,filepath,label=None):
 	blob = cursor.fetchone()
 	lz_data = blob[0]
 	pickled_data = lzo.decompress(lz_data)
-	data = cPickle.loads(pickled_data)
+	data = pickle.loads(pickled_data)
 	return data
 
 

@@ -27,22 +27,22 @@ class CustomFunc(object):
 
 		self.func=func
 		self.graph_config={"xlabel":dataname,"ylabel":yname}
-		for key, value in kwargs.iteritems():
+		for key, value in kwargs.items():
 			self.graph_config[key]=value
 		self.graph_config_temp={}
 		#self.graph_config_temp=copy.deepcopy(self.graph_config)
 
 	def apply(self,data,**kwargs):
-		for key,value in self.graph_config.iteritems():
+		for key,value in self.graph_config.items():
 			if value(data) is not None:
 				self.graph_config_temp[key]=value(data)
-		if "progress_info" in kwargs.keys():
+		if "progress_info" in list(kwargs.keys()):
 			return self.func(data,progress_info=kwargs["progress_info"])
 		return self.func(data)
 
 	def modify_graph_config(self,**kwargs):
 		tempcfg=self.graph_config_temp
-		for key, value in kwargs.iteritems():
+		for key, value in kwargs.items():
 			self.graph_config_temp[key]=value
 
 

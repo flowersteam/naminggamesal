@@ -5,24 +5,15 @@ class Imitation(VocUpdate):
 
 	def update_hearer(self,ms,w,mh,voc,mem,bool_succ, context=[]):
 		voc.add(ms,w,context=context)
-		print voc._content_m.index.levels
 		voc.rm_hom(ms,w)
-		print voc._content_m.index.levels
 		voc.rm_syn(ms,w)
-		print voc._content_m.index.levels
 		voc.finish_update()
-		print voc._content_m.index.levels
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
-		print voc._content_m.index.levels
 		voc.add(ms,w,context=context)
-		print voc._content_m.index.levels
 		voc.rm_hom(ms,w)
-		print voc._content_m.index.levels
 		voc.rm_syn(ms,w)
-		print voc._content_m.index.levels
 		voc.finish_update()
-		print voc._content_m.index.levels
 
 class ImitationPermutation(VocUpdate):
 

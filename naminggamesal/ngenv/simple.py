@@ -4,7 +4,7 @@ import string
 
 
 VOWELS = "aeiou"
-CONSONANTS = "".join(set(string.lowercase) - set(VOWELS))
+CONSONANTS = "".join(set(string.ascii_lowercase) - set(VOWELS))
 
 
 class SimpleEnv(Environment):

@@ -1,7 +1,10 @@
 #!/usr/bin/python
 import sys
 try:
-	import Tkinter
+	if sys.version_info.major == 2:
+		import Tkinter
+	else:
+		import tkinter
 except ImportError:
 	import matplotlib
 	matplotlib.use('Agg')
@@ -33,7 +36,7 @@ class CustomGraph(object):
 		self.keepwinopen=0
 		self.sort=1
 		self.filename="graph"+time.strftime("%Y%m%d%H%M%S", time.localtime())
-		if "filename" in kwargs.keys():
+		if "filename" in list(kwargs.keys()):
 			self.filename=kwargs["filename"]
 		self.title = self.filename
 		self.xlabel = "X"
@@ -63,14 +66,14 @@ class CustomGraph(object):
 		self.stdvec=[0]*len(Y)
 
 		if X is None:
-			self._X = [range(len(Y))]
+			self._X = [list(range(len(Y)))]
 		else:
 			self._X = [X]
 
 
 		self.extensions=["eps","png","pdf"]
 
-		for key,value in kwargs.iteritems():
+		for key,value in kwargs.items():
 			setattr(self,key,value)
 
 		self.stdvec=[self.stdvec]
@@ -149,7 +152,7 @@ class CustomGraph(object):
 				for j in range(0,len(Ytemp)):
 					Ytempmax[j]=Ytemp[j]+stdtemp[j]
 					Ytempmin[j]=Ytemp[j]-stdtemp[j]
-				if 'color' in self.Yoptions[i].keys():
+				if 'color' in list(self.Yoptions[i].keys()):
 					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha,**self.Yoptions[i])
 				else:
 					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha, facecolor=base_line.get_color(), **self.Yoptions[i])
@@ -270,11 +273,11 @@ class CustomGraph(object):
 		Ydict = {}
 		for j in range(len(self._Y)):
 			for i in range(len(self._Y[j])):
-				if Xcopy[j][i] in Ydict.keys():
+				if Xcopy[j][i] in list(Ydict.keys()):
 					Ydict[Xcopy[j][i]].append(Ycopy[j][i])
 				else:
 					Ydict[Xcopy[j][i]] = [Ycopy[j][i]]
-		Xlist = Ydict.keys()
+		Xlist = list(Ydict.keys())
 		Xlist.sort()
 		for x in Xlist:
 			Ylist = Ydict[x]
@@ -302,7 +305,7 @@ class CustomGraph(object):
 			param_list.append(self.Yoptions[i]["label"])
 		param_values={}
 		for ind,param in enumerate(param_list):
-			if param not in param_values.keys():
+			if param not in list(param_values.keys()):
 				param_values[param]=copy.deepcopy(self)
 				param_values[param]._X=[self._X[ind]]
 				param_values[param]._Y=[self._Y[ind]]
@@ -318,7 +321,7 @@ class CustomGraph(object):
 		tempgraph._Y=[]
 		tempgraph.Yoptions=[]
 		tempgraph.stdvec=[]
-		for key in param_values.keys():
+		for key in list(param_values.keys()):
 			param_values[key].merge()
 			tempgraph.add_graph(param_values[key])
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())

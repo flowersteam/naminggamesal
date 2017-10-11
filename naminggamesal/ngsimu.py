@@ -5,7 +5,10 @@ import uuid
 import sqlite3
 import os
 
-import gexf
+try:
+	import gexf
+except ImportError:
+	pass#version of pygexf on pip is not compatible with py3, possible to git clone the orig repo
 
 from copy import deepcopy
 try:

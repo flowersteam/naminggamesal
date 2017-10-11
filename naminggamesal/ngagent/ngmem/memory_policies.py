@@ -99,7 +99,7 @@ class TimeDecreaseSuccessCountPerMMP(SuccessCountPerMMP):
 			m1=ms
 		else:
 			m1=ms#mh justification: getting information from the other's vocabulary for the hearer
-		if m1 in mem["success_m"].keys():
+		if m1 in list(mem["success_m"].keys()):
 			for a in [mem["success_m"][m1],mem["fail_m"][m1]]:
 				a *= self.factor
 
