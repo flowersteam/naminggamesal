@@ -6,6 +6,7 @@ from naminggamesal import ngvoc
 #voctype_list = list(ngvoc.voc_class.keys())
 voctype_list = [
 	'2dictdict',
+	'pandas',
 	'matrix_new']
 
 
