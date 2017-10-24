@@ -57,7 +57,7 @@ def get_vocabulary(voc_type='matrix', **voc_cfg2):
 	tempclass = templist[-1]
 	try:
 		_tempmod = import_module('.'+temppath,package=__name__)
-	except KeyError,AttributeError:
+	except (KeyError,AttributeError):
 		raise ImportError('No such class: '+str(temppath)+'.'+str(tempclass))
 	tempvoc = getattr(_tempmod,tempclass)(**voc_cfg2)
 	return tempvoc
