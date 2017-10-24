@@ -3,8 +3,4 @@ python:
   - "2.7"
   - "3.4"
   - "3.6"
-install:
-  - pip install numpy
-  - pip install scipy
-  - pip install .
 script: pytest

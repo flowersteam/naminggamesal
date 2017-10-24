@@ -12,5 +12,4 @@ lxml
 pygexf
 psycopg2
 cython
-builtins
 future
