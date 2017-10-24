@@ -57,7 +57,7 @@ def get_vocabulary(voc_type='matrix', **voc_cfg2):
 	tempclass = templist[-1]
 	try:
 		_tempmod = import_module('.'+temppath,package=__name__)
-	except KeyError:
+	except KeyError,AttributeError:
 		raise ImportError('No such class: '+str(temppath)+'.'+str(tempclass))
 	tempvoc = getattr(_tempmod,tempclass)(**voc_cfg2)
 	return tempvoc
@@ -108,7 +108,7 @@ class BaseVocabulary(object):
 
 	def get_accessible_meanings(self):
 		return self.get_known_meanings()+self.get_unknown_meanings()
-	
+
 	def get_accessible_words(self):
 		return self.get_known_words()+self.get_unknown_words()
 
@@ -134,7 +134,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 		self._content_m = self.init_empty_content()
 		self._content_w = self.init_empty_content()
-		
+
 		if start == 'completed':
 			self.complete_empty()
 
