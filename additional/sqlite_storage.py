@@ -6,7 +6,10 @@ try:
 except ImportError:
 	import pickle
 import sqlite3 as sql
-import backports.lzma as lzma
+try:
+	import lzma
+except ImportError:
+	import backports.lzma as lzma
 import bz2
 from shutil import copyfileobj
 
@@ -101,16 +104,16 @@ def read_data_conn(cursor,filepath,label=None):
 
 def xz_decompress(file):
 	outfile = file[:-3]
-	with open(outfile,'w') as output:
-		with lzma.LZMAFile(file) as uncompressed:
+	with open(outfile,'wb') as output:
+		with lzma.LZMAFile(file,'rb') as uncompressed:
 		#with bz2.BZ2File(file) as uncompressed:
 			copyfileobj(uncompressed,output)
 
 def xz_compress(file,rm=False):
 	outfile = file+'.xz'
 	#with open(outfile) as output:
-	with open(file) as uncompressed:
-		with lzma.LZMAFile(outfile,'w') as compressed:
+	with open(file,'rb') as uncompressed:
+		with lzma.LZMAFile(outfile,'wb') as compressed:
 		#with bz2.BZ2File(outfile,'w') as compressed:
 			copyfileobj(uncompressed,compressed)
 	if rm:

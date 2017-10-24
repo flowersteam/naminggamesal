@@ -37,7 +37,10 @@ class StratNaive(BaseStrategy):
 class StratNaiveMemBased(StratNaive):
 
 	def guess_m(self,w,voc,mem,context=[]):
-		if w in voc.get_known_words():
+		#if w in voc.get_known_words():
+		#	if not voc.get_known_meanings(w=w,option=None):
+		#		print('pandas error!!!,!!!')
+		if w in voc.get_known_words() and voc.get_known_meanings(w=w,option=None):
 			m_list = voc.get_known_meanings(w=w,option=None)
 			if 'interact_count_voc' in list(mem.keys()):
 				p_list = [ mem['interact_count_voc'].get_value(m=m1,w=w,content_type='w') for m1 in m_list]
@@ -49,7 +52,14 @@ class StratNaiveMemBased(StratNaive):
 				else:
 					m = np.random.choice(m_list,p=p/p.sum())
 			else:
+				#try:
 				m = np.random.choice(m_list)
+				#except:
+				#	print('pandas error')
+				#	if voc.get_unknown_meanings():
+				#		m = voc.get_new_unknown_m()
+				#	else:
+				#		m = voc.get_random_known_m(option='min')
 		elif voc.get_unknown_meanings():
 			m = voc.get_new_unknown_m()
 		else:
@@ -57,7 +67,10 @@ class StratNaiveMemBased(StratNaive):
 		return m
 
 	def pick_w(self,m,voc,mem,context=[]):
-		if m in voc.get_known_meanings():
+		#if m in voc.get_known_meanings():
+		#	if not voc.get_known_words(m=m,option=None):
+		#		print('pandas error!!!')
+		if m in voc.get_known_meanings() and voc.get_known_words(m=m,option=None):
 			w_list = voc.get_known_words(m=m,option=None)
 			if 'interact_count_voc' in list(mem.keys()):
 				p_list = [ mem['interact_count_voc'].get_value(m=m,w=w1,content_type='m') for w1 in w_list]
@@ -68,7 +81,14 @@ class StratNaiveMemBased(StratNaive):
 				else:
 					w = np.random.choice(w_list,p=p)
 			else:
+				#try:
 				w = np.random.choice(w_list)
+				#except:
+				#	print('pandas error')
+				#	if voc.get_unknown_words():
+				#		w = voc.get_new_unknown_w()
+				#	else:
+				#		w = voc.get_random_known_w(option='min')
 		elif voc.get_unknown_words():
 			w = voc.get_new_unknown_w()
 		else:

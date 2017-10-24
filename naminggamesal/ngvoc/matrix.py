@@ -15,9 +15,9 @@ from . import voc_cache, del_cache
 
 class VocMatrix(BaseVocabulary):
 
-	def __init__(self, M, W, start='empty',**voc_cfg2):
-		self._M = M
-		self._W = W
+	def __init__(self, M=0, W=0, start='empty',**voc_cfg2):
+		self._M = copy.deepcopy(M)
+		self._W = copy.deepcopy(W)
 		self._size = [self._M,self._W]
 		#M = voc_cfg2['M']
 		#W = voc_cfg2['W']
