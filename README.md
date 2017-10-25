@@ -1,21 +1,32 @@
-##Naming Games library in Python, for testing Active Learning strategies.
+## Naming Games library in Python, for testing Active Learning strategies.
 
-To test this, especially the provided explanatory notebooks, you can use SageMathCloud, as described here:
+branch master:
+[![Build Status](https://travis-ci.org/flowersteam/naminggamesal.svg?branch=master)](https://travis-ci.org/flowersteam/naminggamesal)
 
-* Go to [SageMathCloud][1]
-* Sign in, or create an account (<1min)
-* Create a new project
-* Enter the project
-* In the *Terminal command* in the upper right corner, type 
-"*git clone https://github.com/flowersteam/naminggamesal.git*"
-* When the clone is finished (few seconds), enter the directory *naminggamesal/notebooks*.
-* Open the Jupyter notebooks (normal order is indicated by the numbers at the beginning of the .ipynb filename)
-
-Note: If a module is missing (and you're notified by Jupyter), you can add it via the terminal command "*pip install --user* MODULE"
+branch develop:
+[![Build Status](https://travis-ci.org/flowersteam/naminggamesal.svg?branch=develop)](https://travis-ci.org/flowersteam/naminggamesal)
 
 
+This library is used in some scientific papers. 
+
+The figures of the articles were this library is mentioned can be recomputed thanks to the jupyter notebooks that can be found also in this repository.
+
+Because the structure of the library is continuously improved, those notebooks may not be compatible anymore with the current version of the code. However, they all correspond to a release version, and can be executed with the code version of the release.
 
 
+You can install the library with the command:
 
+`pip install -e git+https://github.com/flowersteam/naminggamesal.git@origin/develop#egg=naminggamesal`
 
-  [1]: https://cloud.sagemath.com/
+You can change develop by master if you want the master branch, or any commit uuid.
+
+Potential requirements (for debian like systems):
+```
+apt-get install python-dev liblzo2-dev liblzma-dev libsqlite3-dev python-tk
+```
+
+Other requirements may be necessary for scipy, numpy and matplotlib compilation:
+
+```
+apt-get install gcc gfortran python-dev libblas-dev liblapack-dev cython
+```
