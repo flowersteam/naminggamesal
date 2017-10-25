@@ -1,4 +1,4 @@
-## Naming Games library in Python, for testing Active Learning strategies.
+## Naming Games library in Python, for testing Active Learning strategies
 
 branch master:
 [![Build Status](https://travis-ci.org/flowersteam/naminggamesal.svg?branch=master)](https://travis-ci.org/flowersteam/naminggamesal)
@@ -26,7 +26,8 @@ apt-get install python-dev liblzo2-dev liblzma-dev libsqlite3-dev python-tk
 ```
 
 Other requirements may be necessary for scipy, numpy and matplotlib compilation:
-
 ```
 apt-get install gcc gfortran python-dev libblas-dev liblapack-dev cython
 ```
+
+
