@@ -2,9 +2,13 @@
 
 branch master:
 [![Build Status](https://travis-ci.org/flowersteam/naminggamesal.svg?branch=master)](https://travis-ci.org/flowersteam/naminggamesal)
+[![codecov](https://codecov.io/gh/flowersteam/naminggamesal/branch/master/graph/badge.svg)](https://codecov.io/gh/flowersteam/naminggamesal)
+
 
 branch develop:
 [![Build Status](https://travis-ci.org/flowersteam/naminggamesal.svg?branch=develop)](https://travis-ci.org/flowersteam/naminggamesal)
+[![codecov](https://codecov.io/gh/flowersteam/naminggamesal/branch/develop/graph/badge.svg)](https://codecov.io/gh/flowersteam/naminggamesal)
+
 
 Tests are done with both python 2 and 3.
 
