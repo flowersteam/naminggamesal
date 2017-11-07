@@ -146,7 +146,14 @@ class VocMatrixNew(BaseVocabularyElaborated):
 			raise ValueError('unknown content type:'+str(content_type))
 
 	def get_value(self,m,w,content_type='m'):
-		pass
+		m_idx = self.meaning_indexes[m]
+		w_idx = self.word_indexes[w]
+		if content_type == 'm':
+			return self._content_m[m_idx,w_idx]
+		if content_type == 'w':
+			return self._content_w[m_idx,w_idx]
+		else:
+			raise ValueError('content type nopt recognized')
 
 	def rm_syn(self,m,w,content_type='both'):
 		for i in self.get_known_words(m=m):
@@ -166,6 +173,7 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		for mm in m_list_bis:
 			max_ind += 1
 			self.meaning_indexes[mm] = max_ind
+		self.update_vocshape()
 		return m_list_bis
 
 
@@ -178,4 +186,19 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		for ww in w_list_bis:
 			max_ind += 1
 			self.word_indexes[ww] = max_ind
+		self.update_vocshape()
 		return w_list_bis
+
+	def update_vocshape(self):
+		M = len(self.get_accessible_meanings())
+		W = len(self.get_accessible_words())
+		new_w = self.init_empty_content()
+		new_m = self.init_empty_content()
+		M1,W1 = self._content_w.shape
+		M2,W2 = self._content_m.shape
+		if M1*W1 != 0:
+			new_w[:(M-M1),:(W-W1)] = self._content_w
+		if M2*W2 != 0:
+			new_w[:(M-M2),:(W-W2)] = self._content_m
+		self._content_w = new_w
+		self._content_m = new_m

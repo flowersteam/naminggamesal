@@ -9,6 +9,15 @@ voctype_list = [
 	'pandas',
 	'matrix_new']
 
+@pytest.mark.parametrize("voc_type", voctype_list)
+def test_import(voc_type):
+	v = ngvoc.get_vocabulary(voc_type=voc_type)
+
+@pytest.fixture(params=voctype_list)
+def tempvoc(request):
+	param = request.param
+	return ngvoc.get_vocabulary(voc_type=param)
+
 
 def test_importerror():
 	try:
@@ -19,17 +28,12 @@ def test_importerror():
 		else:
 			raise
 
-@pytest.mark.parametrize("voc_type", voctype_list)
-def test_import(voc_type):
-	v = ngvoc.get_vocabulary(voc_type=voc_type)
-
-@pytest.mark.parametrize("voc_type", voctype_list)
-def test_discover_meanings(voc_type):
+def test_discover_meanings(tempvoc):
 	m1 = 'ioh'
 	m2 = 123
 	m3 = 12
 	m4= 'ohl'
-	v = ngvoc.get_vocabulary(voc_type=voc_type)
+	v = tempvoc
 	before = copy.deepcopy(v.accessible_meanings)
 	v.discover_meanings([m1,m2,m3])
 	between = copy.deepcopy(v.accessible_meanings)
@@ -37,16 +41,67 @@ def test_discover_meanings(voc_type):
 	after = copy.deepcopy(v.accessible_meanings)
 	assert before == [] and between == [m1,m2,m3] and after == [m1,m2,m3,m4]
 
-@pytest.mark.parametrize("voc_type", voctype_list)
-def test_discover_words(voc_type):
+def test_discover_words(tempvoc):
 	w1 = 'ioh'
 	w2 = 123
 	w3 = 12
 	w4 = 'uig'
-	v = ngvoc.get_vocabulary(voc_type=voc_type)
+	v = tempvoc
 	before = copy.deepcopy(v.accessible_words)
 	v.discover_words([w1,w2,w3])
 	between = copy.deepcopy(v.accessible_words)
 	v.discover_words([w2,w4])
 	after = copy.deepcopy(v.accessible_words)
 	assert before == [] and between == [w1,w2,w3] and after == [w1,w2,w3,w4]
+
+
+def test_add(tempvoc):
+	w = 'a'
+	m = 123
+	v = tempvoc
+	v.discover_words([w])
+	v.discover_meanings([m])
+	before = v.get_value(m=m,w=w)
+	v.add(m=m,w=w,val = 0.75)
+	after = v.get_value(m=m,w=w)
+	assert before == 0 and after == 0.75
+
+
+def test_add2(tempvoc):
+	w = 'a'
+	m = 123
+	v = tempvoc
+	v.discover_words([w])
+	v.discover_meanings([m])
+	before = v.get_value(m=m,w=w,content_type='m'),v.get_value(m=m,w=w,content_type='w')
+	v.add(m=m,w=w,val = 0.75,content_type='m')
+	v.add(m=m,w=w,val = 0.95,content_type='w')
+	after = v.get_value(m=m,w=w,content_type='m'),v.get_value(m=m,w=w,content_type='w')
+	assert before == (0,0) and after == (0.75,0.95)
+
+
+def test_add3(tempvoc):
+	w = 'a'
+	m = 123
+	v = tempvoc
+	v.discover_words([w])
+	v.discover_meanings([m])
+	before = v.get_value(m=m,w=w,content_type='m'),v.get_value(m=m,w=w,content_type='w')
+	v.add(m=m,w=w,val = 0.85,content_type='both')
+	after = v.get_value(m=m,w=w,content_type='m'),v.get_value(m=m,w=w,content_type='w')
+	assert before == (0,0) and after == (0.85,0.85)
+
+
+def test_add4(tempvoc):
+	w = 'a'
+	m = 123
+	v = tempvoc
+	v.discover_words([w])
+	v.discover_meanings([m])
+	before = v.get_value(m=m,w=w,content_type='m'),v.get_value(m=m,w=w,content_type='w')
+	v.add(m=m,w=w,val = 0.85,content_type='both')
+	between = v.get_value(m=m,w=w,content_type='m'),v.get_value(m=m,w=w,content_type='w')
+	v.add(m=m,w=w,val = -0.6,content_type='both')
+	after = v.get_value(m=m,w=w,content_type='m'),v.get_value(m=m,w=w,content_type='w')
+	assert before == (0,0) and between == (0.85,0.85) and after == (0,0)
+
