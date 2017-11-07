@@ -29,42 +29,46 @@ class VocMatrixNew(BaseVocabularyElaborated):
 
 	#@voc_cache
 	def get_known_words(self,m=None,option=None):
+		if m is not None:
+			m_idx = self.meaning_indexes[m]
 		if m is None:
 			return list(set(self.get_accessible_words())-set(self.unknown_words))
 		elif option is None:
-			selection = self._content_m[m,:]
+			selection = self._content_m[m_idx,:]
 			ans = list(selection.nonzero()[0])
-			return ans
+			return [self.indexes_word[www] for www in ans]
 		elif option == 'max':
-			selection = self._content_m[m,:]
+			selection = self._content_m[m_idx,:]
 			nz = selection.nonzero()
 			ans = list(np.argwhere(selection == np.amax(selection[nz])).reshape((-1)))
-			return ans
+			return [self.indexes_word[www] for www in ans]
 		elif option == 'min':
-			selection = self._content_m[m,:]
+			selection = self._content_m[m_idx,:]
 			nz = selection.nonzero()
 			ans = list(np.argwhere(selection == np.amin(selection[nz])).reshape((-1)))
-			return ans
+			return [self.indexes_word[www] for www in ans]
 
 
 	#@voc_cache
 	def get_known_meanings(self,w=None,option=None):
+		if w is not None:
+			w_idx = self.word_indexes[w]
 		if w is None:
 			return list(set(self.get_accessible_meanings())-set(self.unknown_meanings))
 		elif option is None:
-			selection = self._content_w[w,:]
-			ans = list(selection.nonzero()[0])
-			return ans
+			selection = self._content_w[:,w_idx]
+			ans = list(set(list(selection.nonzero()[0])))
+			return [self.indexes_meaning[mmm] for mmm in ans]
 		elif option == 'max':
-			selection = self._content_w[w,:]
+			selection = self._content_w[:,w_idx]
 			nz = selection.nonzero()
-			ans = list(np.argwhere(selection == np.amax(selection[nz])).reshape((-1)))
-			return ans
+			ans = list(set(list(np.argwhere(selection == np.amax(selection[nz])).reshape((-1)))))
+			return [self.indexes_meaning[mmm] for mmm in ans]
 		elif option == 'min':
-			selection = self._content_w[w,:]
+			selection = self._content_w[:,w_idx]
 			nz = selection.nonzero()
-			ans = list(np.argwhere(selection == np.amin(selection[nz])).reshape((-1)))
-			return ans
+			ans = list(set(list(np.argwhere(selection == np.amin(selection[nz])).reshape((-1)))))
+			return [self.indexes_meaning[mmm] for mmm in ans]
 
 	#@voc_cache
 	def get_known_meanings_weights(self,w):
@@ -169,10 +173,12 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		m_list_bis = BaseVocabularyElaborated.discover_meanings(self,m_list=m_list)
 		if not hasattr(self,'meaning_indexes'):
 			self.meaning_indexes = {}
+			self.indexes_meaning = {}
 		max_ind = len(list(self.meaning_indexes.keys()))-1
 		for mm in m_list_bis:
 			max_ind += 1
 			self.meaning_indexes[mm] = max_ind
+			self.indexes_meaning[max_ind] = mm
 		self.update_vocshape()
 		return m_list_bis
 
@@ -182,10 +188,12 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		w_list_bis = BaseVocabularyElaborated.discover_words(self,w_list=w_list)
 		if not hasattr(self,'word_indexes'):
 			self.word_indexes = {}
+			self.indexes_word = {}
 		max_ind = len(list(self.word_indexes.keys()))-1
 		for ww in w_list_bis:
 			max_ind += 1
 			self.word_indexes[ww] = max_ind
+			self.indexes_word[max_ind] = ww
 		self.update_vocshape()
 		return w_list_bis
 
