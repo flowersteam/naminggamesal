@@ -35,18 +35,21 @@ class VocMatrixNew(BaseVocabularyElaborated):
 			return list(set(self.get_accessible_words())-set(self.unknown_words))
 		elif option is None:
 			selection = self._content_m[m_idx,:]
-			ans = list(selection.nonzero()[0])
-			return [self.indexes_word[www] for www in ans]
+			ans = self.get_coords(option=option,mat=selection,m_idx=m_idx)
+			#ans = list(set(list(selection.nonzero()[0])))
+			return [self.indexes_word[www[1]] for www in ans]
 		elif option == 'max':
 			selection = self._content_m[m_idx,:]
-			nz = selection.nonzero()
-			ans = list(np.argwhere(selection == np.amax(selection[nz])).reshape((-1)))
-			return [self.indexes_word[www] for www in ans]
+			#nz = selection.nonzero()
+			ans = self.get_coords(option=option,mat=selection)
+			#ans = list(set(list(np.argwhere(selection == np.amax(selection[nz])).reshape((-1)))))
+			return [self.indexes_word[www[1]] for www in ans]
 		elif option == 'min':
 			selection = self._content_m[m_idx,:]
-			nz = selection.nonzero()
-			ans = list(np.argwhere(selection == np.amin(selection[nz])).reshape((-1)))
-			return [self.indexes_word[www] for www in ans]
+			#nz = selection.nonzero()
+			ans = self.get_coords(option=option,mat=selection)
+			#ans = list(set(list(np.argwhere(selection == np.amin(selection[nz])).reshape((-1)))))
+			return [self.indexes_word[www[1]] for www in ans]
 
 
 	#@voc_cache
@@ -57,18 +60,21 @@ class VocMatrixNew(BaseVocabularyElaborated):
 			return list(set(self.get_accessible_meanings())-set(self.unknown_meanings))
 		elif option is None:
 			selection = self._content_w[:,w_idx]
-			ans = list(set(list(selection.nonzero()[0])))
-			return [self.indexes_meaning[mmm] for mmm in ans]
+			ans = self.get_coords(option=option,mat=selection,w_idx=w_idx)
+			#ans = list(set(list(selection.nonzero()[0])))
+			return [self.indexes_meaning[mmm[0]] for mmm in ans]
 		elif option == 'max':
 			selection = self._content_w[:,w_idx]
-			nz = selection.nonzero()
-			ans = list(set(list(np.argwhere(selection == np.amax(selection[nz])).reshape((-1)))))
-			return [self.indexes_meaning[mmm] for mmm in ans]
+			#nz = selection.nonzero()
+			ans = self.get_coords(option=option,mat=selection)
+			#ans = list(set(list(np.argwhere(selection == np.amax(selection[nz])).reshape((-1)))))
+			return [self.indexes_meaning[mmm[0]] for mmm in ans]
 		elif option == 'min':
 			selection = self._content_w[:,w_idx]
-			nz = selection.nonzero()
-			ans = list(set(list(np.argwhere(selection == np.amin(selection[nz])).reshape((-1)))))
-			return [self.indexes_meaning[mmm] for mmm in ans]
+			#nz = selection.nonzero()
+			ans = self.get_coords(option=option,mat=selection)
+			#ans = list(set(list(np.argwhere(selection == np.amin(selection[nz])).reshape((-1)))))
+			return [self.indexes_meaning[mmm[0]] for mmm in ans]
 
 	#@voc_cache
 	def get_known_meanings_weights(self,w):
@@ -183,7 +189,6 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		return m_list_bis
 
 
-
 	def discover_words(self,w_list):
 		w_list_bis = BaseVocabularyElaborated.discover_words(self,w_list=w_list)
 		if not hasattr(self,'word_indexes'):
@@ -210,3 +215,123 @@ class VocMatrixNew(BaseVocabularyElaborated):
 			new_w[:(M-M2),:(W-W2)] = self._content_m
 		self._content_w = new_w
 		self._content_m = new_m
+
+	def get_coords(self,mat,option=None,w_idx=None,m_idx=None):
+		nz = mat.nonzero()
+		if not nz[0].size:
+			return []
+		if option is None:
+			return self.get_coords_none(mat,nz=nz,w_idx=w_idx,m_idx=m_idx)
+		elif option == 'max':
+			return self.get_coords_max(mat,nz=nz)
+		elif option == 'min':
+			return self.get_coords_min(mat,nz=nz)
+		elif option == 'minofmaxw':
+			return self.get_coords_minofmaxw(mat,nz=nz)
+		elif option == 'minofmaxm':
+			return self.get_coords_minofmaxm(mat,nz=nz)
+
+	def get_coords_none(self,mat,nz=None,w_idx=None,m_idx=None):
+		if nz is None:
+			nz = mat.nonzero()
+		if w_idx is not None:
+			coords = [(nn,w_idx) for nn in nz[0]]
+		elif m_idx is not None:
+			coords = [(m_idx,nn) for nn in nz[0]]
+		else:
+			coords = nz[0]
+		return coords
+
+	def get_coords_max(self,mat,nz=None):
+		if nz is None:
+			nz = mat.nonzero()
+		coords = np.argwhere(mat == np.amax(mat[nz]))
+		coords = coords.reshape((-1,2))
+		return coords
+
+	def get_coords_min(self,mat,nz=None):
+		if nz is None:
+			nz = mat.nonzero()
+		coords = np.argwhere(mat == np.amin(mat[nz]))
+		coords = coords.reshape((-1,2))
+		return coords
+
+	def get_coords_minofmaxw(self,mat,nz=None):
+		best_scores = mat.max(axis=0)
+		val = np.amin(best_scores)
+		coords = np.argwhere(best_scores == val)
+		coords = coords.reshape((-1,2))
+		return coords
+
+	def get_coords_minofmaxm(self,mat,nz=None):
+		best_scores = mat.max(axis=1)
+		val = np.amin(best_scores)
+		coords = np.argwhere(best_scores == val)
+		coords = coords.reshape((-1,2))
+		return coords
+
+
+
+class VocSparseNew(VocMatrixNew):
+
+	def init_empty_content(self,option='m'):
+		if option == 'm':
+			return sparse.csr_matrix((len(self.get_accessible_meanings()),len(self.get_accessible_words())))
+		elif option == 'w':
+			return sparse.csc_matrix((len(self.get_accessible_meanings()),len(self.get_accessible_words())))
+		else:
+			raise ValueError('no such option: '+str(option))
+
+
+
+	def get_coords_none(self,mat,nz=None,w_idx=None,m_idx=None):
+		if nz is None:
+			nz = mat.nonzero()
+		coords = [(nz[0][i],nz[1][i]) for i in range(len(nz[0]))] #tolist??
+		return coords
+
+	def get_coords_max(self,mat,nz=None):
+		if nz is None:
+			nz = mat.nonzero()
+		coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max()) if mat.data.any()]
+		return coords
+
+	def get_coords_min(self,mat,nz=None):
+		if nz is None:
+			nz = mat.nonzero()
+		coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min()) if mat.data.any()]
+		return coords
+
+	def get_coords_minofmaxm(self,mat,nz=None):
+		if nz is None:
+			nz = mat.nonzero()
+		meanings = self.get_known_meanings(option=None)
+		best_scores = np.zeros(len(meanings))
+		for i in range(len(nz[0])):
+			m = nz[0][i]
+			w = nz[1][i]
+			index_m = np.argwhere(meanings == m).reshape((-1))[0]
+			best_scores[index_m] = max(best_scores[index_m],mat[m,w])
+		val = np.amin(best_scores)
+		coords_m = np.argwhere(best_scores == val).reshape((-1))
+		coords = []
+		for m_i in coords_m:
+			coords += [(m_i,w_i) for w_i in self.get_known_words(m=m_i,option='max')]
+		return coords
+
+	def get_coords_minofmaxw(self,mat,nz=None):
+		if nz is None:
+			nz = mat.nonzero()
+		words = self.get_known_words(option=None)
+		best_scores = np.zeros(len(words))
+		for i in range(len(nz[0])):
+			m = nz[0][i]
+			w = nz[1][i]
+			index_w = np.argwhere(words == w).reshape((-1))[0]
+			best_scores[index_w] = max(best_scores[index_w],mat[m,w])
+		val = np.amin(best_scores)
+		coords_w = np.argwhere(best_scores == val).reshape((-1))
+		coords = []
+		for w_i in coords_w:
+			coords += [(m_i,w_i) for m_i in self.get_known_meanings(w=w_i,option='max')]
+		return coords

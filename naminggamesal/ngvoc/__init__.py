@@ -23,7 +23,8 @@ voc_class={
 	'category':'category.VocCategory',
 	'2dictdict':'twodictdict.Voc2DictDict',
 	'pandas':'pd_df.VocPandas',
-	'matrix_new':'matrix_new.VocMatrixNew'
+	'matrix_new':'matrix_new.VocMatrixNew',
+	'sparse_new':'matrix_new.VocSparseNew',
 }
 
 

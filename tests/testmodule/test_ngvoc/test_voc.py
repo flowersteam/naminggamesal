@@ -7,7 +7,8 @@ from naminggamesal import ngvoc
 voctype_list = [
 	'2dictdict',
 	#'pandas',
-	'matrix_new']
+	'matrix_new',
+	'sparse_new']
 
 @pytest.mark.parametrize("voc_type", voctype_list)
 def test_import(voc_type):
