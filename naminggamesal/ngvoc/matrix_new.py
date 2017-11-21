@@ -16,10 +16,12 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		return np.zeros((len(self.get_accessible_meanings()),len(self.get_accessible_words())))
 
 	def get_KM(self):
-		return len(self._content_m)
+		#return len(self._content_m)
+		return len(self.get_accessible_meanings())-len(self.unknown_meanings)
 
 	def get_KW(self):
-		return len(self._content_w)
+		#return len(self._content_w)
+		return len(self.get_accessible_words())-len(self.unknown_words)
 
 	def get_alterable_shallow_copy(self):
 		return copy.deepcopy(self)
@@ -84,19 +86,24 @@ class VocMatrixNew(BaseVocabularyElaborated):
 	def get_known_words_weights(self,m):
 		pass
 
+
 	#@voc_cache
 	def get_known_meanings_weights_values(self,w):
-		selection = self._content_w[w,:]
+		w_idx = self.word_indexes[w]
+		selection = self._content_w[:,w_idx]
 		nz = selection.nonzero()
 		ans = list(selection[nz])
-		return ans
+		#return selection.reshape((1, len(self.get_accessible_meanings())))
+		return selection.tolist()
 
 	#@voc_cache
 	def get_known_words_weights_values(self,m):
-		selection = self._content_m[m,:]
+		m_idx = self.meaning_indexes[m]
+		selection = self._content_m[m_idx,:]
 		nz = selection.nonzero()
 		ans = list(selection[nz])
-		return ans
+		#return selection.reshape((1, len(self.get_accessible_words())))
+		return selection.tolist()
 
 	#@voc_cache
 	def get_known_meanings_weights_indexes(self,w):
@@ -210,9 +217,10 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		M1,W1 = self._content_w.shape
 		M2,W2 = self._content_m.shape
 		if M1*W1 != 0:
-			new_w[:(M-M1),:(W-W1)] = self._content_w
+			#new_w[:(M1-M),:(W1-W)] = self._content_w
+			new_w[:M1,:W1] = self._content_w
 		if M2*W2 != 0:
-			new_w[:(M-M2),:(W-W2)] = self._content_m
+			new_w[:M2,:W2] = self._content_m
 		self._content_w = new_w
 		self._content_m = new_m
 
@@ -270,7 +278,57 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		coords = coords.reshape((-1,2))
 		return coords
 
+	@classmethod
+	def srtheo_voc(cls,voc1,voc2=None,m=None,w=None,role='both'):
+		if role == 'speaker':
+			m1 = copy.deepcopy(voc1._content_m)
+			m2 = copy.deepcopy(voc2._content_w)
+			if not hasattr(voc1,'is_normalized') or not voc1.is_normalized:
+				m1 = cls.norm(mat=m1,axis=1)
+			if not hasattr(voc2,'is_normalized') or not voc2.is_normalized:
+				m2 = cls.norm(mat=m2,axis=0)
+			try:
+				prefactor = 1./voc1.get_M()
+			except ZeroDivisionError:
+				return 0
+			if m is not None and w is not None:
+				m_idx = voc1.meaning_indexes[m]
+				m_idx2 = voc2.meaning_indexes[m]
+				w_idx = voc1.word_indexes[w]
+				w_idx2 = voc2.word_indexes[w]
+				return m1[m_idx,w_idx]*m2[m_idx2,w_idx2]
+			elif m is not None:
+				m_idx = voc1.meaning_indexes[m]
+				assert m_idx == voc2.meaning_indexes[m]
+				m1 = m1[m_idx,:]
+				m2 = m2[m_idx,:]
+				tempval = cls.mult_sum(m1,m2)
+				return tempval
+			elif w is not None:
+				w_idx = voc1.word_indexes[w]
+				assert w_idx == voc2.word_indexes[w]
+				m1 = m1[:,w_idx]
+				m2 = m2[:,w_idx]
+				tempval = cls.mult_sum(m1,m2)
+				return tempval
+			else:
+				tempval = cls.mult_sum(m1,m2)
+				return prefactor * tempval
+		elif role == 'hearer':
+			return cls.srtheo_voc(voc1=voc2,voc2=voc1,m=m,w=w,role='speaker')
+		elif role == 'both':
+			return 0.5*(cls.srtheo_voc(voc1=voc1,voc2=voc2,m=m,w=w,role='speaker')+cls.srtheo_voc(voc1=voc1,voc2=voc2,m=m,w=w,role='hearer'))
 
+	@classmethod
+	def norm(cls,mat,axis=0):
+		with np.errstate(divide='ignore'):
+			divmat = np.nan_to_num(1/ np.linalg.norm(mat, axis=axis, ord=1,keepdims=True))
+		return mat *divmat
+
+	@classmethod
+	def mult_sum(cls,m1,m2):
+		mult = np.multiply(m1,m2)
+		return np.nan_to_num(mult).sum()
 
 class VocSparseNew(VocMatrixNew):
 
@@ -335,3 +393,34 @@ class VocSparseNew(VocMatrixNew):
 		for w_i in coords_w:
 			coords += [(m_i,w_i) for m_i in self.get_known_meanings(w=w_i,option='max')]
 		return coords
+
+	#@voc_cache
+	def get_known_meanings_weights_values(self,w):
+		w_idx = self.word_indexes[w]
+		return self._content_w.getcol(w_idx).todense().reshape(-1).tolist()[0]
+
+	#@voc_cache
+	def get_known_words_weights_values(self,m):
+		m_idx = self.meaning_indexes[m]
+		return self._content_m.getrow(m_idx).todense().tolist()[0]
+
+	@classmethod
+	def norm(cls,mat,axis=0):
+		with np.errstate(divide='ignore'):
+			normvec = scipy.sparse.linalg.norm(mat, axis=axis, ord=1)
+			normvec = np.matrix(normvec)
+			if axis == 1:
+				normvec = normvec.transpose()
+			divmat = np.nan_to_num(1/ normvec)#,keepdims=True))
+			if mat.__class__ == sparse.csr.csr_matrix:
+				return mat.multiply(divmat).tocsr()
+			elif mat.__class__ == sparse.csc.csc_matrix:
+				return mat.multiply(divmat).tocsc()
+			else:
+				return mat.multiply(divmat)
+
+
+	@classmethod
+	def mult_sum(cls,m1,m2):
+		mult = m1.multiply(m2)
+		return mult.sum()

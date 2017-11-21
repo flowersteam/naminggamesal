@@ -132,19 +132,32 @@ class Voc2DictDict(BaseVocabularyElaborated):
 
 	#@voc_cache
 	def get_known_meanings_weights(self,w):
-		return list(self._content_w[w].items())
+		try:
+			return list(self._content_w[w].items())
+		except KeyError:
+			return []
+
 
 	#@voc_cache
 	def get_known_words_weights(self,m):
-		return list(self._content_m[m].items())
+		try:
+			return list(self._content_m[m].items())
+		except KeyError:
+			return []
 
 	#@voc_cache
 	def get_known_meanings_weights_values(self,w):
-		return list(self._content_w[w].values())
+		try:
+			return list(self._content_w[w].values())
+		except KeyError:
+			return []
 
 	#@voc_cache
 	def get_known_words_weights_values(self,m):
-		return list(self._content_m[m].values())
+		try:
+			return list(self._content_m[m].values())
+		except KeyError:
+			return []
 
 	def get_alterable_shallow_copy(self):
 		return copy.deepcopy(self)

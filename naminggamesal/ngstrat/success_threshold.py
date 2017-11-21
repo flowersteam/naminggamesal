@@ -109,9 +109,13 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 		for m in range(0,len(KM)):
 			if ratelist[m] == tempmin:
 				tempm.append(m)
-		j = random.choice(tempm)
-		ans = KM[j]
-		return ans
+		#j = np.random.choice(tempm)
+		#ans = KM[j]
+		#return ans
+		meaning_list = [KM[m] for m in tempm]
+		weight_list = np.asarray([voc.get_freq_weight(KM[m]) for m in tempm])
+		weight_list = weight_list/weight_list.sum()
+		return np.random.choice(meaning_list,p=weight_list)
 
 ##################################### STRATEGIE SUCCESS THRESHOLD WISE MAX########################################
 class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
