@@ -2491,9 +2491,18 @@ def srtheo_voc(voc1,voc2=None,m=None,w=None,role='both',force_ngmeth=False):
 			except ZeroDivisionError:
 				pass
 		elif m is None and w is not None:
-			for m1 in voc1.get_known_meanings(w=w,option=None):
-				if len(voc1.get_known_words(m=m1)) and voc1.get_M():
-					ans += voc1.get_value(m1,w,content_type='m') * voc2.get_value(m1,w,content_type='w')/(float(sum(voc1.get_known_words_weights_values(m=m1)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
+			raise NotImplementedError
+			#if voc1.get_known_meanings(option=None) and voc1.get_M():
+			#	prefactor_inv = 0.
+			#	for m1 in voc1.get_known_meanings(option=None):
+			#		incr = srtheo_voc(voc1=voc1,voc2=voc2,m=m1,w=w,role=role,force_ngmeth=force_ngmeth)
+			#		if incr > 0:
+			#			prefactor_inv += 1.
+			#			ans += incr
+			#	try:
+			#		ans *= 1./prefactor_inv
+			#	except ZeroDivisionError:
+			#		pass
 		else:
 			for m1 in voc1.get_known_meanings(option=None):
 				for w1 in voc1.get_known_words(m=m1,option=None):
@@ -2513,30 +2522,7 @@ def srtheo_voc(voc1,voc2=None,m=None,w=None,role='both',force_ngmeth=False):
 	if role == 'both':
 		return (srtheo_voc(voc1=voc1,voc2=voc2,m=m,w=w,role='speaker',force_ngmeth=force_ngmeth)+srtheo_voc(voc1=voc1,voc2=voc2,m=m,w=w,role='hearer',force_ngmeth=force_ngmeth))/2.
 	else:
-		raise ValueError('Unknow role: '+str(role))
-
-#may still be a problem for w not None, especially for hearer case
-
-#==================
-
-#def srtheo_voc_membased(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both'):
-#	if hasattr(voc1,'get_alterable_shallow_copy'):
-#		voc1_temp = voc1.get_alterable_shallow_copy()
-#	else:
-#		voc1_temp = copy.deepcopy(voc1)
-#	for m1 in voc1_temp.get_known_meanings():
-#		for w1 in voc1_temp.get_known_words(m=m1):
-#			val_temp = voc2.get_value(m=m1,w=w1,content_type='m')
-#			val_temp = max(val_temp, 0.000001)
-#			voc1_temp.add(m=m1,w=w1,val=val_temp,content_type='m')
-#
-#	for w1 in voc1_temp.get_known_words():
-#		for m1 in voc1_temp.get_known_meanings(w=w1):
-#			val_temp = voc2.get_value(m=m1,w=w1,content_type='w')
-#			val_temp = max(val_temp, 0.000001)
-#			voc1_temp.add(m=m1,w=w1,val=val_temp,content_type='w')
-#
-#	return srtheo_voc(voc1=voc1_temp,voc2=voc2,voc2_m=voc2_m,voc2_w=voc2_w,m=m,w=w,role=role)
+		raise NotImplementedError('Unknow role: '+str(role))
 
 import pyximport; pyximport.install()
 from .cngmeth import srtheo_voc_membased

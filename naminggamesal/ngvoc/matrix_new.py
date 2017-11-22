@@ -305,12 +305,14 @@ class VocMatrixNew(BaseVocabularyElaborated):
 				tempval = cls.mult_sum(m1,m2)
 				return tempval
 			elif w is not None:
-				w_idx = voc1.word_indexes[w]
-				assert w_idx == voc2.word_indexes[w]
-				m1 = m1[:,w_idx]
-				m2 = m2[:,w_idx]
-				tempval = cls.mult_sum(m1,m2)
-				return tempval
+				raise NotImplementedError
+				#w_idx = voc1.word_indexes[w]
+				#assert w_idx == voc2.word_indexes[w]
+				#m1 = m1[:,w_idx]
+				#m2 = m2[:,w_idx]
+				#prefactor2 = cls.count_nonzero(m1)
+				#tempval = cls.mult_sum(m1,m2)
+				#return tempval * prefactor2
 			else:
 				tempval = cls.mult_sum(m1,m2)
 				return prefactor * tempval
@@ -330,6 +332,10 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		mult = np.multiply(m1,m2)
 		return np.nan_to_num(mult).sum()
 
+	@classmethod
+	def count_nonzero(cls,m1):
+		return np.count_nonzero(m1)
+
 class VocSparseNew(VocMatrixNew):
 
 	def init_empty_content(self,option='m'):
@@ -341,6 +347,11 @@ class VocSparseNew(VocMatrixNew):
 			raise ValueError('no such option: '+str(option))
 
 
+	@del_cache
+	def rm(self,m,w,content_type='both'):
+		VocMatrixNew.rm(self,m=m,w=w,content_type=content_type)
+		self._content_m.eliminate_zeros()
+		self._content_w.eliminate_zeros()
 
 	def get_coords_none(self,mat,nz=None,w_idx=None,m_idx=None):
 		if nz is None:
@@ -424,3 +435,7 @@ class VocSparseNew(VocMatrixNew):
 	def mult_sum(cls,m1,m2):
 		mult = m1.multiply(m2)
 		return mult.sum()
+
+	@classmethod
+	def count_nonzero(cls,m1):
+		return m1.getnnz()

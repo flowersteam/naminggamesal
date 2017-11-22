@@ -141,8 +141,8 @@ class BaseVocabularyElaborated(BaseVocabulary):
 		#W = voc_cfg2['W']
 		BaseVocabulary.__init__(self,**voc_cfg2)
 
-		self._content_m = self.init_empty_content()
-		self._content_w = self.init_empty_content()
+		self._content_m = self.init_empty_content(option='m')
+		self._content_w = self.init_empty_content(option='w')
 
 		if start == 'completed':
 			self.complete_empty()
@@ -164,8 +164,8 @@ class BaseVocabularyElaborated(BaseVocabulary):
 	def empty(self):
 		m_list = self.get_accessible_meanings()
 		w_list = self.get_accessible_words()
-		self._content_m = self.init_empty_content()
-		self._content_w = self.init_empty_content()
+		self._content_m = self.init_empty_content(option='m')
+		self._content_w = self.init_empty_content(option='w')
 		self.unknown_meanings = m_list
 		self.unknown_words = w_list
 
