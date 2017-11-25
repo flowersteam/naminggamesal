@@ -29,5 +29,5 @@ setup(name='naminggamesal',
       description='Using Active Learning in Naming Games',
       url='https://github.com/flowersteam/naminggamesal',
       license='GNU AFFERO GENERAL PUBLIC LICENSE Version 3',
-      ext_modules = cythonize(['naminggamesal/ngmeth_utils/srtheo_utils.pyx','naminggamesal/ngvoc/c2dictdict.pyx']),
+      ext_modules = cythonize(['naminggamesal/ngmeth_utils/csrtheo_utils.pyx','naminggamesal/ngvoc/c2dictdict.pyx']),
       )
