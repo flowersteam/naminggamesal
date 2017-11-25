@@ -6,12 +6,16 @@ import random
 import networkx as nx
 from intervaltree import IntervalTree,Interval
 import scipy
+from scipy.optimize import curve_fit
+from scipy.special import zetac
 
 #from numpy.linalg import norm
 
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
 from .ngpop import Population
+
+from .ngmeth_utils import zipf_utils,decvec_utils,nx_utils,srtheo_utils
 
 def pop_ize(func):
 	def out_func(pop,**kwargs):
@@ -820,9 +824,9 @@ def srtheo_local(agent, m=None, w=None, **kwargs):
 	#if 'interact_count_m' in pop._agentlist[0]._memory.keys() or 'interact_count_voc' in pop._agentlist[0]._memory.keys():
 		#for ag in pop._agentlist:
 		if hasattr(ag._vocabulary,'_content'):
-			return srtheo_voc(ag._vocabulary._content, m=m, w=w, voc2_m=ag._memory['interact_count_m'],voc2_w=ag._memory['interact_count_w'])
+			return srtheo_utils.srtheo_voc(ag._vocabulary._content, m=m, w=w, voc2_m=ag._memory['interact_count_m'],voc2_w=ag._memory['interact_count_w'])
 		else:
-			return srtheo_voc(ag._vocabulary, m=m, w=w, voc2=ag._memory['interact_count_voc'])
+			return srtheo_utils.srtheo_voc(ag._vocabulary, m=m, w=w, voc2=ag._memory['interact_count_voc'])
 	else:
 		return 0
 
@@ -877,6 +881,60 @@ def entropy_moyen_norm_min(pop):
 FUNC=entropy_moyen_norm
 graphconfig={"ymin":entropy_moyen_norm_min,"ymax":entropy_moyen_norm_max}
 custom_entropy_moyen_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########zipf_exponent_m##########
+
+def zipf_exponent_m(agent, **kwargs):
+	return zipf_utils.zipf_current(agent=agent,option='m')[0]
+
+def zipf_exponent_min(pop):
+	return 0
+
+
+
+FUNC = zipf_exponent_m
+FUNC_BIS=pop_ize(FUNC)
+graphconfig = {"ymin":zipf_exponent_min}
+custom_zipf_exponent_m = custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########zipf_error_m##########
+
+def zipf_error_m(agent, **kwargs):
+	return zipf_utils.zipf_current(agent=agent,option='m')[1]
+
+def zipf_error_min(pop):
+	return 0
+
+def zipf_error_max(pop):
+	return 1.
+
+
+FUNC = zipf_error_m
+FUNC_BIS=pop_ize(FUNC)
+graphconfig = {"ymin":zipf_error_min,"ymax":zipf_error_max}
+custom_zipf_error_m = custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+
+#########zipf_exponent_w##########
+
+def zipf_exponent_w(agent, **kwargs):
+	return zipf_utils.zipf_current(agent=agent,option='w')[0]
+
+FUNC = zipf_exponent_w
+FUNC_BIS=pop_ize(FUNC)
+graphconfig = {"ymin":zipf_exponent_min}
+custom_zipf_exponent_w = custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########zipf_error_w##########
+
+def zipf_error_w(agent, **kwargs):
+	return zipf_utils.zipf_current(agent=agent,option='w')[1]
+
+
+FUNC = zipf_error_w
+FUNC_BIS=pop_ize(FUNC)
+graphconfig = {"ymin":zipf_error_min,"ymax":zipf_error_max}
+custom_zipf_error_w = custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
 ############################	LEVEL POPULATION ############################
@@ -1772,7 +1830,7 @@ custom_overlap_semantic=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########weight_over_degree##########
 
 def weight_over_degree(pop,**kwargs):
-	G = build_nx_graph(pop._agentlist)
+	G = nx_utils.build_nx_graph(pop._agentlist)
 	values = []
 	for ag in pop._agentlist:
 		weight = 0
@@ -2166,363 +2224,6 @@ custom_exec_time_total = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 
 
-################  OTHER    ####################################
-
-def m_limit_theorique(M,W):
-	return (-((M+W-1.)/2.)+math.sqrt((M+W-1.)**2/4.+2.*M*W))/2.
-
-def decvec_from_MW(M,W):
-	decvec=[]
-	m=m_limit_theorique(M,W)
-	for i in range(0,M+1):
-		if i<=m:
-			decvec.append(1)
-		else:
-			decvec.append(0)
-	return decvec
 
 
 
-def decvectest_from_MW(M,W):
-	decvec=[]
-	m0=0
-	for i in range(0,M+1):
-		dm=i-m0
-		pp=(M-i)/float(M)*(W-i)/float(W)
-		pm=i/float(M)*(i-1.)/float(W)
-		print(pp)
-		print(pm)
-		print(" ")
-		if pm<=pp:
-			decvec.append(1)
-		else:
-			decvec.append(0)
-	return decvec
-
-def decvec2_from_MW(M,W):
-	decvec=[]
-	m0=0
-	for i in range(0,M+1):
-		dm=i-m0
-		pp=(M-i)/float(M)*(W-i)/float(W-dm)
-		pm=m0/float(M)*(m0-1.)/float(W-dm)
-		print(pp)
-		print(pm)
-		print(" ")
-		if pm<=pp:
-			decvec.append(1)
-			m0+=1
-		else:
-			decvec.append(0)
-	return decvec
-
-
-def decvec3_from_MW(M,W):
-	decvec=[]
-	for i in range(0,M):
-		pp=(M-i)/float(M)*(W-i)/float(W)
-		pm=i/float(M)*(i-1.)/float(W)
-		Gp=np.log2(W-i)
-		Gm=np.log2(W-i+1)
-		if pm*Gm<=pp*Gp:
-			decvec.append(1)
-		else:
-			decvec.append(0)
-	decvec.append(0)
-	return decvec
-
-
-def decvec3_softmax_from_MW(M,W,Temp):
-	decvec=[]
-	for i in range(0,M):
-		pp=(M-i)/float(M)*(W-i)/float(W)
-		pm=i/float(M)*(i-1.)/float(W)
-		Gp=np.log2(W-i)
-		Gm=np.log2(W-i+1)
-		P1 = np.exp(pp*Gp/Temp)
-		P2 = np.exp(-pm*Gm/Temp)
-		decvec.append(P1/(P1+P2))
-	decvec.append(0)
-	return decvec
-
-
-def decvec4_softmax_from_MW(M,W,Temp):
-	decvec=[1.]
-	for i in range(1,M):
-		pp=(M-i)/float(M)*(W-i)/float(W)
-		pm=i/float(M)*(i-1.)/float(W)
-		Gp=np.log2(W-i)
-		Gm=np.log2(W-i+1)
-		P1 = np.exp(pp*Gp/Temp)
-		P2 = np.exp(pm*Gm/Temp)
-		p=P1/(P1+P2)
-		if np.isnan(p):
-			if pm*Gm<=pp*Gp:
-				p=1.
-			else:
-				p=0.
-		decvec.append(p)
-	decvec.append(0.)
-	return decvec
-
-def decvec5_softmax_from_MW(M,W,Temp):
-	decvec=[1.]
-	for i in range(1,M):
-		pp=(W-i)/float(W)
-		pm=(i*(i-1)+(M-i)*(i-1))/float(M*W)
-		Gp=np.log2(W-i)
-		Gm=np.log2(W-i+1)
-		P1 = np.exp(pp*Gp/Temp)
-		P2 = np.exp(pm*Gm/Temp)
-		p=P2/(P1+P2)
-		if np.isnan(p):
-			if pm*Gm>=pp*Gp:
-				p=1.
-			else:
-				p=0.
-		decvec.append(p)
-	decvec.append(0.)
-	return decvec
-
-def decvectest_softmax_from_MW(M,W,Temp):
-	decvec=[1.]
-	for i in range(1,M):
-		pp=(W-i)/float(W)
-		pm=(i*(i-1)+(M-i)*(i-1))/float(M*W)
-		Gp=np.log2(W-i)
-		Gm=-np.log2(W-i+1)
-		P1 = np.exp(pp*Gp/Temp)
-		P2 = np.exp(pm*Gm/Temp)
-		p=P2/(P1+P2)
-		if np.isnan(p):
-			if pm*Gm>=pp*Gp:
-				p=1.
-			else:
-				p=0.
-		decvec.append(p)
-	decvec.append(0.)
-	return decvec
-
-def decvec_full_explo(M,W):
-	decvec = [1.]
-	for i in range(1,M):
-		decvec.append(1.)
-	decvec.append(0.)
-
-
-def decvec_full_teach(M,W):
-	decvec = [1.]
-	for i in range(1,M):
-		decvec.append(0.)
-	decvec.append(0.)
-
-############################################################################
-#NETWORKX TOOLS
-
-def build_nx_graph(agent_list):
-	if not hasattr(pop._agentlist[0]._vocabulary,'_content'):
-		raise ValueError('this measure is not implemented for this type of vocabulary')
-	G = nx.Graph()
-	for ag in agent_list:
-		tempm = np.sum(ag._vocabulary.get_content())
-		G.add_node(ag._id,size=1.-(tempentropy(ag._vocabulary.get_M()-tempm, ag._vocabulary.get_W()-tempm)/tempentropy(ag._vocabulary.get_M(), ag._vocabulary.get_W())))
-	list_length = len(agent_list)
-	for i in range(list_length):
-		agent1 = agent_list[i]
-		for j in range(i+1,list_length):
-			agent2 = agent_list[j]
-			tempmat = np.multiply(agent1._vocabulary.get_content(), agent2._vocabulary.get_content())
-			tempm = np.sum(tempmat)
-			weight = 1.-(tempentropy(agent1._vocabulary.get_M()-tempm, agent1._vocabulary.get_W()-tempm)/tempentropy(agent1._vocabulary.get_M(), agent1._vocabulary.get_W()))
-			if weight != 0:
-				G.add_edge(agent1._id,agent2._id,weight=weight)
-	return G
-
-def degree_distrib(pop,**kwargs):
-	G = build_nx_graph(pop._agentlist)
-	return custom_graph.CustomGraph(nx.degree_histogram(G))
-
-def edgevalue_distrib(pop,**kwargs):
-	G = build_nx_graph(pop._agentlist)
-	dict_XY = {}
-	for ed in G.edges:
-		weight = ed['weight']
-		if weight in list(dict_XY.keys()):
-			dict_XY[weight] += 1
-		else:
-			dict_XY[weight] = 1
-	for key, value in list(dict_XY.items()):
-		X.append(key)
-		Y.append(value)
-	return custom_graph.CustomGraph(X=X,Y=Y)
-
-
-
-
-#==================
-
-
-def srtheo_voc_old(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both',force_ngmeth=False):
-	if (not force_ngmeth) and voc2 is not None and hasattr(voc1.__class__,'srtheo_voc') and hasattr(voc2.__class__,'srtheo_voc') and voc1.__class__.srtheo_voc == voc2.__class__.srtheo_voc:
-		return voc1.srtheo_voc(voc1=voc1,voc2=voc2,m=m,w=w,role=role)
-	ans = 0.
-	if not hasattr(voc1,'_content_m'):
-		if role == 'both' or role == 'hearer':
-			m1 = copy.deepcopy(voc1)
-			if voc2 is not None:
-				m2 = copy.deepcopy(voc2)
-			else:
-				m2 = copy.deepcopy(voc2_m)
-
-			if m is not None:
-				m2 = m2[m,:]
-				m1 = m1[m,:]
-			if w is not None:
-				m1 = m1[:,w]
-				m2 = m2[:,w]
-
-#			if renorm:
-#				if renorm_fact is None: # !!!!! TODO: Deal with div by zero
-			m1 = m1 / np.linalg.norm(m1, axis=0, ord=1,keepdims=True)
-#					m2 = m2 / np.linalg.norm(m2, axis=1, ord=1,keepdims=True)
-#				else:# !!!!! TODO: Deal with div by zero
-#					m1 = m1 / renorm_fact
-#					m2 = m2 / renorm_fact
-			mult = np.multiply(m1,m2)
-			ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
-		if role == 'both' or role == 'speaker':
-			m1 = copy.deepcopy(voc1)
-			if voc2 is not None:
-				m2 = copy.deepcopy(voc2)
-			else:
-				m2 = copy.deepcopy(voc2_w)
-
-			if m is not None:
-				m2 = m2[m,:]
-				m1 = m1[m,:]
-			if w is not None:
-				m1 = m1[:,w]
-				m2 = m2[:,w]
-
-#			if renorm:
-#				if renorm_fact is None:# !!!!! TODO: Deal with div by zero
-			m1 = m1 / np.linalg.norm(m1, axis=1, ord=1,keepdims=True)
-#					m2 = m2 / np.linalg.norm(m2, axis=0, ord=1,keepdims=True)
-#				else:
-#					m1 = m1 / renorm_fact# !!!!! TODO: Deal with div by zero
-#					m2 = m2 / renorm_fact
-			mult = np.multiply(m1,m2)
-			ans += 1./voc1.shape[0] * np.nan_to_num(mult).sum()
-	else:
-		if role == 'both' or role == 'speaker':
-			if m is not None and w is None:# or w is not None:
-				if m in voc1.get_known_meanings(option=None):#voc1._content_m.keys():
-					for w1 in voc1.get_known_words(m=m,option=None):#voc1._content_m[m].keys():
-						if len(voc1.get_known_words(m=m)):
-							ans += voc1.get_value(m,w1,content_type='m') * voc2.get_value(m,w1,content_type='w')/(float(sum(voc1.get_known_words_weights_values(m=m))))#/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
-			elif m is not None and w is not None:
-				if len(voc1.get_known_words(m=m)):
-					ans += voc1.get_value(m,w,content_type='m') * voc2.get_value(m,w,content_type='w')/(float(sum(voc1.get_known_words_weights_values(m=m))))#/float(voc1.get_M())#/float(len(voc2.get_known_words(m=m))*len(voc1.get_known_meanings(w=w1)))#voc1._content_m[m][w1] * voc2._content_w[w1][m]
-			elif m is None and w is not None:
-				for m1 in voc1.get_known_meanings(w=w,option=None):
-					if len(voc1.get_known_words(m=m1)) and voc1.get_M():
-						ans += voc1.get_value(m1,w,content_type='m') * voc2.get_value(m1,w,content_type='w')/(float(sum(voc1.get_known_words_weights_values(m=m1)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
-			else:
-				for m1 in voc1.get_known_meanings(option=None):
-					for w1 in voc1.get_known_words(m=m1,option=None):
-						if len(voc1.get_known_words(m=m1)) and voc1.get_M():
-							try:
-								if not hasattr(voc2,'is_normalized') or not voc2.is_normalized:
-									ans += voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/(float(sum(voc1.get_known_words_weights_values(m=m1)))*sum(voc1.get_known_meanings_weights_values(w=w1))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
-								else:
-									ans += voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/(float(sum(voc1.get_known_words_weights_values(m=m1)))*float(voc1.get_M()))#/float(len(voc2.get_known_words(m=m1))*len(voc1.get_known_meanings(w=w1)))
-							except ZeroDivisionError :
-								pass
-		if role == 'both' or role == 'hearer':
-			if w is not None and m is None:# or m is not None:
-				if w in voc1.get_known_words(option=None): #voc2._content_w.keys():
-					for m1 in voc1.get_known_meanings(w=w,option=None): #voc2._content_w[w].keys():
-						if len(voc1.get_known_meanings(w=w)) and voc2.get_M():
-							ans += voc2.get_value(m1,w,content_type='m') * voc1.get_value(m1,w,content_type='w')/(float(sum(voc1.get_known_meanings_weights_values(w=w)))*float(voc2.get_M()))#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w)))#voc1._content_m[m1][w] * voc2._content_w[w][m1]
-			elif w is not None and m is not None:
-				if len(voc1.get_known_meanings(w=w)):
-					ans += voc2.get_value(m,w,content_type='m') * voc1.get_value(m,w,content_type='w')/(float(sum(voc1.get_known_meanings_weights_values(w=w))))#/float(voc2.get_M())
-			elif w is None and m is not None:
-				for w1 in voc2.get_known_words(m=m,option=None):
-					if len(voc1.get_known_meanings(w=w1)):
-						ans += voc2.get_value(m,w1,content_type='m') * voc1.get_value(m,w1,content_type='w')/(float(sum(voc1.get_known_meanings_weights_values(w=w1))))#/float(voc2.get_M())
-			else:
-				for m1 in voc2.get_known_meanings(option=None):
-					for w1 in voc2.get_known_words(m=m1,option=None):
-						if len(voc1.get_known_meanings(w=w1)) and voc2.get_M():
-							ans += voc2.get_value(m1,w1,content_type='m') * voc1.get_value(m1,w1,content_type='w')/(float(sum(voc1.get_known_meanings_weights_values(w=w1)))*float(voc2.get_M()))#/float(len(voc1.get_known_words(m=m1))*len(voc2.get_known_meanings(w=w1)))
-	if role == 'both':
-		return ans/2.
-	else:
-		return ans
-
-def srtheo_voc(voc1,voc2=None,m=None,w=None,role='both',force_ngmeth=False):
-	if (not force_ngmeth) and voc2 is not None and hasattr(voc1.__class__,'srtheo_voc') and hasattr(voc2.__class__,'srtheo_voc') and voc1.__class__.srtheo_voc == voc2.__class__.srtheo_voc:
-		return voc1.srtheo_voc(voc1=voc1,voc2=voc2,m=m,w=w,role=role)
-	if role == 'speaker':
-		ans = 0
-		if m is not None and w is None:
-			if m in voc1.get_known_meanings(option=None):
-				for w1 in voc1.get_known_words(m=m,option=None):
-					try:
-						prefactor = 1.
-						if not hasattr(voc2,'is_normalized') or not voc2.is_normalized:
-							prefactor *= 1./sum(voc2.get_known_meanings_weights_values(w=w1))
-						if not hasattr(voc1,'is_normalized') or not voc1.is_normalized:
-							prefactor *= 1./sum(voc1.get_known_words_weights_values(m=m))
-						if len(voc1.get_known_words(m=m)):
-							ans += prefactor*voc1.get_value(m,w1,content_type='m') * voc2.get_value(m,w1,content_type='w')
-					except ZeroDivisionError:
-						pass
-		elif m is not None and w is not None:
-			try:
-				prefactor = 1.
-				if not hasattr(voc2,'is_normalized') or not voc2.is_normalized:
-					prefactor *= 1./sum(voc2.get_known_meanings_weights_values(w=w))
-				if not hasattr(voc1,'is_normalized') or not voc1.is_normalized:
-					prefactor *= 1./sum(voc1.get_known_words_weights_values(m=m))
-				if len(voc1.get_known_words(m=m)):
-					ans += prefactor*voc1.get_value(m,w,content_type='m') * voc2.get_value(m,w,content_type='w')
-			except ZeroDivisionError:
-				pass
-		elif m is None and w is not None:
-			raise NotImplementedError
-			#if voc1.get_known_meanings(option=None) and voc1.get_M():
-			#	prefactor_inv = 0.
-			#	for m1 in voc1.get_known_meanings(option=None):
-			#		incr = srtheo_voc(voc1=voc1,voc2=voc2,m=m1,w=w,role=role,force_ngmeth=force_ngmeth)
-			#		if incr > 0:
-			#			prefactor_inv += 1.
-			#			ans += incr
-			#	try:
-			#		ans *= 1./prefactor_inv
-			#	except ZeroDivisionError:
-			#		pass
-		else:
-			for m1 in voc1.get_known_meanings(option=None):
-				for w1 in voc1.get_known_words(m=m1,option=None):
-					if len(voc1.get_known_words(m=m1,option=None)) and voc1.get_M():
-						try:
-							prefactor = 1.
-							if not hasattr(voc2,'is_normalized') or not voc2.is_normalized:
-								prefactor *= 1./sum(voc2.get_known_meanings_weights_values(w=w1))
-							if not hasattr(voc1,'is_normalized') or not voc1.is_normalized:
-								prefactor *= 1./sum(voc1.get_known_words_weights_values(m=m1))
-							ans += prefactor * voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/len(voc1.get_accessible_meanings())#float(voc1.get_M())
-						except ZeroDivisionError :
-							pass
-		return ans
-	if role == 'hearer':
-		return srtheo_voc(voc1=voc2,voc2=voc1,m=m,w=w,role='speaker',force_ngmeth=force_ngmeth)
-	if role == 'both':
-		return (srtheo_voc(voc1=voc1,voc2=voc2,m=m,w=w,role='speaker',force_ngmeth=force_ngmeth)+srtheo_voc(voc1=voc1,voc2=voc2,m=m,w=w,role='hearer',force_ngmeth=force_ngmeth))/2.
-	else:
-		raise NotImplementedError('Unknow role: '+str(role))
-
-import pyximport; pyximport.install()
-from .cngmeth import srtheo_voc_membased

@@ -222,7 +222,7 @@ class InteractionCounts(MemoryPolicy):
 			mem['interact_count_w'] = np.zeros((voc._M,voc._W))
 		else:
 			assert not 'interact_count_voc' in list(mem.keys())
-			mem['interact_count_voc'] = voc.__class__(start='empty')
+			mem['interact_count_voc'] = voc.__class__(start='empty',normalized=True)
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if hasattr(voc,'_content'):

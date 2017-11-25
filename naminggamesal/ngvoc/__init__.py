@@ -124,7 +124,7 @@ class BaseVocabulary(object):
 class BaseVocabularyElaborated(BaseVocabulary):
 
 
-	def __init__(self, start='empty', meaning_choice=None, **voc_cfg2):
+	def __init__(self, start='empty', meaning_choice=None, normalized=False, **voc_cfg2):
 		#self._M = M
 		#self._W = W
 		self.unknown_meanings = []
@@ -140,6 +140,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 		#M = voc_cfg2['M']
 		#W = voc_cfg2['W']
 		BaseVocabulary.__init__(self,**voc_cfg2)
+		self.is_normalized = normalized
 
 		self._content_m = self.init_empty_content(option='m')
 		self._content_w = self.init_empty_content(option='w')
@@ -240,7 +241,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	def get_random_known_m(self,w=None, option='max'):
 		if not len(self.get_known_meanings(w=w)) == 0:
-			m = random.choice(self.get_known_meanings(w=w, option=option))
+			m = self.get_random_m(m_list=self.get_known_meanings(w=w, option=option))
 		else:
 			#print "tried to get known m but none are known"
 			m = self.get_new_unknown_m()
@@ -248,7 +249,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	def get_random_known_w(self,m=None, option='max'):
 		if not len(self.get_known_words(m=m)) == 0:
-			w = random.choice(self.get_known_words(m=m, option=option))
+			w = self.get_random_w(w_list=self.get_known_words(m=m, option=option))
 		else:
 			#print "tried to get known w but none are known"
 			w = self.get_new_unknown_w()
@@ -271,17 +272,29 @@ class BaseVocabularyElaborated(BaseVocabulary):
 		except:
 			return l
 
-	def get_random_m(self):
-		if not hasattr(self,'meaning_choice'):
-			return random.choice(self.get_accessible_meanings()) #random from known+explored+adjacent_possible
+	def get_random_m(self,m_list=None):
+		if m_list is None:
+			m_list = self.get_accessible_meanings()
+		if not hasattr(self,'freq_weights_m'):
+			return random.choice(m_list)
 		else:
-			distrib = np.asarray([1./(i+1) for i in range(len(self.get_accessible_meanings()))])
+			distrib = [self.get_freq_weights_m(m) for m in m_list]
 			distrib = distrib/distrib.sum()
-			return np.random.choice(self.get_accessible_meanings(),p=distrib) #random from known+explored+adjacent_possible
+			return np.random.choice(m_list,p=distrib) #random from known+explored+adjacent_possible
+
+	def get_random_w(self,w_list=None):
+		if w_list is None:
+			w_list = self.get_accessible_words()
+		if not hasattr(self,'freq_weights_w'):
+			return random.choice(w_list) #random from known+explored+adjacent_possible
+		else:
+			distrib = [self.get_freq_weights_w(w) for w in w_list]
+			distrib = distrib/distrib.sum()
+			return np.random.choice(w_list,p=distrib)
 
 	def get_new_unknown_m(self):
 		if len(self.unknown_meanings) != 0:
-			m = random.choice(self.unknown_meanings)
+			m = self.get_random_m(m_list=self.unknown_meanings)
 		else:
 			#print "tried to get new m but all are known"
 			m = self.get_random_known_m()
@@ -292,7 +305,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 			w = self.next_word
 			delattr(self,'next_word')
 		elif len(self.unknown_words) != 0:
-			w = random.choice(self.unknown_words)
+			w = self.get_random_w(w_list=self.unknown_words)
 		else:
 			#print "tried to get new w but all are known"
 			w = self.get_random_known_w()
@@ -300,26 +313,40 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 
 	@del_cache
-	def discover_meanings(self,m_list):
+	def discover_meanings(self,m_list,weights=None):
 		#m_list = list(set(list(m_list)))
 		m_list = [ii for n,ii in enumerate(m_list) if ii not in m_list[:n]]
 		m_list_bis = [m for m in m_list if m not in self.accessible_meanings]#known_meanings()+self.unknown_meanings]
-		if hasattr(self,'meaning_choice') and self.meaning_choice is not None:
-			j = len(self.accessible_meanings)
-			for m in m_list_bis:
-				j += 1
-				self.freq_weights[m] = 1./j
+		if weights is not None:
+			weights_bis = [weights[i] for i in range(len(m_list)) if m_list[i] in m_list_bis]#known_meanings()+self.unknown_meanings]
+		#if hasattr(self,'meaning_choice') and self.meaning_choice is not None:
+		#	j = len(self.accessible_meanings)
+		#	for m in m_list_bis:
+		#		j += 1
+		#		self.freq_weights[m] = 1./j
 		self.unknown_meanings += m_list_bis
 		self.accessible_meanings += m_list_bis
+		if weights is not None and [i for i in weights if i!=1]:
+			if not hasattr(self,'freq_weights_m'):
+				self.freq_weights_m = {}
+			for i in range(len(m_list_bis)):
+				self.freq_weights_m[m_list_bis[i]] = weights_bis[i]
 		return m_list_bis
 
 	@del_cache
-	def discover_words(self,w_list):
+	def discover_words(self,w_list,weights=None):
 		#w_list = list(set(list(w_list)))
 		w_list = [ii for n,ii in enumerate(w_list) if ii not in w_list[:n]]
 		w_list_bis = [w for w in w_list if w not in self.accessible_words]#known_words()+self.unknown_words]
+		if weights is not None:
+			weights_bis = [weights[i] for i in range(len(w_list)) if w_list[i] in w_list_bis]
 		self.unknown_words += w_list_bis
 		self.accessible_words += w_list_bis
+		if weights is not None and [i for i in weights if i!=1]:
+			if not hasattr(self,'freq_weights_w'):
+				self.freq_weights_w = {}
+			for i in range(len(w_list_bis)):
+				self.freq_weights_w[w_list_bis[i]] = weights_bis[i]
 		return w_list_bis
 
 	def get_unknown_meanings(self):

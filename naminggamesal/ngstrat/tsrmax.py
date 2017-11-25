@@ -33,7 +33,7 @@ class StratTSRMax(StratNaive):
 			if value == val_max:
 				max_list.append(key)
 
-		m = random.choice(max_list)
+		m = voc.get_random_m(max_list)
 
 		if 'proba_of_success_increase' in list(mem.keys()):
 			m_rm_list = set([m])

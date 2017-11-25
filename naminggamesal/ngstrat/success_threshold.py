@@ -109,13 +109,11 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 		for m in range(0,len(KM)):
 			if ratelist[m] == tempmin:
 				tempm.append(m)
-		#j = np.random.choice(tempm)
-		#ans = KM[j]
-		#return ans
-		meaning_list = [KM[m] for m in tempm]
-		weight_list = np.asarray([voc.get_freq_weight(KM[m]) for m in tempm])
-		weight_list = weight_list/weight_list.sum()
-		return np.random.choice(meaning_list,p=weight_list)
+		try:
+			meaning_list = [KM[m] for m in tempm]
+			return voc.get_random_m(m_list=meaning_list)
+		except IndexError:
+			return voc.get_random_known_m()
 
 ##################################### STRATEGIE SUCCESS THRESHOLD WISE MAX########################################
 class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
@@ -124,7 +122,7 @@ class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 		ratelist = self.get_success_rates(voc, mem)
 		threshold = self.threshold_explo
 		KM = voc.get_known_meanings()
-		if (np.mean(ratelist)>self.threshold_explo) or len(KM) == 0 : #and len(KM)<voc._M
+		if (np.mean(ratelist)>self.threshold_explo) or len(KM) == 0 :
 			if len(KM) == voc.get_M():
 				threshold = 1
 			else:
@@ -138,11 +136,10 @@ class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 			if ratelist[m] == tempmax:
 				tempm.append(m)
 		try:
-			j = random.choice(tempm)
+			meaning_list = [KM[m] for m in tempm]
+			return voc.get_random_m(m_list=meaning_list)
 		except IndexError:
 			return voc.get_random_known_m()
-		ans = KM[j]
-		return ans
 
 ##################################### STRATEGIE SUCCESS THRESHOLD WISE########################################
 class StratSuccessThresholdScores(StratSuccessThresholdWise):
@@ -230,4 +227,4 @@ class StratSuccessThresholdEpirob(StratNaive):
 				elif voc.get_value(m,w) == LS:
 					m_l.append(m)
 		m_l = list(set(m_l))
-		return random.choice(m_l)
+		return voc.get_random_m(m_l)

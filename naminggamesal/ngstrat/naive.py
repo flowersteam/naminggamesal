@@ -46,14 +46,14 @@ class StratNaiveMemBased(StratNaive):
 				p_list = [ mem['interact_count_voc'].get_value(m=m1,w=w,content_type='w') for m1 in m_list]
 				p = np.asarray(p_list)
 				if p.sum() == 0:
-					m = np.random.choice(m_list)
+					m = voc.get_random_m(m_list)
 					#print "got only 0s as association values when looking for known meanings of a given word"
 					#print p
 				else:
 					m = np.random.choice(m_list,p=p/p.sum())
 			else:
 				#try:
-				m = np.random.choice(m_list)
+				m = voc.get_random_m(m_list)
 				#except:
 				#	print('pandas error')
 				#	if voc.get_unknown_meanings():
@@ -77,12 +77,12 @@ class StratNaiveMemBased(StratNaive):
 				p = np.asarray(p_list)
 				p = p/p.sum()
 				if p.sum() != 1:
-					w = np.random.choice(w_list)
+					w = voc.get_random_w(w_list)
 				else:
 					w = np.random.choice(w_list,p=p)
 			else:
 				#try:
-				w = np.random.choice(w_list)
+				w = voc.get_random_w(w_list)
 				#except:
 				#	print('pandas error')
 				#	if voc.get_unknown_words():
@@ -110,14 +110,11 @@ class StratNaiveCategory(BaseStrategy):
 		return next(context_gen)
 
 	def guess_m(self, w, voc, mem, context):
-		ml = []
-		for m in context:
-			if w in voc.get_known_words(m):
-				ml.append(m)
+		ml = [m for m in context if w in voc.get_known_words(m)]
 		if not ml:
 			return None
 		else:
-			return random.choice(ml)
+			return voc.get_random_m(ml)
 
 	def pick_w(self, m, voc, mem, context):
 		wl = set(voc.get_known_words(m))
@@ -127,10 +124,10 @@ class StratNaiveCategory(BaseStrategy):
 		if not wl:
 			return voc.get_new_unknown_w()
 		else:
-			return random.choice(list(wl))
+			return voc.get_random_w(list(wl))
 
 	def pick_m(self, voc, mem, context):
-		m = random.choice(context)
+		m = voc.get_random_m(m_list=context)
 		#voc.minmax_slice(m,context)
 		return m
 
@@ -146,7 +143,7 @@ class StratNaiveCategoryPlosOne(StratNaiveCategory):
 		if not wl:
 			return voc.get_new_unknown_w()
 		else:
-			return random.choice(list(wl))
+			return voc.get_random_w(list(wl))
 
 #	def init_memory(self,voc):
 #		return IntervalTree([Interval(0,1,None)])

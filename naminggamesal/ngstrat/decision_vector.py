@@ -3,7 +3,7 @@
 from .naive import StratNaive
 import random
 import numpy as np
-from .. import ngmeth
+from ..ngmeth_utils import decvec_utils
 
 
 ################################### STRATEGIE DECISION VECTOR #########################################""
@@ -32,7 +32,7 @@ class StratDecisionVectorGainmax(StratDecisionVector):
 		super(StratDecisionVectorGainmax, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		M = strat_cfg2['M']
 		W = strat_cfg2['W']
-		self.decision_vector = ngmeth.decvec3_from_MW(M, W)
+		self.decision_vector = decvec_utils.decvec3_from_MW(M, W)
 ##############################
 
 
@@ -42,7 +42,7 @@ class StratDecisionVectorGainSoftmax(StratDecisionVector):
 		M = strat_cfg2['M']
 		W = strat_cfg2['W']
 		Temp = strat_cfg2['Temp']
-		self.decision_vector = ngmeth.decvec4_softmax_from_MW(M, W, Temp)
+		self.decision_vector = decvec_utils.decvec4_softmax_from_MW(M, W, Temp)
 ##############################
 
 class StratDecisionVectorGainSoftmaxHearer(StratDecisionVector):
@@ -51,7 +51,7 @@ class StratDecisionVectorGainSoftmaxHearer(StratDecisionVector):
 		M = strat_cfg2['M']
 		W = strat_cfg2['W']
 		Temp = strat_cfg2['Temp']
-		self.decision_vector = ngmeth.decvec5_softmax_from_MW(M, W, Temp)
+		self.decision_vector = decvec_utils.decvec5_softmax_from_MW(M, W, Temp)
 ##############################
 
 class StratDecisionVectorGainSoftmaxHearerTest(StratDecisionVector):
@@ -60,5 +60,5 @@ class StratDecisionVectorGainSoftmaxHearerTest(StratDecisionVector):
 		M = strat_cfg2['M']
 		W = strat_cfg2['W']
 		Temp = strat_cfg2['Temp']
-		self.decision_vector = ngmeth.decvectest_softmax_from_MW(M, W, Temp)
+		self.decision_vector = decvec_utils.decvectest_softmax_from_MW(M, W, Temp)
 ##############################

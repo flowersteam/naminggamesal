@@ -4,6 +4,7 @@ import random
 import numpy as np
 
 from naminggamesal import ngvoc,ngmeth
+from naminggamesal.ngmeth_utils.srtheo_utils import srtheo_voc
 
 #voctype_list = list(ngvoc.voc_class.keys())
 voctype_list = [
@@ -311,21 +312,21 @@ def test_srtheovoc_basic(tempvoc):
 	v.discover_meanings(['a','b','c'])
 	v.discover_words(range(4))
 	v.add(m='a',w=1,content_type='m')
-	assert ngmeth.srtheo_voc(v,v) == 0
+	assert srtheo_voc(v,v) == 0
 
 def test_srtheovoc_basic2(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
 	v.discover_words(range(4))
 	v.add(m='a',w=1,content_type='w')
-	assert ngmeth.srtheo_voc(v,v) == 0
+	assert srtheo_voc(v,v) == 0
 
 def test_srtheovoc_basic3(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
 	v.discover_words(range(4))
 	v.add(m='a',w=1,content_type='both')
-	assert ngmeth.srtheo_voc(v,v) == 1/3.
+	assert srtheo_voc(v,v) == 1/3.
 
 def test_srtheovoc_basic4(tempvoc):
 	v = tempvoc
@@ -336,7 +337,7 @@ def test_srtheovoc_basic4(tempvoc):
 	v.add(m='a',w=2,content_type='m')
 	v.add(m='a',w=3,content_type='m')
 	v.add(m='a',w=1,content_type='w')
-	assert ngmeth.srtheo_voc(v,v) == 1/12.
+	assert srtheo_voc(v,v) == 1/12.
 
 def test_srtheovoc_basic4_2(tempvoc):
 	v = tempvoc
@@ -345,7 +346,7 @@ def test_srtheovoc_basic4_2(tempvoc):
 	v.add(m='a',w=0,content_type='m')
 	v.add(m='a',w=1,content_type='m')
 	v.add(m='a',w=1,content_type='w')
-	assert ngmeth.srtheo_voc(v,v) == 1/6.
+	assert srtheo_voc(v,v) == 1/6.
 
 def test_srtheovoc_basic5(tempvoc):
 	v = tempvoc
@@ -356,7 +357,7 @@ def test_srtheovoc_basic5(tempvoc):
 	v.add(m='a',w=2,content_type='w')
 	v.add(m='a',w=3,content_type='w')
 	v.add(m='a',w=1,content_type='m')
-	assert ngmeth.srtheo_voc(v,v) == 1/3.
+	assert srtheo_voc(v,v) == 1/3.
 
 def test_srtheovoc_basic5_2(tempvoc):
 	v = tempvoc
@@ -365,7 +366,7 @@ def test_srtheovoc_basic5_2(tempvoc):
 	v.add(m='a',w=0,content_type='w')
 	v.add(m='a',w=1,content_type='w')
 	v.add(m='a',w=1,content_type='m')
-	assert ngmeth.srtheo_voc(v,v) == 1/3.
+	assert srtheo_voc(v,v) == 1/3.
 
 def test_srtheovoc_basic6(tempvoc):
 	v = tempvoc
@@ -377,7 +378,7 @@ def test_srtheovoc_basic6(tempvoc):
 	v.add(m='a',w=0,content_type='m')
 	v.add(m='a',w=1,content_type='m')
 	v.add(m='b',w=0,content_type='m')
-	assert abs(ngmeth.srtheo_voc(v,v) - 5/12.) < epsilon
+	assert abs(srtheo_voc(v,v) - 5/12.) < epsilon
 
 def test_srtheovoc_basic6_2(tempvoc):
 	v = tempvoc
@@ -388,7 +389,7 @@ def test_srtheovoc_basic6_2(tempvoc):
 	v.add(m='b',w=0,content_type='w')
 	v.add(m='a',w=0,content_type='m')
 	v.add(m='b',w=0,content_type='m')
-	assert abs(ngmeth.srtheo_voc(v,v) - 4/12.) < epsilon
+	assert abs(srtheo_voc(v,v) - 4/12.) < epsilon
 
 def test_srtheovoc_basic6_3(tempvoc):
 	v = tempvoc
@@ -402,7 +403,7 @@ def test_srtheovoc_basic6_3(tempvoc):
 	v2.add(m='b',w=1,content_type='both')
 	v2.add(m='c',w=2,content_type='both')
 	v2.add(m='b',w=2,content_type='both')
-	assert abs(ngmeth.srtheo_voc(v,v2,role='speaker') - 1/6.) < epsilon
+	assert abs(srtheo_voc(v,v2,role='speaker') - 1/6.) < epsilon
 
 def test_srtheovoc_basic6_3bis(tempvoc):
 	v = tempvoc
@@ -416,7 +417,7 @@ def test_srtheovoc_basic6_3bis(tempvoc):
 	v2.add(m='b',w=1,content_type='both')
 	v2.add(m='c',w=2,content_type='both')
 	v2.add(m='b',w=2,content_type='both')
-	assert abs(ngmeth.srtheo_voc(v,v2,role='hearer') - 1/6.) < epsilon
+	assert abs(srtheo_voc(v,v2,role='hearer') - 1/6.) < epsilon
 
 def test_srtheovoc_basic7(tempvoc):
 	v = tempvoc
@@ -425,7 +426,7 @@ def test_srtheovoc_basic7(tempvoc):
 	for m in ['a','b','c']:
 		for w in range(4):
 			v.add(m=m,w=w,content_type='both')
-	assert abs(ngmeth.srtheo_voc(v,v) - 1/3.) < epsilon
+	assert abs(srtheo_voc(v,v) - 1/3.) < epsilon
 
 role_list = [
 	'speaker',
@@ -438,43 +439,43 @@ role_list = [
 def test_srtheovoc(tempvoc2,role):
 	v = tempvoc2
 	v2 = tempvoc2
-	assert abs(ngmeth.srtheo_voc(v,v2,role=role) - ngmeth.srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
+	assert abs(srtheo_voc(v,v2,role=role) - srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
 
 @pytest.mark.parametrize("role", role_list)
 def test_srtheovoc2(tempvoc3,role):
 	v = tempvoc3
 	v2 = tempvoc3
-	assert abs(ngmeth.srtheo_voc(v,v2,role=role) - ngmeth.srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
+	assert abs(srtheo_voc(v,v2,role=role) - srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
 
 @pytest.mark.parametrize("role", role_list)
 def test_srtheovoc3(tempvoc2,tempvoc3,role):
 	v = tempvoc2
 	v2 = tempvoc3
-	assert abs(ngmeth.srtheo_voc(v,v2,role=role) - ngmeth.srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
+	assert abs(srtheo_voc(v,v2,role=role) - srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
 
 @pytest.mark.parametrize("role", role_list)
 def test_srtheovoc4(tempvoc4,role):
 	v = tempvoc4
 	v2 = tempvoc4
-	assert abs(ngmeth.srtheo_voc(v,v2,role=role) - ngmeth.srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
+	assert abs(srtheo_voc(v,v2,role=role) - srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
 
 @pytest.mark.parametrize("role", role_list)
 def test_srtheovoc5(tempvoc3,tempvoc4,role):
 	v = tempvoc3
 	v2 = tempvoc4
-	assert abs(ngmeth.srtheo_voc(v,v2,role=role) - ngmeth.srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
+	assert abs(srtheo_voc(v,v2,role=role) - srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
 
 @pytest.mark.parametrize("role", role_list)
 def test_srtheovoc6(tempvoc5,tempvoc4,role):
 	v = tempvoc5
 	v2 = tempvoc4
-	assert abs(ngmeth.srtheo_voc(v,v2,role=role) - ngmeth.srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
+	assert abs(srtheo_voc(v,v2,role=role) - srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
 
 @pytest.mark.parametrize("role", role_list)
 def test_srtheovoc7(tempvoc6,tempvoc7,role):
 	v = tempvoc6
 	v2 = tempvoc7
-	assert abs(ngmeth.srtheo_voc(v,v2,role=role) - ngmeth.srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
+	assert abs(srtheo_voc(v,v2,role=role) - srtheo_voc(v,v2,force_ngmeth=True,role=role)) < epsilon
 
 
 def test_weightvalues_m(tempvoc2):
@@ -534,7 +535,7 @@ def test_srtheovoc_m(tempvoc):
 	v.add(m='a',w=2,content_type='m')
 	v.add(m='a',w=3,content_type='m')
 	v.add(m='a',w=1,content_type='w')
-	assert ngmeth.srtheo_voc(v,v,m='a') == 1/4.
+	assert srtheo_voc(v,v,m='a') == 1/4.
 
 def test_srtheovoc_m2(tempvoc):
 	v = tempvoc
@@ -545,7 +546,7 @@ def test_srtheovoc_m2(tempvoc):
 	v.add(m='a',w=2,content_type='m')
 	v.add(m='a',w=3,content_type='m')
 	v.add(m='a',w=1,content_type='w')
-	assert ngmeth.srtheo_voc(v,v,m='b') == 0.
+	assert srtheo_voc(v,v,m='b') == 0.
 
 def test_srtheovoc_m3(tempvoc):
 	v = tempvoc
@@ -557,7 +558,7 @@ def test_srtheovoc_m3(tempvoc):
 	v.add(m='b',w=0,content_type='m')
 	v.add(m='a',w=1,content_type='w')
 	v.add(m='b',w=1,content_type='w')
-	assert ngmeth.srtheo_voc(v,v,m='a') == 1/6. and ngmeth.srtheo_voc(v,v,m='b') == 0.
+	assert srtheo_voc(v,v,m='a') == 1/6. and srtheo_voc(v,v,m='b') == 0.
 
 def test_srtheovoc_m4(tempvoc):
 	v = tempvoc
@@ -569,14 +570,14 @@ def test_srtheovoc_m4(tempvoc):
 	v.add(m='b',w=0,content_type='w')
 	v.add(m='a',w=1,content_type='m')
 	v.add(m='b',w=1,content_type='m')
-	assert ngmeth.srtheo_voc(v,v,m='a') == 1. and ngmeth.srtheo_voc(v,v,m='b') == 0.
+	assert srtheo_voc(v,v,m='a') == 1. and srtheo_voc(v,v,m='b') == 0.
 
 @pytest.mark.parametrize("role", role_list)
 def test_srtheovoc8(tempvoc6,tempvoc7,role):
 	v = tempvoc6
 	v2 = tempvoc7
 	m = v.get_random_known_m(option=None)
-	assert abs(ngmeth.srtheo_voc(v,v2,role=role,m=m) - ngmeth.srtheo_voc(v,v2,force_ngmeth=True,role=role,m=m)) < epsilon
+	assert abs(srtheo_voc(v,v2,role=role,m=m) - srtheo_voc(v,v2,force_ngmeth=True,role=role,m=m)) < epsilon
 
 @pytest.mark.parametrize("role", role_list)
 def test_srtheovoc9(tempvoc6,tempvoc7,role):
@@ -584,4 +585,4 @@ def test_srtheovoc9(tempvoc6,tempvoc7,role):
 	v2 = tempvoc7
 	m = v.get_random_known_m(option=None)
 	w = v.get_random_known_w(m=m,option=None)
-	assert abs(ngmeth.srtheo_voc(v,v2,role=role,m=m,w=w) - ngmeth.srtheo_voc(v,v2,force_ngmeth=True,role=role,m=m,w=w)) < epsilon
+	assert abs(srtheo_voc(v,v2,role=role,m=m,w=w) - srtheo_voc(v,v2,force_ngmeth=True,role=role,m=m,w=w)) < epsilon

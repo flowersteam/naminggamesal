@@ -85,11 +85,10 @@ class StratMinCountsWiseMax(StratMinCounts):
 			if counts[m] == tempmax:
 				tempm.append(m)
 		try:
-			j = random.choice(tempm)
+			meaning_list = [KM[m] for m in tempm]
+			return voc.get_random_m(m_list=meaning_list)
 		except IndexError:
 			return voc.get_random_known_m()
-		ans = KM[j]
-		return ans
 
 
 ##################################### STRATEGIE SUCCESS THRESHOLD WISE MAX########################################
@@ -101,5 +100,5 @@ class StratMinCountsBasic(StratMinCounts):
 		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc.get_M() and min(counts)>self.mincounts):
 			return voc.get_new_unknown_m()
 		KM = voc.get_known_meanings()
-		return random.choice(KM)
+		return voc.get_random_m(KM)
 

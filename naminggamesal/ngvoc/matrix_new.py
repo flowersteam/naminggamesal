@@ -182,8 +182,8 @@ class VocMatrixNew(BaseVocabularyElaborated):
 			if i!=m:
 				self.rm(i,w,content_type=content_type)
 
-	def discover_meanings(self,m_list):
-		m_list_bis = BaseVocabularyElaborated.discover_meanings(self,m_list=m_list)
+	def discover_meanings(self,m_list,weights=None):
+		m_list_bis = BaseVocabularyElaborated.discover_meanings(self,m_list=m_list,weights=weights)
 		if not hasattr(self,'meaning_indexes'):
 			self.meaning_indexes = {}
 			self.indexes_meaning = {}
@@ -196,8 +196,8 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		return m_list_bis
 
 
-	def discover_words(self,w_list):
-		w_list_bis = BaseVocabularyElaborated.discover_words(self,w_list=w_list)
+	def discover_words(self,w_list,weights=None):
+		w_list_bis = BaseVocabularyElaborated.discover_words(self,w_list=w_list,weights=weights)
 		if not hasattr(self,'word_indexes'):
 			self.word_indexes = {}
 			self.indexes_word = {}
@@ -284,8 +284,10 @@ class VocMatrixNew(BaseVocabularyElaborated):
 			m1 = copy.deepcopy(voc1._content_m)
 			m2 = copy.deepcopy(voc2._content_w)
 			if not hasattr(voc1,'is_normalized') or not voc1.is_normalized:
+				print('bla')
 				m1 = cls.norm(mat=m1,axis=1)
 			if not hasattr(voc2,'is_normalized') or not voc2.is_normalized:
+				print('bla')
 				m2 = cls.norm(mat=m2,axis=0)
 			try:
 				prefactor = 1./voc1.get_M()

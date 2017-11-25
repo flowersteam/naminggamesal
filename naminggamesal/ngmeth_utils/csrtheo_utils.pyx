@@ -1,4 +1,4 @@
-from .ngmeth import srtheo_voc
+from .srtheo_utils import srtheo_voc
 import copy
 
 def srtheo_voc_membased(voc1,voc2=None,voc2_m=None,voc2_w=None,m=None,w=None,role='both'):
