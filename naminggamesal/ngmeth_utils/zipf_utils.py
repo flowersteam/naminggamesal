@@ -9,7 +9,7 @@ def zipf_rank_freq(x, a):
 	return 1./((x**a)*(1.+zetac(a)))
 
 def fit_zipf(distrib):
-	distrib = copy.deepcopy(distrib)
+	distrib_2 = copy.deepcopy(distrib)
 	distrib_2.sort(reverse=True)
 	exponent,zipferror = curve_fit(zipf_rank_freq, xdata=range(1,len(distrib_2)+1), ydata=distrib_2)
 	return exponent[0],zipferror[0]
@@ -39,7 +39,7 @@ def zipf_current(agent=None,pop=None,option='w'):
 		raise ValueError('pop or agent args should be defined')
 	distrib = {'m':{},'w':{}}
 	delta = 1./nbiter
-	for i in nbiter:
+	for i in range(nbiter):
 		ms,w = zipfpick(agent=agent,pop=pop)
 		if ms not in list(distrib['m'].keys()):
 			distrib['m'][ms] = delta

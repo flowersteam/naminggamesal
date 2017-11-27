@@ -54,6 +54,29 @@ def tempvoc2(request):
 	return v
 
 @pytest.fixture(params=voctype_list)
+def tempvoc2_bis(request):
+	param = request.param
+	v = ngvoc.get_vocabulary(voc_type=param)
+	meanings = ['a','b','c','d','e','f']
+	words = range(-4,10)
+	v.discover_meanings(meanings)
+	v.discover_words(words)
+	assoc_list = [
+			('a',0,0.1),
+			('b',0,0.3),
+			('b',3,0.3),
+			('a',1,0.4),
+			('e',9,0.2),
+			('c',1,0.1),
+			('d',1,0.4),
+			('e',1,0.1),
+			]
+	for assoc in assoc_list:
+		v.add(m=assoc[0],w=assoc[1],val=assoc[2])
+	v.assoc_list = assoc_list
+	return v
+
+@pytest.fixture(params=voctype_list)
 def tempvoc3(request):
 	param = request.param
 	v = ngvoc.get_vocabulary(voc_type=param)
@@ -254,6 +277,25 @@ def test_getknown_words(tempvoc2):
 def test_getknown_meanings(tempvoc2):
 	v = tempvoc2
 	assert sorted(v.get_known_meanings())==['a','b','c','d','e'] and sorted(v.get_known_meanings(w=0)) == ['a','b']
+
+
+
+def test_getknown_words_min(tempvoc2_bis):
+	v = tempvoc2_bis
+	assert sorted(v.get_known_words(m='a',option='min'))==[0] and sorted(v.get_known_words(m='b',option='min')) == [0,3] and sorted(v.get_known_words(m='c',option='min')) == [1]
+
+def test_getknown_words_max(tempvoc2_bis):
+	v = tempvoc2_bis
+	assert sorted(v.get_known_words(m='a',option='max'))==[1] and sorted(v.get_known_words(m='b',option='max')) == [0,3] and sorted(v.get_known_words(m='c',option='max')) == [1]
+
+def test_getknown_meanings_min(tempvoc2_bis):
+	v = tempvoc2_bis
+	assert sorted(v.get_known_meanings(w=0,option='min'))==['a'] and sorted(v.get_known_meanings(w=1,option='min')) == ['c','e'] and sorted(v.get_known_meanings(w=3,option='min')) == ['b']
+
+
+def test_getknown_meanings_max(tempvoc2_bis):
+	v = tempvoc2_bis
+	assert sorted(v.get_known_meanings(w=0,option='max'))==['b'] and sorted(v.get_known_meanings(w=1,option='max')) == ['a','d'] and sorted(v.get_known_meanings(w=3,option='max')) == ['b']
 
 
 

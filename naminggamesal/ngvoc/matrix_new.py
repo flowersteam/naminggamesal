@@ -43,13 +43,13 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		elif option == 'max':
 			selection = self._content_m[m_idx,:]
 			#nz = selection.nonzero()
-			ans = self.get_coords(option=option,mat=selection)
+			ans = self.get_coords(option=option,mat=selection,m_idx=m_idx)
 			#ans = list(set(list(np.argwhere(selection == np.amax(selection[nz])).reshape((-1)))))
 			return [self.indexes_word[www[1]] for www in ans]
 		elif option == 'min':
 			selection = self._content_m[m_idx,:]
 			#nz = selection.nonzero()
-			ans = self.get_coords(option=option,mat=selection)
+			ans = self.get_coords(option=option,mat=selection,m_idx=m_idx)
 			#ans = list(set(list(np.argwhere(selection == np.amin(selection[nz])).reshape((-1)))))
 			return [self.indexes_word[www[1]] for www in ans]
 
@@ -68,13 +68,13 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		elif option == 'max':
 			selection = self._content_w[:,w_idx]
 			#nz = selection.nonzero()
-			ans = self.get_coords(option=option,mat=selection)
+			ans = self.get_coords(option=option,mat=selection,w_idx=w_idx)
 			#ans = list(set(list(np.argwhere(selection == np.amax(selection[nz])).reshape((-1)))))
 			return [self.indexes_meaning[mmm[0]] for mmm in ans]
 		elif option == 'min':
 			selection = self._content_w[:,w_idx]
 			#nz = selection.nonzero()
-			ans = self.get_coords(option=option,mat=selection)
+			ans = self.get_coords(option=option,mat=selection,w_idx=w_idx)
 			#ans = list(set(list(np.argwhere(selection == np.amin(selection[nz])).reshape((-1)))))
 			return [self.indexes_meaning[mmm[0]] for mmm in ans]
 
@@ -231,52 +231,55 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		if option is None:
 			return self.get_coords_none(mat,nz=nz,w_idx=w_idx,m_idx=m_idx)
 		elif option == 'max':
-			return self.get_coords_max(mat,nz=nz)
+			return self.get_coords_max(mat,nz=nz,w_idx=w_idx,m_idx=m_idx)
 		elif option == 'min':
-			return self.get_coords_min(mat,nz=nz)
+			return self.get_coords_min(mat,nz=nz,w_idx=w_idx,m_idx=m_idx)
 		elif option == 'minofmaxw':
-			return self.get_coords_minofmaxw(mat,nz=nz)
+			return self.get_coords_minofmaxw(mat,nz=nz,w_idx=w_idx,m_idx=m_idx)
 		elif option == 'minofmaxm':
-			return self.get_coords_minofmaxm(mat,nz=nz)
+			return self.get_coords_minofmaxm(mat,nz=nz,w_idx=w_idx,m_idx=m_idx)
 
 	def get_coords_none(self,mat,nz=None,w_idx=None,m_idx=None):
 		if nz is None:
 			nz = mat.nonzero()
-		if w_idx is not None:
-			coords = [(nn,w_idx) for nn in nz[0]]
-		elif m_idx is not None:
-			coords = [(m_idx,nn) for nn in nz[0]]
-		else:
-			coords = nz[0]
-		return coords
+		return self.add_coord(nz[0],w_idx=w_idx,m_idx=m_idx)
 
-	def get_coords_max(self,mat,nz=None):
+	def add_coord(self,coords,m_idx=None,w_idx=None):
+		if w_idx is not None:
+			coords_output = [(nn,w_idx) for nn in coords]
+		elif m_idx is not None:
+			coords_output = [(m_idx,nn) for nn in coords]
+		else:
+			coords_output = coords
+		return coords_output
+
+	def get_coords_max(self,mat,nz=None,m_idx=None,w_idx=None):
 		if nz is None:
 			nz = mat.nonzero()
 		coords = np.argwhere(mat == np.amax(mat[nz]))
-		coords = coords.reshape((-1,2))
-		return coords
+		#coords = coords.reshape((-1,2))
+		return self.add_coord(coords.reshape((-1)).tolist(),w_idx=w_idx,m_idx=m_idx)
 
-	def get_coords_min(self,mat,nz=None):
+	def get_coords_min(self,mat,nz=None,m_idx=None,w_idx=None):
 		if nz is None:
 			nz = mat.nonzero()
 		coords = np.argwhere(mat == np.amin(mat[nz]))
-		coords = coords.reshape((-1,2))
-		return coords
+		#coords = coords.reshape((-1,2))
+		return self.add_coord(coords.reshape((-1)).tolist(),w_idx=w_idx,m_idx=m_idx)
 
-	def get_coords_minofmaxw(self,mat,nz=None):
+	def get_coords_minofmaxw(self,mat,nz=None,m_idx=None,w_idx=None):
 		best_scores = mat.max(axis=0)
 		val = np.amin(best_scores)
 		coords = np.argwhere(best_scores == val)
-		coords = coords.reshape((-1,2))
-		return coords
+		#coords = coords.reshape((-1,2))
+		return self.add_coord(coords.reshape((-1)).tolist(),w_idx=w_idx,m_idx=m_idx)
 
-	def get_coords_minofmaxm(self,mat,nz=None):
+	def get_coords_minofmaxm(self,mat,nz=None,m_idx=None,w_idx=None):
 		best_scores = mat.max(axis=1)
 		val = np.amin(best_scores)
 		coords = np.argwhere(best_scores == val)
-		coords = coords.reshape((-1,2))
-		return coords
+		#coords = coords.reshape((-1,2))
+		return self.add_coord(coords.reshape((-1)).tolist(),w_idx=w_idx,m_idx=m_idx)
 
 	@classmethod
 	def srtheo_voc(cls,voc1,voc2=None,m=None,w=None,role='both'):
@@ -284,10 +287,8 @@ class VocMatrixNew(BaseVocabularyElaborated):
 			m1 = copy.deepcopy(voc1._content_m)
 			m2 = copy.deepcopy(voc2._content_w)
 			if not hasattr(voc1,'is_normalized') or not voc1.is_normalized:
-				print('bla')
 				m1 = cls.norm(mat=m1,axis=1)
 			if not hasattr(voc2,'is_normalized') or not voc2.is_normalized:
-				print('bla')
 				m2 = cls.norm(mat=m2,axis=0)
 			try:
 				prefactor = 1./voc1.get_M()
@@ -359,21 +360,21 @@ class VocSparseNew(VocMatrixNew):
 		if nz is None:
 			nz = mat.nonzero()
 		coords = [(nz[0][i],nz[1][i]) for i in range(len(nz[0]))] #tolist??
-		return coords
+		return self.add_coord(coords,w_idx=w_idx,m_idx=m_idx)
 
-	def get_coords_max(self,mat,nz=None):
+	def get_coords_max(self,mat,nz=None,w_idx=None,m_idx=None):
 		if nz is None:
 			nz = mat.nonzero()
 		coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.max()) if mat.data.any()]
-		return coords
+		return self.add_coord(coords,w_idx=w_idx,m_idx=m_idx)
 
-	def get_coords_min(self,mat,nz=None):
+	def get_coords_min(self,mat,nz=None,w_idx=None,m_idx=None):
 		if nz is None:
 			nz = mat.nonzero()
 		coords = [(nz[0][i[0]],nz[1][i[0]]) for i in np.argwhere(mat.data == mat.data.min()) if mat.data.any()]
-		return coords
+		return self.add_coord(coords,w_idx=w_idx,m_idx=m_idx)
 
-	def get_coords_minofmaxm(self,mat,nz=None):
+	def get_coords_minofmaxm(self,mat,nz=None,w_idx=None,m_idx=None):
 		if nz is None:
 			nz = mat.nonzero()
 		meanings = self.get_known_meanings(option=None)
@@ -388,9 +389,9 @@ class VocSparseNew(VocMatrixNew):
 		coords = []
 		for m_i in coords_m:
 			coords += [(m_i,w_i) for w_i in self.get_known_words(m=m_i,option='max')]
-		return coords
+		return self.add_coord(coords,w_idx=w_idx,m_idx=m_idx)
 
-	def get_coords_minofmaxw(self,mat,nz=None):
+	def get_coords_minofmaxw(self,mat,nz=None,w_idx=None,m_idx=None):
 		if nz is None:
 			nz = mat.nonzero()
 		words = self.get_known_words(option=None)
@@ -405,7 +406,7 @@ class VocSparseNew(VocMatrixNew):
 		coords = []
 		for w_i in coords_w:
 			coords += [(m_i,w_i) for m_i in self.get_known_meanings(w=w_i,option='max')]
-		return coords
+		return self.add_coord(coords,w_idx=w_idx,m_idx=m_idx)
 
 	#@voc_cache
 	def get_known_meanings_weights_values(self,w):
@@ -441,3 +442,6 @@ class VocSparseNew(VocMatrixNew):
 	@classmethod
 	def count_nonzero(cls,m1):
 		return m1.getnnz()
+
+	def add_coord(self,coords,m_idx=None,w_idx=None):
+		return coords
