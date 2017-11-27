@@ -9,7 +9,6 @@ branch develop:
 [![Build Status](https://travis-ci.org/flowersteam/naminggamesal.svg?branch=develop)](https://travis-ci.org/flowersteam/naminggamesal)
 [![codecov](https://codecov.io/gh/flowersteam/naminggamesal/branch/develop/graph/badge.svg)](https://codecov.io/gh/flowersteam/naminggamesal)
 
-
 Tests are done with both python 2 and 3.
 
 #### This library is used in some scientific papers. 
@@ -34,5 +33,4 @@ Other requirements may be necessary for scipy, numpy and matplotlib compilation:
 ```
 apt-get install gcc gfortran python-dev libblas-dev liblapack-dev cython
 ```
-
 
