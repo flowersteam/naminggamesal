@@ -113,11 +113,17 @@ class BaseVocabulary(object):
 	def get_accessible_words(self):
 		return self.get_known_words()+self.get_unknown_words()
 
-	def get_freq_weight(self,m):
-		if not hasattr(self,'freq_weights'):
+	def get_freq_weight_m(self,m):
+		if not hasattr(self,'freq_weights_m'):
 			return 1.
 		else:
-			return self.freq_weights[m]
+			return self.freq_weights_m[m]
+
+	def get_freq_weight_w(self,w):
+		if not hasattr(self,'freq_weights_w'):
+			return 1.
+		else:
+			return self.freq_weights_w[w]
 
 
 
@@ -278,7 +284,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 		if not hasattr(self,'freq_weights_m'):
 			return random.choice(m_list)
 		else:
-			distrib = [self.get_freq_weights_m(m) for m in m_list]
+			distrib = np.asarray([self.get_freq_weight_m(m) for m in m_list])
 			distrib = distrib/distrib.sum()
 			return np.random.choice(m_list,p=distrib) #random from known+explored+adjacent_possible
 
@@ -288,7 +294,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 		if not hasattr(self,'freq_weights_w'):
 			return random.choice(w_list) #random from known+explored+adjacent_possible
 		else:
-			distrib = [self.get_freq_weights_w(w) for w in w_list]
+			distrib = np.asarray([self.get_freq_weight_w(w) for w in w_list])
 			distrib = distrib/distrib.sum()
 			return np.random.choice(w_list,p=distrib)
 
