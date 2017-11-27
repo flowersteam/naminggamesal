@@ -1,4 +1,14 @@
 #!/usr/bin/python
+import sys
+try:
+	if sys.version_info.major == 2:
+		import Tkinter
+	else:
+		import tkinter
+except ImportError:
+	import matplotlib
+	matplotlib.use('Agg')
+	sys.stderr.write('Tkinter not installed, loading matplotlib and pyplot with Agg backend\n')
 
 import matplotlib.pyplot as plt
 import time
@@ -22,66 +32,61 @@ def load_graph(filename):
 
 
 class CustomGraph(object):
-	def __init__(self,Y,*arg,**kwargs):
+	def __init__(self,Y=None,X=None,**kwargs):
 		self.keepwinopen=0
 		self.sort=1
 		self.filename="graph"+time.strftime("%Y%m%d%H%M%S", time.localtime())
-		if "filename" in kwargs.keys():
+		if "filename" in list(kwargs.keys()):
 			self.filename=kwargs["filename"]
-		self.title=self.filename
-		self.xlabel="X"
-		self.ylabel="Y"
-		self.alpha=0.3
+		self.title = self.filename
+		self.xlabel = "X"
+		self.ylabel = "Y"
+		self.alpha = 0.3
 
-		self.Yoptions=[{}]
+		self.Yoptions = [{}]
 		self.legendoptions = {}
 		self.legend_permut = []
 
-		self.xmin=[0,0]
-		self.xmax=[0,5]
-		self.ymin=[0,0]
-		self.ymax=[0,5]
+		self.loglog = False
+		self.semilog = False
+		self.loglog_basex = 10
+		self.loglog_basey = 10
 
-		self.std=0
+		self.xmin = None
+		self.xmax = None
+		self.ymin = None
+		self.ymax = None
 
-		self._Y=[Y]
+		self.std = False
+
+		if Y is None:
+			self._Y = []
+		else:
+			self._Y = [Y]
 		self.stdvec=[0]*len(Y)
 
-		if len(arg)!=0:
-			self._X=[Y]
-			self._Y=[arg[0]]
+		if X is None:
+			self._X = [list(range(len(Y)))]
 		else:
-			self._X=[range(0,len(Y))]
+			self._X = [X]
 
 
 		self.extensions=["eps","png","pdf"]
 
-		for key,value in kwargs.iteritems():
+		for key,value in kwargs.items():
 			setattr(self,key,value)
 
 		self.stdvec=[self.stdvec]
-
-		if not isinstance(self.xmin,list):
-			temp=self.xmin
-			self.xmin=[1,temp]
-		if not isinstance(self.xmax,list):
-			temp=self.xmax
-			self.xmax=[1,temp]
-		if not isinstance(self.ymin,list):
-			temp=self.ymin
-			self.ymin=[1,temp]
-		if not isinstance(self.ymax,list):
-			temp=self.ymax
-			self.ymax=[1,temp]
 
 		self.init_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def show(self):
-		plt.figure()
 		plt.ion()
+		fig = plt.gcf()
 		self.draw()
 		plt.show()
+		return fig
 
 	def save(self,*path):
 		if path:
@@ -93,6 +98,8 @@ class CustomGraph(object):
 			mon_pickler.dump(self)
 
 	def write_files(self,*path):
+		backend = plt.get_backend()
+		plt.switch_backend('Agg')
 		if len(path)!=0:
 			out_path=path[0]
 		else:
@@ -102,7 +109,7 @@ class CustomGraph(object):
 		self.draw()
 		for extension in self.extensions:
 			plt.savefig(out_path+self.filename+"."+extension,format=extension,bbox_inches='tight')
-
+		plt.switch_backend(backend)
 
 	def draw(self):
 
@@ -133,14 +140,19 @@ class CustomGraph(object):
 					Ytemp[j]=temptup[j][1][0]
 					stdtemp[j]=temptup[j][1][1]
 
-			base_line=plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
+			base_line = plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
+			if self.loglog:
+				plt.xscale('symlog',basex=self.loglog_basex)
+				plt.yscale('symlog',basex=self.loglog_basey)
+			elif self.semilog:
+				plt.xscale('symlog',basex=self.loglog_basex)
 			if self.std:
 				Ytempmin=[0]*len(Ytemp)
 				Ytempmax=[0]*len(Ytemp)
 				for j in range(0,len(Ytemp)):
 					Ytempmax[j]=Ytemp[j]+stdtemp[j]
 					Ytempmin[j]=Ytemp[j]-stdtemp[j]
-				if 'color' in self.Yoptions[i].keys():
+				if 'color' in list(self.Yoptions[i].keys()):
 					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha,**self.Yoptions[i])
 				else:
 					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha, facecolor=base_line.get_color(), **self.Yoptions[i])
@@ -149,14 +161,14 @@ class CustomGraph(object):
 		plt.ylabel(self.ylabel)
 		plt.title(self.title)
 
-		if self.xmin[0]:
-			plt.xlim(xmin=self.xmin[1])
-		if self.xmax[0]:
-			plt.xlim(xmax=self.xmax[1])
-		if self.ymin[0]:
-			plt.ylim(ymin=self.ymin[1])
-		if self.ymax[0]:
-			plt.ylim(ymax=self.ymax[1])
+		if self.xmin is not None:
+			plt.xlim(xmin=self.xmin)
+		if self.xmax is not None:
+			plt.xlim(xmax=self.xmax)
+		if self.ymin is not None:
+			plt.ylim(ymin=self.ymin)
+		if self.ymax is not None:
+			plt.ylim(ymax=self.ymax)
 
 		handles, labels = plt.axes().get_legend_handles_labels()
 		handles2, labels2 = [], []
@@ -194,28 +206,96 @@ class CustomGraph(object):
 		self.Yoptions=self.Yoptions+other_graph.Yoptions
 		self.stdvec=self.stdvec+other_graph.stdvec
 
-	def complete_with(self,other_graph):
+	def complete_with(self,other_graph, mix=True, remove_duplicates=False):
 		for i in range(0,len(self._X)):
-			self._X[i]=list(copy.deepcopy(self._X[i]))+list(copy.deepcopy(other_graph._X[i]))
-			self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
-			self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
+			if mix and not self._X[-1]<other_graph._X[0]:
+				X = copy.deepcopy(self._X[i])
+				Y = copy.deepcopy(self._Y[i])
+				stdvec = copy.deepcopy(self.stdvec[i])
+				Xind = 0
+				oXind = 0
+				self._X[i] = []
+				self._Y[i] = []
+				self.stdvec[i] = []
+				while Xind < len(X) and oXind < len(other_graph._X[i]):
+					if X[Xind] < other_graph._X[i][oXind]:
+						self._X[i].append(X[Xind])
+						self._Y[i].append(Y[Xind])
+						self.stdvec[i].append(stdvec[Xind])
+						Xind += 1
+					elif X[Xind] > other_graph._X[i][oXind]:
+						self._X[i].append(other_graph._X[i][oXind])
+						self._Y[i].append(other_graph._Y[i][oXind])
+						self.stdvec[i].append(other_graph.stdvec[i][oXind])
+						oXind += 1
+					else:
+						self._X[i].append(X[Xind])
+						self._Y[i].append(Y[Xind])
+						self.stdvec[i].append(stdvec[Xind])
+						Xind += 1
+						oXind += 1
+			else:
+				self._X[i]=list(copy.deepcopy(self._X[i]))+list(copy.deepcopy(other_graph._X[i]))
+				self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
+				self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
+			if remove_duplicates:
+				X = copy.deepcopy(self._X[i])
+				Y = copy.deepcopy(self._Y[i])
+				stdvec = copy.deepcopy(self.stdvec[i])
+				self._X[i] = []
+				self._Y[i] = []
+				self.stdvec[i] = []
+				for j in range(len(X)):
+					if X[j] not in self._X[i]:
+						self._X[i].append(X[j])
+						self._Y[i].append(Y[j])
+						self.stdvec[i].append(stdvec[j])
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
+
+#	def complete_with(self,other_graph):
+#		for i in range(0,len(self._X)):
+#			self._X[i]=range(0, len(self._X[i])+len(other_graph._X[i]))
+#			self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
+#			self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
+#		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def merge(self):
-		Yarray=np.array(self._Y)
-		stdarray=np.array(self.stdvec)
-		stdtemp=[]
-		Ytemp=[]
+		#Yarray=np.array(self._Y)
+		#stdarray=np.array(self.stdvec)
+		Xcopy = copy.deepcopy(self._X)
+		Ycopy = copy.deepcopy(self._Y)
+		stdcopy = copy.deepcopy(self.stdvec)
+		stdtemp = []
+		Ytemp = []
+		#Xtemp = []
 		self.Yoptions=[self.Yoptions[0]]
 		self.std=1
+		Ydict = {}
+		for j in range(len(self._Y)):
+			for i in range(len(self._Y[j])):
+				if Xcopy[j][i] in list(Ydict.keys()):
+					Ydict[Xcopy[j][i]].append(Ycopy[j][i])
+				else:
+					Ydict[Xcopy[j][i]] = [Ycopy[j][i]]
+		Xlist = list(Ydict.keys())
+		Xlist.sort()
+		for x in Xlist:
+			Ylist = Ydict[x]
+			Ytemp.append(np.mean(Ylist))
+			stdtemp.append(np.std(Ylist))
 
-		for i in range(0,len(self._Y[0])):
-			Ytemp.append(np.mean(list(Yarray[:,i])))
-			stdtemp.append(np.std(list(Yarray[:,i])))
-		self._Y=[Ytemp]
-		self.stdvec=[stdtemp]
-		self._X=[self._X[0]]
-		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
+
+		#max_length = max([len(self._Y[j]) for j in range(len(self._Y))])
+		#for i in range(max_length):
+		#	Ylist = [Ycopy[j][i] for j in range(len(Ycopy)) if len(Ycopy[j])>i]
+		#	Ytemp.append(np.mean(Ylist))
+		#	stdtemp.append(np.std(Ylist))
+		#	#Ytemp.append(np.mean(list(Yarray[:,i])))
+		#	#stdtemp.append(np.std(list(Yarray[:,i])))
+		self._Y = [Ytemp]
+		self.stdvec = [stdtemp]
+		self._X = [Xlist]
+		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 
 
@@ -225,7 +305,7 @@ class CustomGraph(object):
 			param_list.append(self.Yoptions[i]["label"])
 		param_values={}
 		for ind,param in enumerate(param_list):
-			if param not in param_values.keys():
+			if param not in list(param_values.keys()):
 				param_values[param]=copy.deepcopy(self)
 				param_values[param]._X=[self._X[ind]]
 				param_values[param]._Y=[self._Y[ind]]
@@ -241,7 +321,7 @@ class CustomGraph(object):
 		tempgraph._Y=[]
 		tempgraph.Yoptions=[]
 		tempgraph.stdvec=[]
-		for key in param_values.keys():
+		for key in list(param_values.keys()):
 			param_values[key].merge()
 			tempgraph.add_graph(param_values[key])
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())

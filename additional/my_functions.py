@@ -11,9 +11,9 @@ def print_on_line(txt,line_nb):
 		#	print " "*term.width
 		#print term.move(line_nb,0)+" "*term.width
 		#with term.location(line_nb,0):
-		print txt+"                    "
+		print(txt+"                    ")
 		#print term.move(line_nb,0)+txt
-	print term.move(term.height-2,0)
+	print(term.move(term.height-2,0))
 	#term.location()
 	#print " ",
 
