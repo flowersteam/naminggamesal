@@ -98,7 +98,7 @@ class Agent(object):
 		self._strategy.visual(self._vocabulary,mem=self._memory,vtype=vtype,iterr=iterr,mlist=mlist,wlist=wlist)
 
 	def eval_success(self, ms, w, mh,context=[]):
-		return self._strategy.success.eval(ms=ms, w=w, mh=mh, voc=self._vocabulary, strategy=self,context=context)
+		return self._strategy.success.eval(ms=ms, w=w, mh=mh, voc=self._vocabulary, mem=self._memory, strategy=self._strategy,context=context)
 
 	def pick_context(self, env, size=2, diff=True):
 		return self._strategy.pick_context(voc=self._vocabulary,mem=self._memory,context_gen=self._sensoryapparatus.context_gen(env=env, diff=diff, size=size))

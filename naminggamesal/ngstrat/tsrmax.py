@@ -5,7 +5,7 @@ import random
 import numpy as np
 import copy
 
-from ..ngmeth import srtheo_voc
+from ..ngmeth_utils.srtheo_utils import srtheo_voc
 import copy
 
 class StratTSRMax(StratNaive):

@@ -1,7 +1,7 @@
 
 class GlobalSuccess(object):
 
-	def eval(self, ms, w, mh, voc, strategy, context=[]):
+	def eval(self, ms, w, mh, voc, mem, strategy, context=[]):
 		if ms == mh:
 			return True
 		else:
@@ -9,7 +9,7 @@ class GlobalSuccess(object):
 
 class GlobalSuccessRestrictive(object):
 
-	def eval(self, ms, w, mh, voc, strategy, context=[]):
+	def eval(self, ms, w, mh, voc, mem, strategy, context=[]):
 		if [mh] == voc.get_known_meanings(w=w,option='max'):
 			return True
 		else:
@@ -18,7 +18,7 @@ class GlobalSuccessRestrictive(object):
 
 class GlobalSuccessEpirob(object):
 
-	def eval(self, ms, w, mh, voc, strategy, context=[]):
+	def eval(self, ms, w, mh, voc, mem, strategy, context=[]):
 		if ms == mh or not voc.get_known_meanings(w):
 			return True
 		else:
@@ -27,7 +27,7 @@ class GlobalSuccessEpirob(object):
 
 class GlobalSuccessNoRandom(object):
 
-	def eval(self, ms, w, mh, voc, strategy, context=[]):
+	def eval(self, ms, w, mh, voc, mem, strategy, context=[]):
 		if ms == mh and ms in voc.get_known_meanings(w):
 			return True
 		else:

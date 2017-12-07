@@ -13,6 +13,7 @@ success_class={
 	'communicative':'communicative_success.CommunicativeSuccess',
 	'communicative_max':'communicative_success.CommunicativeSuccessMax',
 	'alignment':'alignment_success.AlignmentSuccess',
+	'acceptancepolicy_success':'acceptancepolicy_success.AcceptancePolicySuccess',
 }
 
 def get_success(success_type='global', **success_cfg2):

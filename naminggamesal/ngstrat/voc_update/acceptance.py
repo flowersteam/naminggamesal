@@ -120,14 +120,18 @@ class AcceptanceTSMax(AcceptancePolicy):
 
 class AcceptanceTSMaxNew(AcceptancePolicy):
 
-	def __init__(self,mem_policy={'mem_type':'interaction_counts'},role='both', beta=None,**cfg2):
+	def __init__(self,mem_policy={'mem_type':'interaction_counts'},role='both', beta=None, use_new_mem=True,**cfg2):
 		AcceptancePolicy.__init__(self,**cfg2)
+		self.use_new_mem = use_new_mem
 		self.memory_policies.append(copy.deepcopy(mem_policy))
 		self.role = role
 		self.beta = beta
 
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
-		mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
+		if hasattr(self,'use_new_mem') and self.use_new_mem:
+			mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
+		else:
+			mem_new = mem
 		if hasattr(voc,'_content'):
 			pop_voc_m = mem_new['interact_count_m']
 			pop_voc_w = mem_new['interact_count_w']
@@ -171,7 +175,10 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 
 
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
-		mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
+		if hasattr(self,'use_new_mem') and self.use_new_mem:
+			mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
+		else:
+			mem_new = mem
 		if hasattr(voc,'_content'):
 			pop_voc_m = mem_new['interact_count_m']
 			pop_voc_w = mem_new['interact_count_w']
