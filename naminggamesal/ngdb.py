@@ -542,17 +542,19 @@ class Experiment(ngsimu.Experiment):
 					cust_func = getattr(ngmeth,'custom_'+method)# avoiding having several values for exp level
 					if cust_func.level != 'exp':
 						tempgraph.complete_with(tempgraph2)
-				if not len(tempgraph._X)==1: # for data at exp level
-					while tmax < tempgraph._X[0][-1]:
-						do_not_commit = True
-						tempgraph._X[0].pop()
-						tempgraph._Y[0].pop()
-						tempgraph.stdvec[0].pop()
-					while tmin > tempgraph._X[0][0]:
-						do_not_commit = True
-						tempgraph._X[0].pop(0)
-						tempgraph._Y[0].pop(0)
-						tempgraph.stdvec[0].pop(0)
+					else:
+						tempgraph = tempgraph2
+				#if not len(tempgraph._X)==1: # for data at exp level
+				#	while tmax < tempgraph._X[0][-1]:
+				#		do_not_commit = True
+				#		tempgraph._X[0].pop()
+				#		tempgraph._Y[0].pop()
+				#		tempgraph.stdvec[0].pop()
+				#	while tmin > tempgraph._X[0][0]:
+				#		do_not_commit = True
+				#		tempgraph._X[0].pop(0)
+				#		tempgraph._Y[0].pop(0)
+				#		tempgraph.stdvec[0].pop(0)
 			else:
 				if not self.compute:
 					raise Exception('Computation needed')

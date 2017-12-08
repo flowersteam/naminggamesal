@@ -1,6 +1,8 @@
 
 from ...ngmeth_utils.srtheo_utils import srtheo_voc
 
+from .global_success import GlobalSuccessNoRandom
+
 class AcceptancePolicySuccess(object):
 
 	def eval(self, ms, w, mh, voc, mem, strategy, context=[]):
@@ -11,3 +13,10 @@ class AcceptancePolicySuccess(object):
 			return True
 		else:
 			return False
+
+class AcceptancePolicyOrNormalSuccess(object):
+
+	def eval(self, ms, w, mh, voc, mem, strategy, context=[]):
+		succ_1 = GlobalSuccessNoRandom.eval(self, ms=ms, w=w, mh=mh, voc=voc, mem=mem, strategy=strategy, context=context)
+		succ_2 = AcceptancePolicySuccess.eval(self, ms=ms, w=w, mh=mh, voc=voc, mem=mem, strategy=strategy, context=context)
+		return (succ_1 or succ_2)

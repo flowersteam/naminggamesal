@@ -14,6 +14,7 @@ success_class={
 	'communicative_max':'communicative_success.CommunicativeSuccessMax',
 	'alignment':'alignment_success.AlignmentSuccess',
 	'acceptancepolicy_success':'acceptancepolicy_success.AcceptancePolicySuccess',
+	'acceptancepolicyornormal_success':'acceptancepolicy_success.AcceptancePolicyOrNormalSuccess',
 }
 
 def get_success(success_type='global', **success_cfg2):
