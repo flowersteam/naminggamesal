@@ -108,6 +108,18 @@ class Experiment(object):
 		self.reconstruct_info = []
 		self.no_storage = no_storage
 
+	def add_agent(self,agent):
+		self.init_poplist()
+		pop = self._poplist.get_last()
+		pop.add_agent(agent)
+		self._poplist.append(pop,self._T[-1])
+	
+	def rm_agent(self,agent):
+		self.init_poplist()
+		pop = self._poplist.get_last()
+		pop.rm_agent(agent)
+		self._poplist.append(pop,self._T[-1])
+
 	def compress(self,rm=True):
 		self._poplist.compress(rm=rm)
 
@@ -200,13 +212,15 @@ class Experiment(object):
 		return self._time_step
 
 
+	def init_poplist(self):
+		if not self._T:
+			self.add_pop(Population(xp_uuid=self.uuid,**self._pop_cfg),0)
 
 	#def __str__(self):
 	#	return "T: "+str(self._T[-1])+"\n"+str(self._poplist.get_last())
 
 	def continue_exp_until(self,T):
-		if not self._T:
-			self.add_pop(Population(xp_uuid=self.uuid,**self._pop_cfg),0)
+		self.init_poplist()
 		temptmax = self._T[-1]
 		start_time = time.clock() - self._exec_time[-1]
 		while (temptmax + self.stepfun(temptmax) <= T) :
@@ -221,8 +235,7 @@ class Experiment(object):
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 	def continue_exp(self,dT=None):
-		if not self._T:
-			self.add_pop(Population(xp_uuid=self.uuid,**self._pop_cfg),0)
+		self.init_poplist()
 		if dT is None:
 			dT = self.stepfun(self._T[-1])
 		self.continue_exp_until(self._T[-1]+dT)
