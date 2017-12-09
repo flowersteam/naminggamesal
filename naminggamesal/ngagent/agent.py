@@ -49,8 +49,8 @@ class Agent(object):
 	def get_id(self):
 		return self._id
 
-	def __str__(self):
-		return str(self._vocabulary)
+#	def __str__(self):
+#		return str(self._vocabulary)
 
 	def pick_m(self,context=[]):
 		return self._strategy.pick_m(self._vocabulary,self._memory,context=context)
