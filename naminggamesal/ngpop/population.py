@@ -118,7 +118,7 @@ class Population(object):
 
 	def rm_agent(self, agent=None, agent_id=None):
 		if agent_id is None:
-			if agent is None
+			if agent is None:
 				ag = self._agentlist[0]
 				agent_id =  agent._id
 			else:
