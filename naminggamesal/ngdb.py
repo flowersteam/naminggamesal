@@ -37,11 +37,11 @@ class NamingGamesDB(object):
 				inst.just_retrieved = True
 				return inst
 			else:
-				instance = object.__new__(cls, *args, **kwargs)
+				instance = object.__new__(cls)
 				cls.instances.add(instance)
 				return instance
 		else:
-			instance = object.__new__(cls, *args, **kwargs)
+			instance = object.__new__(cls)
 			cls.instances.add(instance)
 			return instance
 
