@@ -116,15 +116,18 @@ class Population(object):
 				return i
 		print("id does not exist")
 
-	def rm_agent(self, agent_id=None):
+	def rm_agent(self, agent=None, agent_id=None):
 		if agent_id is None:
-			agent = self._agentlist[0]
-			agent_id =  agent._id
+			if agent is None
+				ag = self._agentlist[0]
+				agent_id =  agent._id
+			else:
+				ag = agent
 		else:
-			agent = self._agentlist[self.get_index_from_id(agent_id)]
-		self._agentlist.remove(agent)
+			ag = self._agentlist[self.get_index_from_id(agent_id)]
+		self._agentlist.remove(ag)
 		self._size -= 1
-		self._topology.rm_agent(agent,pop=self)
+		self._topology.rm_agent(ag,pop=self)
 
 	def pick_speaker(self):
  		return self.agent_pick.pick_speaker(self).get_id()
