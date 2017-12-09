@@ -33,7 +33,7 @@ def add_data(filepath,data,label,priority='decompressed'):
 		cursor.execute("CREATE TABLE IF NOT EXISTS main_table("\
 				+"T INT, "\
 				+"Population_object BLOB)")
-		cursor.execute("DELETE main_table WHERE T="+str(label))
+		cursor.execute("DELETE FROM main_table WHERE T="+str(label))
 		cursor.execute("INSERT INTO main_table VALUES (?,?)",(label,sql.Binary(lz_data)))
 
 
