@@ -279,9 +279,16 @@ class NamingGamesDB(object):
 				self.cursor.execute("SELECT Experiment_object FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
 				tempblob = self.cursor.fetchone()
 				if sys.version_info.major == '2':
-					tempexp = pickle.loads(lzo.decompress(str(tempblob[0])))
+					try:
+						tempexp = pickle.loads(lzo.decompress(str(tempblob[0])))
+					except TypeError:
+						tempexp = pickle.loads(lzo.decompress(str(tempblob[0].tobytes())))
 				else:
-					tempexp = pickle.loads(lzo.decompress(tempblob[0]))
+					try:
+						tempexp = pickle.loads(lzo.decompress(tempblob[0]))
+					except TypeError:
+						tempexp = pickle.loads(lzo.decompress(tempblob[0].tobytes()))
+
 				tempexp.db = self
 			else:
 				print("ID doesn't exist in DB")
