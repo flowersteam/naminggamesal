@@ -123,7 +123,7 @@ class Experiment(object):
 	def get_agent(self, agent_uuid):
 		self.init_poplist()
 		pop = self._poplist.get_last()
-		agent_list = [ag for ag in pop._agentlist if ag._id = agent_uuid]
+		agent_list = [ag for ag in pop._agentlist if ag._id == agent_uuid]
 		if len(agent_list) == 0:
 			raise KeyError('No agent with this uuid')
 		else:
