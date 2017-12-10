@@ -90,18 +90,22 @@ class SimpleEnv(Environment):
 			if hasattr(agent._memory[mem_key],'discover_words'):
 				agent._memory[mem_key].discover_words(w_list=list(self.w_list),weights=[self.get_weight(w=w) for w in self.w_list])
 
-	def set_mlist(self):
-		self.m_list = [i for i in range(self.M)]
+	def set_mlist(self,m_list = None):
+		if m_list is None:
+			self.m_list = [i for i in range(self.M)]
+		else:
+			self.m_list = m_list
 
-	def set_wlist(self):
-		self.w_list = [i for i in range(self.W)]
-
+	def set_wlist(self,w_list):
+		if w_list is None:
+			self.w_list = [i for i in range(self.W)]
+		else:
+			self.w_list = w_list
 
 class SimpleEnvRealWords(SimpleEnv):
 
-
-	def set_wlist(self):
-		self.w_list = [self.word_generator() for i in range(self.W)]
+	def set_wlist(self,w_list=):
+		SimpleEnv.set_wlist(w_list=[self.word_generator() for i in range(self.W)])
 
 	def word_generator(self):
 		w = ''

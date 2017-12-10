@@ -120,6 +120,15 @@ class Experiment(object):
 		pop.rm_agent(agent)
 		self._poplist.append(pop,self._T[-1])
 
+	def get_agent(self, agent_uuid):
+		self.init_poplist()
+		pop = self._poplist.get_last()
+		agent_list = [ag for ag in pop._agentlist if ag._id = agent_uuid]
+		if len(agent_list) == 0:
+			raise KeyError('No agent with this uuid')
+		else:
+			return agent_list[0]
+
 	def compress(self,rm=True):
 		self._poplist.compress(rm=rm)
 

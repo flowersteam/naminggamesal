@@ -69,6 +69,8 @@ class Agent(object):
 		return self._strategy.pick_new_m(self._vocabulary,self._memory)
 
 	def guess_m(self,w, context=[]):
+		if w not in self._vocabulary.get_known_words():
+			self.discover_words([w])
 		return self._strategy.guess_m(w,self._vocabulary,self._memory, context=context)
 
 	def pick_w(self,m, context=[]):
@@ -109,3 +111,15 @@ class Agent(object):
 
 	def perceive(self,input_signal,env=None):
 		self._sensoryapparatus.perceive(input_signal=input_signal,env=env)
+
+	def discover_meanings(self,m_list):
+		for mem_key in list(self._memory.keys()):
+			if hasattr(self._memory[mem_key],'discover_meanings'):
+				self._memory[mem_key].discover_meanings(m_list=m_list)
+		return self._vocabulary.discover_meanings(m_list)
+
+	def discover_words(self,w_list):
+		for mem_key in list(self._memory.keys()):
+			if hasattr(self._memory[mem_key],'discover_words'):
+				self._memory[mem_key].discover_words(w_list=w_list)
+		return self._vocabulary.discover_words(w_list)
