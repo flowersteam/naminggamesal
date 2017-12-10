@@ -113,6 +113,7 @@ class Experiment(object):
 		pop = self._poplist.get_last()
 		pop.add_agent(agent)
 		self._poplist.append(pop,self._T[-1])
+		self._poplist.compress()
 		self.commit_to_db()
 	
 	def rm_agent(self,agent):
@@ -120,6 +121,7 @@ class Experiment(object):
 		pop = self._poplist.get_last()
 		pop.rm_agent(agent)
 		self._poplist.append(pop,self._T[-1])
+		self._poplist.compress()
 		self.commit_to_db()
 
 	def get_agent(self, agent_uuid):
