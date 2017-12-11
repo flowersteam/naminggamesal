@@ -90,13 +90,13 @@ class SimpleEnv(Environment):
 			if hasattr(agent._memory[mem_key],'discover_words'):
 				agent._memory[mem_key].discover_words(w_list=list(self.w_list),weights=[self.get_weight(w=w) for w in self.w_list])
 
-	def set_mlist(self,m_list = None):
+	def set_mlist(self,m_list=None):
 		if m_list is None:
 			self.m_list = [i for i in range(self.M)]
 		else:
 			self.m_list = m_list
 
-	def set_wlist(self,w_list):
+	def set_wlist(self,w_list=None):
 		if w_list is None:
 			self.w_list = [i for i in range(self.W)]
 		else:

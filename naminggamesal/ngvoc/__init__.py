@@ -301,6 +301,8 @@ class BaseVocabularyElaborated(BaseVocabulary):
 	def get_new_unknown_m(self):
 		if len(self.unknown_meanings) != 0:
 			m = self.get_random_m(m_list=self.unknown_meanings)
+		elif len(self.accessible_meanings) == 0:
+			raise ValueError('No known meanings')
 		else:
 			#print "tried to get new m but all are known"
 			m = self.get_random_known_m()
@@ -312,6 +314,8 @@ class BaseVocabularyElaborated(BaseVocabulary):
 			delattr(self,'next_word')
 		elif len(self.unknown_words) != 0:
 			w = self.get_random_w(w_list=self.unknown_words)
+		elif len(self.accessible_words) == 0:
+			raise ValueError('No known words')
 		else:
 			#print "tried to get new w but all are known"
 			w = self.get_random_known_w()
