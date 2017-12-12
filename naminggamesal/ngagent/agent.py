@@ -69,7 +69,7 @@ class Agent(object):
 		return self._strategy.pick_new_m(self._vocabulary,self._memory)
 
 	def guess_m(self,w, context=[]):
-		if w not in self._vocabulary.get_known_words():
+		if w not in self._vocabulary.get_accessible_words():
 			self.discover_words([w])
 		return self._strategy.guess_m(w,self._vocabulary,self._memory, context=context)
 

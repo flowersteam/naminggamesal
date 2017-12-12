@@ -108,6 +108,13 @@ class Experiment(object):
 		self.reconstruct_info = []
 		self.no_storage = no_storage
 
+	def save_pop(self):
+		self.init_poplist()
+		pop = self._poplist.get_last()
+		self._poplist.append(pop,self._T[-1])
+		self._poplist.compress()
+		self.commit_to_db()
+
 	def add_agent(self,agent):
 		self.init_poplist()
 		pop = self._poplist.get_last()
