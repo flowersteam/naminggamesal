@@ -27,11 +27,25 @@ from weakref import WeakSet
 
 class NamingGamesDB(object):
 
-	def __new__(cls, inst_uuid=None, *args, **kwargs):
+	def __new__(cls, conn_info=None, db_type='sqlite3', inst_uuid=None, *args, **kwargs):
 		if "instances" not in cls.__dict__:
 			cls.instances = set()#WeakSet()
 		if inst_uuid is not None:
 			inst_list = [inst for inst in cls.instances if hasattr(inst,'uuid') and inst_uuid == inst.uuid]
+			if inst_list:
+				inst = inst_list[0]
+				inst.just_retrieved = True
+				return inst
+			else:
+				instance = object.__new__(cls)
+				cls.instances.add(instance)
+				return instance
+		elif db_type == 'psycopg2':
+			if conn_info is None:
+				_conn_info = "host='localhost' dbname='naminggames' user='naminggames' password='naminggames'"
+			else:
+				_conn_info = conn_info
+			inst_list = [inst for inst in cls.instances if hasattr(inst,'conn_info') and _conn_info == inst.conn_info]
 			if inst_list:
 				inst = inst_list[0]
 				inst.just_retrieved = True
@@ -59,7 +73,7 @@ class NamingGamesDB(object):
 			else:
 				self.uuid = new_uuid
 
-	def __init__(self, conn_info=None, db_type = 'sqlite3', name=None, do_not_close=False, db_uuid=None):
+	def __init__(self, conn_info=None, db_type = 'sqlite3', inst_uuid=None, name=None, do_not_close=False):
 		if not hasattr(self,'uuid'):
 			self.db_type = db_type
 			self.sql = sys.modules[db_type]
