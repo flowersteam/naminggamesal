@@ -31,7 +31,6 @@ import subprocess
 
 class Poplist(object):
 	def __init__(self,path):
-		self.priority = priority
 		self.filepath = path
 		#if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Old Policy: if both compressed and uncompressed versions present, erase uncompressed
 			#os.remove(self.filepath)
