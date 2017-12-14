@@ -78,10 +78,10 @@ class NamingGamesDB(object):
 			self.db_type = db_type
 			self.sql = sys.modules[db_type]
 			self.do_not_close = do_not_close
-			if db_uuid is None:
+			if inst_uuid is None:
 				self.uuid = str(uuid.uuid1())
 			else:
-				self.uuid = db_uuid
+				self.uuid = inst_uuid
 			if db_type == 'sqlite3':
 				if conn_info is None:
 					if name:
@@ -374,9 +374,9 @@ class NamingGamesDB(object):
 	def get_id_list(self, all_id=False, pattern=None, tmax=0, **xp_cfg):
 		if (not all_id) and (xp_cfg or pattern):
 			if xp_cfg:
-				self.cursor.execute("SELECT Id FROM main_table WHERE Config=\'{}\'".format(json.dumps(xp_cfg, sort_keys=True)))
+				self.cursor.execute("SELECT Id FROM main_table WHERE Config=\'{}\' ORDER BY Tmax".format(json.dumps(xp_cfg, sort_keys=True)))
 			else:
-				self.cursor.execute("SELECT Id FROM main_table WHERE Config LIKE \'{}\'".format(pattern))
+				self.cursor.execute("SELECT Id FROM main_table WHERE Config LIKE \'%{}%\' ORDER BY Tmax".format(pattern))
 		else:
 			self.cursor.execute("SELECT Id FROM main_table")
 		templist=list(self.cursor)
