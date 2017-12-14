@@ -15,32 +15,30 @@ from shutil import copyfileobj
 
 
 
-def add_data(filepath,data,label,priority='decompressed'):
-	if priority == 'compressed' and os.path.isfile(filepath+'.xz'):
-		xz_decompress(filepath+'.xz')
+def add_data(filepath,data,label):
+	if not os.path.isfile(filepath):
+		if not os.path.isfile(filepath+'.xz'):
+			raise IOError('No file for poplist: '+filepath+' . You should call init_db before adding elements')
+		else:
+			xz_decompress(filepath+'.xz')
 	pickled_data = pickle.dumps(data, pickle.HIGHEST_PROTOCOL)
 	lz_data = lzo.compress(pickled_data)
-	try:
-		os.makedirs(os.path.dirname(filepath))
-	except OSError as exc:
-		if exc.errno == errno.EEXIST and os.path.isdir(os.path.dirname(filepath)):
-			pass
-		else:
-			raise
 	conn = sql.connect(filepath)
 	with conn:
 		cursor = conn.cursor()
-		cursor.execute("CREATE TABLE IF NOT EXISTS main_table("\
-				+"T INT, "\
-				+"Population_object BLOB)")
+#		cursor.execute("CREATE TABLE IF NOT EXISTS main_table("\
+#				+"T INT, "\
+#				+"Population_object BLOB)")
 		cursor.execute("DELETE FROM main_table WHERE T="+str(label))
 		cursor.execute("INSERT INTO main_table VALUES (?,?)",(label,sql.Binary(lz_data)))
 
 
-def read_data(filepath,label=None,priority='decompressed'):
-	if not os.path.isfile(filepath) or (priority == 'compressed' and os.path.isfile(filepath+'.xz')):
-		xz_decompress(filepath+'.xz')
-		#os.remove(filepath+'.xz')
+def read_data(filepath,label=None):
+	if not os.path.isfile(filepath):
+		if not os.path.isfile(filepath+'.xz'):
+			raise IOError('No file for poplist: '+filepath+' . You should call init_db before adding elements')
+		else:
+			xz_decompress(filepath+'.xz')
 	conn = sql.connect(filepath)
 	with conn:
 		cursor = conn.cursor()

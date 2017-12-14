@@ -30,7 +30,7 @@ import numpy as np
 import subprocess
 
 class Poplist(object):
-	def __init__(self,path,priority='decompressed'):
+	def __init__(self,path):
 		self.priority = priority
 		self.filepath = path
 		#if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Old Policy: if both compressed and uncompressed versions present, erase uncompressed
@@ -45,22 +45,18 @@ class Poplist(object):
 		init_db(filepath=self.filepath)
 		self.init_done = True
 
-	def append(self,pop,T,priority=None):
-		if priority is None:
-			priority = self.priority
+	def append(self,pop,T):
 		if hasattr(self,'init_done') and not self.init_done:
 			self.init_db()
-		add_data(filepath=self.filepath,data=pop,label=T,priority=priority)
+		add_data(filepath=self.filepath,data=pop,label=T)
 		self.T_last = T
 		#add_data_conn(cursor=self.cursor,data=pop,label=T)
 
-	def get(self,T,priority=None):
-		if priority is None:
-			priority = self.priority
+	def get(self,T):
 		if hasattr(self,'T_last') and T == self.T_last:
 			return self.get_last()
 		else:
-			return read_data(filepath=self.filepath,label=T,priority=priority)
+			return read_data(filepath=self.filepath,label=T)
 		#return read_data_conn(cursor=self.cursor,label=T)
 
 	def get_last(self):
@@ -84,8 +80,6 @@ class Poplist(object):
 
 	def __setstate__(self,in_dict):
 		self.__dict__.update(in_dict)
-		if not hasattr(self,'priority'):
-			self.priority = 'decompressed'
 		if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Policy: if both compressed and uncompressed versions present, erase uncompressed
 			os.remove(self.filepath)
 		#self.conn = sqlite3.connect(self.filepath)
