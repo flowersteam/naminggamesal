@@ -151,10 +151,16 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		if content_type == 'm':
 			m_idx = self.meaning_indexes[m]
 			w_idx = self.word_indexes[w]
+			gkw = self.get_known_words(m=m)
+			if len(gkw) == 1 and w in gkw:
+				self.unknown_meanings.append(m)
 			self._content_m[m_idx,w_idx] = 0
 		elif content_type == 'w':
 			m_idx = self.meaning_indexes[m]
 			w_idx = self.word_indexes[w]
+			gkm = self.get_known_meanings(w=w)
+			if len(gkm) == 1 and m in gkm:
+				self.unknown_words.append(w)
 			self._content_w[m_idx,w_idx] = 0
 		elif content_type == 'both':
 			self.rm(m=m,w=w,content_type='m')

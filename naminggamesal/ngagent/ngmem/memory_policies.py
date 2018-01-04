@@ -374,6 +374,35 @@ class BetaMAB(MemoryPolicy):
 
 
 
+class BetaMABBis(BetaMAB):
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		delta_reward = self.val_update(ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ,context=context)
+		for m in voc.get_unknown_meanings():
+			if m in list(mem['bandit']['arms']['others'].keys()):
+				del mem['bandit']['arms']['others'][m]
+		if ms not in list(mem['bandit']['arms']['others'].keys()):
+			mem['bandit']['arms']['arm_explo'][0] += delta_reward
+			mem['bandit']['arms']['arm_explo'][1] += 1. - delta_reward
+			mem['bandit']['arms']['others'][ms] = [1.+delta_reward,2.-delta_reward]
+		else:
+			mem['bandit']['arms']['others'][ms][0] += delta_reward
+			mem['bandit']['arms']['others'][ms][1] += 1. - delta_reward
+
+class BetaMABTer(BetaMAB):
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		delta_reward = self.val_update(ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ,context=context)
+		for m in voc.get_unknown_meanings():
+			if m in list(mem['bandit']['arms']['others'].keys()):
+				del mem['bandit']['arms']['others'][m]
+		if ms not in list(mem['bandit']['arms']['others'].keys()):
+			if role == 'speaker':
+				mem['bandit']['arms']['arm_explo'][0] += delta_reward
+				mem['bandit']['arms']['arm_explo'][1] += 1. - delta_reward
+			mem['bandit']['arms']['others'][ms] = [1.+delta_reward,2.-delta_reward]
+		else:
+			mem['bandit']['arms']['others'][ms][0] += delta_reward
+			mem['bandit']['arms']['others'][ms][1] += 1. - delta_reward
+
 class SuccessMAB(BetaMAB):
 
 	def val_update(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):

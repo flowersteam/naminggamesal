@@ -18,6 +18,8 @@ mempolicy_class={
 'interaction_counts_sliding_window_local':'memory_policies.InteractionCountsSlidingWindowLocal',
 'proba_of_success_increase':'memory_policies.ProbaSuccessIncrease',
 'bandit':'memory_policies.BetaMAB',
+'bandit_bis':'memory_policies.BetaMABBis',
+'bandit_ter':'memory_policies.BetaMABTer',
 }
 
 def get_memory(memory_policies,voc=None):

@@ -374,9 +374,9 @@ class NamingGamesDB(object):
 	def get_id_list(self, all_id=False, pattern=None, tmax=0, **xp_cfg):
 		if (not all_id) and (xp_cfg or pattern):
 			if xp_cfg:
-				self.cursor.execute("SELECT Id FROM main_table WHERE Config=\'{}\' ORDER BY Tmax".format(json.dumps(xp_cfg, sort_keys=True)))
+				self.cursor.execute("SELECT Id FROM main_table WHERE Config=\'{}\' ORDER BY Tmax DESC".format(json.dumps(xp_cfg, sort_keys=True)))
 			else:
-				self.cursor.execute("SELECT Id FROM main_table WHERE Config LIKE \'%{}%\' ORDER BY Tmax".format(pattern))
+				self.cursor.execute("SELECT Id FROM main_table WHERE Config LIKE \'%{}%\' ORDER BY Tmax DESC".format(pattern))
 		else:
 			self.cursor.execute("SELECT Id FROM main_table")
 		templist=list(self.cursor)
@@ -540,6 +540,8 @@ class Experiment(ngsimu.Experiment):
 	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True, tempgraph=None):
 		do_not_commit = False
 		if not tmax:
+			if not self._T:
+				raise ValueError('this experiment has not been started and cannot be plotted: '+self.uuid)
 			tmax = self._T[-1]
 		ind = -1
 		if tmax >= self._T[-1] + self.stepfun(self._T[-1]):

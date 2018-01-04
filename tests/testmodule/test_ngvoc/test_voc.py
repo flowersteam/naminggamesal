@@ -233,10 +233,11 @@ def test_rm(tempvoc):
 	v.discover_words([w])
 	v.discover_meanings([m])
 	v.add(m=m,w=w,val = 0.75)
+	known_meanings = v.get_known_meanings()
 	before = v.get_value(m=m,w=w)
 	v.rm(m=m,w=w)
 	after = v.get_value(m=m,w=w)
-	assert after == 0 and before == 0.75
+	assert after == 0 and (m in known_meanings) and before == 0.75 and (m not in v.get_known_meanings())
 
 def test_rm2(tempvoc):
 	w = 'a'
