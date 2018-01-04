@@ -69,7 +69,6 @@ class StratTSRMax(StratNaive):
 			#	mm_list = voc.get_known_meanings() + [m_explo]
 			#else:
 			#	mm_list = voc.get_known_meanings()
-		print('m',mm_list,m_explo)
 		for m1 in mm_list:
 			if 'proba_of_success_increase' in list(mem.keys()) and m1 in list(mem['proba_of_success_increase'].keys()):
 				val_norm = mem['proba_of_success_increase'][m1]
@@ -80,7 +79,6 @@ class StratTSRMax(StratNaive):
 					ww_list = [w_explo]
 				else:
 					ww_list = voc.get_known_words(m=m1)
-				print(ww_list)
 				for w in ww_list:
 					p_success = float(global_mat.get_value(m1,w,content_type='w'))
 					p_fail = 1. - p_success
