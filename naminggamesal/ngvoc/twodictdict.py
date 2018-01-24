@@ -6,6 +6,7 @@ import copy
 import matplotlib.pyplot as plt
 import scipy
 from scipy import sparse
+import numbers
 
 from . import BaseVocabulary,BaseVocabularyElaborated
 from . import voc_cache, del_cache
@@ -165,6 +166,55 @@ class Voc2DictDict(BaseVocabularyElaborated):
 
 	#def inherit_from: to split a meaning or a word
 
+	def __add__(self,other):
+		ans = copy.deepcopy(self)
+		epsilon = 1.
+		if hasattr(ans,'negative') and ans.negative:
+			epsilon *= -1
+		if hasattr(other,'negative') and other.negative:
+			epsilon *= -1
+		for m in other.get_known_meanings():
+			for w in other.get_known_words(m=m):
+				ans.add(m=m,w=w,content_type='m',val=other.get_value(m=m,w=w,content_type='m')+epsilon*self.get_value(m=m,w=w,content_type='m'))
+		for w in other.get_known_words():
+			for m in other.get_known_meanings(w=w):
+				ans.add(m=m,w=w,content_type='w',val=other.get_value(m=m,w=w,content_type='w')+epsilon*self.get_value(m=m,w=w,content_type='w'))
+		if (hasattr(ans,'is_normalized') and ans.is_normalized ) or (hasattr(other,'is_normalized') and other.is_normalized):
+			raise ValueError('summing vocabularies that are normalized')
+		else:
+			return ans
+
+
+
+	def __sub__(self,other):
+		raise NotImplementedError
+		return self + ((-1) * other)
+
+	def __mul__(self,other):
+		ans = copy.deepcopy(self)
+		if hasattr(ans,'is_normalized') and ans.is_normalized:
+			raise ValueError('multiplying a vocabulary that is normalized')
+		if isinstance(other, numbers.Real):
+			if other < 0:
+				raise NotImplementedError
+			for m in ans.get_known_meanings():
+				for w in ans.get_known_words(m=m):
+					ans.add(m=m,w=w,content_type='m',val=other*self.get_value(m=m,w=w,content_type='m'))
+			for w in ans.get_known_words():
+				for m in ans.get_known_meanings(w=w):
+					ans.add(m=m,w=w,content_type='w',val=other*self.get_value(m=m,w=w,content_type='w'))
+			return ans
+		else:
+			raise NotImplementedError
+
+	def __rmul__(self,other):
+		return self.__mul__(other)
+
+	def __truediv__(self,other):
+		return (1./other) * self
+
+	def __floordiv__(self,other):
+		return self.__truediv__(other)
 
 
 

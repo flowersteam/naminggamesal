@@ -75,7 +75,7 @@ class SuccessCountPerMMP(MemoryPolicy):
 	def init_memory(self,mem,voc):
 		assert not 'success_m' in list(mem.keys())
 		assert not 'fail_m' in list(mem.keys())
-		if hasattr(voc,'_content'):
+		if voc is not None and hasattr(voc,'_content'):
 			mem["success_m"] = np.zeros(voc.get_M())#[0]*voc._M
 			mem["fail_m"] = np.zeros(voc.get_M())#[0]*voc._M
 		else:
@@ -121,7 +121,7 @@ class SuccessCountPerMWMP(MemoryPolicy):
 
 		assert not 'success_mw' in list(mem.keys())
 		assert not 'fail_mw' in list(mem.keys())
-		mem["success_mw"] = np.zeros((voc._M, voc._W))
+		mem["success_mw"] = np.zeros((voc._M, voc._W))#not adapted to growing m and w spaces, and init not 'voc is None'-proof
 		mem["fail_mw"] = np.zeros((voc._M, voc._W))
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
@@ -215,7 +215,10 @@ class InteractionCounts(MemoryPolicy):
 
 
 	def init_memory(self,mem,voc):
-		if hasattr(voc,'_content'):
+		if voc is None:
+			assert not 'interact_count_voc' in list(mem.keys())
+			mem['interact_count_voc'] = None
+		elif hasattr(voc,'_content'):
 			assert not 'interact_count_m' in list(mem.keys())
 			assert not 'interact_count_w' in list(mem.keys())
 			mem['interact_count_m'] = np.zeros((voc._M,voc._W))
@@ -239,16 +242,10 @@ class InteractionCounts(MemoryPolicy):
 				for w1 in mem['interact_count_voc'].get_known_words(m=ms):#_content_m[ms].keys():
 					temp_val = mem['interact_count_voc'].get_value(ms,w1,content_type='m')
 					mem['interact_count_voc'].add(m=ms,w=w1,content_type='m',val=temp_val*self.factor)
-					#mem['interact_count_voc']._content_m[ms][w1] *= float(self.factor)
-					#if mem['interact_count_voc'].get_value(ms,w1,content_type='m') == 0: #_content_m[ms][w1] == 0:
-					#	mem['interact_count_voc'].rm(ms,w1,content_type='m')
 			if w in mem['interact_count_voc'].get_known_words():
 				for m1 in mem['interact_count_voc'].get_known_meanings(w=w):#_content_w[w].keys():
 					temp_val = mem['interact_count_voc'].get_value(m1,w,content_type='w')
 					mem['interact_count_voc'].add(m=m1,w=w,content_type='w',val=temp_val*self.factor)
-					#mem['interact_count_voc']._content_w[w][m1] *= float(self.factor)#USE ADD OR EQUIVALENT!!! Otherwise may not be treated well with some aspects of the voc
-					#if mem['interact_count_voc'].get_value(m1,w,content_type='w') == 0: #._content_w[w][m1] == 0:
-					#	mem['interact_count_voc'].rm(m1,w,content_type='w')
 			if self.time_scale > 0.:
 				mem['interact_count_voc'].add_value(ms,w,val=1.-self.factor,content_type='both')
 
@@ -259,6 +256,17 @@ class InteractionCounts(MemoryPolicy):
 			self.factor = 0.
 		else:
 			self.factor = np.exp(1./self.time_scale)
+
+	def rebuild_global_mem(self,pop,mem):
+		v = pop._agentlist[0]._vocabulary.__class__(start='empty',normalized=True)
+		for ag in pop._agentlist:
+			v += ag._vocabulary
+		v = v/len(pop._agentlist)
+		v.is_normalized = True
+		mem['interact_count_voc'] = v/len(pop._agentlist)
+
+	def clean(self,mem):
+		mem['interact_count_voc'] = None
 
 
 class InteractionCountsSlidingWindow(InteractionCounts):
@@ -341,13 +349,17 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 
 class BetaMAB(MemoryPolicy):
 
-	def __init__(self,mem_type):
+	def __init__(self,mem_type,hierarchical=False):
 		MemoryPolicy.__init__(self,mem_type=mem_type)
+		self.hierarchical = hierarchical
 
 	def init_memory(self,mem,voc):
 		MemoryPolicy.init_memory(self,mem,voc)
 		assert not 'bandit' in list(mem.keys())
-		mem['bandit'] = {'arms':{'arm_explo':[1,1],'others':{}},'old_rewards':0.}
+		if self.hierarchical:
+			mem['bandit'] = {'arms':{'arm_explo':[1,1],'arm_exploit':[1,1],'others':{}},'old_rewards':0.}
+		else:
+			mem['bandit'] = {'arms':{'arm_explo':[1,1],'others':{}},'old_rewards':0.}
 
 
 	def val_update(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):

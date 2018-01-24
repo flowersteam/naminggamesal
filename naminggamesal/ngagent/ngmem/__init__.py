@@ -70,6 +70,10 @@ class Memory(collections.MutableMapping):
 		for mem_p in self.memory_policies:
 			mem_p.update_memory(mem=self,ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
 
+	def clean(self):
+		for mem_p in self.memory_policies:
+			mem_p.clean(mem=self)
+
 	def init_memory(self,voc=None):
 		for mem_p in self.memory_policies:
 			mem_p.init_memory(mem=self,voc=voc)
@@ -105,4 +109,7 @@ class MemoryPolicy(object):
 		pass
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		pass
+
+	def clean(self,mem):
 		pass

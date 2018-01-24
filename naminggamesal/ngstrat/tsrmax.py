@@ -147,7 +147,7 @@ class StratTSRMax(StratNaive):
 
 class StratTSRMaxMAB(StratTSRMax):
 
-	def __init__(self, vu_cfg, efficient_computing=True, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=True,bandit_type='bandit',**strat_cfg2):
+	def __init__(self, vu_cfg, efficient_computing=False, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=False,bandit_type='bandit',**strat_cfg2):
 		StratTSRMax.__init__(self, vu_cfg=copy.deepcopy(vu_cfg), efficient_computing=efficient_computing, mem_type=mem_type,time_scale=time_scale,cache=cache, **copy.deepcopy(strat_cfg2))
 		mp = {'mem_type':bandit_type}
 		if 'bandit' not in [ mmpp['mem_type'][:6] for mmpp in self.memory_policies]:
@@ -164,4 +164,32 @@ class StratTSRMaxMAB(StratTSRMax):
 			val = np.random.beta(mem['bandit']['arms']['others'][m][0],mem['bandit']['arms']['others'][m][1])
 			m_list.append((m,val))
 
+		return m_list
+
+
+class StratTSRMaxHMAB(StratTSRMax):
+
+	def __init__(self, vu_cfg, efficient_computing=False, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=False,bandit_type='bandit',**strat_cfg2):
+		StratTSRMax.__init__(self, vu_cfg=copy.deepcopy(vu_cfg), efficient_computing=efficient_computing, mem_type=mem_type,time_scale=time_scale,cache=cache, **copy.deepcopy(strat_cfg2))
+		mp = {'mem_type':bandit_type,'hierarchical':True}
+		if 'bandit' not in [ mmpp['mem_type'][:6] for mmpp in self.memory_policies]:
+			self.memory_policies.append(mp)
+
+	def get_mval_list(self,voc,mem,context):
+		m_list = []
+		explore = False
+		if len(voc.get_unknown_meanings())>0:
+			explore = True
+			m_explo = voc.get_new_unknown_m()
+			val_explore = np.random.beta(mem['bandit']['arms']['arm_explo'][0],mem['bandit']['arms']['arm_explo'][1])
+			if len(voc.get_known_meanings())>0:
+				val_exploit = np.random.beta(mem['bandit']['arms']['arm_exploit'][0],mem['bandit']['arms']['arm_exploit'][1])
+				explore = (val_explore > val_exploit)
+		if explore:
+			m_list.append((m_explo,val_explore))
+		else:
+			assert len(mem['bandit']['arms']['others'].keys())>0
+			for m in list(mem['bandit']['arms']['others'].keys()):
+				val = np.random.beta(mem['bandit']['arms']['others'][m][0],mem['bandit']['arms']['others'][m][1])
+				m_list.append((m,val))
 		return m_list

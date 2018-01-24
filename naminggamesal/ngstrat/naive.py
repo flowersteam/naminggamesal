@@ -34,6 +34,15 @@ class StratNaive(BaseStrategy):
 		m = self.pick_m(voc,mem,context)
 		return m
 
+class StratNaiveExploBiased(StratNaive):
+
+	def pick_m(self,voc,mem,context=[]):
+		m_list = voc.get_known_meanings()
+		m_explo = voc.get_new_unknown_m()
+		if m_explo not in m_list:
+			m_list.append(m_explo)
+		return random.choice(m_list)
+
 class StratNaiveMemBased(StratNaive):
 
 	def guess_m(self,w,voc,mem,context=[]):
@@ -102,6 +111,11 @@ class StratNaiveMemBased(StratNaive):
 	def hearer_pick_m(self,voc,mem,context=[]):
 		m = self.pick_m(voc,mem,context)
 		return m
+
+class StratNaiveMemBasedExploBiased(StratNaiveMemBased):
+
+	def pick_m(self,voc,mem,context=[]):
+		return StratNaiveExploBiased.pick_m(self,voc=voc,mem=mem,context=context)
 
 ######## FOR CATEGORY GAME ############
 class StratNaiveCategory(BaseStrategy):

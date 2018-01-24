@@ -386,6 +386,8 @@ class NamingGamesDB(object):
 		#TODO: implement generator instead of list??
 
 	def get_param(self, xp_uuid, param, method=None):
+		if not hasattr(self,'cursor'):
+			self.reconnect()
 		if method is None:
 			self.cursor.execute("SELECT {} FROM {} WHERE Id=\'{}\'".format(param, 'main_table', xp_uuid))
 		else:

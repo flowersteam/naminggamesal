@@ -15,6 +15,8 @@ sns.set(rc={'image.cmap': 'Purples_r'})
 strat_class={
 	'naive':'naive.StratNaive',
 	'naive_membased':'naive.StratNaiveMemBased',
+	'naive_explobiased':'naive.StratNaiveExploBiased',
+	'naive_membased_explobiased':'naive.StratNaiveMemBasedExploBiased',
 	'naive_category':'naive.StratNaiveCategory',
 	'naive_category_pone':'naive.StratNaiveCategoryPlosOne',
 
@@ -53,6 +55,7 @@ strat_class={
 
 	'tsrmax':'tsrmax.StratTSRMax',
 	'tsrmax_mab':'tsrmax.StratTSRMaxMAB',
+	'tsrmax_hmab':'tsrmax.StratTSRMaxHMAB',
 
 	'user':'user.StratUser',
 	'user_noninteractive':'user.StratUserNonInteractive',

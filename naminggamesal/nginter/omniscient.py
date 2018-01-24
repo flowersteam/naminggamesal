@@ -1,11 +1,13 @@
 #!/usr/bin/python
 
-from . import Interaction
+from . import Interaction,get_interaction
+from ..ngagent.ngmem import get_memory
 import random
+import copy
 import numpy as np
 
 ##########
-class Omniscient(Interaction):
+class OmniscientOld(Interaction):
 	def interact(self, speaker, hearer, pop, current_game_info,simulated=False):
 		if not simulated:
 			speaker.warn(role='speaker')
@@ -32,3 +34,27 @@ class Omniscient(Interaction):
 			self._last_info = [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
 		else:
 			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
+
+class Omniscient(Interaction):
+	def __init__(self,subinteract_cfg,**interact_cfg_2):
+		self.subinteract = get_interaction(**subinteract_cfg)
+		#self.memory_policies = memory_policies
+		#self._memory = get_memory(self.memory_policies)
+		Interaction.__init__(self,**interact_cfg_2)
+
+	def interact(self, speaker, hearer, pop, current_game_info,simulated=False):
+		#for v in list(self._memory.values()):
+		#	if hasattr(v,'rebuild_global_mem'):
+		#		v.rebuild_global_mem(pop)
+		
+		v = pop._agentlist[0]._vocabulary.__class__(start='empty',normalized=False)
+		for ag in pop._agentlist:
+			v = v + ag._vocabulary #implement auto discover meanings
+		v = v/len(pop._agentlist)
+		v.is_normalized = True
+		speaker._memory['interact_count_voc'] = copy.deepcopy(v)
+		hearer._memory['interact_count_voc'] = copy.deepcopy(v)
+		#speaker._memory.update(copy.deepcopy(self._memory))
+		#hearer._memory.update(copy.deepcopy(self._memory))
+		#self._memory.clean()
+		return self.subinteract.interact(speaker=speaker, hearer=hearer, pop=pop, current_game_info=current_game_info,simulated=simulated)
