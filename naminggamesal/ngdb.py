@@ -38,6 +38,8 @@ class NamingGamesDB(object):
 				return inst
 			else:
 				instance = object.__new__(cls)
+				instance.uuid = inst_uuid
+				instance.initialized = False
 				cls.instances.add(instance)
 				return instance
 		elif db_type == 'psycopg2':
@@ -74,12 +76,13 @@ class NamingGamesDB(object):
 				self.uuid = new_uuid
 
 	def __init__(self, conn_info=None, db_type = 'sqlite3', inst_uuid=None, name=None, do_not_close=False):
-		if not hasattr(self,'uuid'):
+		if not hasattr(self,'uuid') or (hasattr(self,'initialized') and not self.initialized):
 			self.db_type = db_type
 			self.sql = sys.modules[db_type]
 			self.do_not_close = do_not_close
 			if inst_uuid is None:
-				self.uuid = str(uuid.uuid1())
+				if not hasattr(self,'uuid'):
+					self.uuid = str(uuid.uuid1())
 			else:
 				self.uuid = inst_uuid
 			if db_type == 'sqlite3':
@@ -139,6 +142,7 @@ class NamingGamesDB(object):
 					+"Time_max " + self.int_str + ", "\
 					+"Custom_Graph " + self.blob_str + ")")
 			self.connection.commit()
+			self.initialized = True
 
 	def execute(self,command):
 		self.cursor.execute(command)
