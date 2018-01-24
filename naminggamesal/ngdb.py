@@ -27,7 +27,7 @@ from weakref import WeakSet
 
 class NamingGamesDB(object):
 
-	def __new__(cls, conn_info=None, db_type='sqlite3', inst_uuid=None, *args, **kwargs):
+	def __new__(cls, inst_uuid=None, conn_info=None, db_type='sqlite3', *args, **kwargs):
 		if "instances" not in cls.__dict__:
 			cls.instances = set()#WeakSet()
 		if inst_uuid is not None:
