@@ -20,6 +20,7 @@ mempolicy_class={
 'bandit':'memory_policies.BetaMAB',
 'bandit_bis':'memory_policies.BetaMABBis',
 'bandit_ter':'memory_policies.BetaMABTer',
+'bandit_laps':'memory_policies.LAPSMAB',
 }
 
 def get_memory(memory_policies,voc=None):
@@ -95,6 +96,11 @@ class Memory(collections.MutableMapping):
 		fake_mem.update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
 		return fake_mem
 
+	def get_mp(self,mp_type):
+		mmpp = zip(self.mpclasses,self.memory_policies)
+		mp_l = [mp for mc,mp in mmpp if mc==mp_type]
+		assert len(mp_l) == 1
+		return mp_l[0]
 
 
 class MemoryPolicy(object):

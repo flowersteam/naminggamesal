@@ -193,3 +193,46 @@ class StratTSRMaxHMAB(StratTSRMax):
 				val = np.random.beta(mem['bandit']['arms']['others'][m][0],mem['bandit']['arms']['others'][m][1])
 				m_list.append((m,val))
 		return m_list
+
+
+class LAPSMaxMAB(StratNaive):
+
+
+	def __init__(self, vu_cfg, mem_type='interaction_counts_sliding_window_local',time_scale=10,gamma=0.1,bandit_type='bandit_laps',**strat_cfg2):
+		StratNaive.__init__(self,vu_cfg=vu_cfg, **copy.deepcopy(strat_cfg2))
+		mp = {'mem_type':mem_type,'time_scale':time_scale}
+		self.mem_type = mem_type
+		if 'interaction_count' not in [ mmpp['mem_type'][:17] for mmpp in self.memory_policies]:
+			self.memory_policies.append(mp)
+		mp2 = {'mem_type':bandit_type,'gamma':gamma,'time_scale':time_scale}
+		self.bandit_type = bandit_type
+		self.gamma = gamma
+		self.time_scale = time_scale
+		if 'bandit' not in [ mmpp['mem_type'][:6] for mmpp in self.memory_policies]:
+			self.memory_policies.append(mp2)
+
+	def pick_m(self,voc,mem,context):
+		if len(voc.get_known_meanings()) == 0 or self.explore_condition(voc=voc,mem=mem,context=context):
+			return voc.get_new_unknown_m()
+		else:
+			laps_val = mem['bandit']['laps_val']
+			mp = mem.get_mp(self.bandit_type)
+			return mp.pick_arm(mem=mem)
+
+	def hearer_pick_m(self,voc,mem,context):
+		return self.pick_m(voc, mem,context)
+
+	def explore_condition(self,voc,mem,context):
+		return mem['bandit']['laps_val'] >= (len(voc.get_known_meanings())-1)/len(voc.get_accessible_meanings())
+
+
+class LAPSMaxMABExploThreshold(LAPSMaxMAB):
+
+	def __init__(self,vu_cfg,threshold = 1.,epsilon_power=4,*args,**kwargs):
+		LAPSMaxMAB.__init__(self,vu_cfg=vu_cfg,*args,**kwargs)
+		self.threshold = threshold
+		self.epsilon_power = epsilon_power
+
+	def explore_condition(self,voc,mem,context):
+		return mem['bandit']['laps_val'] >= self.threshold*(1.-10**(-self.epsilon_power))*(len(voc.get_known_meanings()))/len(voc.get_accessible_meanings())
+

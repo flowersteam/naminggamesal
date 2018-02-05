@@ -59,6 +59,9 @@ class CustomGraph(object):
 
 		self.std = False
 
+		self.xticker = False
+		self.yticker = False
+
 		if Y is None:
 			self._Y = []
 		else:
@@ -197,6 +200,19 @@ class CustomGraph(object):
 		if hasattr(self, 'rcparams'):
 			for key,value in self.rcparams:
 				matplotlib.rcParams[key] = value
+
+		if hasattr(self,'xticker') and self.xticker:
+			ax = matplotlib.pyplot.gca()
+			mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fK' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
+			mkformatter = matplotlib.ticker.FuncFormatter(mkfunc)
+			ax.xaxis.set_major_formatter(mkformatter)
+
+		if hasattr(self,'yticker') and self.yticker:
+			ax = matplotlib.pyplot.gca()
+			mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fK' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
+			mkformatter = matplotlib.ticker.FuncFormatter(mkfunc)
+			ax.yaxis.set_major_formatter(mkformatter)
+
 		plt.draw()
 
 

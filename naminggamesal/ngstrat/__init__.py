@@ -57,6 +57,9 @@ strat_class={
 	'tsrmax_mab':'tsrmax.StratTSRMaxMAB',
 	'tsrmax_hmab':'tsrmax.StratTSRMaxHMAB',
 
+	'lapsmax_mab':'tsrmax.LAPSMaxMAB',
+	'lapsmax_mab_explothreshold':'tsrmax.LAPSMaxMABExploThreshold',
+
 	'user':'user.StratUser',
 	'user_noninteractive':'user.StratUserNonInteractive',
 }
