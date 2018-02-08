@@ -5,6 +5,7 @@ import numpy as np
 import copy
 import scipy
 from scipy import sparse
+import numbers
 
 from . import BaseVocabulary,BaseVocabularyElaborated
 from . import voc_cache, del_cache
@@ -273,6 +274,7 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		#coords = coords.reshape((-1,2))
 		return self.add_coord(coords.reshape((-1)).tolist(),w_idx=w_idx,m_idx=m_idx)
 
+
 	def get_coords_minofmaxw(self,mat,nz=None,m_idx=None,w_idx=None):
 		best_scores = mat.max(axis=0)
 		val = np.amin(best_scores)
@@ -344,6 +346,107 @@ class VocMatrixNew(BaseVocabularyElaborated):
 	@classmethod
 	def count_nonzero(cls,m1):
 		return np.count_nonzero(m1)
+
+	def get_normalized_content(self,content_type):
+		if content_type =='m':
+			if self.is_normalized:
+				return deepcopy(self._content_m)
+			else:
+				return self.__class__.norm(mat=self._content_m,axis=1)
+		elif content_type =='w':
+			if self.is_normalized:
+				return deepcopy(self._content_w)
+			else:
+				return self.__class__.norm(mat=self._content_w,axis=0)
+		else:
+			raise ValueError('Unknown content type: '+str(content_type))
+
+	def check_negatives_sub(self,orig,other,content_type='both'):
+		if content_type in ['m','w']:
+			coords = orig.get_coords_compare_sub(other=other,content_type=content_type)
+			for mi,wi in coords:
+				m = self.indexes_meaning[mi]
+				w = self.indexes_word[wi]
+				self.rm(m=m,w=w,content_type=content_type)
+		elif content_type =='both':
+			self.check_negatives_sub(content_type='m')
+			self.check_negatives_sub(content_type='w')
+		else:
+			raise ValueError('Unknown content type: '+str(content_type))
+
+	def get_coords_compare_sub(self,other,content_type):
+		if content_type =='m':
+			mat1 = self._content_m
+			mat2 = other._content_m
+		elif content_type =='w':
+			mat1 = self._content_w
+			mat2 = other._content_w
+		else:
+			raise ValueError('Unknown content type: '+str(content_type))
+		coords = np.argwhere(mat1 <= mat2)
+		#coords = coords.reshape((-1,2))
+		return list(coords)
+
+
+	def __add__(self,other):
+		ans = copy.deepcopy(self)
+		for m in other.get_accessible_meanings():
+			assert m in ans.get_accessible_meanings()
+		for w in other.get_accessible_words():
+			assert w in ans.get_accessible_words()
+		for m in other.get_known_meanings():
+			if m in ans.unknown_meanings:
+				ans.unknown_meanings.remove(m)
+		for w in other.get_known_words():
+			if w in ans.unknown_words:
+				ans.unknown_words.remove(w)
+		ans._content_w = ans.get_normalized_content(content_type='w') + other.get_normalized_content(content_type='w')
+		ans._content_m = ans.get_normalized_content(content_type='m') + other.get_normalized_content(content_type='w')
+		ans.is_normalized = False
+		return ans
+
+
+
+	def __sub__(self,other):
+		ans = copy.deepcopy(self)
+		for m in other.get_accessible_meanings():
+			assert m in ans.get_accessible_meanings()
+		for w in other.get_accessible_words():
+			assert w in ans.get_accessible_words()
+		for m in other.get_known_meanings():
+			if m in ans.unknown_meanings:
+				ans.unknown_meanings.remove(m)
+		for w in other.get_known_words():
+			if w in ans.unknown_words:
+				ans.unknown_words.remove(w)
+		ans._content_w = ans.get_normalized_content(content_type='w') - other.get_normalized_content(content_type='w')
+		ans._content_m = ans.get_normalized_content(content_type='m') - other.get_normalized_content(content_type='w')
+		ans.is_normalized = False
+		ans.check_negatives_sub(orig=self,other=other)
+		return ans
+
+	def __mul__(self,other):
+		ans = copy.deepcopy(self)
+		ans.is_normalized = False 
+		if isinstance(other, numbers.Real):
+			if other < 0:
+				raise NotImplementedError
+			else:
+				ans._content_w = ans.get_normalized_content(content_type='w') * other
+				ans._content_m = ans.get_normalized_content(content_type='m') * other
+		else:
+			raise NotImplementedError
+		return ans
+
+	def __rmul__(self,other):
+		return self.__mul__(other)
+
+	def __truediv__(self,other):
+		return (1./other) * self
+
+	def __floordiv__(self,other):
+		return self.__truediv__(other)
+
 
 class VocSparseNew(VocMatrixNew):
 

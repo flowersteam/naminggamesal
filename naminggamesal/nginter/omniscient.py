@@ -48,6 +48,8 @@ class Omniscient(Interaction):
 		#		v.rebuild_global_mem(pop)
 		
 		v = pop._agentlist[0]._vocabulary.__class__(start='empty',normalized=False)
+		v.discover_meanings(pop._agentlist[0]._vocabulary.get_accessible_meanings())
+		v.discover_words(pop._agentlist[0]._vocabulary.get_accessible_words())
 		for ag in pop._agentlist:
 			v = v + ag._vocabulary #implement auto discover meanings
 		v = v/len(pop._agentlist)

@@ -16,6 +16,7 @@ from . import ngmem
 
 class Agent(object):
 	def __init__(self, voc_cfg, strat_cfg, sensor_cfg=None, memory_policies=[], agent_id=None, env=None):
+		self.cfg = {'voc_cfg':deepcopy(voc_cfg),'strat_cfg':deepcopy(strat_cfg),'sensor_cfg':deepcopy(sensor_cfg)}
 		if agent_id is None:
 			self._id = str(uuid.uuid1())
 		else:
@@ -38,7 +39,7 @@ class Agent(object):
 		self.success = 0
 
 	def init_memory(self):
-		self._memory = ngmem.get_memory(memory_policies=self.memory_policies,voc=self._vocabulary)#self._strategy.init_memory(self._vocabulary)
+		self._memory = ngmem.get_memory(memory_policies=self.memory_policies,voc=self._vocabulary,cfg=deepcopy(self.cfg))#self._strategy.init_memory(self._vocabulary)
 
 	def get_vocabulary_content(self):
 		return self._vocabulary.get_content()

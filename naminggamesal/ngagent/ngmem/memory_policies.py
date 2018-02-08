@@ -2,10 +2,11 @@ from . import MemoryPolicy
 import numpy as np
 import copy
 from ...ngmeth_utils.srtheo_utils import srtheo_voc
+from ...ngstrat import get_strategy
 
 class SuccessMatrixMP(MemoryPolicy):
 
-	def init_memory(self,mem,voc):
+	def init_memory(self,mem,voc,cfg=None):
 		assert not 'success_matrix' in list(mem.keys())
 		mem['success_matrix'] = np.zeros((self.nb_boxes,self.nb_boxes,2))
 
@@ -19,7 +20,7 @@ class SuccessMatrixMP(MemoryPolicy):
 
 class PastInterMP(MemoryPolicy):
 
-	def init_memory(self,mem,voc):
+	def init_memory(self,mem,voc,cfg=None):
 		assert not 'past_interactions' in list(mem.keys())
 		mem['past_interactions'] = []
 
@@ -30,6 +31,21 @@ class PastInterMP(MemoryPolicy):
 		mem['past_interactions'] = past_int[-self.past_window:]+[(d, c, bool_succ)]
 
 
+class OldVoc(MemoryPolicy):
+
+	def init_memory(self,mem,voc,cfg=None):
+		assert not 'old_voc' in list(mem.keys())
+		mem['old_voc'] = copy.deepcopy(voc)
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
+		mem['old_voc'] = copy.deepcopy(voc)
+
+class OtherVoc(MemoryPolicy):
+
+	def init_memory(self,mem,voc,cfg=None):
+		assert not 'other_voc' in list(mem.keys())
+		mem['other_voc'] = copy.deepcopy(voc)
+
 
 class LastResultMP(MemoryPolicy):
 
@@ -39,7 +55,7 @@ class LastResultMP(MemoryPolicy):
 		else:
 			mem["result"]=0
 
-	def init_memory(self,mem,voc):
+	def init_memory(self,mem,voc,cfg=None):
 
 		assert not 'result' in list(mem.keys())
 		mem["result"]=1
@@ -49,7 +65,7 @@ class ProbaSuccessIncrease(MemoryPolicy):#!! only a cache
 	#def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 	#	m_rm_list = list(  set([ms]) | set(voc.get_known_meanings(w=w)) ) not removing here because voc is already updated, hence lists of ms and ws to be removed are not always known
 
-	def init_memory(self,mem,voc):
+	def init_memory(self,mem,voc,cfg=None):
 		assert not 'proba_of_success_increase' in list(mem.keys())
 		mem['proba_of_success_increase'] = dict()
 
@@ -72,7 +88,7 @@ class SuccessCountPerMMP(MemoryPolicy):
 			except KeyError:
 				mem["fail_m"][m1] = 1
 
-	def init_memory(self,mem,voc):
+	def init_memory(self,mem,voc,cfg=None):
 		assert not 'success_m' in list(mem.keys())
 		assert not 'fail_m' in list(mem.keys())
 		if voc is not None and hasattr(voc,'_content'):
@@ -82,6 +98,12 @@ class SuccessCountPerMMP(MemoryPolicy):
 			mem["success_m"] = dict()
 			mem["fail_m"] = dict()
 
+
+class StratMP(MemoryPolicy):
+
+	def init_memory(self,mem,voc,cfg=None):
+		assert not 'strat' in list(mem.keys())
+		mem['strat'] = get_strategy(**cfg['strat_cfg'])
 
 
 class TimeDecreaseSuccessCountPerMMP(SuccessCountPerMMP):
@@ -117,7 +139,7 @@ class TimeDecreaseSuccessCountPerMMP(SuccessCountPerMMP):
 
 
 class SuccessCountPerMWMP(MemoryPolicy):
-	def init_memory(self,mem,voc):
+	def init_memory(self,mem,voc,cfg=None):
 
 		assert not 'success_mw' in list(mem.keys())
 		assert not 'fail_mw' in list(mem.keys())
@@ -136,7 +158,7 @@ class SuccessCountPerMWMP(MemoryPolicy):
 
 class SuccessCountMP(MemoryPolicy):
 
-	def init_memory(self,mem,voc):
+	def init_memory(self,mem,voc,cfg=None):
 		assert not 'success' in list(mem.keys())
 		assert not 'fail' in list(mem.keys())
 		mem['success'] = 0
@@ -214,7 +236,7 @@ class InteractionCounts(MemoryPolicy):
 		self.valmax = 1
 
 
-	def init_memory(self,mem,voc):
+	def init_memory(self,mem,voc,cfg=None):
 		if voc is None:
 			assert not 'interact_count_voc' in list(mem.keys())
 			mem['interact_count_voc'] = None
@@ -275,7 +297,7 @@ class InteractionCountsSlidingWindow(InteractionCounts):
 		MemoryPolicy.__init__(self,mem_type=mem_type)
 		self.time_scale = time_scale
 
-	def init_memory(self,mem,voc):
+	def init_memory(self,mem,voc,cfg=None):
 		InteractionCounts.init_memory(self,mem,voc)
 		assert not 'past_interactions_sliding_window' in list(mem.keys())
 		mem['past_interactions_sliding_window'] = []
@@ -303,8 +325,8 @@ class InteractionCountsSlidingWindow(InteractionCounts):
 
 class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 
-	def init_memory(self,mem,voc):
-		InteractionCounts.init_memory(self,mem,voc)
+	def init_memory(self,mem,voc,cfg=None):
+		InteractionCounts.init_memory(self,mem,voc,cfg=cfg)
 		assert not 'past_interactions_sliding_window_local' in list(mem.keys())
 		mem['past_interactions_sliding_window_local'] = {'m':{},'w':{}}
 
@@ -347,6 +369,31 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 		self.time_scale = new_time_scale
 
 
+class InteractionCountsOmniscient(InteractionCounts):
+
+	def init_memory(self,mem,voc,cfg=None):
+		InteractionCounts.init_memory(self,mem,voc,cfg=cfg)
+		self.submem1 = OldVoc()
+		self.submem1.init_memory(mem=mem,voc=voc,cfg=cfg)
+		self.submem2 = OtherVoc()
+		self.submem2.init_memory(mem=mem,voc=voc,cfg=cfg)
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		mem['interact_count_voc'] += (voc - mem['old_voc'])/self.time_scale #CHECK - implemented!, check normalization assertions, check 0<=x<=1
+		voc_other = mem['other_voc']
+		voc_other_new = copy.deepcopy(mem['other_voc'])
+		if role == 'speaker':
+			mem['strat'].update_speaker(ms=ms,w=w,mh=mh,voc=voc_other_new,mem=mem,bool_succ=bool_succ,context=context)
+		elif role == 'hearer':
+			mem['strat'].update_hearer(ms=ms,w=w,mh=mh,voc=voc_other_new,mem=mem,bool_succ=bool_succ,context=context)
+		else:
+			raise ValueError('Role '+str(role)+' unknown.')
+		mem['interact_count_voc'] += (voc_other_new - voc_other)/self.time_scale #CHECK - implemented!, check normalization assertions, check 0<=x<=1
+
+		self.submem1.update_memory(ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ,context=context)
+		self.submem2.update_memory(ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ,context=context)
+
+
 class BetaMAB(MemoryPolicy):
 
 	def __init__(self,mem_type,hierarchical=False,magnitude=1.):
@@ -354,8 +401,8 @@ class BetaMAB(MemoryPolicy):
 		self.hierarchical = hierarchical
 		self.magnitude = magnitude
 
-	def init_memory(self,mem,voc):
-		MemoryPolicy.init_memory(self,mem,voc)
+	def init_memory(self,mem,voc,cfg=None):
+		MemoryPolicy.init_memory(self,mem,voc,cfg=cfg)
 		assert not 'bandit' in list(mem.keys())
 		if self.hierarchical:
 			mem['bandit'] = {'arms':{'arm_explo':[1,1],'arm_exploit':[1,1],'others':{}},'old_rewards':0.}
@@ -437,8 +484,8 @@ class LAPSMAB(MemoryPolicy):
 		self.time_scale = time_scale
 
 
-	def init_memory(self,mem,voc):
-		MemoryPolicy.init_memory(self,mem,voc)
+	def init_memory(self,mem,voc,cfg=None):
+		MemoryPolicy.init_memory(self,mem,voc,cfg=cfg)
 		assert not 'bandit' in list(mem.keys())
 		mem['bandit'] = {'arms':{},'laps_val':0.,'reward':0.}
 

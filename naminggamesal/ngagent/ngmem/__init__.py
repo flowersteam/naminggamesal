@@ -21,10 +21,14 @@ mempolicy_class={
 'bandit_bis':'memory_policies.BetaMABBis',
 'bandit_ter':'memory_policies.BetaMABTer',
 'bandit_laps':'memory_policies.LAPSMAB',
+'old_voc':'memory_policies.OldVoc',
+'other_voc':'memory_policies.OtherVoc',
+'strat':'memory_policies.StratMP',
+'interaction_counts_omniscient':'memory_policies.InteractionCountsOmniscient',
 }
 
-def get_memory(memory_policies,voc=None):
-	return Memory(memory_policies=memory_policies,voc=voc)
+def get_memory(memory_policies,voc=None,cfg=None):
+	return Memory(memory_policies=memory_policies,voc=voc,cfg=cfg)
 
 def get_memory_policy(mem_type,**mem_pol_cfg2):
 	tempstr = mem_type
@@ -40,7 +44,7 @@ def get_memory_policy(mem_type,**mem_pol_cfg2):
 
 class Memory(collections.MutableMapping):
 
-	def __init__(self, memory_policies, voc=None):
+	def __init__(self, memory_policies, voc=None,cfg=None):
 		self.store = dict()
 		self.memory_policies = []
 		self.mpclasses = []
@@ -50,7 +54,7 @@ class Memory(collections.MutableMapping):
 				self.memory_policies.append(get_memory_policy(**mp))
 			else:
 				print(mp['mem_type'],'already in memory policies, not appending')
-		self.init_memory(voc=voc)
+		self.init_memory(voc=voc,cfg=cfg)
 
 	def __getitem__(self, key):
 		return self.store[key]
@@ -75,9 +79,9 @@ class Memory(collections.MutableMapping):
 		for mem_p in self.memory_policies:
 			mem_p.clean(mem=self)
 
-	def init_memory(self,voc=None):
+	def init_memory(self,voc=None,cfg=None):
 		for mem_p in self.memory_policies:
-			mem_p.init_memory(mem=self,voc=voc)
+			mem_p.init_memory(mem=self,voc=voc,cfg=cfg)
 		if voc is not None:
 			voc.finish_update()
 
@@ -111,7 +115,7 @@ class MemoryPolicy(object):
 	def __eq__(self,other):
 		return self.mem_type == other.mem_type
 
-	def init_memory(self,mem,voc):
+	def init_memory(self,mem,voc,cfg=None):
 		pass
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
