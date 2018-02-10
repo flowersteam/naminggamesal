@@ -335,7 +335,7 @@ class VocMatrixNew(BaseVocabularyElaborated):
 	@classmethod
 	def norm(cls,mat,axis=0):
 		with np.errstate(divide='ignore'):
-			divmat = np.nan_to_num(1/ np.linalg.norm(mat, axis=axis, ord=1,keepdims=True))
+			divmat = np.nan_to_num(1./ np.linalg.norm(mat, axis=axis, ord=1,keepdims=True))
 		return mat *divmat
 
 	@classmethod
@@ -350,12 +350,12 @@ class VocMatrixNew(BaseVocabularyElaborated):
 	def get_normalized_content(self,content_type):
 		if content_type =='m':
 			if self.is_normalized:
-				return deepcopy(self._content_m)
+				return copy.deepcopy(self._content_m)
 			else:
 				return self.__class__.norm(mat=self._content_m,axis=1)
 		elif content_type =='w':
 			if self.is_normalized:
-				return deepcopy(self._content_w)
+				return copy.deepcopy(self._content_w)
 			else:
 				return self.__class__.norm(mat=self._content_w,axis=0)
 		else:
@@ -369,8 +369,8 @@ class VocMatrixNew(BaseVocabularyElaborated):
 				w = self.indexes_word[wi]
 				self.rm(m=m,w=w,content_type=content_type)
 		elif content_type =='both':
-			self.check_negatives_sub(content_type='m')
-			self.check_negatives_sub(content_type='w')
+			self.check_negatives_sub(orig=orig,other=other,content_type='m')
+			self.check_negatives_sub(orig=orig,other=other,content_type='w')
 		else:
 			raise ValueError('Unknown content type: '+str(content_type))
 
@@ -402,7 +402,7 @@ class VocMatrixNew(BaseVocabularyElaborated):
 				ans.unknown_words.remove(w)
 		ans._content_w = ans.get_normalized_content(content_type='w') + other.get_normalized_content(content_type='w')
 		ans._content_m = ans.get_normalized_content(content_type='m') + other.get_normalized_content(content_type='w')
-		ans.is_normalized = False
+		#ans.is_normalized = False
 		return ans
 
 
@@ -421,21 +421,21 @@ class VocMatrixNew(BaseVocabularyElaborated):
 				ans.unknown_words.remove(w)
 		ans._content_w = ans.get_normalized_content(content_type='w') - other.get_normalized_content(content_type='w')
 		ans._content_m = ans.get_normalized_content(content_type='m') - other.get_normalized_content(content_type='w')
-		ans.is_normalized = False
+		#ans.is_normalized = False
 		ans.check_negatives_sub(orig=self,other=other)
 		return ans
 
 	def __mul__(self,other):
 		ans = copy.deepcopy(self)
-		ans.is_normalized = False 
 		if isinstance(other, numbers.Real):
-			if other < 0:
+			if other <= 0:
 				raise NotImplementedError
 			else:
-				ans._content_w = ans.get_normalized_content(content_type='w') * other
-				ans._content_m = ans.get_normalized_content(content_type='m') * other
+				ans._content_w *= other#= ans.get_normalized_content(content_type='w') * other
+				ans._content_m *= other#= ans.get_normalized_content(content_type='m') * other
 		else:
 			raise NotImplementedError
+		#ans.is_normalized = False
 		return ans
 
 	def __rmul__(self,other):

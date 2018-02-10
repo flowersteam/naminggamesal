@@ -47,16 +47,22 @@ class Omniscient(Interaction):
 		#	if hasattr(v,'rebuild_global_mem'):
 		#		v.rebuild_global_mem(pop)
 		
-		v = pop._agentlist[0]._vocabulary.__class__(start='empty',normalized=False)
+		v = pop._agentlist[0]._vocabulary.__class__(start='empty',normalized=True)
 		v.discover_meanings(pop._agentlist[0]._vocabulary.get_accessible_meanings())
 		v.discover_words(pop._agentlist[0]._vocabulary.get_accessible_words())
 		for ag in pop._agentlist:
 			v = v + ag._vocabulary #implement auto discover meanings
-		v = v/len(pop._agentlist)
+		v.is_normalized = True
+		v = v*1./len(pop._agentlist)
 		v.is_normalized = True
 		speaker._memory['interact_count_voc'] = copy.deepcopy(v)
+		speaker._memory['other_voc'] = copy.deepcopy(hearer._vocabulary)
 		hearer._memory['interact_count_voc'] = copy.deepcopy(v)
+		hearer._memory['other_voc'] = copy.deepcopy(speaker._vocabulary)
 		#speaker._memory.update(copy.deepcopy(self._memory))
 		#hearer._memory.update(copy.deepcopy(self._memory))
 		#self._memory.clean()
-		return self.subinteract.interact(speaker=speaker, hearer=hearer, pop=pop, current_game_info=current_game_info,simulated=simulated)
+		ans = self.subinteract.interact(speaker=speaker, hearer=hearer, pop=pop, current_game_info=current_game_info,simulated=simulated)
+		if not simulated:
+			self._last_info = self.subinteract._last_info
+		return ans

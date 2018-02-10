@@ -54,7 +54,21 @@ class StratTSRMax(StratNaive):
 	def get_mval_list(self,voc,mem,context):
 		m_list = []
 		m_explo = None
-		if (not (hasattr(self,'explo_th') and self.explo_th) or srtheo_voc(voc,voc2=mem['interact_count_voc']) >= (1.-10**(-5))*float(len(voc.get_known_meanings()))/len(voc.get_accessible_meanings())) and len(voc.get_unknown_meanings())>0:
+		test1 = (hasattr(self,'explo_th') and self.explo_th)
+		test2 = srtheo_voc(voc,voc2=mem['interact_count_voc']) >= (1.-10**(-5))*float(len(voc.get_known_meanings()))/len(voc.get_accessible_meanings())
+		test3 = len(voc.get_unknown_meanings())>0
+		if test1:
+			if test2:
+				explo = True
+			else:
+				explo = False
+		else:
+			explo = True
+		if not test3:
+			explo = False
+		#print('1:',test1,' 2:',test2,' 3:', test3,' explo:',explo)
+		#print('srtheo:',srtheo_voc(voc,voc2=mem['interact_count_voc']))
+		if explo:
 			m_explo = voc.get_new_unknown_m()
 			w_explo = voc.get_new_unknown_w()
 			mm_list = voc.get_known_meanings() + [m_explo]
@@ -78,7 +92,10 @@ class StratTSRMax(StratNaive):
 			else:
 				val = 0
 				if m1 == m_explo:
-					ww_list = [w_explo]
+					if len(voc.unknown_words):
+						ww_list = voc.unknown_words#[w_explo]
+					else:
+						ww_list = voc.get_known_words()#[w_explo]
 				else:
 					ww_list = voc.get_known_words(m=m1)
 				for w in ww_list:
@@ -131,7 +148,11 @@ class StratTSRMax(StratNaive):
 				if m1 == m_explo:
 					adj_poss_increase = 1.
 					#factor = voc.get_M()/(voc.get_M()+adj_poss_increase)
-					factor = 1.
+					#factor = 1.
+					if len(voc.unknown_words):
+						factor = 1./len(voc.unknown_words)
+					else:
+						factor = 1./len(voc.get_accessible_words())
 					m_list.append((m_explo,val*factor))
 				else:
 					m_list.append((m1,val/len(voc.get_known_words(m=m1))))
@@ -199,7 +220,7 @@ class StratTSRMaxHMAB(StratTSRMax):
 class LAPSMaxMAB(StratNaive):
 
 
-	def __init__(self, vu_cfg, mem_type='interaction_counts_sliding_window_local',time_scale=10,gamma=0.1,bandit_type='bandit_laps',**strat_cfg2):
+	def __init__(self, vu_cfg, mem_type='interaction_counts_sliding_window_local',time_scale=2,gamma=0.01,bandit_type='bandit_laps',**strat_cfg2):
 		StratNaive.__init__(self,vu_cfg=vu_cfg, **copy.deepcopy(strat_cfg2))
 		mp = {'mem_type':mem_type,'time_scale':time_scale}
 		self.mem_type = mem_type

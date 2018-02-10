@@ -373,10 +373,12 @@ class InteractionCountsOmniscient(InteractionCounts):
 
 	def init_memory(self,mem,voc,cfg=None):
 		InteractionCounts.init_memory(self,mem,voc,cfg=cfg)
-		self.submem1 = OldVoc()
+		self.submem1 = OldVoc(mem_type='old_voc')
 		self.submem1.init_memory(mem=mem,voc=voc,cfg=cfg)
-		self.submem2 = OtherVoc()
+		self.submem2 = OtherVoc(mem_type='other_voc')
 		self.submem2.init_memory(mem=mem,voc=voc,cfg=cfg)
+		self.submem3 = StratMP(mem_type='strat')
+		self.submem3.init_memory(mem=mem,voc=voc,cfg=cfg)
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		mem['interact_count_voc'] += (voc - mem['old_voc'])/self.time_scale #CHECK - implemented!, check normalization assertions, check 0<=x<=1
