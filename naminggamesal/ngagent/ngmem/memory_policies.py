@@ -30,6 +30,15 @@ class PastInterMP(MemoryPolicy):
 		c = (context[0]+context[1])/2.
 		mem['past_interactions'] = past_int[-self.past_window:]+[(d, c, bool_succ)]
 
+class PastInterAll(MemoryPolicy):
+
+	def init_memory(self,mem,voc,cfg=None):
+		assert not 'past_interactions_all' in list(mem.keys())
+		mem['past_interactions_all'] = []
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
+		mem['past_interactions_all'].append({'role':role,'ms':ms,'mh':mh,'w':w,'bool_succ':bool_succ,'context':context})
+
 
 class OldVoc(MemoryPolicy):
 

@@ -73,9 +73,6 @@ class SpeakersChoiceEpirob(Interaction):
 		else:
 			return [ms,w,mh,bool_succ,speaker._id,hearer._id,bool_newconv]
 
-
-
-
 class SpeakersChoiceOmniscient(Interaction):
 	def interact(self, speaker, hearer, pop, current_game_info,simulated=False):
 		if not simulated:

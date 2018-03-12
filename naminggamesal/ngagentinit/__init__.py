@@ -9,6 +9,7 @@ agent_init_class={
 	'own_words':'own_conventions.OwnWordsInit',
 	'converged':'converged.Converged',
 	'oneuser':'oneuser.OneUser',
+	'onedifferent':'oneuser.OneDifferent',
 	'oneuser_noninteractive':'oneuser.OneUserNonInteractive',
 }
 

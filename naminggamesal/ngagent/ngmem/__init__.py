@@ -6,6 +6,7 @@ import copy
 mempolicy_class={
 'success_matrix':'memory_policies.SuccessMatrixMP',
 'past_interactions':'memory_policies.PastInterMP',
+'past_interactions_all':'memory_policies.PastInterAll',
 'successcount':'memory_policies.SuccessCountMP',
 'successcount_perm':'memory_policies.SuccessCountPerMMP',
 'successcount_permw':'memory_policies.SuccessCountPerMWMP',

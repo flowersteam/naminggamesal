@@ -4,7 +4,7 @@ services:
   ngal:
     build: .
     container_name: ngal
-    command: bash -c "python setup.py develop && mkdir -p notebooks && cd notebooks && jupyter notebook --ip=0.0.0.0 --allow-root"
+    command: bash -c "python setup.py develop && mkdir -p notebooks && cd notebooks && jupyter notebook --ip=127.0.0.1 --allow-root"
     volumes:
       - .:/naminggamesal
     ports:
