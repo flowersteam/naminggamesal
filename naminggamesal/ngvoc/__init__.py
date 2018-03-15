@@ -176,6 +176,11 @@ class BaseVocabularyElaborated(BaseVocabulary):
 		self.unknown_meanings = m_list
 		self.unknown_words = w_list
 
+	def empty_copy(self):
+		ans = copy.deepcopy(self)
+		ans.empty()
+		return ans
+
 	@voc_cache
 	def exists(self,m,w):
 		if self.get_value(m,w,content_type='m') > 0 or self.get_value(m,w,content_type='w') > 0:

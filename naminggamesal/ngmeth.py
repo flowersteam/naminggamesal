@@ -936,6 +936,30 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig = {"ymin":zipf_error_min,"ymax":zipf_error_max}
 custom_zipf_error_w = custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
+#########optimalvocpolicy##########
+
+def optimalvocpolicy(agent,**kwargs):
+	v = agent._memory['interact_count_voc']
+	v2 = v.empty_copy()
+	for m in v.get_known_meanings():
+		w = v.get_known_words(m=m,option='max')[0]
+		v2.add(m=m,w=w,content_type='m')
+	for w in v.get_known_words():
+		m = v.get_known_meanings(w=w,option='max')[0]
+		v2.add(m=m,w=w,content_type='w')
+	return srtheo_utils.srtheo_voc(voc=v,voc2=v2)
+
+def optimalvocpolicy_max(pop):
+	return 1.
+
+def optimalvocpolicy_min(pop):
+	return 0
+
+FUNC=optimalvocpolicy
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":optimalvocpolicy_min,"ymax":optimalvocpolicy_max}
+custom_optimalvocpolicy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
 
 ############################	LEVEL POPULATION ############################
 
@@ -1104,6 +1128,32 @@ def Nlinksurs_couples_min(pop):
 FUNC=Nlinksurs_couples
 graphconfig={"ymin":Nlinksurs_couples_min,"ymax":Nlinksurs_couples_max}
 custom_Nlinksurs_couples=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########optimalvocpolicy_pop##########
+
+def optimalvocpolicy_pop(pop,**kwargs):
+	v = copy.deepcopy(pop._agentlist[0]._vocabulary)
+	for ag in pop._agentlist[1:]:
+		v += ag._vocabulary
+	v *= 1./len(pop._agentlist)
+	v2 = v.empty_copy()
+	for m in v.get_known_meanings():
+		w = v.get_known_words(m=m,option='max')[0]
+		v2.add(m=m,w=w,content_type='m')
+	for w in v.get_known_words():
+		m = v.get_known_meanings(w=w,option='max')[0]
+		v2.add(m=m,w=w,content_type='w')
+	return srtheo_utils.srtheo_voc(voc=v,voc2=v2)
+
+def optimalvocpolicy_pop_max(pop):
+	return 1.
+
+def optimalvocpolicy_pop_min(pop):
+	return 0
+
+FUNC=optimalvocpolicy_pop
+graphconfig={"ymin":optimalvocpolicy_pop_min,"ymax":optimalvocpolicy_pop_max}
+custom_optimalvocpolicy_pop=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########entropypop##########
 
