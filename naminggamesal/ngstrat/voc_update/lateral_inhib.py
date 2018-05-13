@@ -9,7 +9,7 @@ class BasicLateralInhibition(VocUpdate):
 		self.d_inc = d_inc
 
 	def update_hearer(self,ms,w,mh,voc,mem,bool_succ, context=[]):
-		if voc._content[ms, w] == 0:
+		if voc.get_value(m=ms, w=w) == 0:
 			voc.add(ms,w,self.s_init,context=context)
 		elif not bool_succ:
 			self.decrease(mh, w, voc)
@@ -22,7 +22,7 @@ class BasicLateralInhibition(VocUpdate):
 		voc.finish_update()
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
-		if voc._content[ms, w] == 0:
+		if voc.get_value(m=ms, w=w) == 0:
 			voc.add(ms, w, self.s_init,context=context)
 		elif not bool_succ:
 			self.decrease(ms, w, voc)
@@ -35,18 +35,18 @@ class BasicLateralInhibition(VocUpdate):
 		voc.finish_update()
 
 	def inhibit(self,m,w,voc, context=[]):
-		voc.add(m,w,max(voc._content[m,w] - self.d_inh, 0),context=context)
+		voc.add(m,w,max(voc.get_value(m=m, w=w) - self.d_inh, 0),context=context)
 
 	def increase(self,m,w,voc, context=[]):
-		voc.add(m,w,min(voc._content[m,w] + self.d_inc, 1),context=context)
+		voc.add(m,w,min(voc.get_value(m=m, w=w) + self.d_inc, 1),context=context)
 
 	def decrease(self,m,w,voc, context=[]):
-		voc.add(m,w,max(voc._content[m,w] - self.d_dec, 0),context=context)
+		voc.add(m,w,max(voc.get_value(m=m, w=w) - self.d_dec, 0),context=context)
 
 class BLISSynOnly(BasicLateralInhibition):
 
 	def update_hearer(self,ms,w,mh,voc,mem,bool_succ, context=[]):
-		if voc._content[ms, w] == 0:
+		if voc.get_value(m=ms, w=w) == 0:
 			voc.add(ms,w,self.s_init,context=context)
 		elif not bool_succ:
 			self.decrease(mh, w, voc)
@@ -57,7 +57,7 @@ class BLISSynOnly(BasicLateralInhibition):
 		voc.finish_update()
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
-		if voc._content[ms, w] == 0:
+		if voc.get_value(m=ms, w=w) == 0:
 			voc.add(ms, w, self.s_init,context=context)
 		elif not bool_succ:
 			self.decrease(ms, w, voc)
@@ -70,13 +70,13 @@ class BLISSynOnly(BasicLateralInhibition):
 class InterpolatedLateralInhibition(BasicLateralInhibition):
 
 	def inhibit(self,m,w,voc, context=[]):
-		voc.add(m,w,voc._content[m,w] * (1 - self.d_inh),context=context)
+		voc.add(m,w,voc.get_value(m=m, w=w) * (1 - self.d_inh),context=context)
 
 	def decrease(self,m,w,voc, context=[]):
-		voc.add(m,w,voc._content[m,w] * (1 - self.d_dec),context=context)
+		voc.add(m,w,voc.get_value(m=m, w=w) * (1 - self.d_dec),context=context)
 
 	def increase(self, m ,w, voc, context=[]):
-		voc.add(m,w,voc._content[m,w] * (1 - self.d_inc) + self.d_inc,context=context)
+		voc.add(m,w,voc.get_value(m=m, w=w) * (1 - self.d_inc) + self.d_inc,context=context)
 
 class BasicLateralInhibitionHearerOnly(BasicLateralInhibition):
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
@@ -86,7 +86,7 @@ class BasicLateralInhibitionHearerOnly(BasicLateralInhibition):
 class BasicLateralInhibitionHearerOnlyFailure(BasicLateralInhibition):
 
 	def update_speaker(self,ms,w,mh,voc,mem,bool_succ, context=[]):
-		if voc._content[ms, w] == 0:
+		if voc.get_value(m=ms, w=w) == 0:
 			voc.add(ms, w, self.s_init,context=context)
 		elif bool_succ:
 			self.increase(ms, w, voc)

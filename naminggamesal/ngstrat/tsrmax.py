@@ -10,7 +10,7 @@ import copy
 
 class StratTSRMax(StratNaive):
 
-	def __init__(self, vu_cfg, efficient_computing=False, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=False,explo_th=False,**strat_cfg2):
+	def __init__(self, vu_cfg, efficient_computing=False, mem_type='interaction_counts_sliding_window_local',global_opt=False,time_scale=10,cache=False,explo_th=False,**strat_cfg2):
 		StratNaive.__init__(self,vu_cfg=vu_cfg, **copy.deepcopy(strat_cfg2))
 		mp = {'mem_type':mem_type,'time_scale':time_scale}
 		if 'interaction_count' not in [ mmpp['mem_type'][:17] for mmpp in self.memory_policies]:
@@ -18,6 +18,7 @@ class StratTSRMax(StratNaive):
 		if cache:
 			assert 'proba_of_success_increase' not in [ mmpp['mem_type'][:25] for mmpp in self.memory_policies]
 			self.memory_policies.append({'mem_type':'proba_of_success_increase'})
+		self.global_opt = global_opt
 		self.efficient_computing = efficient_computing
 		self.explo_th = explo_th
 
@@ -118,7 +119,10 @@ class StratTSRMax(StratNaive):
 					#	for w_loop in list(set(voc.get_known_words(m=m1))|set([w])):
 					#		dS_success += 0.5 * (srtheo_voc(voc_success,w=w_loop,voc2=global_mat_2,role='hearer') - srtheo_voc(voc,w=w_loop,voc2=global_mat,role='hearer'))
 					#else:
-					dS_success = srtheo_voc(voc_success,voc2=global_mat_2) - srtheo_voc(voc,voc2=global_mat)
+					if hasattr(self,'global_opt') and self.global_opt:
+						dS_success = srtheo_voc(global_mat_2,voc2=global_mat_2) - srtheo_voc(global_mat,voc2=global_mat)
+					else:
+						dS_success = srtheo_voc(voc_success,voc2=global_mat_2) - srtheo_voc(voc,voc2=global_mat)
 					if hasattr(voc,'get_alterable_shallow_copy'):
 						voc_fail = voc.get_alterable_shallow_copy()
 					else:
@@ -136,7 +140,10 @@ class StratTSRMax(StratNaive):
 					#	for w_loop in list(set(voc.get_known_words(m=m1))|set([w])):
 					#		dS_fail += 0.5 * (srtheo_voc(voc_fail,w=w_loop,voc2=global_mat_2,role='hearer') - srtheo_voc(voc,w=w_loop,voc2=global_mat,role='hearer'))
 					#else:
-					dS_fail = srtheo_voc(voc_fail,voc2=global_mat_2) - srtheo_voc(voc,voc2=global_mat)
+					if hasattr(self,'global_opt') and self.global_opt:
+						dS_fail = srtheo_voc(global_mat_2,voc2=global_mat_2) - srtheo_voc(global_mat,voc2=global_mat)
+					else:
+						dS_fail = srtheo_voc(voc_fail,voc2=global_mat_2) - srtheo_voc(voc,voc2=global_mat)
 					val += p_success * dS_success + p_fail * dS_fail
 #				r = random.random()
 #				if r < 1./1:
@@ -169,9 +176,9 @@ class StratTSRMax(StratNaive):
 
 class StratTSRMaxMAB(StratTSRMax):
 
-	def __init__(self, vu_cfg, efficient_computing=False, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=False,bandit_type='bandit',**strat_cfg2):
+	def __init__(self, vu_cfg, global_opt=False, efficient_computing=False, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=False,bandit_type='bandit',**strat_cfg2):
 		StratTSRMax.__init__(self, vu_cfg=copy.deepcopy(vu_cfg), efficient_computing=efficient_computing, mem_type=mem_type,time_scale=time_scale,cache=cache, **copy.deepcopy(strat_cfg2))
-		mp = {'mem_type':bandit_type}
+		mp = {'mem_type':bandit_type, 'global_opt':global_opt}
 		if 'bandit' not in [ mmpp['mem_type'][:6] for mmpp in self.memory_policies]:
 			self.memory_policies.append(mp)
 
@@ -191,9 +198,9 @@ class StratTSRMaxMAB(StratTSRMax):
 
 class StratTSRMaxHMAB(StratTSRMax):
 
-	def __init__(self, vu_cfg, efficient_computing=False, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=False,bandit_type='bandit',**strat_cfg2):
+	def __init__(self, vu_cfg, global_opt=False, efficient_computing=False, mem_type='interaction_counts_sliding_window_local',time_scale=10,cache=False,bandit_type='bandit',**strat_cfg2):
 		StratTSRMax.__init__(self, vu_cfg=copy.deepcopy(vu_cfg), efficient_computing=efficient_computing, mem_type=mem_type,time_scale=time_scale,cache=cache, **copy.deepcopy(strat_cfg2))
-		mp = {'mem_type':bandit_type,'hierarchical':True}
+		mp = {'mem_type':bandit_type,'hierarchical':True,'global_opt':global_opt}
 		if 'bandit' not in [ mmpp['mem_type'][:6] for mmpp in self.memory_policies]:
 			self.memory_policies.append(mp)
 
@@ -220,13 +227,13 @@ class StratTSRMaxHMAB(StratTSRMax):
 class LAPSMaxMAB(StratNaive):
 
 
-	def __init__(self, vu_cfg, mem_type='interaction_counts_sliding_window_local',time_scale=2,gamma=0.01,bandit_type='bandit_laps',**strat_cfg2):
+	def __init__(self, vu_cfg, global_opt=False, mem_type='interaction_counts_sliding_window_local',time_scale=2,gamma=0.01,bandit_type='bandit_laps',**strat_cfg2):
 		StratNaive.__init__(self,vu_cfg=vu_cfg, **copy.deepcopy(strat_cfg2))
 		mp = {'mem_type':mem_type,'time_scale':time_scale}
 		self.mem_type = mem_type
 		if 'interaction_count' not in [ mmpp['mem_type'][:17] for mmpp in self.memory_policies]:
 			self.memory_policies.append(mp)
-		mp2 = {'mem_type':bandit_type,'gamma':gamma,'time_scale':time_scale}
+		mp2 = {'mem_type':bandit_type,'gamma':gamma,'time_scale':time_scale,'global_opt':global_opt}
 		self.bandit_type = bandit_type
 		self.gamma = gamma
 		self.time_scale = time_scale

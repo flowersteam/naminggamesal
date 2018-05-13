@@ -407,8 +407,9 @@ class InteractionCountsOmniscient(InteractionCounts):
 
 class BetaMAB(MemoryPolicy):
 
-	def __init__(self,mem_type,hierarchical=False,magnitude=1.):
+	def __init__(self,mem_type,hierarchical=False,magnitude=1.,global_opt=False):
 		MemoryPolicy.__init__(self,mem_type=mem_type)
+		self.global_opt = global_opt
 		self.hierarchical = hierarchical
 		self.magnitude = magnitude
 
@@ -422,8 +423,11 @@ class BetaMAB(MemoryPolicy):
 
 
 	def val_update(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
-		if hasattr(voc,'_content'):
-			new_val = srtheo_voc(voc,voc2_m=mem['interact_count_m'],voc2_w=mem['interact_count_w'])
+		#if hasattr(voc,'_content'):
+		#	new_val = srtheo_voc(voc,voc2_m=mem['interact_count_m'],voc2_w=mem['interact_count_w'])
+		#else:
+		if hasattr(self,'global_opt') and self.global_opt:
+			new_val = srtheo_voc(mem['interact_count_voc'],voc2=mem['interact_count_voc'])
 		else:
 			new_val = srtheo_voc(voc,voc2=mem['interact_count_voc'])
 		if not hasattr(self,'magnitude'):
@@ -489,10 +493,11 @@ class SuccessMAB(BetaMAB):
 
 class LAPSMAB(MemoryPolicy):
 
-	def __init__(self,mem_type,gamma=0.1,time_scale=2):
+	def __init__(self,mem_type,gamma=0.1,time_scale=2,global_opt=False):
 		MemoryPolicy.__init__(self,mem_type=mem_type)
 		self.gamma = gamma
 		self.time_scale = time_scale
+		self.global_opt = global_opt
 
 
 	def init_memory(self,mem,voc,cfg=None):
@@ -504,8 +509,11 @@ class LAPSMAB(MemoryPolicy):
 
 
 	def val_update(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
-		if hasattr(voc,'_content'):
-			new_val = srtheo_voc(voc,voc2_m=mem['interact_count_m'],voc2_w=mem['interact_count_w'])
+		#if hasattr(voc,'_content'):
+		#	new_val = srtheo_voc(voc,voc2_m=mem['interact_count_m'],voc2_w=mem['interact_count_w'])
+		#else:
+		if hasattr(self,'global_opt') and self.global_opt:
+			new_val = srtheo_voc(mem['interact_count_voc'],voc2=mem['interact_count_voc'])
 		else:
 			new_val = srtheo_voc(voc,voc2=mem['interact_count_voc'])
 		reward = max(new_val - mem['bandit']['laps_val'],0)
