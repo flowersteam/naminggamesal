@@ -183,7 +183,7 @@ class CustomGraph(object):
 
 
 
-		plt.legend(handles2, labels2, **self.legendoptions)
+		plt.legend(handles=handles2, labels=labels2, **self.legendoptions)
 
 		#plt.legend(bbox_to_anchor=(0,0,0.55,0.8))
 		#plt.legend(bbox_to_anchor=(0,0,0.5,1))
