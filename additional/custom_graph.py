@@ -86,10 +86,10 @@ class CustomGraph(object):
 
 	def show(self):
 		plt.ion()
-		fig = plt.gcf()
+		#fig = plt.gcf()
 		self.draw()
 		plt.show()
-		return fig
+		#return fig
 
 	def save(self,*path):
 		if path:
@@ -173,7 +173,7 @@ class CustomGraph(object):
 		if self.ymax is not None:
 			plt.ylim(ymax=self.ymax)
 
-		handles, labels = plt.axes().get_legend_handles_labels()
+		handles, labels = plt.gca().get_legend_handles_labels()
 		handles2, labels2 = [], []
 		for tr in range(len(self.legend_permut)):
 			handles2.append(handles[self.legend_permut[tr]])
@@ -182,8 +182,10 @@ class CustomGraph(object):
 			#labels2[self.legend_permut[tr]] = labels[tr]
 
 
-
-		plt.legend(handles=handles2, labels=labels2, **self.legendoptions)
+		legend_opt = copy.deepcopy(self.legendoptions)
+		if 'labels' in list(self.legendoptions.keys()):
+			del legend_opt['labels']
+		plt.legend(handles=handles2, labels=labels2, **legend_opt)
 
 		#plt.legend(bbox_to_anchor=(0,0,0.55,0.8))
 		#plt.legend(bbox_to_anchor=(0,0,0.5,1))
