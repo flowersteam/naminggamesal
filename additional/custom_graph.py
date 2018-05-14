@@ -173,19 +173,24 @@ class CustomGraph(object):
 		if self.ymax is not None:
 			plt.ylim(ymax=self.ymax)
 
-		handles, labels = plt.gca().get_legend_handles_labels()
-		handles2, labels2 = [], []
-		for tr in range(len(self.legend_permut)):
-			handles2.append(handles[self.legend_permut[tr]])
-			#handles2[self.legend_permut[tr]] = handles[tr]
-			labels2.append(labels[self.legend_permut[tr]])
-			#labels2[self.legend_permut[tr]] = labels[tr]
 
+		if self.legend_permut != []:
+			handles, labels = plt.gca().get_legend_handles_labels()
+			handles2, labels2 = [], []
+			for tr in range(len(self.legend_permut)):
+				handles2.append(handles[self.legend_permut[tr]])
+				#handles2[self.legend_permut[tr]] = handles[tr]
+				labels2.append(labels[self.legend_permut[tr]])
+				#labels2[self.legend_permut[tr]] = labels[tr]
+			if handles2 == []:
+				handles2 = handles
 
-		legend_opt = copy.deepcopy(self.legendoptions)
-		if 'labels' in list(self.legendoptions.keys()):
-			del legend_opt['labels']
-		plt.legend(handles=handles2, labels=labels2, **legend_opt)
+			legend_opt = copy.deepcopy(self.legendoptions)
+			if 'labels' in list(self.legendoptions.keys()):
+				del legend_opt['labels']
+			plt.legend(handles=handles2, labels=labels2, **legend_opt)
+		else:
+			plt.legend(**self.legendoptions)
 
 		#plt.legend(bbox_to_anchor=(0,0,0.55,0.8))
 		#plt.legend(bbox_to_anchor=(0,0,0.5,1))
