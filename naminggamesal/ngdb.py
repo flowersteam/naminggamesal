@@ -141,7 +141,6 @@ class NamingGamesDB(object):
 					+"Function TEXT, "\
 					+"Time_max " + self.int_str + ", "\
 					+"Custom_Graph " + self.blob_str + ")")
-			#CREATE TABLE UUID/DBINFO
 			self.cursor.execute("CREATE TABLE IF NOT EXISTS db_info(DbUUID TEXT)")
 			self.cursor.execute("SELECT DbUUID FROM db_info")
 			db_uuid = self.cursor.fetchone()
