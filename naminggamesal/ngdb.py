@@ -141,6 +141,14 @@ class NamingGamesDB(object):
 					+"Function TEXT, "\
 					+"Time_max " + self.int_str + ", "\
 					+"Custom_Graph " + self.blob_str + ")")
+			#CREATE TABLE UUID/DBINFO
+			self.cursor.execute("CREATE TABLE IF NOT EXISTS db_info(DbUUID TEXT)")
+			self.cursor.execute("SELECT DbUUID FROM db_info")
+			db_uuid = self.cursor.fetchone()
+			if db_uuid is not None:
+				self.uuid = db_uuid[0]
+			self.cursor.execute("DELETE FROM db_info")
+			self.cursor.execute("INSERT INTO db_info VALUES ("+self.var+") ",(self.uuid,))
 			self.connection.commit()
 			self.initialized = True
 
