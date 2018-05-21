@@ -11,6 +11,8 @@ agent_init_class={
 	'oneuser':'oneuser.OneUser',
 	'onedifferent':'oneuser.OneDifferent',
 	'oneuser_noninteractive':'oneuser.OneUserNonInteractive',
+	'mixed_pop':'mixed_pop.MixedPop',
+	'mixed_pop_proba':'mixed_pop.MixedPopProba',
 }
 
 def get_agent_init(agent_init_type='agent_init', **agent_init_cfg2):

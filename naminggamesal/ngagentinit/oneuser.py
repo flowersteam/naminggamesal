@@ -1,5 +1,17 @@
 from .agent_init import AgentInit
 import copy
+import collections
+
+def update_nested_dict(orig_dict, new_dict):
+    for key, val in new_dict.iteritems():
+        if isinstance(val, collections.Mapping):
+            tmp = update_nested_dict(orig_dict.get(key, { }), val)
+            orig_dict[key] = tmp
+        elif isinstance(val, list):
+            orig_dict[key] = (orig_dict.get(key, []) + val)
+        else:
+            orig_dict[key] = new_dict[key]
+    return orig_dict
 
 class OneUser(AgentInit):
 
@@ -16,10 +28,6 @@ class OneUser(AgentInit):
 			self.done = True
 		return out_cfg
 
-	def modify_agent(self,agent, pop, pop_init=False):
-		AgentInit.modify_agent(self,agent=agent,pop=pop,pop_init=pop_init)
-		if hasattr(pop.env,'init_agent'):
-			pop.env.init_agent(agent)
 
 class OneUserNonInteractive(OneUser):
 
@@ -44,7 +52,7 @@ class OneDifferent(OneUser):
 		AgentInit.modify_cfg(self,pop_init=pop_init, **ag_cfg)
 		out_cfg = copy.deepcopy(ag_cfg)
 		if not self.done:
-			out_cfg.update(self.first_ag_cfg)
+			update_nested_dict(out_cfg,self.new_cfg)
 			self.done = True
 		return out_cfg
 
