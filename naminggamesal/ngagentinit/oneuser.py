@@ -3,7 +3,7 @@ import copy
 import collections
 
 def update_nested_dict(orig_dict, new_dict):
-    for key, val in new_dict.iteritems():
+    for key, val in new_dict.items():
         if isinstance(val, collections.Mapping):
             tmp = update_nested_dict(orig_dict.get(key, { }), val)
             orig_dict[key] = tmp

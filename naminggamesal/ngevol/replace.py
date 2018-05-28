@@ -12,7 +12,7 @@ class Replace(Evolution):
 		self.rate = rate
 
 	def step(self,pop):
-		if self.count == self.rate-1:
+		if self.count >= self.rate-1:
 			pop.rm_agent()
 			pop.add_new_agent()
 			self.count = 0
