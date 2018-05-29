@@ -4,6 +4,8 @@ from ... import ngmeth
 import numpy as np
 import copy
 import scipy
+from ...ngmeth_utils.srtheo_utils import srtheo_voc
+
 
 class AcceptancePolicy(VocUpdate):
 
