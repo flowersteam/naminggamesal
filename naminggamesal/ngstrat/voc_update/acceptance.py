@@ -118,9 +118,9 @@ class AcceptanceTSMax(AcceptancePolicy):
 		if self.role != 'local':
 			role = self.role
 		if hasattr(self,'strict') and self.strict:
-			return ngmeth.srtheo_voc(voc1,pop_voc,role=role) < ngmeth.srtheo_voc(voc2,pop_voc,role=role)
+			return srtheo_voc(voc1,pop_voc,role=role) < srtheo_voc(voc2,pop_voc,role=role)
 		else:
-			return ngmeth.srtheo_voc(voc1,pop_voc,role=role) <= ngmeth.srtheo_voc(voc2,pop_voc,role=role)
+			return srtheo_voc(voc1,pop_voc,role=role) <= srtheo_voc(voc2,pop_voc,role=role)
 
 
 class AcceptanceTSMaxNew(AcceptancePolicy):
@@ -152,7 +152,7 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 				role = self.role
 			if self.beta is not None:
 				print('deprecated')
-			return ngmeth.srtheo_voc(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= ngmeth.srtheo_voc(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
+			return srtheo_voc(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= srtheo_voc(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
 		else:
 			pop_voc = mem_new['interact_count_voc']
 			if hasattr(voc,'get_alterable_shallow_copy'):
@@ -168,13 +168,13 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 				role = self.role
 			if self.beta is None:
 				if hasattr(self,'strict') and self.strict:
-					return ngmeth.srtheo_voc(voc,voc2=pop_voc,role=role) < ngmeth.srtheo_voc(voc_new,voc2=pop_voc,role=role)
+					return srtheo_voc(voc,voc2=pop_voc,role=role) < srtheo_voc(voc_new,voc2=pop_voc,role=role)
 				else:
-					return ngmeth.srtheo_voc(voc,voc2=pop_voc,role=role) <= ngmeth.srtheo_voc(voc_new,voc2=pop_voc,role=role)
+					return srtheo_voc(voc,voc2=pop_voc,role=role) <= srtheo_voc(voc_new,voc2=pop_voc,role=role)
 			else:
-				#v_ref = ngmeth.srtheo_voc(voc,voc2=mem['interact_count_voc'],role=role)
-				v_new = ngmeth.srtheo_voc(voc,voc2=pop_voc,role=role)
-				v_update = ngmeth.srtheo_voc(voc_new,voc2=pop_voc,role=role)
+				#v_ref = srtheo_voc(voc,voc2=mem['interact_count_voc'],role=role)
+				v_new = srtheo_voc(voc,voc2=pop_voc,role=role)
+				v_update = srtheo_voc(voc_new,voc2=pop_voc,role=role)
 				p_1 = np.exp(self.beta*v_new)
 				p_2 = np.exp(self.beta*v_update)
 				r = random.random()
@@ -208,9 +208,9 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 			if self.beta is not None:
 				print('deprecated')
 			if hasattr(self,'strict') and self.strict:
-				return ngmeth.srtheo_voc_membased(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) < ngmeth.srtheo_voc_membased(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
+				return srtheo_voc_membased(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) < srtheo_voc_membased(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
 			else:
-				return ngmeth.srtheo_voc_membased(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= ngmeth.srtheo_voc_membased(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
+				return srtheo_voc_membased(voc1,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role) <= srtheo_voc_membased(voc2,voc2_m=pop_voc_m,voc2_w=pop_voc_w,role=role)
 		else:
 			pop_voc = mem_new['interact_count_voc']
 			if hasattr(voc,'get_alterable_shallow_copy'):
@@ -227,11 +227,11 @@ class AcceptanceTSMaxNewMemBasedChoices(AcceptanceTSMaxNew):
 			if self.role != 'local':
 				role = self.role
 			if self.beta is None:
-				return ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role) <= ngmeth.srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
+				return srtheo_voc_membased(voc,voc2=pop_voc,role=role) <= srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
 			else:
-				#v_ref = ngmeth.srtheo_voc(voc,voc2=mem['interact_count_voc'],role=role)
-				v_old = ngmeth.srtheo_voc_membased(voc,voc2=pop_voc,role=role)
-				v_update = ngmeth.srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
+				#v_ref = srtheo_voc(voc,voc2=mem['interact_count_voc'],role=role)
+				v_old = srtheo_voc_membased(voc,voc2=pop_voc,role=role)
+				v_update = srtheo_voc_membased(voc_new,voc2=pop_voc,role=role)
 				p_1 = np.exp(self.beta*v_old)
 				p_2 = np.exp(self.beta*v_update)
 				r = random.random()
