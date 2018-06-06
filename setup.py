@@ -2,13 +2,17 @@
 
 import re
 import sys
+import subprocess
 
 from setuptools import setup, find_packages
 try:
     from Cython.Build import cythonize
 except ImportError:
     import pip
-    pip.main(['install', 'Cython'])
+    try:
+      pip.main(['install', 'Cython'])
+    except:
+      subprocess.checkcall('pip install Cython')
     from Cython.Build import cythonize
 
 def version():

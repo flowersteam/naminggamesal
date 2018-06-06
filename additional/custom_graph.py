@@ -33,11 +33,11 @@ def load_graph(filename):
 
 class CustomGraph(object):
 	def __init__(self,Y=None,X=None,**kwargs):
-		self.keepwinopen=0
-		self.sort=1
-		self.filename="graph"+time.strftime("%Y%m%d%H%M%S", time.localtime())
+		self.keepwinopen = 0
+		self.sort = 1
+		self.filename = "graph"+time.strftime("%Y%m%d%H%M%S", time.localtime())
 		if "filename" in list(kwargs.keys()):
-			self.filename=kwargs["filename"]
+			self.filename = kwargs["filename"]
 		self.title = self.filename
 		self.xlabel = "X"
 		self.ylabel = "Y"
@@ -66,7 +66,7 @@ class CustomGraph(object):
 			self._Y = []
 		else:
 			self._Y = [Y]
-		self.stdvec=[0]*len(Y)
+		self.stdvec = [0 for _ in range(len(Y))]
 
 		if X is None:
 			self._X = [list(range(len(Y)))]
@@ -161,7 +161,10 @@ class CustomGraph(object):
 					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha, facecolor=base_line.get_color(), **self.Yoptions[i])
 
 		plt.xlabel(self.xlabel)
-		plt.ylabel(self.ylabel)
+		if self.ylabel is not None and (len(self.ylabel)<4 or (self.ylabel[:2]=='$\\' and self.ylabel[-1] == '$')):
+			plt.ylabel(self.ylabel,rotation=0)
+		else:
+			plt.ylabel(self.ylabel)
 		plt.title(self.title)
 
 		if self.xmin is not None:
@@ -224,10 +227,26 @@ class CustomGraph(object):
 
 
 	def add_graph(self,other_graph):
-		self._X=self._X+other_graph._X
-		self._Y=self._Y+other_graph._Y
-		self.Yoptions=self.Yoptions+other_graph.Yoptions
-		self.stdvec=self.stdvec+other_graph.stdvec
+		self._X = self._X + copy.deepcopy(other_graph._X)
+		self._Y = self._Y + copy.deepcopy(other_graph._Y)
+		self.Yoptions = self.Yoptions + copy.deepcopy(other_graph.Yoptions)
+		self.stdvec = self.stdvec + copy.deepcopy(other_graph.stdvec)
+		if self.xmin is None or other_graph.xmin is None:
+			self.xmin = None
+		else:
+			self.xmin = min(self.xmin,other_graph.xmin)
+		if self.ymin is None or other_graph.ymin is None:
+			self.ymin = None
+		else:
+			self.ymin = min(self.ymin,other_graph.ymin)
+		if self.xmax is None or other_graph.xmax is None:
+			self.xmax = None
+		else:
+			self.xmax = max(self.xmax,other_graph.xmax)
+		if self.ymax is None or other_graph.ymax is None:
+			self.ymax = None
+		else:
+			self.ymax = max(self.ymax,other_graph.ymax)
 
 	def complete_with(self,other_graph, mix=True, remove_duplicates=False):
 		for i in range(0,len(self._X)):
@@ -273,6 +292,22 @@ class CustomGraph(object):
 						self._X[i].append(X[j])
 						self._Y[i].append(Y[j])
 						self.stdvec[i].append(stdvec[j])
+		if self.xmin is None or other_graph.xmin is None:
+			self.xmin = None
+		else:
+			self.xmin = min(self.xmin,other_graph.xmin)
+		if self.ymin is None or other_graph.ymin is None:
+			self.ymin = None
+		else:
+			self.ymin = min(self.ymin,other_graph.ymin)
+		if self.xmax is None or other_graph.xmax is None:
+			self.xmax = None
+		else:
+			self.xmax = max(self.xmax,other_graph.xmax)
+		if self.ymax is None or other_graph.ymax is None:
+			self.ymax = None
+		else:
+			self.ymax = max(self.ymax,other_graph.ymax)
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 #	def complete_with(self,other_graph):

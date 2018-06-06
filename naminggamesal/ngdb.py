@@ -362,7 +362,7 @@ class NamingGamesDB(object):
 				templist[i]=templist[i][0]
 			return templist
 		else:
-			self.cursor.execute("SELECT Id FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg, sort_keys=True)+"\' AND Function=\'"+method+"\' AND Time_max>=\'"+tmax+"\'")
+			self.cursor.execute("SELECT Id FROM computed_data_table WHERE Expe_config=\'"+json.dumps(xp_cfg, sort_keys=True)+"\' AND Function=\'"+method+"\' AND Time_max>=\'"+str(tmax)+"\'")
 			templist=list(self.cursor)
 			for i in range(0,len(templist)):
 				templist[i]=templist[i][0]
@@ -375,7 +375,8 @@ class NamingGamesDB(object):
 				templist=list(self.cursor)
 				for i in range(0,len(templist)):
 					templist[i]=templist[i][0]
-				return self.get_graph_id_list(xp_cfg=xp_cfg,method=method,tmax=t_max)
+				#return self.get_graph_id_list(xp_cfg=xp_cfg,method=method,tmax=tmax)
+				return []
 		#TODO: implement generator instead of list??
 
 
