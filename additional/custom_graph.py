@@ -142,7 +142,6 @@ class CustomGraph(object):
 					Xtemp[j]=temptup[j][0]
 					Ytemp[j]=temptup[j][1][0]
 					stdtemp[j]=temptup[j][1][1]
-
 			base_line = plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
 			if self.loglog:
 				plt.xscale('symlog',basex=self.loglog_basex)
@@ -225,12 +224,38 @@ class CustomGraph(object):
 
 		plt.draw()
 
+	def add_option(self,idx=None,**options):
+		if idx is None:
+			for yopt in self.Yoptions:
+				yopt.update(**copy.deepcopy(options))
+		else:
+			self.Yoptions[idx].update(**copy.deepcopy(options))
+
+	def __add__(self,other_graph):
+		g = copy.deepcopy(self)
+		if other_graph is not None:
+			g.add_graph(other_graph)
+		return g
 
 	def add_graph(self,other_graph):
 		self._X = self._X + copy.deepcopy(other_graph._X)
 		self._Y = self._Y + copy.deepcopy(other_graph._Y)
 		self.Yoptions = self.Yoptions + copy.deepcopy(other_graph.Yoptions)
 		self.stdvec = self.stdvec + copy.deepcopy(other_graph.stdvec)
+		label_in_1 = 'labels' in self.legendoptions
+		label_in_2 = 'labels' in other_graph.legendoptions
+		if label_in_1 or label_in_2:
+			if not label_in_1:
+				self_labels = ['' for _ in self._X]
+				other_labels = other_graph.legendoptions['labels']
+			elif not label_in_2:
+				self_labels = self.legendoptions['labels']
+				other_labels = ['' for _ in other_graph._X]
+			else:
+				self_labels = self.legendoptions['labels']
+				other_labels = other_graph.legendoptions['labels']
+			self.legendoptions['labels'] = self_labels + copy.deepcopy(other_labels)
+
 		if self.xmin is None or other_graph.xmin is None:
 			self.xmin = None
 		else:
