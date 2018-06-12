@@ -12,9 +12,15 @@ class StratNaive(BaseStrategy):
 		if w in voc.get_known_words():
 			m = voc.get_random_known_m(w)
 		elif voc.get_unknown_meanings():
-			m = voc.get_new_unknown_m()
+			if hasattr(self,'allow_idk') and self.allow_idk:
+				m = None
+			else:
+				m = voc.get_new_unknown_m()
 		else:
-			m = voc.get_random_known_m(option='min')
+			if hasattr(self,'allow_idk') and self.allow_idk:
+				m = None
+			else:
+				m = voc.get_random_known_m(option='min')
 		return m
 
 	def pick_w(self,m,voc,mem,context=[]):
@@ -70,9 +76,15 @@ class StratNaiveMemBased(StratNaive):
 				#	else:
 				#		m = voc.get_random_known_m(option='min')
 		elif voc.get_unknown_meanings():
-			m = voc.get_new_unknown_m()
+			if hasattr(self,'allow_idk') and self.allow_idk:
+				m = None
+			else:
+				m = voc.get_new_unknown_m()
 		else:
-			m = voc.get_random_known_m(option='min')
+			if hasattr(self,'allow_idk') and self.allow_idk:
+				m = None
+			else:
+				m = voc.get_random_known_m(option='min')
 		return m
 
 	def pick_w(self,m,voc,mem,context=[]):

@@ -59,8 +59,8 @@ class CustomGraph(object):
 
 		self.std = False
 
-		self.xticker = False
-		self.yticker = False
+		self.xticker = True
+		self.yticker = True
 
 		if Y is None:
 			self._Y = []
@@ -212,15 +212,17 @@ class CustomGraph(object):
 
 		if hasattr(self,'xticker') and self.xticker:
 			ax = matplotlib.pyplot.gca()
-			mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fK' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
-			mkformatter = matplotlib.ticker.FuncFormatter(mkfunc)
-			ax.xaxis.set_major_formatter(mkformatter)
+			if ax.get_xlim()[1]-ax.get_xlim()[0] > 1000:
+				mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fK' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
+				mkformatter = matplotlib.ticker.FuncFormatter(mkfunc)
+				ax.xaxis.set_major_formatter(mkformatter)
 
 		if hasattr(self,'yticker') and self.yticker:
 			ax = matplotlib.pyplot.gca()
-			mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fK' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
-			mkformatter = matplotlib.ticker.FuncFormatter(mkfunc)
-			ax.yaxis.set_major_formatter(mkformatter)
+			if ax.get_ylim()[1]-ax.get_ylim()[0] > 1000:
+				mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fK' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
+				mkformatter = matplotlib.ticker.FuncFormatter(mkfunc)
+				ax.yaxis.set_major_formatter(mkformatter)
 
 		plt.draw()
 

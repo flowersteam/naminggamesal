@@ -29,21 +29,27 @@ class StratUser(BaseStrategy):
 		possible_choices = voc.get_accessible_meanings()
 		return self.get_choice_from_list(possible_choices)
 
-	def get_choice_from_list(self,possible_choices):
-		if hasattr(possible_choices,'sorted'):
-			print(possible_choices.sorted())
+	def get_choice_from_list(self,possible_choices,idk=True):
+		_possible_choices = copy.deepcopy(possible_choices)
+		if idk:
+			_possible_choices.append("I don't know")
+		if hasattr(_possible_choices,'sorted'):
+			print(_possible_choices.sorted())
 		else:
-			print(possible_choices)
+			print(_possible_choices)
 		val = input()
-		if val in possible_choices:
+		if val in _possible_choices:
 			print('you have chosen:',val)
 			return val
-		elif val in [str(v) for v in possible_choices]:
+		elif val in [str(v) for v in _possible_choices]:
 			print('you have chosen:',val)
-			for v in possible_choices:
+			for v in _possible_choices:
 				if val == str(v):
 					break
-			return v
+			if v == "I don't know":
+				return None
+			else:
+				return v
 		else:
 			print('Not in possible choices, reasking')
 			return self.get_choice_from_list(possible_choices=possible_choices)
