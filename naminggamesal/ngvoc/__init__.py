@@ -164,8 +164,14 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	@del_cache
 	def complete_empty(self):
-		assert len(self.get_known_meanings()) == 0
-		print("complete_empty not implemented yet")
+		self.empty()
+		m_l = random.shuffle(copy.deepcopy(self.unknown_meanings))
+		w_l = random.shuffle(copy.deepcopy(self.unknown_words))
+		while len(w_l) < len(m_l):
+			assert len(w_l)>0
+			w_l += w_l
+		for i in range(len(m_l)):
+			self.add(m=m_l[i],w=w_l[i])
 
 	@del_cache
 	def empty(self):
