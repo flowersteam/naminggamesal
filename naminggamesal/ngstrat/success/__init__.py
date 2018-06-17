@@ -17,7 +17,7 @@ success_class={
 	'acceptancepolicyornormal_success':'acceptancepolicy_success.AcceptancePolicyOrNormalSuccess',
 }
 
-def get_success(success_type='global', **success_cfg2):
+def get_success(success_type='global_norandom', **success_cfg2):
 	tempint = success_type
 	if tempint in list(success_class.keys()):
 		tempint = success_class[tempint]
