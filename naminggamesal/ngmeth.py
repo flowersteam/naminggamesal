@@ -27,7 +27,7 @@ def pop_ize(func):
 			std=np.std(tempNlist)
 			_min=np.min(tempNlist)
 			_max=np.max(tempNlist)
-		return [mean,std,tempNlist,_min,_max]
+		return [mean,std,_min,_max,tempNlist]
 	out_func.__name__=func.__name__+"_mean"
 	return out_func
 
@@ -35,7 +35,7 @@ def pop_ize(func):
 
 ############################	LEVEL AGENT ############################
 
-#### 	INPUT:		agent , **progress_info
+####	INPUT:		agent , **progress_info
 ####	OUTPUT:		[mean,std,(tempNlist)]
 
 #	FUNC_BIS=pop_ize(FUNC)

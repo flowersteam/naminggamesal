@@ -156,10 +156,10 @@ class CustomGraph(object):
 			elif self.semilog:
 				plt.xscale('symlog',basex=self.loglog_basex)
 			if self.std:
-				Ytempmin=[0]*len(Ytemp)
-				Ytempmax=[0]*len(Ytemp)
+				Ytempmin = [0 for _ in Ytemp]
+				Ytempmax = [0 for _ in Ytemp]
 				for j in range(0,len(Ytemp)):
-					if not hasattr(self.std_mode) or self.std_mode == 'std':
+					if not hasattr(self,'std_mode') or self.std_mode == 'std':
 						Ytempmax[j]=Ytemp[j]+stdtemp[j]
 						Ytempmin[j]=Ytemp[j]-stdtemp[j]
 					elif self.std_mode == 'minmax':
