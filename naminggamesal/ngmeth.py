@@ -25,7 +25,9 @@ def pop_ize(func):
 			tempNlist.append(func(agentlist[i]))
 			mean=np.mean(tempNlist)
 			std=np.std(tempNlist)
-		return [mean,std,tempNlist]
+			_min=np.min(tempNlist)
+			_max=np.max(tempNlist)
+		return [mean,std,tempNlist,_min,_max]
 	out_func.__name__=func.__name__+"_mean"
 	return out_func
 

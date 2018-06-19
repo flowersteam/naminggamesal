@@ -58,6 +58,7 @@ class CustomGraph(object):
 		self.ymax = None
 
 		self.std = False
+		self.std_mode = 'std'
 
 		self.xticker = True
 		self.yticker = True
@@ -67,6 +68,8 @@ class CustomGraph(object):
 		else:
 			self._Y = [Y]
 		self.stdvec = [0 for _ in range(len(Y))]
+		self.minvec = [np.nan for _ in range(len(Y))]
+		self.maxvec = [np.nan for _ in range(len(Y))]
 
 		if X is None:
 			self._X = [list(range(len(Y)))]
@@ -80,6 +83,8 @@ class CustomGraph(object):
 			setattr(self,key,value)
 
 		self.stdvec=[self.stdvec]
+		self.minvec=[self.minvec]
+		self.maxvec=[self.maxvec]
 
 		self.init_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
@@ -127,14 +132,16 @@ class CustomGraph(object):
 		plt.ion()
 		plt.cla()
 		plt.clf()
-		current_palette=sns.color_palette()
+		current_palette = sns.color_palette()
 		for i in range(0,len(self._Y)):
 
-			Xtemp=copy.deepcopy(self._X[i])
-			Ytemp=copy.deepcopy(self._Y[i])
-			stdtemp=copy.deepcopy(self.stdvec[i])
+			Xtemp = copy.deepcopy(self._X[i])
+			Ytemp = copy.deepcopy(self._Y[i])
+			stdtemp = copy.deepcopy(self.stdvec[i])
+			mintemp = copy.deepcopy(self.minvec[i])
+			maxtemp = copy.deepcopy(self.maxvec[i])
 			if self.sort: # WARNING!!!!! No X value should appear 2 times -> bug to solve
-				tempdic={}
+				tempdic = {}
 				for j in range(0,len(Xtemp)):
 					tempdic[Xtemp[j]]=[Ytemp[j],stdtemp[j]]
 				temptup=sorted(tempdic.items())
@@ -152,8 +159,12 @@ class CustomGraph(object):
 				Ytempmin=[0]*len(Ytemp)
 				Ytempmax=[0]*len(Ytemp)
 				for j in range(0,len(Ytemp)):
-					Ytempmax[j]=Ytemp[j]+stdtemp[j]
-					Ytempmin[j]=Ytemp[j]-stdtemp[j]
+					if not hasattr(self.std_mode) or self.std_mode == 'std':
+						Ytempmax[j]=Ytemp[j]+stdtemp[j]
+						Ytempmin[j]=Ytemp[j]-stdtemp[j]
+					elif self.std_mode == 'minmax':
+						Ytempmax[j] = maxtemp[j]
+						Ytempmin[j] = mintemp[j]
 				if 'color' in list(self.Yoptions[i].keys()):
 					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha,**self.Yoptions[i])
 				else:
@@ -239,11 +250,21 @@ class CustomGraph(object):
 			g.add_graph(other_graph)
 		return g
 
+	def __setstate__(self, in_dict):
+		if not 'minvec' in list(in_dict.keys()):
+			in_dict['minvec'] = [[np.nan for _ in X] for X in in_dict['_X']]
+		if not 'maxvec' in list(in_dict.keys()):
+			in_dict['maxvec'] = [[np.nan for _ in X] for X in in_dict['_X']]
+		self.__dict__.update(in_dict)
+
 	def add_graph(self,other_graph):
 		self._X = self._X + copy.deepcopy(other_graph._X)
 		self._Y = self._Y + copy.deepcopy(other_graph._Y)
 		self.Yoptions = self.Yoptions + copy.deepcopy(other_graph.Yoptions)
 		self.stdvec = self.stdvec + copy.deepcopy(other_graph.stdvec)
+		self.minvec = self.minvec + copy.deepcopy(other_graph.minvec)
+		self.maxvec = self.maxvec + copy.deepcopy(other_graph.maxvec)
+		
 		label_in_1 = 'labels' in self.legendoptions
 		label_in_2 = 'labels' in other_graph.legendoptions
 		if label_in_1 or label_in_2:
@@ -281,44 +302,62 @@ class CustomGraph(object):
 				X = copy.deepcopy(self._X[i])
 				Y = copy.deepcopy(self._Y[i])
 				stdvec = copy.deepcopy(self.stdvec[i])
+				minvec = copy.deepcopy(self.minvec[i])
+				maxvec = copy.deepcopy(self.maxvec[i])
 				Xind = 0
 				oXind = 0
 				self._X[i] = []
 				self._Y[i] = []
 				self.stdvec[i] = []
+				self.minvec[i] = []
+				self.maxvec[i] = []
 				while Xind < len(X) and oXind < len(other_graph._X[i]):
 					if X[Xind] < other_graph._X[i][oXind]:
 						self._X[i].append(X[Xind])
 						self._Y[i].append(Y[Xind])
 						self.stdvec[i].append(stdvec[Xind])
+						self.minvec[i].append(minvec[Xind])
+						self.maxvec[i].append(maxvec[Xind])
 						Xind += 1
 					elif X[Xind] > other_graph._X[i][oXind]:
 						self._X[i].append(other_graph._X[i][oXind])
 						self._Y[i].append(other_graph._Y[i][oXind])
 						self.stdvec[i].append(other_graph.stdvec[i][oXind])
+						self.minvec[i].append(other_graph.minvec[i][oXind])
+						self.maxvec[i].append(other_graph.maxvec[i][oXind])
 						oXind += 1
 					else:
 						self._X[i].append(X[Xind])
 						self._Y[i].append(Y[Xind])
 						self.stdvec[i].append(stdvec[Xind])
+						self.minvec[i].append(minvec[Xind])
+						self.maxvec[i].append(maxvec[Xind])
 						Xind += 1
 						oXind += 1
 			else:
 				self._X[i]=list(copy.deepcopy(self._X[i]))+list(copy.deepcopy(other_graph._X[i]))
 				self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
 				self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
+				self.minvec[i]=list(copy.deepcopy(self.minvec[i]))+list(copy.deepcopy(other_graph.minvec[i]))
+				self.maxvec[i]=list(copy.deepcopy(self.maxvec[i]))+list(copy.deepcopy(other_graph.maxvec[i]))
 			if remove_duplicates:
 				X = copy.deepcopy(self._X[i])
 				Y = copy.deepcopy(self._Y[i])
 				stdvec = copy.deepcopy(self.stdvec[i])
+				minvec = copy.deepcopy(self.minvec[i])
+				maxvec = copy.deepcopy(self.maxvec[i])
 				self._X[i] = []
 				self._Y[i] = []
 				self.stdvec[i] = []
+				self.minvec[i] = []
+				self.maxvec[i] = []
 				for j in range(len(X)):
 					if X[j] not in self._X[i]:
 						self._X[i].append(X[j])
 						self._Y[i].append(Y[j])
 						self.stdvec[i].append(stdvec[j])
+						self.minvec[i].append(minvec[j])
+						self.maxvec[i].append(maxvec[j])
 		if self.xmin is None or other_graph.xmin is None:
 			self.xmin = None
 		else:
@@ -350,6 +389,8 @@ class CustomGraph(object):
 		Xcopy = copy.deepcopy(self._X)
 		Ycopy = copy.deepcopy(self._Y)
 		stdcopy = copy.deepcopy(self.stdvec)
+		mincopy = copy.deepcopy(self.minvec)
+		maxcopy = copy.deepcopy(self.maxvec)
 		stdtemp = []
 		Ytemp = []
 		#Xtemp = []
@@ -368,6 +409,8 @@ class CustomGraph(object):
 			Ylist = Ydict[x]
 			Ytemp.append(np.mean(Ylist))
 			stdtemp.append(np.std(Ylist))
+			mintemp.append(np.min(Ylist))
+			maxtemp.append(np.max(Ylist))
 
 
 		#max_length = max([len(self._Y[j]) for j in range(len(self._Y))])
@@ -379,6 +422,8 @@ class CustomGraph(object):
 		#	#stdtemp.append(np.std(list(Yarray[:,i])))
 		self._Y = [Ytemp]
 		self.stdvec = [stdtemp]
+		self.minvec = [mintemp]
+		self.maxvec = [maxtemp]
 		self._X = [Xlist]
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 
@@ -406,6 +451,8 @@ class CustomGraph(object):
 		tempgraph._Y=[]
 		tempgraph.Yoptions=[]
 		tempgraph.stdvec=[]
+		tempgraph.minvec=[]
+		tempgraph.maxvec=[]
 		for key in list(param_values.keys()):
 			param_values[key].merge()
 			tempgraph.add_graph(param_values[key])
@@ -417,6 +464,8 @@ class CustomGraph(object):
 		self._X=[]
 		self.Yoptions=[]
 		self.stdvec=[]
+		self.minvec=[]
+		self.maxvec=[]
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
 

@@ -113,7 +113,7 @@ class Experiment(object):
 		pop.add_agent(agent)
 		self._poplist.append(pop,self._T[-1])
 		self.commit_to_db()
-	
+
 	def rm_agent(self,agent):
 		self.init_poplist()
 		pop = self._poplist.get_last()
@@ -285,19 +285,25 @@ class Experiment(object):
 		tempfun=getattr(ngmeth,"custom_"+method)
 		tempoutmean=[]
 		tempoutstd=[]
+		tempoutmin=[]
+		tempoutmax=[]
 		if tempfun.level=="agent":
 			for j in range(indmin,len(self._T)+1+indmax):
 				tempout=tempfun.apply(self._poplist.get(self._T[j]))
 				tempoutmean.append(tempout[0])
 				tempoutstd.append(tempout[1])
+				tempoutmin.append(tempout[2])
+				tempoutmax.append(tempout[3])
 			configgraph=tempfun.get_graph_config()
 			configgraph["xlabel"]="T"
 			tempY=tempoutmean
 			tempX=self._T[indmin:(len(self._T)+indmax+1)]
 			stdvec=tempoutstd
+			minvec=tempoutmin
+			maxvec=tempoutmax
 			#configgraph["xmin"]=min(tempX)
 			#configgraph["xmax"]=max(tempX)
-			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=1,sort=0,stdvec=stdvec,filename="graph_"+tempfun.func.__name__,**configgraph)
+			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=1,sort=0,minvec=minvec,maxvec=maxvec,stdvec=stdvec,filename="graph_"+tempfun.func.__name__,**configgraph)
 		elif tempfun.level=="population":
 			tempout=[]
 			for j in range(indmin,len(self._T)+1+indmax):
@@ -329,8 +335,7 @@ class Experiment(object):
 			#configgraph["xmax"]=max(tempX)
 			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
 		else:
-			print("Custom_func level doesn't exist or has an unknown value:")
-			print((tempfun.level))
+			raise ValueError("Custom_func level doesn't exist or has an unknown value:"+str(tempfun.level))
 		if X:
 			tempgraph2=self.graph(method=X,tmin=tmin,tmax=tmax)
 			tempgraph=tempgraph.func_of(tempgraph2)
