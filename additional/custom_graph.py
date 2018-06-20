@@ -392,6 +392,8 @@ class CustomGraph(object):
 		mincopy = copy.deepcopy(self.minvec)
 		maxcopy = copy.deepcopy(self.maxvec)
 		stdtemp = []
+		mintemp = []
+		maxtemp = []
 		Ytemp = []
 		#Xtemp = []
 		self.Yoptions=[self.Yoptions[0]]
