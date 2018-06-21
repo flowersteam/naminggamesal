@@ -33,6 +33,8 @@ setup(name='naminggamesal',
       license='GNU AFFERO GENERAL PUBLIC LICENSE Version 3',
       #ext_modules = cythonize(['naminggamesal/ngmeth_utils/csrtheo_utils.pyx','naminggamesal/ngvoc/c2dictdict.pyx']),
       ext_modules=
-        [Extension(sources=['naminggamesal/ngmeth_utils/csrtheo_utils.pyx','naminggamesal/ngvoc/c2dictdict.pyx']),]
+        [Extension(name='naminggamesal.ngmeth_utils.csrtheo_utils',sources=['naminggamesal/ngvoc/c2dictdict.pyx']),
+        Extension(name='naminggamesal.ngvoc.c2dictdict',sources=['naminggamesal/ngvoc/c2dictdict.pyx']),
+        ]
     )
 
