@@ -3,6 +3,7 @@
 import re
 import sys
 import subprocess
+import sys
 
 from setuptools import setup, find_packages
 try:
@@ -12,7 +13,8 @@ except ImportError:
     try:
       pip.main(['install', 'Cython'])
     except:
-      subprocess.check_call('pip install Cython')
+        version = sys.version_info[0]
+        subprocess.check_call('pip{} install Cython'.format(str(version)))
     from Cython.Build import cythonize
 
 def version():
