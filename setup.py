@@ -12,7 +12,7 @@ except ImportError:
     try:
       pip.main(['install', 'Cython'])
     except:
-      subprocess.checkcall('pip install Cython')
+      subprocess.check_call('pip install Cython')
     from Cython.Build import cythonize
 
 def version():
