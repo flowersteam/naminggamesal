@@ -9,13 +9,9 @@ from setuptools import setup, find_packages
 try:
     from Cython.Build import cythonize
 except ImportError:
-    import pip
-    try:
-      pip.main(['install', 'Cython'])
-    except:
-        version = sys.version_info[0]
-        subprocess.check_call('pip{} install Cython'.format(str(version)))
-    from Cython.Build import cythonize
+     def cythonize(*args, **kwargs):
+         from Cython.Build import cythonize
+         return cythonize(*args, **kwargs)
 
 def version():
     with open('naminggamesal/_version.py') as f:
