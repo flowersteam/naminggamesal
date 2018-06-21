@@ -23,8 +23,7 @@ def requirements():
 
 
 try:
-    extensions = 
-        [Extension(name='naminggamesal.ngmeth_utils.csrtheo_utils',sources=['naminggamesal/ngmeth_utils/csrtheo_utils.pyx']),
+    extensions = [Extension(name='naminggamesal.ngmeth_utils.csrtheo_utils',sources=['naminggamesal/ngmeth_utils/csrtheo_utils.pyx']),
         Extension(name='naminggamesal.ngvoc.c2dictdict',sources=['naminggamesal/ngvoc/c2dictdict.pyx']),
         ]
 except:
