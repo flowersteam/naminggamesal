@@ -9,8 +9,6 @@ before_install:
 install:
   - pip install codecov pytest-cov
   - pip install -r requirements.txt
-  - pip install cython
-  - pip install -U setuptools
   - python setup.py develop
 script: pytest --cov=./
 after_success:
