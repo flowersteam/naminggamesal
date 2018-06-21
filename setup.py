@@ -22,14 +22,12 @@ def requirements():
         return f.readlines()
 
 
-try:
-    extensions = [Extension(name='naminggamesal.ngmeth_utils.csrtheo_utils',sources=['naminggamesal/ngmeth_utils/csrtheo_utils.pyx']),
+extensions = [Extension(name='naminggamesal.ngmeth_utils.csrtheo_utils',sources=['naminggamesal/ngmeth_utils/csrtheo_utils.pyx']),
         Extension(name='naminggamesal.ngvoc.c2dictdict',sources=['naminggamesal/ngvoc/c2dictdict.pyx']),
         ]
-except:
-    extensions = cythonize(['naminggamesal/ngmeth_utils/csrtheo_utils.pyx','naminggamesal/ngvoc/c2dictdict.pyx'])
 
-setup(name='naminggamesal',
+def do_setup():
+    setup(name='naminggamesal',
       version=version(),
       packages=find_packages(),
       install_requires=[requirements()],
@@ -42,4 +40,8 @@ setup(name='naminggamesal',
       #ext_modules = cythonize(['naminggamesal/ngmeth_utils/csrtheo_utils.pyx','naminggamesal/ngvoc/c2dictdict.pyx']),
       ext_modules=extensions
     )
-
+try:
+    do_setup()
+except:
+    extensions = cythonize(['naminggamesal/ngmeth_utils/csrtheo_utils.pyx','naminggamesal/ngvoc/c2dictdict.pyx'])
+    do_setup()
