@@ -64,7 +64,7 @@ strat_class={
 	'user_noninteractive':'user.StratUserNonInteractive',
 }
 
-def get_strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, **strat_cfg2):
+def get_strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global_norandom'}, **strat_cfg2):
 	tempstr = strat_type
 	if tempstr == 'mixed':
 		tot = sum(strat_cfg2['proba'])
@@ -88,7 +88,7 @@ def get_strategy(strat_type='naive', vu_cfg={'vu_type':'imitation'}, success_cfg
 
 class BaseStrategy(object):
 
-	def __init__(self, vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global'}, memory_policies=[], **strat_cfg2):
+	def __init__(self, vu_cfg={'vu_type':'imitation'}, success_cfg={'success_type':'global_norandom'}, memory_policies=[], **strat_cfg2):
 		#for key, value in strat_cfg2.iteritems():
 		#	setattr(self, key, value)
 		self.voc_update = get_voc_update(**vu_cfg)
