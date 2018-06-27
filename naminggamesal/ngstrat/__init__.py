@@ -188,7 +188,7 @@ class BaseStrategy(object):
 	def pick_m(self,voc,mem,context=[]):
 		pass
 
-	def pick_w(self,voc,mem,context=[]):
+	def pick_w(self,m,voc,mem,context=[]):
 		pass
 
 	def guess_m(self,voc,mem,context=[]):
