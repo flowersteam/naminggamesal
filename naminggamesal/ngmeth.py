@@ -1944,8 +1944,8 @@ custom_interactions_per_agent =custom_func.CustomFunc(FUNC,"time",**graphconfig)
 
 def product_maxmem_convtime(exp,X=0,**kwargs):
 
-	max_mem_val = exp.db.get_graph(exp.uuid, method='max_mem_conv')._Y[0][0]
-	conv_time_val = exp.db.get_graph(exp.uuid, method='conv_time')._Y[0][0]
+	max_mem_val = exp.graph('max_mem_conv')._Y[0][0]
+	conv_time_val = exp.graph('conv_time')._Y[0][0]
 	return [max_mem_val*conv_time_val]
 
 def product_maxmem_convtime_min(exp):
@@ -1961,7 +1961,7 @@ custom_product_maxmem_convtime =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def max_mem(exp,X=0,**kwargs):
 
-	mem = exp.db.get_graph(exp.uuid, method='Nlink')#mem = exp.graph(method='Nlink')
+	mem = exp.graph('Nlink')
 	return [max(mem._Y[0])]
 
 def max_mem_min(exp):
@@ -1975,7 +1975,7 @@ custom_max_mem =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_mem_conv##########
 
 def max_mem_conv(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
+	sr_gr = exp.graph('srtheo')
 	sr = sr_gr._Y[0][-1]
 	if sr >= thresh:
 		return max_mem(exp,X=X,**kwargs)
@@ -1994,7 +1994,7 @@ custom_max_mem_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def max_N_d(exp,X=0,**kwargs):
 
-	mem = exp.db.get_graph(exp.uuid, method='N_d')#mem = exp.graph(method='Nlink')
+	mem = exp.graph('N_d')
 	return [max(mem._Y[0])]
 
 def max_N_d_min(exp):
@@ -2008,7 +2008,7 @@ custom_max_N_d =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_N_d_conv##########
 
 def max_N_d_conv(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
+	sr_gr = exp.graph('srtheo')
 	sr = sr_gr._Y[0][-1]
 	if sr >= thresh:
 		return max_N_d(exp,X=X,**kwargs)
@@ -2024,7 +2024,7 @@ custom_max_N_d_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time##########
 
 def conv_time(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
+	sr_gr = exp.graph('srtheo')
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
 		if sr[i] >= thresh:
@@ -2046,11 +2046,11 @@ custom_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time2##########
 
 def conv_time2(exp,X=0,thresh=1.,**kwargs):
-	Nd_gr = exp.db.get_graph(exp.uuid, method='N_d')#exp.graph(method='srtheo')
+	Nd_gr = exp.graph('N_d')
 	Nd = Nd_gr._Y[0]
-	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')#exp.graph(method='srtheo')
+	Nm_gr = exp.graph('N_meanings')
 	Nm = Nm_gr._Y[0]
-	Nw_gr = exp.db.get_graph(exp.uuid, method='N_words')#exp.graph(method='srtheo')
+	Nw_gr = exp.graph('N_words')
 	Nw = Nw_gr._Y[0]
 	M = N_meanings_max(exp._poplist.get_last())
 	for i in range(len(Nd)):
@@ -2072,9 +2072,9 @@ custom_conv_time2 =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########block_time##########
 
 def block_time(exp,X=0,**kwargs):
-	Nd_gr = exp.db.get_graph(exp.uuid, method='N_d')#exp.graph(method='srtheo')
+	Nd_gr = exp.graph('N_d')
 	Nd = Nd_gr._Y[0]
-	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')#exp.graph(method='srtheo')
+	Nm_gr = exp.graph('N_meanings')
 	Nm = Nm_gr._Y[0]
 	M = N_meanings_max(exp._poplist.get_last())
 	for i in range(len(Nd)):
@@ -2096,11 +2096,11 @@ custom_block_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########homonymy_block##########
 
 def homonymy_block(exp,X=0,**kwargs):
-	Nd_gr = exp.db.get_graph(exp.uuid, method='N_d')#exp.graph(method='srtheo')
+	Nd_gr = exp.graph('N_d')
 	Nd = Nd_gr._Y[0]
-	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')#exp.graph(method='srtheo')
+	Nm_gr = exp.graph('N_meanings')
 	Nm = Nm_gr._Y[0]
-	hom_gr = exp.db.get_graph(exp.uuid, method='homonymy')#exp.graph(method='srtheo')
+	hom_gr = exp.graph('homonymy')
 	hom = hom_gr._Y[0]
 	M = N_meanings_max(exp._poplist.get_last())
 	if Nm[-1] == M and Nd[-1] == M:
@@ -2122,7 +2122,7 @@ custom_homonymy_block =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_N_d_time##########
 
 def max_N_d_time(exp,X=0,thresh=1.,**kwargs):
-	N_d_gr = exp.db.get_graph(exp.uuid, method='N_d')#exp.graph(method='srtheo')
+	N_d_gr = exp.graph('N_d')
 	N_d_vec = N_d_gr._Y[0]
 	val = max(N_d_vec)
 	for i in range(len(N_d_vec)-1):
@@ -2145,7 +2145,7 @@ custom_max_N_d_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time_plus_srtheo##########
 
 def conv_time_plus_srtheo(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
+	sr_gr = exp.graph('srtheo')
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
 		if sr[i] >= thresh:
@@ -2161,8 +2161,8 @@ custom_conv_time_plus_srtheo =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def srtheo_and_block_time(exp,X=0,thresh=1.,**kwargs):
 	sr_val = -1
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')
-	bt_gr = exp.db.get_graph(exp.uuid, method='block_time')
+	sr_gr = exp.graph('srtheo')
+	bt_gr = exp.graph('block_time')
 	bt_val = bt_gr._Y[0][0]
 	for i in range(len(sr_gr._X[0])):
 		if sr_gr._X[0][i] == bt_val:
@@ -2181,9 +2181,9 @@ custom_srtheo_and_block_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def conv_time2_Nm_srtheo(exp,X=0,thresh=1.,**kwargs):
 	sr_val = -1
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')
-	ct2_gr = exp.db.get_graph(exp.uuid, method='conv_time2')
-	Nm_gr = exp.db.get_graph(exp.uuid, method='N_meanings')
+	sr_gr = exp.graph('srtheo')
+	ct2_gr = exp.graph('conv_time2')
+	Nm_gr = exp.graph('N_meanings')
 	ct_val = ct2_gr._Y[0][-1]
 	for i in range(len(sr_gr._X[0])):
 		if sr_gr._X[0][i] == ct_val:
@@ -2204,7 +2204,7 @@ custom_conv_time2_Nm_srtheo =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########partial_conv_time##########
 
 def partial_conv_time(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
+	sr_gr = exp.graph('srtheo')
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
 		if sr[i] >= 0.9*thresh:
@@ -2220,7 +2220,7 @@ custom_partial_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_mem_conv_threshold##########
 
 def max_mem_conv_threshold(exp,X=0,**kwargs):
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
+	sr_gr = exp.graph('srtheo')
 	thresh = sr_gr._Y[0][-1]
 	return max_mem(exp,X=X,thresh=thresh,**kwargs)
 
@@ -2233,7 +2233,7 @@ custom_max_mem_conv_threshold = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time_threshold##########
 
 def conv_time_threshold(exp,X=0,**kwargs):
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
+	sr_gr = exp.graph('srtheo')
 	thresh = sr_gr._Y[0][-1]
 	return conv_time(exp,X=X,thresh=thresh,**kwargs)
 
@@ -2245,7 +2245,7 @@ custom_conv_time_threshold =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########partial_conv_time_threshold##########
 
 def partial_conv_time_threshold(exp,X=0,**kwargs):
-	sr_gr = exp.db.get_graph(exp.uuid, method='srtheo')#exp.graph(method='srtheo')
+	sr_gr = exp.graph('srtheo')
 	thresh = sr_gr._Y[0][-1]
 	return partial_conv_time(exp,X=X,thresh=thresh,**kwargs)
 

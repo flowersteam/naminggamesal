@@ -22,10 +22,7 @@ def test_importerror():
 	try:
 		a = ngvoc.get_vocabulary(voc_type='thereisnosuchclass')
 	except ImportError as e:
-		if len(e.args) and len(e.args[0])>14 and e.args[0][:15] == 'No such class: ':
-			pass
-		else:
-			raise
+		assert len(e.args) and len(e.args[0])>14 and e.args[0][:15] == 'No such class: '
 
 @pytest.fixture(params=voctype_list)
 def tempvoc(request):
