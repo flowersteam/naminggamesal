@@ -43,17 +43,38 @@ steptype_list = [
 def steptype(request):
 	return request.param
 
+success_list = [
+	'global',
+	'global_norandom',
+	'alignment',
+	'communicative'
+	]
+@pytest.fixture(params=success_list)
+def successtype(request):
+	return request.param
+
+strat_list = [
+	'naive',
+	'success_threshold',
+	'success_threshold_wise',
+	'lapsmax_explothreshold',
+	]
+@pytest.fixture(params=strat_list)
+def strattype(request):
+	return request.param
+
 
 #@pytest.mark.parametrize("voctype", voctype_list)
 #@pytest.mark.parametrize("vutype", vutype_list)
 #@pytest.mark.parametrize("steptype", steptype_list)
 @pytest.fixture
-def xp_cfg(voctype,vutype,steptype):
+def xp_cfg(voctype,vutype,steptype,successtype,strattype):
 	base_xp_cfg = {
     'pop_cfg':{
         'voc_cfg':{'voc_type':voctype},
-        'strat_cfg':{'strat_type':'naive',
-                    'vu_cfg':{'vu_type':vutype}},
+        'strat_cfg':{'strat_type':strattype,
+                    'vu_cfg':{'vu_type':vutype},
+                    'success_cfg':{'success_type':successtype}},
         'interact_cfg':{'interact_type':'speakerschoice'},
         'env_cfg':{'env_type':'simple','M':M,'W':W},
         'nbagent':N
