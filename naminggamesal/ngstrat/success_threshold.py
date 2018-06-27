@@ -53,8 +53,14 @@ class StratSuccessThreshold(StratNaive):
 		succ_sum=0
 		fail_sum=0
 		for m in voc.get_known_meanings():
-			succ_sum+=mem["success_m"][m]
-			fail_sum+=mem["fail_m"][m]
+			try:
+				succ_sum+=mem["success_m"][m]
+			except KeyError:
+				pass
+			try:
+				fail_sum+=mem["fail_m"][m]
+			except KeyError:
+				pass
 		if succ_sum==0:
 			return 0
 		else:
@@ -68,8 +74,14 @@ class StratSuccessThresholdCorrected(StratSuccessThreshold):
 		fail_sum=0
 		temprate=0
 		for m in voc.get_known_meanings():
-			succ_sum=mem["success_m"][m]
-			fail_sum=mem["fail_m"][m]
+			try:
+				succ_sum=mem["success_m"][m]
+			except KeyError:
+				succ_sum = 0
+			try:
+				fail_sum=mem["fail_m"][m]
+			except KeyError:
+				fail_sum = 0
 			if succ_sum!=0:
 				temprate+=succ_sum/float(fail_sum+succ_sum)
 		if voc.get_known_meanings():
