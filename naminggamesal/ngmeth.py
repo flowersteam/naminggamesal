@@ -2181,7 +2181,7 @@ def tdiff_d_min(exp):
 
 FUNC = tdiff_d
 
-graphconfig = {"ymin":max_tdiff_d_min,"ymax":tdiff_d_max}
+graphconfig = {"ymin":tdiff_d_min,"ymax":tdiff_d_max}
 custom_tdiff_d =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########tdiff_w##########
@@ -2200,7 +2200,7 @@ def tdiff_w_min(exp):
 
 FUNC = tdiff_w
 
-graphconfig = {"ymin":max_tdiff_w_min,"ymax":tdiff_w_max}
+graphconfig = {"ymin":tdiff_w_min,"ymax":tdiff_w_max}
 custom_tdiff_w =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########tdiff_wd##########
@@ -2219,7 +2219,7 @@ def tdiff_wd_min(exp):
 
 FUNC = tdiff_wd
 
-graphconfig = {"ymin":max_tdiff_wd_min,"ymax":tdiff_wd_max}
+graphconfig = {"ymin":tdiff_wd_min,"ymax":tdiff_wd_max}
 custom_tdiff_wd =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########conv_time_plus_srtheo##########
