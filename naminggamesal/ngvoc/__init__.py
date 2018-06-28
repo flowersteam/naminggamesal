@@ -321,8 +321,13 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	def get_new_unknown_w(self):
 		if hasattr(self,'next_word'):
-			w = self.next_word
-			delattr(self,'next_word')
+			if isinstance(self.next_word,list):
+				w = self.next_word.pop()
+				if len(self.next_word) == 0:
+					delattr(self,'next_word')
+			else:
+				w = self.next_word
+				delattr(self,'next_word')
 		elif len(self.unknown_words) != 0:
 			w = self.get_random_w(w_list=self.unknown_words)
 		elif len(self.accessible_words) == 0:
