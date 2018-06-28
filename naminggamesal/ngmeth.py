@@ -2142,6 +2142,86 @@ FUNC = max_N_d_time
 graphconfig = {"ymin":max_N_d_time_min,"ymax":max_N_d_time_max}
 custom_max_N_d_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
+#########max_Nlink_time##########
+
+def max_Nlink_time(exp,X=0,thresh=1.,**kwargs):
+	Nlink_gr = exp.graph('Nlink')
+	Nlink_vec = Nlink_gr._Y[0]
+	val = max(Nlink_vec)
+	for i in range(len(Nlink_vec)-1):
+		if Nlink_vec[i] == val:
+			return [Nlink_gr._X[0][i]]
+	return [np.nan]
+
+
+def max_Nlink_time_max(exp):
+	return exp._T[-1]
+
+def max_Nlink_time_min(exp):
+	return 0
+
+FUNC = max_Nlink_time
+
+graphconfig = {"ymin":max_Nlink_time_min,"ymax":max_Nlink_time_max}
+custom_max_Nlink_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########tdiff_d##########
+
+def tdiff_d(exp,X=0,thresh=1.,**kwargs):
+	val1 = exp.graph('max_N_d_time')
+	val2 = exp.graph('conv_time2')
+	return [val2-val1]
+
+
+def tdiff_d_max(exp):
+	return exp._T[-1]
+
+def tdiff_d_min(exp):
+	return 0
+
+FUNC = tdiff_d_time
+
+graphconfig = {"ymin":max_tdiff_d_min,"ymax":tdiff_d_max}
+custom_tdiff_d_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########tdiff_w##########
+
+def tdiff_w(exp,X=0,thresh=1.,**kwargs):
+	val1 = exp.graph('max_Nlink_time')
+	val2 = exp.graph('conv_time2')
+	return [val2-val1]
+
+
+def tdiff_w_max(exp):
+	return exp._T[-1]
+
+def tdiff_w_min(exp):
+	return 0
+
+FUNC = tdiff_w_time
+
+graphconfig = {"ymin":max_tdiff_w_min,"ymax":tdiff_w_max}
+custom_tdiff_w_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########tdiff_wd##########
+
+def tdiff_wd(exp,X=0,thresh=1.,**kwargs):
+	val1 = exp.graph('max_N_d_time')
+	val2 = exp.graph('max_Nlink_time')
+	return [val2-val1]
+
+
+def tdiff_wd_max(exp):
+	return exp._T[-1]
+
+def tdiff_wd_min(exp):
+	return 0
+
+FUNC = tdiff_wd_time
+
+graphconfig = {"ymin":max_tdiff_wd_min,"ymax":tdiff_wd_max}
+custom_tdiff_wd_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
 #########conv_time_plus_srtheo##########
 
 def conv_time_plus_srtheo(exp,X=0,thresh=1.,**kwargs):
