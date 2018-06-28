@@ -68,8 +68,9 @@ class CustomGraph(object):
 		else:
 			self._Y = [Y]
 		self.stdvec = [0 for _ in range(len(Y))]
-		self.minvec = [np.nan for _ in range(len(Y))]
-		self.maxvec = [np.nan for _ in range(len(Y))]
+		self.all_data = [ [] for _ in Y ]
+		self.minvec = [np.nan for _ in Y]
+		self.maxvec = [np.nan for _ in Y]
 
 		if X is None:
 			self._X = [list(range(len(Y)))]
@@ -83,6 +84,7 @@ class CustomGraph(object):
 			setattr(self,key,value)
 
 		self.stdvec=[self.stdvec]
+		self.all_data=[self.all_data]
 		self.minvec=[self.minvec]
 		self.maxvec=[self.maxvec]
 
@@ -255,6 +257,8 @@ class CustomGraph(object):
 			in_dict['minvec'] = [[np.nan for _ in X] for X in in_dict['_X']]
 		if not 'maxvec' in list(in_dict.keys()):
 			in_dict['maxvec'] = [[np.nan for _ in X] for X in in_dict['_X']]
+		if not 'all_data' in list(in_dict.keys()):
+			in_dict['all_data'] = [[[] for _ in X] for X in in_dict['_X']]
 		self.__dict__.update(in_dict)
 
 	def add_graph(self,other_graph):
@@ -262,9 +266,10 @@ class CustomGraph(object):
 		self._Y = self._Y + copy.deepcopy(other_graph._Y)
 		self.Yoptions = self.Yoptions + copy.deepcopy(other_graph.Yoptions)
 		self.stdvec = self.stdvec + copy.deepcopy(other_graph.stdvec)
+		self.all_data = self.all_data + copy.deepcopy(other_graph.all_data)
 		self.minvec = self.minvec + copy.deepcopy(other_graph.minvec)
 		self.maxvec = self.maxvec + copy.deepcopy(other_graph.maxvec)
-		
+
 		label_in_1 = 'labels' in self.legendoptions
 		label_in_2 = 'labels' in other_graph.legendoptions
 		if label_in_1 or label_in_2:
@@ -297,11 +302,13 @@ class CustomGraph(object):
 			self.ymax = max(self.ymax,other_graph.ymax)
 
 	def complete_with(self,other_graph, mix=True, remove_duplicates=False):
+		other_graph = copy.deepcopy(other_graph)
 		for i in range(0,len(self._X)):
 			if mix and not self._X[-1]<other_graph._X[0]:
 				X = copy.deepcopy(self._X[i])
 				Y = copy.deepcopy(self._Y[i])
 				stdvec = copy.deepcopy(self.stdvec[i])
+				all_data = copy.deepcopy(self.all_data[i])
 				minvec = copy.deepcopy(self.minvec[i])
 				maxvec = copy.deepcopy(self.maxvec[i])
 				Xind = 0
@@ -309,6 +316,7 @@ class CustomGraph(object):
 				self._X[i] = []
 				self._Y[i] = []
 				self.stdvec[i] = []
+				self.all_data[i] = []
 				self.minvec[i] = []
 				self.maxvec[i] = []
 				while Xind < len(X) and oXind < len(other_graph._X[i]):
@@ -316,6 +324,7 @@ class CustomGraph(object):
 						self._X[i].append(X[Xind])
 						self._Y[i].append(Y[Xind])
 						self.stdvec[i].append(stdvec[Xind])
+						self.all_data[i].append(all_data[Xind])
 						self.minvec[i].append(minvec[Xind])
 						self.maxvec[i].append(maxvec[Xind])
 						Xind += 1
@@ -323,6 +332,7 @@ class CustomGraph(object):
 						self._X[i].append(other_graph._X[i][oXind])
 						self._Y[i].append(other_graph._Y[i][oXind])
 						self.stdvec[i].append(other_graph.stdvec[i][oXind])
+						self.all_data[i].append(other_graph.all_data[i][oXind])
 						self.minvec[i].append(other_graph.minvec[i][oXind])
 						self.maxvec[i].append(other_graph.maxvec[i][oXind])
 						oXind += 1
@@ -330,6 +340,7 @@ class CustomGraph(object):
 						self._X[i].append(X[Xind])
 						self._Y[i].append(Y[Xind])
 						self.stdvec[i].append(stdvec[Xind])
+						self.all_data[i].append(all_data[Xind])
 						self.minvec[i].append(minvec[Xind])
 						self.maxvec[i].append(maxvec[Xind])
 						Xind += 1
@@ -338,17 +349,20 @@ class CustomGraph(object):
 				self._X[i]=list(copy.deepcopy(self._X[i]))+list(copy.deepcopy(other_graph._X[i]))
 				self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
 				self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
+				self.all_data[i]=list(copy.deepcopy(self.all_data[i]))+list(copy.deepcopy(other_graph.all_data[i]))
 				self.minvec[i]=list(copy.deepcopy(self.minvec[i]))+list(copy.deepcopy(other_graph.minvec[i]))
 				self.maxvec[i]=list(copy.deepcopy(self.maxvec[i]))+list(copy.deepcopy(other_graph.maxvec[i]))
 			if remove_duplicates:
 				X = copy.deepcopy(self._X[i])
 				Y = copy.deepcopy(self._Y[i])
 				stdvec = copy.deepcopy(self.stdvec[i])
+				all_data = copy.deepcopy(self.all_data[i])
 				minvec = copy.deepcopy(self.minvec[i])
 				maxvec = copy.deepcopy(self.maxvec[i])
 				self._X[i] = []
 				self._Y[i] = []
 				self.stdvec[i] = []
+				self.all_data[i] = []
 				self.minvec[i] = []
 				self.maxvec[i] = []
 				for j in range(len(X)):
@@ -356,6 +370,7 @@ class CustomGraph(object):
 						self._X[i].append(X[j])
 						self._Y[i].append(Y[j])
 						self.stdvec[i].append(stdvec[j])
+						self.all_data[i].append(all_data[j])
 						self.minvec[i].append(minvec[j])
 						self.maxvec[i].append(maxvec[j])
 		if self.xmin is None or other_graph.xmin is None:
@@ -383,7 +398,7 @@ class CustomGraph(object):
 #			self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
 #		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
-	def merge(self):
+	def merge(self,keep_all_data=False):
 		#Yarray=np.array(self._Y)
 		#stdarray=np.array(self.stdvec)
 		Xcopy = copy.deepcopy(self._X)
@@ -395,6 +410,7 @@ class CustomGraph(object):
 		mintemp = []
 		maxtemp = []
 		Ytemp = []
+		alldatatemp = []
 		#Xtemp = []
 		self.Yoptions=[self.Yoptions[0]]
 		self.std=1
@@ -413,6 +429,7 @@ class CustomGraph(object):
 			stdtemp.append(np.std(Ylist))
 			mintemp.append(np.min(Ylist))
 			maxtemp.append(np.max(Ylist))
+			alldatatemp.append(copy.deepcopy(Ylist))
 
 
 		#max_length = max([len(self._Y[j]) for j in range(len(self._Y))])
@@ -422,6 +439,10 @@ class CustomGraph(object):
 		#	stdtemp.append(np.std(Ylist))
 		#	#Ytemp.append(np.mean(list(Yarray[:,i])))
 		#	#stdtemp.append(np.std(list(Yarray[:,i])))
+		if keep_all_data:
+			self.all_data = [alldatatemp]
+		else:
+			self.all_data = [[[] for _ in X] for X in self._X]
 		self._Y = [Ytemp]
 		self.stdvec = [stdtemp]
 		self.minvec = [mintemp]
