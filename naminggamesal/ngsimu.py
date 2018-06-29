@@ -316,7 +316,10 @@ class Experiment(object):
 		elif tempfun.level=="population":
 			tempout=[]
 			for j in range(indmin,len(self._T)+1+indmax):
-				tempout.append(tempfun.apply(self._poplist.get(self._T[j])))
+				if self._T[j] == self._T[-1]:
+					tempout.append(tempfun.apply(self._poplist.get_last()))
+				else:
+					tempout.append(tempfun.apply(self._poplist.get(self._T[j])))
 			configgraph=tempfun.get_graph_config()
 			configgraph["xlabel"]="T"
 			tempY=tempout
