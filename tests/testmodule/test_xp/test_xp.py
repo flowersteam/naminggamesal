@@ -121,7 +121,7 @@ global_m_list = ['conv_time',
 				]
 
 def xp_loop(cfg):
-	xp = db.get_experiment(**xp_cfg)
+	xp = db.get_experiment(**cfg)
 	xp.continue_exp_until(20)
 	for local_m in local_m_list:
 		xp.graph(local_m)
