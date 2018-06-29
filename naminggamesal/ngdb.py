@@ -532,11 +532,11 @@ class Experiment(ngsimu.Experiment):
 	def commit_data_to_db(self,graph,method):
 		self.db.commit_data(self,graph,method)
 
-	def continue_exp_until(self,T, autocommit=True):
+	def continue_exp_until(self,T, autocommit=True,monitoring_func=None):
 		if not self.compute and T >= self._T[-1] + self.stepfun(self._T[-1]):
 			raise Exception('Computation needed')
 		try:
-			super(Experiment,self).continue_exp_until(T)
+			super(Experiment,self).continue_exp_until(T,monitoring_func=monitoring_func)
 		except Exception as e:
 			if len(e.args) == 0 or e.args[0] != 'User intervention needed':
 				print(self.uuid)
@@ -544,12 +544,12 @@ class Experiment(ngsimu.Experiment):
 		if autocommit:
 			self.commit_to_db()
 
-	def continue_exp(self,dT=None, autocommit=True):
+	def continue_exp(self,dT=None, autocommit=True, monitoring_func=None):
 		if not self._T:
 			self.add_pop(ngsimu.Population(xp_uuid=self.uuid,**self._pop_cfg),0)
 		if dT is None:
 			dT = self.stepfun(self._T[-1])
-		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit)
+		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit,monitoring_func=monitoring_func)
 
 	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True, tempgraph=None):
 		do_not_commit = False

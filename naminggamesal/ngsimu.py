@@ -44,10 +44,12 @@ class Poplist(object):
 		init_db(filepath=self.filepath)
 		self.init_done = True
 
-	def append(self,pop,T):
+	def append(self,pop,T,no_storage=False):
 		if hasattr(self,'init_done') and not self.init_done:
 			self.init_db()
-		add_data(filepath=self.filepath,data=pop,label=T)
+		if not no_storage:
+			add_data(filepath=self.filepath,data=pop,label=T)
+		self.pop = pop
 		self.T_last = T
 		#add_data_conn(cursor=self.cursor,data=pop,label=T)
 
@@ -229,7 +231,7 @@ class Experiment(object):
 	#def __str__(self):
 	#	return "T: "+str(self._T[-1])+"\n"+str(self._poplist.get_last())
 
-	def continue_exp_until(self,T):
+	def continue_exp_until(self,T,monitoring_func=None):
 		self.init_poplist()
 		temptmax = self._T[-1]
 		start_time = time.clock() - self._exec_time[-1]
@@ -240,22 +242,29 @@ class Experiment(object):
 				self.reconstruct_info.append(temppop._lastgameinfo)
 				self.reconstruct_info = self.reconstruct_info[-100:]
 			end_time = time.clock()
-			self.add_pop(temppop,temptmax+self.stepfun(temptmax),exec_time=end_time-start_time)
+			exec_time = end_time-start_time
+			temppop._exec_time = exec_time
+			self.add_pop(temppop,temptmax+self.stepfun(temptmax),exec_time=exec_time)
 			temptmax += self.stepfun(temptmax)
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
+			if monitoring_func is not None:
+				monitoring_func(self)
+			#self._T.append(temptmax)
+			#self._exec_time.append(exec_time)
 
-	def continue_exp(self,dT=None):
+	def continue_exp(self,dT=None,monitoring_func=None):
 		self.init_poplist()
 		if dT is None:
 			dT = self.stepfun(self._T[-1])
-		self.continue_exp_until(self._T[-1]+dT)
+		self.continue_exp_until(self._T[-1]+dT,monitoring_func=monitoring_func)
 
 	def add_pop(self,pop,T,exec_time=0):
 		pop._exec_time = exec_time
 		if (not hasattr(self,'no_storage')) or (not self.no_storage):
 			self._poplist.append(pop,T)
 		else:
-			self._poplist.T_last = T
+			self._poplist.append(pop,T,no_storage=True)
+			#self._poplist.T_last = T
 		self._T.append(T)
 		self._exec_time.append(exec_time)
 
