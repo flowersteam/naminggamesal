@@ -110,7 +110,7 @@ local_m_list = ['srtheo',
 
 
 global_m_list = ['conv_time',
-				'conv_time_2',
+				'conv_time2',
 				'max_mem',
 				'max_N_d',
 				'max_N_d_time',
