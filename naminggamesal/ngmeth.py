@@ -2168,8 +2168,8 @@ custom_max_Nlink_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########tdiff_d##########
 
 def tdiff_d(exp,X=0,thresh=1.,**kwargs):
-	val1 = exp.graph('max_N_d_time')
-	val2 = exp.graph('conv_time2')
+	val1 = exp.graph('max_N_d_time')._Y[0][0]
+	val2 = exp.graph('conv_time2')._Y[0][0]
 	return [val2-val1]
 
 
@@ -2187,8 +2187,8 @@ custom_tdiff_d =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########tdiff_w##########
 
 def tdiff_w(exp,X=0,thresh=1.,**kwargs):
-	val1 = exp.graph('max_Nlink_time')
-	val2 = exp.graph('conv_time2')
+	val1 = exp.graph('max_Nlink_time')._Y[0][0]
+	val2 = exp.graph('conv_time2')._Y[0][0]
 	return [val2-val1]
 
 
@@ -2206,8 +2206,8 @@ custom_tdiff_w =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########tdiff_wd##########
 
 def tdiff_wd(exp,X=0,thresh=1.,**kwargs):
-	val1 = exp.graph('max_N_d_time')
-	val2 = exp.graph('max_Nlink_time')
+	val1 = exp.graph('max_N_d_time')._Y[0][0]
+	val2 = exp.graph('max_Nlink_time')._Y[0][0]
 	return [val2-val1]
 
 
