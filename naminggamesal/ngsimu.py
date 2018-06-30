@@ -300,9 +300,9 @@ class Experiment(object):
 		if tempfun.level=="agent":
 			for j in range(indmin,len(self._T)+1+indmax):
 				if hasattr(self,'no_storage') and self.no_storage:
-					tempout=tempfun.apply(self._poplist.get_last())
+					tempout = copy.deepcopy(tempfun.apply(self._poplist.get_last()))
 				else:
-					tempout=tempfun.apply(self._poplist.get(self._T[j]))
+					tempout = copy.deepcopy(tempfun.apply(self._poplist.get(self._T[j])))
 				tempoutmean.append(tempout[0])
 				tempoutstd.append(tempout[1])
 				tempoutmin.append(tempout[2])
@@ -332,7 +332,7 @@ class Experiment(object):
 			#configgraph["xmax"]=max(tempX)
 			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
 		elif tempfun.level=="time":
-			tempout=tempfun.apply(self)
+			tempout = copy.deepcopy(tempfun.apply(self))
 			tempout=tempout[indmin:(len(self._T)+indmax+1)]
 			configgraph=tempfun.get_graph_config()
 			configgraph["xlabel"]="T"
@@ -342,7 +342,7 @@ class Experiment(object):
 			#configgraph["xmax"]=max(tempX)
 			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=0,sort=0,filename="graph_"+tempfun.func.__name__,**configgraph)
 		elif tempfun.level=="exp":
-			tempout=tempfun.apply(self)#,X=X)# TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			tempout = copy.deepcopy(tempfun.apply(self))#,X=X)# TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			configgraph=tempfun.get_graph_config()
 			#configgraph["xlabel"]="T"
 			tempY=tempout
