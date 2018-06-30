@@ -4,6 +4,7 @@ import time
 import uuid
 import sqlite3
 import os
+import copy
 
 try:
 	import gexf
@@ -298,7 +299,10 @@ class Experiment(object):
 		tempoutmax=[]
 		if tempfun.level=="agent":
 			for j in range(indmin,len(self._T)+1+indmax):
-				tempout=tempfun.apply(self._poplist.get(self._T[j]))
+				if hasattr(self,'no_storage') and self.no_storage:
+					tempout=tempfun.apply(self._poplist.get_last())
+				else:
+					tempout=tempfun.apply(self._poplist.get(self._T[j]))
 				tempoutmean.append(tempout[0])
 				tempoutstd.append(tempout[1])
 				tempoutmin.append(tempout[2])
@@ -316,10 +320,10 @@ class Experiment(object):
 		elif tempfun.level=="population":
 			tempout=[]
 			for j in range(indmin,len(self._T)+1+indmax):
-				if self._T[j] == self._T[-1]:
-					tempout.append(tempfun.apply(self._poplist.get_last()))
+				if hasattr(self,'no_storage') and self.no_storage:
+					tempout.append(copy.deepcopy(tempfun.apply(self._poplist.get_last())))
 				else:
-					tempout.append(tempfun.apply(self._poplist.get(self._T[j])))
+					tempout.append(copy.deepcopy(tempfun.apply(self._poplist.get(self._T[j]))))
 			configgraph=tempfun.get_graph_config()
 			configgraph["xlabel"]="T"
 			tempY=tempout
