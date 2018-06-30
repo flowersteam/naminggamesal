@@ -89,13 +89,13 @@ class Poplist(object):
 
 class Experiment(object):
 
-	def __init__(self, pop_cfg, step=1, no_storage=False):
+	def __init__(self, pop_cfg={}, step=1, no_storage=False):
 		self._time_step = step
 		self.define_stepfun()
 		self._T = []
 		self._exec_time=[]
 		self.uuid = str(uuid.uuid1())
-		self._pop_cfg = pop_cfg
+		self._pop_cfg = copy.deepcopy(pop_cfg)
 		#self._pop_cfg['xp_uuid'] = self.uuid
 		self._poplist = Poplist('data/' + self.uuid + '.db')
 		#self.add_pop(Population(**pop_cfg),0)

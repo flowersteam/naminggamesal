@@ -23,15 +23,15 @@ import networkx as nx
 
 class Population(object):
 
-	def __init__(self, voc_cfg, strat_cfg, interact_cfg, nbagent, agent_init_cfg={'agent_init_type':'agent_init'}, evolution_cfg={'evolution_type':'idle'}, agentpick_cfg={'agentpick_type':'random_pick'}, sensor_cfg=None, env_cfg=None,topology_cfg={'topology_type':'full_graph'},xp_uuid=None):
+	def __init__(self, voc_cfg={'voc_type':'matrix_new'}, strat_cfg={'strattype':'naive'}, interact_cfg={'interact_type':'speakerschoice'}, nbagent=10, agent_init_cfg={'agent_init_type':'agent_init'}, evolution_cfg={'evolution_type':'idle'}, agentpick_cfg={'agentpick_type':'random_pick'}, sensor_cfg=None, env_cfg={'env_type':'simple','M':10,'W':10},topology_cfg={'topology_type':'full_graph'},xp_uuid=None):
 		self._size = 0
-		self._strat_cfg = strat_cfg
-		self._agent_init_cfg = agent_init_cfg
-		self.agent_init = get_agent_init(**agent_init_cfg)
-		self._agentpick_cfg = agentpick_cfg
-		self.agent_pick = get_agentpick(**agentpick_cfg)
-		self._sensor_cfg = sensor_cfg
-		self._env_cfg = env_cfg
+		self._strat_cfg = copy.deepcopy(strat_cfg)
+		self._agent_init_cfg = copy.deepcopy(agent_init_cfg)
+		self.agent_init = get_agent_init(**self._agent_init_cfg)
+		self._agentpick_cfg = copy.deepcopy(agentpick_cfg)
+		self.agent_pick = get_agentpick(**self._agentpick_cfg)
+		self._sensor_cfg = copy.deepcopy(sensor_cfg)
+		self._env_cfg = copy.deepcopy(env_cfg)
 		self._interaction = get_interaction(**interact_cfg)
 		self._evolution = get_evolution(**evolution_cfg)
 		self._exec_time = 0.

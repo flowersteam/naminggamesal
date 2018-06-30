@@ -514,7 +514,7 @@ class NamingGamesDB(object):
 
 class Experiment(ngsimu.Experiment):
 
-	def __init__(self,pop_cfg,step=1,database=None,compute=True,no_storage=False):
+	def __init__(self,pop_cfg={},step=1,database=None,compute=True,no_storage=False):
 		if not database:
 			self.db = NamingGamesDB()
 		else:
