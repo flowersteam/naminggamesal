@@ -1968,7 +1968,7 @@ def srtheo_end_min(exp):
 	return 0
 
 def srtheo_end_max(exp):
-	return 0
+	return 1.
 
 FUNC = srtheo_end
 
