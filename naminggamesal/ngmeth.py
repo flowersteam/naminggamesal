@@ -1957,6 +1957,24 @@ graphconfig = {"ymin":product_maxmem_convtime_min}#,"ymax":product_maxmem_convti
 custom_product_maxmem_convtime =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 
+#########srtheo_end##########
+
+def srtheo_end(exp,X=0,**kwargs):
+
+	sr_gr = exp.graph('srtheo')
+	return [sr_gr._Y[0][-1]]
+
+def srtheo_end_min(exp):
+	return 0
+
+def srtheo_end_max(exp):
+	return 0
+
+FUNC = srtheo_end
+
+graphconfig = {"ymin":srtheo_end_min,"ymax":srtheo_end_max}
+custom_srtheo_end =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
 #########max_mem##########
 
 def max_mem(exp,X=0,**kwargs):
