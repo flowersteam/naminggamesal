@@ -565,11 +565,11 @@ class Experiment(ngsimu.Experiment):
 			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax, autocommit=autocommit, tempgraph=tempgraph)
 		while self._T[ind]>tmax:
 			ind -= 1
-		if self.db.data_exists(xp_uuid=self.uuid, method=method):
+		if tempgraph is not None or self.db.data_exists(xp_uuid=self.uuid, method=method):
 			if tempgraph is None:
 				tempgraph = self.db.get_graph(self.uuid, method=method)
 			#dbmin = tempgraph._X[0][0] - self._time_step
-			dbmax = tempgraph._X[0][-1] + self.stepfun(tempgraph._X[0][-1])
+			dbmax = tempgraph._X[0][-1] #+ self.stepfun(tempgraph._X[0][-1])
 			if dbmax>=tmin: #and dbmin<=tmax
 				if dbmax<tmax:
 					if not self.compute:

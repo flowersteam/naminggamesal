@@ -54,6 +54,11 @@ class Poplist(object):
 		self.T_last = T
 		#add_data_conn(cursor=self.cursor,data=pop,label=T)
 
+	def store_last(self):
+		if hasattr(self,'init_done') and not self.init_done:
+			self.init_db()
+		add_data(filepath=self.filepath,data=self.pop,label=self.T_last)
+
 	def get(self,T):
 		if hasattr(self,'T_last') and T == self.T_last:
 			return self.get_last()
@@ -227,7 +232,7 @@ class Experiment(object):
 
 	def init_poplist(self):
 		if not self._T:
-			self.add_pop(Population(xp_uuid=self.uuid,**self._pop_cfg),0)
+			self.add_pop(Population(xp_uuid=self.uuid,**self._pop_cfg),0,force_storage=True)
 
 	#def __str__(self):
 	#	return "T: "+str(self._T[-1])+"\n"+str(self._poplist.get_last())
@@ -235,6 +240,8 @@ class Experiment(object):
 	def continue_exp_until(self,T,monitoring_func=None):
 		self.init_poplist()
 		temptmax = self._T[-1]
+		if monitoring_func is not None:
+			monitoring_func(self)
 		start_time = time.clock() - self._exec_time[-1]
 		while (temptmax + self.stepfun(temptmax) <= T) :
 			temppop = self._poplist.get_last()
@@ -248,8 +255,10 @@ class Experiment(object):
 			self.add_pop(temppop,temptmax+self.stepfun(temptmax),exec_time=exec_time)
 			temptmax += self.stepfun(temptmax)
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
+			start_mon = time.clock()
 			if monitoring_func is not None:
 				monitoring_func(self)
+			start_time += time.clock() - start_mon
 			#self._T.append(temptmax)
 			#self._exec_time.append(exec_time)
 
@@ -259,15 +268,18 @@ class Experiment(object):
 			dT = self.stepfun(self._T[-1])
 		self.continue_exp_until(self._T[-1]+dT,monitoring_func=monitoring_func)
 
-	def add_pop(self,pop,T,exec_time=0):
+	def add_pop(self,pop,T,exec_time=0,force_storage=False):
 		pop._exec_time = exec_time
-		if (not hasattr(self,'no_storage')) or (not self.no_storage):
+		if (not hasattr(self,'no_storage')) or (not self.no_storage) or force_storage:
 			self._poplist.append(pop,T)
 		else:
 			self._poplist.append(pop,T,no_storage=True)
 			#self._poplist.T_last = T
 		self._T.append(T)
 		self._exec_time.append(exec_time)
+
+	def store_lastpop(self):
+		self._poplist.store_last()
 
 #	def set_time_step(self,newstep):
 #		self._time_step=newstep
@@ -283,6 +295,13 @@ class Experiment(object):
 	def graph(self,method="srtheo",X=None,tmin=0,tmax=None):
 		if not tmax:
 			tmax = self._T[-1]
+		if self.no_storage:
+			if len(self._T)>2:
+				tmin = self._T[-2]+0.1
+			elif len(self._T) == 2:
+				tmin = 0.1
+			else:
+				tmin = 0
 		indmax=-1
 		if tmax >= self._T[-1] + self.stepfun(self._T[-1]):
 			self.continue_exp_until(tmax)
@@ -300,6 +319,7 @@ class Experiment(object):
 		if tempfun.level=="agent":
 			for j in range(indmin,len(self._T)+1+indmax):
 				if hasattr(self,'no_storage') and self.no_storage:
+					assert self._poplist.T_last == self._T[j] , str(self._poplist.T_last)+','+str( self._T[j])+','+str(tmin)
 					tempout = copy.deepcopy(tempfun.apply(self._poplist.get_last()))
 				else:
 					tempout = copy.deepcopy(tempfun.apply(self._poplist.get(self._T[j])))
@@ -321,6 +341,8 @@ class Experiment(object):
 			tempout=[]
 			for j in range(indmin,len(self._T)+1+indmax):
 				if hasattr(self,'no_storage') and self.no_storage:
+					print(self._poplist.T_last,tmin)
+					assert self._poplist.T_last == self._T[j] , str(self._poplist.T_last)+','+str( self._T[j])
 					tempout.append(copy.deepcopy(tempfun.apply(self._poplist.get_last())))
 				else:
 					tempout.append(copy.deepcopy(tempfun.apply(self._poplist.get(self._T[j]))))
