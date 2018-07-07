@@ -99,6 +99,23 @@ def xp_cfg(vutype,successtype,strattype):
     }
 	return base_xp_cfg
 
+@pytest.fixture
+def xp_cfg2(successtype,strattype):
+	base_xp_cfg = {
+    'pop_cfg':{
+        'voc_cfg':{'voc_type':'matrix_new'},
+        'strat_cfg':{'strat_type':strattype,
+                    'vu_cfg':{'vu_type':'minimal'},
+                    'allow_idk':True,
+                    'success_cfg':{'success_type':successtype}},
+        'interact_cfg':{'interact_type':'speakerschoice'},
+        'env_cfg':{'env_type':'simple','M':M,'W':W},
+        'nbagent':N
+    },
+    'step':'log_improved'
+    }
+	return base_xp_cfg
+
 local_m_list = ['srtheo',
 				'Nlink',
 				'N_d',
@@ -140,3 +157,7 @@ def test_struct(xp_cfg_struct):
 
 def test_xp(xp_cfg):
 	xp_loop(xp_cfg)
+
+def test_xp_allowidk(xp_cfg2):
+	xp_loop(xp_cfg2)
+

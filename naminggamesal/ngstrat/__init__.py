@@ -88,9 +88,10 @@ def get_strategy(strat_type='naive', vu_cfg={}, success_cfg={}, **strat_cfg2):
 
 class BaseStrategy(object):
 
-	def __init__(self, vu_cfg={}, success_cfg={}, memory_policies=[], **strat_cfg2):
+	def __init__(self, vu_cfg={}, success_cfg={}, allow_idk=False, memory_policies=[], **strat_cfg2):
 		#for key, value in strat_cfg2.iteritems():
 		#	setattr(self, key, value)
+		self.allow_idk = allow_idk
 		self.voc_update = get_voc_update(**vu_cfg)
 		self.memory_policies = copy.deepcopy(memory_policies)
 		if 'successcount' not in [mp['mem_type'] for mp in self.memory_policies]:
