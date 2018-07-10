@@ -14,5 +14,10 @@ def get_allfunc(tags=[],level=None):
 		if level is not None:
 			t1 = t1 and f_obj.level == level
 		return t1
-	return [f for f in dir(ngmeth) if test(f)]
+	def truncate(f):
+		ans = f[7:]
+		if f[-5:] == '_mean':
+			ans = ans[:-5]
+		return ans
+	return [ truncate(f) for f in dir(ngmeth) if test(f)]
 
