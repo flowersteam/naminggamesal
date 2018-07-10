@@ -948,7 +948,7 @@ def optimalvocpolicy(agent,**kwargs):
 	for w in v.get_known_words():
 		m = v.get_known_meanings(w=w,option='max')[0]
 		v2.add(m=m,w=w,content_type='w')
-	return srtheo_utils.srtheo_voc(voc=v,voc2=v2)
+	return srtheo_utils.srtheo_voc(voc1=v,voc2=v2)
 
 def optimalvocpolicy_max(pop):
 	return 1.
@@ -959,7 +959,7 @@ def optimalvocpolicy_min(pop):
 FUNC=optimalvocpolicy
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":optimalvocpolicy_min,"ymax":optimalvocpolicy_max}
-custom_optimalvocpolicy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_optimalvocpolicy=custom_func.CustomFunc(FUNC_BIS,"agent",tags=["interact_count_voc"],**graphconfig)
 
 
 ############################	LEVEL POPULATION ############################
@@ -1144,7 +1144,7 @@ def optimalvocpolicy_pop(pop,**kwargs):
 	for w in v.get_known_words():
 		m = v.get_known_meanings(w=w,option='max')[0]
 		v2.add(m=m,w=w,content_type='w')
-	return srtheo_utils.srtheo_voc(voc=v,voc2=v2)
+	return srtheo_utils.srtheo_voc(voc1=v,voc2=v2)
 
 def optimalvocpolicy_pop_max(pop):
 	return 1.
@@ -1227,7 +1227,7 @@ def entropycouples_old_min(pop):
 
 FUNC=entropycouples_old
 graphconfig={"ymin":entropycouples_old_min,"ymax":entropycouples_old_max}
-custom_entropycouples_old=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_entropycouples_old=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],**graphconfig)
 
 #########entropycouplesoldnorm##########
 
@@ -1243,7 +1243,7 @@ def entropycouples_old_norm_min(pop):
 
 FUNC=entropycouples_old_norm
 graphconfig={"ymin":entropycouples_old_norm_min,"ymax":entropycouples_old_norm_max}
-custom_entropycouples_old_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_entropycouples_old_norm=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],**graphconfig)
 
 #########explo_rate##########
 
@@ -1449,7 +1449,7 @@ def entropycouples_min(pop):
 
 FUNC=entropycouples
 graphconfig={"ymin":entropycouples_min,"ymax":entropycouples_max}
-custom_entropycouples=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_entropycouples=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],**graphconfig)
 
 #########entropycouplesnorm##########
 
@@ -1465,7 +1465,7 @@ def entropycouples_norm_min(pop):
 
 FUNC=entropycouples_norm
 graphconfig={"ymin":entropycouples_norm_min,"ymax":entropycouples_norm_max}
-custom_entropycouples_norm=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_entropycouples_norm=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],**graphconfig)
 
 #########exec_time##########
 
@@ -1776,7 +1776,7 @@ def entropydistrib_min(pop):
 
 FUNC=entropydistrib
 graphconfig={"ymin":entropydistrib_min,"ymax":entropydistrib_max}
-custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],**graphconfig)
 
 #########overlap##########CAT
 
@@ -1880,29 +1880,29 @@ custom_overlap_semantic=custom_func.CustomFunc(FUNC,"population",tags='category'
 
 #########weight_over_degree##########
 
-def weight_over_degree(pop,**kwargs):
-	G = nx_utils.build_nx_graph(pop._agentlist)
-	values = []
-	for ag in pop._agentlist:
-		weight = 0
-		for ed in G.edges(ag._id):
-			weight += ed['weight']
-		if weight != 0 :
-			values.append(weight/G.degree(ag._id))
-		else:
-			values.append(0)
-	return mean(values)
+# def weight_over_degree(pop,**kwargs):
+# 	G = nx_utils.build_nx_graph(pop._agentlist)
+# 	values = []
+# 	for ag in pop._agentlist:
+# 		weight = 0
+# 		for ed in G.edges(ag._id):
+# 			weight += ed['weight']
+# 		if weight != 0 :
+# 			values.append(weight/G.degree(ag._id))
+# 		else:
+# 			values.append(0)
+# 	return mean(values)
 
-def weight_over_degree_max(pop):
-	return 1
+# def weight_over_degree_max(pop):
+# 	return 1
 
-def weight_over_degree_min(pop):
-	return 0
+# def weight_over_degree_min(pop):
+# 	return 0
 
 
-FUNC=weight_over_degree
-graphconfig={"ymin":weight_over_degree_min,"ymax":weight_over_degree_max}
-custom_weight_over_degree =custom_func.CustomFunc(FUNC,"population",**graphconfig)
+# FUNC=weight_over_degree
+# graphconfig={"ymin":weight_over_degree_min,"ymax":weight_over_degree_max}
+# custom_weight_over_degree =custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 ############################	LEVEL TIME ############################
 

@@ -9,7 +9,7 @@ import additional.custom_graph as custom_graph
 #NETWORKX TOOLS
 
 def build_nx_graph(agent_list):
-	if not hasattr(pop._agentlist[0]._vocabulary,'_content'):
+	if not hasattr(agent_list[0]._vocabulary,'_content'):
 		raise ValueError('this measure is not implemented for this type of vocabulary')
 	G = nx.Graph()
 	for ag in agent_list:
