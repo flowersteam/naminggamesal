@@ -198,7 +198,7 @@ def test_localm(local_m):
 	xp.graph(local_m)
 
 
-def test_globalm(local_m):
+def test_globalm(global_m):
 	xp = db.get_experiment(**simple_cfg)
 	xp.continue_exp_until(40)
 	xp.graph(global_m)

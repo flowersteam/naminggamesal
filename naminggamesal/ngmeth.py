@@ -138,7 +138,7 @@ def new_entropy_min(pop):
 FUNC=new_entropy
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":new_entropy_min}#,"ymax":new_entropy_max}
-custom_new_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_new_entropy=custom_func.CustomFunc(FUNC_BIS,"agent",tags=["success_mw"],**graphconfig)
 #########entropy_time_scale##########
 
 def entropy_time_scale(agent=None,mem=None,voc=None,m=None,w=None,valmax=1.,**kwargs):
@@ -250,7 +250,7 @@ def new_entropy_success_min(pop):
 FUNC=new_entropy_success
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":new_entropy_success_min}#,"ymax":new_entropy_max}
-custom_new_entropy_success=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_new_entropy_success=custom_func.CustomFunc(FUNC_BIS,"agent",tags=["success_mw"],**graphconfig)
 
 #########new_entropy_withvoc##########
 
@@ -301,7 +301,7 @@ def new_entropy_withvoc_min(pop):
 FUNC=new_entropy_withvoc
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":new_entropy_withvoc_min}#,"ymax":new_entropy_withvoc_max}
-custom_new_entropy_withvoc=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_new_entropy_withvoc=custom_func.CustomFunc(FUNC_BIS,"agent",tags=["success_mw"],**graphconfig)
 
 
 #########new_entropy_globalnorm##########
@@ -335,7 +335,7 @@ def new_entropy_globalnorm_min(pop):
 FUNC=new_entropy_globalnorm
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":new_entropy_globalnorm_min}#,"ymax":new_entropy_globalnorm_max}
-custom_new_entropy_globalnorm=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_new_entropy_globalnorm=custom_func.CustomFunc(FUNC_BIS,"agent",tags=["success_mw"],**graphconfig)
 
 
 #########new_entropy_success_rate##########
@@ -374,7 +374,7 @@ def new_entropy_success_rate_min(pop):
 FUNC=new_entropy_success_rate
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":new_entropy_success_rate_min}#,"ymax":new_entropy_success_rate_max}
-custom_new_entropy_success_rate=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_new_entropy_success_rate=custom_func.CustomFunc(FUNC_BIS,"agent",tags=["success_mw"],**graphconfig)
 
 
 #########transinformation##########
@@ -1110,7 +1110,7 @@ def Nlinksurs_couples(pop,**kwargs):
 			agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
 			agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
 			for m in agent1._vocabulary.get_known_meanings():
-				for w in ag._vocabulary.get_known_words(m=m):
+				for w in agent1._vocabulary.get_known_words(m=m):
 					if (m,w) not in d_set:
 						d_set.append((m,w))
 			for (m,w) in [(m1,w1) for (m1,w1) in d_set]:#list comprehension because d_set modified on the fly
