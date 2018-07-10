@@ -5,6 +5,7 @@ import numpy as np
 import os
 
 import tempfile
+import naminggamesal as ngal
 from naminggamesal import ngvoc,ngmeth,ngdb
 
 newpath = tempfile.mkdtemp()
@@ -63,6 +64,18 @@ strat_list = [
 def strattype(request):
 	return request.param
 
+simple_cfg = {
+    'pop_cfg':{
+        'voc_cfg':{'voc_type':'matrix_new'},
+        'strat_cfg':{'strat_type':'naive',
+                    'vu_cfg':{'vu_type':'minimal'},
+                    'success_cfg':{'success_type':'global_norandom'}},
+        'interact_cfg':{'interact_type':'speakerschoice'},
+        'env_cfg':{'env_type':'simple','M':M,'W':W},
+        'nbagent':N
+    },
+    'step':'log_improved'
+    }
 
 #@pytest.mark.parametrize("voctype", voctype_list)
 #@pytest.mark.parametrize("vutype", vutype_list)
@@ -125,6 +138,14 @@ local_m_list = ['srtheo',
 				'synonymy',
 				'exec_time']
 
+# extended_local_m_list = [
+# 				'N_d',
+# 				'exec_time'] + local_m_list
+
+extended_local_m_list = ngal.get_allfunc(level='agent') + ngal.get_allfunc(level='population')
+@pytest.fixture(params=extended_local_m_list)
+def local_m(request):
+	return request.param
 
 global_m_list = ['conv_time',
 				'conv_time2',
@@ -136,6 +157,16 @@ global_m_list = ['conv_time',
 				'tdiff_w',
 				'tdiff_wd',
 				]
+
+# extended_global_m_list = ['conv_time',
+# 				'conv_time2',
+# 				] + global_m_list
+
+extended_global_m_list = ngal.get_allfunc(level='exp')
+@pytest.fixture(params=extended_global_m_list)
+def global_m(request):
+	return request.param
+
 
 def xp_loop(cfg):
 	xp = db.get_experiment(**cfg)
@@ -161,3 +192,13 @@ def test_xp(xp_cfg):
 def test_xp_allowidk(xp_cfg2):
 	xp_loop(xp_cfg2)
 
+def test_localm(local_m):
+	xp = db.get_experiment(**simple_cfg)
+	xp.continue_exp_until(40)
+	xp.graph(local_m)
+
+
+def test_globalm(local_m):
+	xp = db.get_experiment(**simple_cfg)
+	xp.continue_exp_until(40)
+	xp.graph(global_m)

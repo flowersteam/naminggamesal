@@ -5,14 +5,19 @@ import copy
 
 class CustomFunc(object):
 
-	def __init__(self,func,*level,**kwargs):
-		if len(level)!=0:
-			self.level=level[0]
+	def __init__(self,func,level=None,tags=None,**kwargs):
+		self.level = level
+		if tags is None:
+			self.tags = []
+		elif isinstance(tags,list):
+			self.tags = copy.deepcopy(tags)
+		else:
+			self.tags = [copy.deepcopy(tags)]
 
 		def dataname(data):
-			out=""
+			out = ""
 			try:
-				out=data.__name__
+				out = data.__name__
 			except AttributeError:
 				pass
 			return out
@@ -25,7 +30,7 @@ class CustomFunc(object):
 				pass
 			return out
 
-		self.func=func
+		self.func = func
 		self.graph_config={"xlabel":dataname,"ylabel":yname}
 		for key, value in kwargs.items():
 			self.graph_config[key]=value

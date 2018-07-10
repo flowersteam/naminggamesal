@@ -32,7 +32,6 @@ def pop_ize(func):
 	return out_func
 
 
-
 ############################	LEVEL AGENT ############################
 
 ####	INPUT:		agent , **progress_info
@@ -404,7 +403,7 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":transinformation_min,"ymax":transinformation_max}
 custom_transinformation=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
-#########connex_components_per_word##########
+#########connex_components_per_word##########CAT
 
 def connex_components_per_word(agent,**kwargs):
 	if agent._vocabulary._content_decoding:
@@ -421,9 +420,9 @@ def connex_components_per_word_min(pop):
 FUNC=connex_components_per_word
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":connex_components_per_word_min}#,"ymax":connex_components_per_word_max}
-custom_connex_components_per_word=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_connex_components_per_word=custom_func.CustomFunc(FUNC_BIS,"agent",tags='category',**graphconfig)
 
-#########Ncat_percept##########
+#########Ncat_percept##########CAT
 
 def Ncat_percept(agent,**kwargs):
 	return len(agent._vocabulary._content_coding)
@@ -437,9 +436,9 @@ def Ncat_percept_min(pop):
 FUNC=Ncat_percept
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":Ncat_percept_min}#,"ymax":Ncat_percept_max}
-custom_Ncat_percept=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_Ncat_percept=custom_func.CustomFunc(FUNC_BIS,"agent",tags='category',**graphconfig)
 
-#########Ncat_semantic##########
+#########Ncat_semantic##########CAT
 
 def Ncat_semantic(agent,**kwargs):
 	n = 0
@@ -461,7 +460,7 @@ def Ncat_semantic_min(pop):
 FUNC=Ncat_semantic
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":Ncat_semantic_min}#,"ymax":Ncat_semantic_max}
-custom_Ncat_semantic=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_Ncat_semantic=custom_func.CustomFunc(FUNC_BIS,"agent",tags='category',**graphconfig)
 
 
 #########N_words##########
@@ -649,7 +648,7 @@ graphconfig={"ymin":synonymy_min}#,"ymax":N_m_per_w_max}
 custom_synonymy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
-#########cat_synonymy##########
+#########cat_synonymy##########CAT
 
 def cat_synonymy(agent,**kwargs):
 	n = 0
@@ -668,10 +667,10 @@ def cat_synonymy_min(pop):
 FUNC=cat_synonymy
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":cat_synonymy_min}#,"ymax":cat_synonymy_max}
-custom_cat_synonymy=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_cat_synonymy=custom_func.CustomFunc(FUNC_BIS,"agent",tags='category',**graphconfig)
 
 
-#########norm_std_Ncat##########
+#########norm_std_Ncat##########CAT
 
 def norm_std_Ncat(agent,**kwargs):
 	ncat = Ncat_semantic(agent)
@@ -688,10 +687,10 @@ def norm_std_Ncat_min(pop):
 FUNC=norm_std_Ncat
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":norm_std_Ncat_min}#,"ymax":norm_std_Ncat_max}
-custom_norm_std_Ncat=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_norm_std_Ncat=custom_func.CustomFunc(FUNC_BIS,"agent",tags='category',**graphconfig)
 
 
-#########norm_std_Npercept##########
+#########norm_std_Npercept##########CAT
 
 def norm_std_Npercept(agent,**kwargs):
 	ncat = Ncat_percept(agent)
@@ -708,10 +707,10 @@ def norm_std_Npercept_min(pop):
 FUNC=norm_std_Npercept
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":norm_std_Npercept_min}#,"ymax":norm_std_Npercept_max}
-custom_norm_std_Npercept=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_norm_std_Npercept=custom_func.CustomFunc(FUNC_BIS,"agent",tags='category',**graphconfig)
 
 
-#########dist_threshold##########
+#########dist_threshold##########CAT
 
 def dist_threshold(agent,**kwargs):
 	if hasattr(agent._strategy,'get_dist_threshold'):
@@ -728,7 +727,7 @@ def dist_threshold_min(pop):
 FUNC=dist_threshold
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":dist_threshold_min,"ymax":dist_threshold_max}
-custom_dist_threshold=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_dist_threshold=custom_func.CustomFunc(FUNC_BIS,"agent",tags='category',**graphconfig)
 
 #########N_accessible_meanings##########
 
@@ -1287,7 +1286,7 @@ FUNC=relative_explo_rate
 graphconfig={"ymin":relative_explo_rate_min}#,"ymax":relative_explo_rate_max}
 custom_relative_explo_rate=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
-#########N_words_pop##########
+#########N_words_pop##########CAT
 
 
 def N_words_pop(pop,**kwargs):
@@ -1305,9 +1304,9 @@ def N_words_pop_min(pop):
 
 FUNC=N_words_pop
 graphconfig={"ymin":N_words_pop_min}#,"ymax":entropycouples_old_norm_max}
-custom_N_words_pop=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_N_words_pop=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
-#########N_words_ratio##########
+#########N_words_ratio##########CAT
 
 
 def N_words_ratio(pop,**kwargs):
@@ -1330,9 +1329,9 @@ def N_words_ratio_min(pop):
 
 FUNC=N_words_ratio
 graphconfig={"ymin":N_words_ratio_min}#,"ymax":entropycouples_old_norm_max}
-custom_N_words_ratio=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_N_words_ratio=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
-#########distance_used##########
+#########distance_used##########CAT
 
 
 def distance_used(pop,**kwargs):
@@ -1349,10 +1348,10 @@ def distance_used_min(pop):
 
 FUNC=distance_used
 graphconfig={"ymin":distance_used_min,"ymax":entropycouples_old_norm_max}
-custom_distance_used=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_distance_used=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
 
-#########discrim_success##########
+#########discrim_success##########CAT
 
 def discrim_success(pop,**kwargs):
 	n = 0
@@ -1372,9 +1371,9 @@ def discrim_success_min(pop):
 
 FUNC=discrim_success
 graphconfig={"ymin":discrim_success_min,"ymax":discrim_success_max}
-custom_discrim_success=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_discrim_success=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
-#########discrim_success_semantic##########
+#########discrim_success_semantic##########CAT
 
 def discrim_success_semantic(pop,**kwargs):
 	n = 0
@@ -1397,7 +1396,7 @@ def discrim_success_semantic_min(pop):
 
 FUNC=discrim_success_semantic
 graphconfig={"ymin":discrim_success_semantic_min,"ymax":discrim_success_semantic_max}
-custom_discrim_success_semantic=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_discrim_success_semantic=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
 
 #########actual_successrate##########
@@ -1484,7 +1483,7 @@ FUNC=exec_time
 graphconfig={"ymin":exec_time_min}
 custom_exec_time=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
-#########cat_agreement##########
+#########cat_agreement##########CAT
 
 def cat_agreement(pop,**kwargs):
 	agr = 0
@@ -1537,7 +1536,7 @@ def cat_agreement_min(pop):
 
 FUNC=cat_agreement
 graphconfig={"ymin":cat_agreement_min,"ymax":cat_agreement_max}
-custom_cat_agreement=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_cat_agreement=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
 #########srtheo##########
 
@@ -1573,7 +1572,7 @@ FUNC=srtheo
 graphconfig={"ymin":srtheo_min,"ymax":srtheo_max}
 custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
-#########srtheo_cat##########
+#########srtheo_cat##########CAT
 from .ngstrat.naive import StratNaiveCategoryPlosOne
 strat_srtheo_cat = StratNaiveCategoryPlosOne()
 def srtheo_cat(pop,**kwargs):
@@ -1626,7 +1625,7 @@ def srtheo_cat_min(pop):
 
 FUNC=srtheo_cat
 graphconfig={"ymin":srtheo_cat_min,"ymax":srtheo_cat_max}
-custom_srtheo_cat=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_srtheo_cat=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
 ###############""srtheo as used in epirob08 paper#############
 def srtheo2(pop,**kwargs):
@@ -1779,7 +1778,7 @@ FUNC=entropydistrib
 graphconfig={"ymin":entropydistrib_min,"ymax":entropydistrib_max}
 custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
-#########overlap##########
+#########overlap##########CAT
 
 def overlap(pop,**kwargs):
 	n_r = min((pop._size**2),100)
@@ -1829,9 +1828,9 @@ def overlap_min(pop):
 
 FUNC=overlap
 graphconfig={"ymin":overlap_min,"ymax":overlap_max}
-custom_overlap=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_overlap=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
-#########overlap_semantic##########
+#########overlap_semantic##########CAT
 
 def overlap_semantic(pop,**kwargs):
 	n_r = min((pop._size**2)/2,100)
@@ -1877,7 +1876,7 @@ def overlap_semantic_min(pop):
 
 FUNC=overlap_semantic
 graphconfig={"ymin":overlap_semantic_min,"ymax":overlap_semantic_max}
-custom_overlap_semantic=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+custom_overlap_semantic=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
 #########weight_over_degree##########
 
@@ -1974,6 +1973,27 @@ FUNC = srtheo_end
 
 graphconfig = {"ymin":srtheo_end_min,"ymax":srtheo_end_max}
 custom_srtheo_end =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########srtheo_end_smooth##########
+
+def srtheo_end_smooth(exp,X=0,**kwargs):
+
+	sr_gr = exp.graph('srtheo')
+	if len(sr_gr._Y[0]) < 5:
+		return [np.mean(sr_gr._Y[0])]
+	else:
+		return [np.mean(sr_gr._Y[-5:])]
+
+def srtheo_end_smooth_min(exp):
+	return 0
+
+def srtheo_end_smooth_max(exp):
+	return 1.
+
+FUNC = srtheo_end_smooth
+
+graphconfig = {"ymin":srtheo_end_smooth_min,"ymax":srtheo_end_smooth_max}
+custom_srtheo_end_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########max_mem##########
 
