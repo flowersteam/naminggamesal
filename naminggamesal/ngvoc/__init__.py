@@ -125,6 +125,11 @@ class BaseVocabulary(object):
 		else:
 			return self.freq_weights_w[w]
 
+	def get_row(m):
+		return [self.get_value(m=m,w=w) for w in self.get_accessible_words()]
+
+	def get_column(w):
+		return [self.get_value(m=m,w=w) for m in self.get_accessible_meanings()]
 
 
 class BaseVocabularyElaborated(BaseVocabulary):
