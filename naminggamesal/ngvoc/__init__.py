@@ -199,6 +199,12 @@ class BaseVocabularyElaborated(BaseVocabulary):
 		else:
 			return 0
 
+	def get_row(m,content_type='m'):
+		return [self.get_value(m=m,w=w,content_type=content_type) for w in self.get_accessible_words()]
+
+	def get_column(w,content_type='w'):
+		return [self.get_value(m=m,w=w,content_type=content_type) for m in self.get_accessible_meanings()]
+
 
 
 	def __eq__(self,other):
