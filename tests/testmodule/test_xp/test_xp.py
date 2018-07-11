@@ -206,8 +206,8 @@ def test_globalm(global_m):
 
 ######### AGENT INIT ###############
 agentinit_list = [
-	'converged',
-	'own_words',
+	{'agent_init_type':'converged'},
+	{'agent_init_type':'own_words','W_range':10},
 	]
 @pytest.fixture(params=agentinit_list)
 def agentinittype(request):
@@ -217,7 +217,7 @@ def test_agentinit(agentinittype):
 	base_xp_cfg = {
     'pop_cfg':{
         'voc_cfg':{'voc_type':'matrix_new'},
-        'agent_init_cfg':{'agent_init_type':agentinittype},
+        'agent_init_cfg':agentinittype,
         'strat_cfg':{'strat_type':'naive',
                     'vu_cfg':{'vu_type':'minimal'},
                     'success_cfg':{'success_type':'global_norandom'}},

@@ -170,8 +170,10 @@ class BaseVocabularyElaborated(BaseVocabulary):
 	@del_cache
 	def complete_empty(self):
 		self.empty()
-		m_l = random.shuffle(copy.deepcopy(self.unknown_meanings))
-		w_l = random.shuffle(copy.deepcopy(self.unknown_words))
+		m_l = copy.deepcopy(self.unknown_meanings)
+		random.shuffle(m_l)
+		w_l = copy.deepcopy(self.unknown_words)
+		random.shuffle(w_l)
 		while len(w_l) < len(m_l):
 			assert len(w_l)>0
 			w_l += w_l
