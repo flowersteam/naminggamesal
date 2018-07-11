@@ -11,7 +11,6 @@ from .voc_update import get_voc_update
 
 sns.set(rc={'image.cmap': 'Purples_r'})
 
-#####Classe de base
 strat_class={
 	'naive':'naive.StratNaive',
 	'naive_membased':'naive.StratNaiveMemBased',
@@ -103,7 +102,8 @@ class BaseStrategy(object):
 		self.success = get_success(**success_cfg)
 
 	def update_speaker(self, ms, w, mh, voc, mem, bool_succ, context=[]):
-		return self.voc_update.update_speaker(ms, w, mh, voc, mem, bool_succ, context)
+		if not hasattr(self,'broadcasting') or not self.voc_update.broadcasting:
+			return self.voc_update.update_speaker(ms, w, mh, voc, mem, bool_succ, context)
 
 	def update_hearer(self, ms, w, mh, voc, mem, bool_succ, context=[]):
 		return self.voc_update.update_hearer(ms, w, mh, voc, mem, bool_succ, context)

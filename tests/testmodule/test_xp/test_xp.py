@@ -202,3 +202,75 @@ def test_globalm(global_m):
 	xp = db.get_experiment(**simple_cfg)
 	xp.continue_exp_until(40)
 	xp.graph(global_m)
+
+
+######### AGENT INIT ###############
+agentinit_list = [
+	'converged',
+	'own_words',
+	]
+@pytest.fixture(params=agentinit_list)
+def agentinittype(request):
+	return request.param
+
+def test_agentinit(agentinittype):
+	base_xp_cfg = {
+    'pop_cfg':{
+        'voc_cfg':{'voc_type':'matrix_new'},
+        'agent_init_cfg':{'agent_init_type':agentinittype},
+        'strat_cfg':{'strat_type':'naive',
+                    'vu_cfg':{'vu_type':'minimal'},
+                    'success_cfg':{'success_type':'global_norandom'}},
+        'interact_cfg':{'interact_type':'speakerschoice'},
+        'env_cfg':{'env_type':'simple','M':M,'W':W},
+        'nbagent':N
+    },
+    'step':'log_improved'
+    }
+	xp_loop(base_xp_cfg)
+
+
+######### BROADCASTING ###############
+
+def test_braodcasting():
+	base_xp_cfg = {
+    'pop_cfg':{
+        'voc_cfg':{'voc_type':'matrix_new'},
+        'strat_cfg':{'strat_type':'naive',
+                    'vu_cfg':{'vu_type':'minimal','broadcasting':True},
+                    'success_cfg':{'success_type':'global_norandom'}},
+        'interact_cfg':{'interact_type':'speakerschoice'},
+        'env_cfg':{'env_type':'simple','M':M,'W':W},
+        'nbagent':N
+    },
+    'step':'log_improved'
+    }
+	xp_loop(base_xp_cfg)
+
+
+######### WORD PREFERENCE ###############
+wordpreference_list = [
+	'wordpreference_last',
+	'wordpreference_first',
+	'wordpreference_smart',
+	]
+@pytest.fixture(params=wordpreference_list)
+def wordpreferencetype(request):
+	return request.param
+
+def test_wordpreference(wordpreferencetype):
+	base_xp_cfg = {
+    'pop_cfg':{
+        'voc_cfg':{'voc_type':'matrix_new'},
+        'strat_cfg':{'strat_type':'naive',
+                    'vu_cfg':{'vu_type':'minimal'},
+                    'success_cfg':{'success_type':'global_norandom'},
+                    'memory_policies':[{'mem_type':wordpreferencetype}]},
+        'interact_cfg':{'interact_type':'speakerschoice'},
+        'env_cfg':{'env_type':'simple','M':M,'W':W},
+        'nbagent':N
+    },
+    'step':'log_improved'
+    }
+	xp_loop(base_xp_cfg)
+

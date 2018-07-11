@@ -2351,14 +2351,24 @@ custom_max_mem_conv_threshold = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time_threshold##########
 
 def conv_time_threshold(exp,X=0,**kwargs):
-	sr_gr = exp.graph('srtheo')
-	thresh = sr_gr._Y[0][-1]
+	thresh = exp.graph('srtheo_end')
 	return conv_time(exp,X=X,thresh=thresh,**kwargs)
 
 FUNC = conv_time_threshold
 
 graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
 custom_conv_time_threshold =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########conv_time_end_value##########
+
+def conv_time_threshold_smooth(exp,X=0,**kwargs):
+	thresh = exp.graph('srtheo_end_smooth')
+	return conv_time(exp,X=X,thresh=thresh,**kwargs)
+
+FUNC = conv_time_threshold_smooth
+
+graphconfig = {"ymin":conv_time_min,"ymax":conv_time_max}
+custom_conv_time_threshold_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########partial_conv_time_threshold##########
 

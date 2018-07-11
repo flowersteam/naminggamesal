@@ -544,3 +544,34 @@ class LAPSMAB(MemoryPolicy):
 			else:
 				p = None
 			return np.random.choice(m_list,p=p)
+
+
+class WordPreferenceLast(MemoryPolicy):
+
+	def init_memory(self,mem,voc,cfg=None):
+		assert not 'prefered words' in list(mem.keys())
+		mem['prefered words'] = {}
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
+		mem['prefered words'][ms] = w
+
+
+
+class WordPreferenceFirst(WordPreferenceLast):
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
+		if ms not in list(mem['prefered words'].keys()):
+			mem['prefered words'][ms] = w
+
+
+class WordPreferenceSmart(WordPreferenceLast):
+	def init_memory(self,mem,voc,cfg=None):
+		WordPreferenceLast.init_memory(self,mem,voc,cfg)
+		mem['word_preference_success'] = []
+
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
+		if ms not in list(mem['prefered words'].keys()) or ms not in mem['word_preference_success'] or bool_succ:
+			mem['prefered words'][ms] = w
+		if bool_succ and ms not in mem['word_preference_success']:
+			mem['word_preference_success'].append(ms)

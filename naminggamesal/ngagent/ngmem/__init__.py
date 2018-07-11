@@ -26,6 +26,9 @@ mempolicy_class={
 'other_voc':'memory_policies.OtherVoc',
 'strat':'memory_policies.StratMP',
 'interaction_counts_omniscient':'memory_policies.InteractionCountsOmniscient',
+'wordpreference_last':'memory_policies.WordPreferenceLast',
+'wordpreference_first':'memory_policies.WordPreferenceFirst',
+'wordpreference_smart':'memory_policies.WordPreferenceSmart',
 }
 
 def get_memory(memory_policies,voc=None,cfg=None):
