@@ -136,7 +136,8 @@ local_m_list = ['srtheo',
 				'N_words',
 				'homonymy',
 				'synonymy',
-				'exec_time']
+				'exec_time',
+				'decay_coherence']
 
 # extended_local_m_list = [
 # 				'N_d',
@@ -156,6 +157,8 @@ global_m_list = ['conv_time',
 				'tdiff_d',
 				'tdiff_w',
 				'tdiff_wd',
+				'decay_time',
+				'decay_time_smooth',
 				]
 
 # extended_global_m_list = ['conv_time',
@@ -213,11 +216,18 @@ agentinit_list = [
 def agentinittype(request):
 	return request.param
 
-def test_agentinit(agentinittype):
+evol_list = [{'evolution_type':'idle'},
+			{'evolution_type':'replace','rate':5}]
+@pytest.fixture(params=evol_list)
+def evoltype(request):
+	return request.param
+
+def test_agentinit(agentinittype,evoltype):
 	base_xp_cfg = {
     'pop_cfg':{
         'voc_cfg':{'voc_type':'matrix_new'},
         'agent_init_cfg':agentinittype,
+        'evolution_cfg':evoltype,
         'strat_cfg':{'strat_type':'naive',
                     'vu_cfg':{'vu_type':'minimal'},
                     'success_cfg':{'success_type':'global_norandom'}},
@@ -228,6 +238,7 @@ def test_agentinit(agentinittype):
     'step':'log_improved'
     }
 	xp_loop(base_xp_cfg)
+
 
 
 ######### BROADCASTING ###############

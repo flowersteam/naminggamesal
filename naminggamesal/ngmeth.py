@@ -1571,6 +1571,26 @@ def srtheo_min(pop):
 FUNC=srtheo
 graphconfig={"ymin":srtheo_min,"ymax":srtheo_max}
 custom_srtheo=custom_func.CustomFunc(FUNC,"population",**graphconfig)
+#########decay_coherence##########
+
+def decay_coherence(pop, m=None, **kwargs):
+	if not hasattr(pop.agent_init,'converged_voc'):
+		return 0
+	else:
+		v1 = pop._agent_init.converged_voc
+		v2 = pop.get_averaged_voc()
+		return srtheo_voc(voc1=v1,voc2=v2)
+
+
+def decay_coherence_max(pop):
+	return 1
+
+def decay_coherence_min(pop):
+	return 0
+
+FUNC=decay_coherence
+graphconfig={"ymin":decay_coherence_min,"ymax":decay_coherence_max}
+custom_decay_coherence=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 #########srtheo_cat##########CAT
 from .ngstrat.naive import StratNaiveCategoryPlosOne
@@ -1994,6 +2014,26 @@ FUNC = srtheo_end_smooth
 
 graphconfig = {"ymin":srtheo_end_smooth_min,"ymax":srtheo_end_smooth_max}
 custom_srtheo_end_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+#########decay_end_smooth##########
+
+def decay_end_smooth(exp,X=0,**kwargs):
+
+	sr_gr = exp.graph('decay_coherence')
+	if len(sr_gr._Y[0]) < 5:
+		return [np.mean(sr_gr._Y[0])]
+	else:
+		return [np.mean(sr_gr._Y[-5:])]
+
+def decay_end_smooth_min(exp):
+	return 0
+
+def decay_end_smooth_max(exp):
+	return 1.
+
+FUNC = decay_end_smooth
+
+graphconfig = {"ymin":decay_end_smooth_min,"ymax":decay_end_smooth_max}
+custom_decay_end_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########max_mem##########
 
@@ -2106,6 +2146,42 @@ FUNC = conv_time2
 
 graphconfig = {"ymin":conv_time2_min,"ymax":conv_time2_max}
 custom_conv_time2 =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+#########decay_time##########
+
+def decay_time(exp,X=0,**kwargs):
+	vect = exp.graph('decay_coherence')
+	val = exp.graph('decay_coherence')._Y[0][-1]
+	for i in range(len(vect._Y[0])):
+		if vect._Y[0][i] <= val:
+			return [vect._X[0][i]]
+	return [np.nan]
+
+
+def decay_time_max(exp):
+	return exp._T[-1]
+
+def decay_time_min(exp):
+	return 0
+
+FUNC = decay_time
+
+graphconfig = {"ymin":decay_time_min,"ymax":decay_time_max}
+custom_decay_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########decay_time_smooth##########
+
+def decay_time_smooth(exp,X=0,**kwargs):
+	val = exp.graph('decay_end_smooth')._Y[0][0]
+	vect = exp.graph('decay_coherence')
+	for i in range(len(vect._Y[0])):
+		if vect._Y[0][i] <= val:
+			return [vect._X[0][i]]
+	return [np.nan]
+
+FUNC = decay_time_smooth
+
+graphconfig = {"ymin":decay_time_min,"ymax":decay_time_max}
+custom_decay_time_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########block_time##########
 

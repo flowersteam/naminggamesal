@@ -326,3 +326,8 @@ class Population(object):
 
 		return G
 
+	def get_average_voc(self):
+		v = self._agentlist[0]._vocabulary.empty_copy()
+		for ag in self._agentlist:
+			v += ag._vocabulary
+		return v
