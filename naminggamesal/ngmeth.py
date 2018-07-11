@@ -1133,10 +1133,7 @@ custom_Nlinksurs_couples=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########optimalvocpolicy_pop##########
 
 def optimalvocpolicy_pop(pop,**kwargs):
-	v = copy.deepcopy(pop._agentlist[0]._vocabulary)
-	for ag in pop._agentlist[1:]:
-		v += ag._vocabulary
-	v *= 1./len(pop._agentlist)
+	v = pop.get_average_voc()
 	v2 = v.empty_copy()
 	for m in v.get_known_meanings():
 		w = v.get_known_words(m=m,option='max')[0]
@@ -1579,7 +1576,7 @@ def decay_coherence(pop, m=None, **kwargs):
 	else:
 		v1 = pop.agent_init.converged_voc
 		v2 = pop.get_average_voc()
-		return srtheo_voc(voc1=v1,voc2=v2)
+		return srtheo_utils.srtheo_voc(voc1=v1,voc2=v2)
 
 
 def decay_coherence_max(pop):
