@@ -330,4 +330,5 @@ class Population(object):
 		v = self._agentlist[0]._vocabulary.empty_copy()
 		for ag in self._agentlist:
 			v += ag._vocabulary
+		v *= 1./len(self._agentlist)
 		return v

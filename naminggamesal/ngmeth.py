@@ -1578,7 +1578,7 @@ def decay_coherence(pop, m=None, **kwargs):
 		return 0
 	else:
 		v1 = pop.agent_init.converged_voc
-		v2 = pop.get_averaged_voc()
+		v2 = pop.get_average_voc()
 		return srtheo_voc(voc1=v1,voc2=v2)
 
 
