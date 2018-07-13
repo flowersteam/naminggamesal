@@ -815,6 +815,21 @@ FUNC=N_exploring_meanings
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":N_exploring_meanings_min}#,"ymax":N_accessible_meanings_max}
 custom_N_exploring_meanings=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+#########time_before_explo##########
+
+def time_since_explo(agent,**kwargs):
+	if 'time_since_explo' in list(agent._memory.keys()):
+		return agent._memory['time_since_explo']
+	else:
+		return 0
+
+def time_since_explo_min(pop):
+	return 0
+
+FUNC=time_since_explo
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":time_since_explo_min}#,"ymax":time_since_explo_max}
+custom_time_since_explo=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
 #########srtheo_local##########

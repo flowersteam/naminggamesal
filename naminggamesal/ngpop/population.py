@@ -114,7 +114,7 @@ class Population(object):
 		for i in range (0,len(self._agentlist)):
 			if self._agentlist[i].get_id() == agent_id:
 				return i
-		print("id does not exist")
+		raise ValueError("No such agent ID: "+str(agent_id)+". Available IDs: "+str([ag.get_id() for ag in self._agentlist]))
 
 	def rm_agent(self, agent=None, agent_id=None):
 		if agent_id is None:

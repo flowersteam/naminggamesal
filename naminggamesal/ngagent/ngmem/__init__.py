@@ -29,6 +29,7 @@ mempolicy_class={
 'wordpreference_last':'memory_policies.WordPreferenceLast',
 'wordpreference_first':'memory_policies.WordPreferenceFirst',
 'wordpreference_smart':'memory_policies.WordPreferenceSmart',
+'time_since_explo':'memory_policies.TimeSinceExplo',
 }
 
 def get_memory(memory_policies,voc=None,cfg=None):

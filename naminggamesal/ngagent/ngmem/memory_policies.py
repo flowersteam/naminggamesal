@@ -575,3 +575,17 @@ class WordPreferenceSmart(WordPreferenceLast):
 			mem['prefered words'][ms] = w
 		if bool_succ and ms not in mem['word_preference_success']:
 			mem['word_preference_success'].append(ms)
+
+
+class TimeSinceExplo(MemoryPolicy):
+	def init_memory(self,mem,voc,cfg=None):
+		assert not 'time_since_explo' in list(mem.keys())
+		mem['time_since_explo'] = 0
+
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
+		if role == 'speaker':
+			if ms not in voc.get_known_meanings():
+				mem['time_since_explo'] += 1
+			else:
+				mem['time_since_explo'] = 0
