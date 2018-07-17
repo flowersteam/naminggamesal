@@ -121,8 +121,8 @@ class NamingGamesDB(object):
 			try:
 				self.connection = self.sql.connect(self.conn_info)
 			except Exception as e:
-				#raise
-				raise Exception(self.conn_info)
+				print(self.conn_info)
+				raise
 			self.cursor = self.connection.cursor()
 			self.cursor.execute("CREATE TABLE IF NOT EXISTS main_table("\
 					+"Id TEXT, "\
