@@ -31,9 +31,12 @@ import numpy as np
 import subprocess
 
 class Poplist(object):
-	def __init__(self,path,no_compressed_file=False,db_type='sqlite',conn_info=None):
+	def __init__(self,path,no_compressed_file=False,db_type='sqlite',conn_info=None,db_id=None):
 		self.filepath = path
-
+		if db_id is None:
+			self.db_id = str(uuid.uuid1())
+		else:
+			self.db_id = db_id
 		#if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Old Policy: if both compressed and uncompressed versions present, erase uncompressed
 			#os.remove(self.filepath)
 		self.pop = None
@@ -45,7 +48,7 @@ class Poplist(object):
 		if db_type == 'sqlite':
 			self.storage = SQLiteStorage(filepath=path)
 		elif db_type == 'postgres':
-			self.storage = PostgresStorage(db_id=path,conn_info=conn_info)
+			self.storage = PostgresStorage(db_id=self.db_id,conn_info=conn_info)
 		else:
 			raise ValueError('db_type '+str(db_type)+' not recognized.')
 
@@ -110,7 +113,7 @@ class Experiment(object):
 		self.uuid = str(uuid.uuid1())
 		self._pop_cfg = copy.deepcopy(pop_cfg)
 		#self._pop_cfg['xp_uuid'] = self.uuid
-		self._poplist = Poplist('data/' + self.uuid + '.db',no_compressed_file=no_compressed_file,db_type=db_type,conn_info=conn_info)
+		self._poplist = Poplist('data/' + self.uuid + '.db',no_compressed_file=no_compressed_file,db_type=db_type,conn_info=conn_info,db_id=self.uuid)
 		#self.add_pop(Population(**pop_cfg),0)
 		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
