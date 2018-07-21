@@ -97,9 +97,9 @@ class PostgresStorage(SQLiteStorage):
 
 	def __init__(self,db_id=None,conn_info=None):
 		if db_id is None:
-			self.db_id = str(uuid.uuid1())
+			self.db_id = 'NG_'+str(uuid.uuid1()).replace("-","_")
 		else:
-			self.db_id = db_id
+			self.db_id = db_id.replace("-","_")
 		if conn_info is None:
 			self.conn_info = "host='localhost' dbname='naminggames' user='naminggames' password='naminggames'"
 		else:
