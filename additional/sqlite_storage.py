@@ -14,14 +14,14 @@ except ImportError:
 import bz2
 from shutil import copyfileobj
 
-def xz_decompress(self,file):
+def xz_decompress(file):
 	outfile = file[:-3]
 	with open(outfile,'wb') as output:
 		with lzma.LZMAFile(file,'rb') as uncompressed:
 		#with bz2.BZ2File(file) as uncompressed:
-		copyfileobj(uncompressed,output)
+			copyfileobj(uncompressed,output)
 
-def xz_compress(self,file,rm=False):
+def xz_compress(file,rm=False):
 	outfile = file+'.xz'
 	#with open(outfile) as output:
 	with open(file,'rb') as uncompressed:
