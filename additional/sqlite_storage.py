@@ -72,7 +72,7 @@ class SQLiteStorage(object):
 		if blob is None:
 			raise IOError('No row in database ' + str(self.filepath) + ' for label: '+str(label))
 		lz_data = blob[0]
-		pickled_data = lzo.decompress(lz_data)
+		pickled_data = lzo.decompress(bytes(lz_data))
 		data = pickle.loads(pickled_data)
 		return data
 
@@ -141,6 +141,6 @@ class PostgresStorage(SQLiteStorage):
 		if blob is None:
 			raise IOError('No row in database ' + self.db_id + ' for label: '+str(label))
 		lz_data = blob[0]
-		pickled_data = lzo.decompress(lz_data)
+		pickled_data = lzo.decompress(bytes(lz_data))
 		data = pickle.loads(pickled_data)
 		return data
