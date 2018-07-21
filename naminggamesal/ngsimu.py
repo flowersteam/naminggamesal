@@ -34,9 +34,9 @@ class Poplist(object):
 	def __init__(self,path,no_compressed_file=False,db_type='sqlite',conn_info=None,db_id=None):
 		self.filepath = path
 		if db_id is None:
-			self.db_id = str(uuid.uuid1())
+			self.db_id = ''.join(str(uuid.uuid1()).split('-'))
 		else:
-			self.db_id = db_id
+			self.db_id = ''.join(db_id.split('-'))
 		#if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Old Policy: if both compressed and uncompressed versions present, erase uncompressed
 			#os.remove(self.filepath)
 		self.pop = None
