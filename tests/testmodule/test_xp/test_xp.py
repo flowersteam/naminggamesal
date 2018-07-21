@@ -197,6 +197,11 @@ def test_nocompress():
 	cfg['no_compressed_file'] = True
 	xp_loop(cfg)
 
+def test_postgres():
+	cfg = copy.deepcopy(simple_cfg)
+	cfg['db_type'] = 'postgres'
+	xp_loop(cfg)
+
 def test_xp_allowidk(xp_cfg2):
 	xp_loop(xp_cfg2)
 

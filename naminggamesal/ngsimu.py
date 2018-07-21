@@ -21,7 +21,7 @@ from .ngpop import Population
 from . import ngmeth
 import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
-from additional.sqlite_storage import add_data,read_data,xz_compress,xz_decompress,init_db
+from additional.sqlite_storage import SQLiteStorage,PostgresStorage,xz_compress,xz_decompress
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
@@ -31,8 +31,9 @@ import numpy as np
 import subprocess
 
 class Poplist(object):
-	def __init__(self,path,no_compressed_file=False):
+	def __init__(self,path,no_compressed_file=False,db_type='sqlite',conn_info=None):
 		self.filepath = path
+
 		#if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Old Policy: if both compressed and uncompressed versions present, erase uncompressed
 			#os.remove(self.filepath)
 		self.pop = None
@@ -41,16 +42,22 @@ class Poplist(object):
 		#self.conn = sqlite3.connect(self.filepath)
 		#self.cursor = self.conn.cursor()
 		self.no_compressed_file = no_compressed_file
+		if db_type == 'sqlite':
+			self.storage = SQLiteStorage(filepath=path)
+		elif db_type == 'postgres':
+			self.storage = PostgresStorage(db_id=path,conn_info=conn_info)
+		else:
+			raise ValueError('db_type '+str(db_type)+' not recognized.')
 
 	def init_db(self):
-		init_db(filepath=self.filepath)
+		self.storage.init_db()
 		self.init_done = True
 
 	def append(self,pop,T,no_storage=False):
 		if hasattr(self,'init_done') and not self.init_done:
 			self.init_db()
 		if not no_storage:
-			add_data(filepath=self.filepath,data=pop,label=T)
+			self.storage.add_data(data=pop,label=T)
 		self.pop = pop
 		self.T_last = T
 		#add_data_conn(cursor=self.cursor,data=pop,label=T)
@@ -58,18 +65,18 @@ class Poplist(object):
 	def store_last(self):
 		if hasattr(self,'init_done') and not self.init_done:
 			self.init_db()
-		add_data(filepath=self.filepath,data=self.pop,label=self.T_last)
+		self.storage.add_data(data=self.pop,label=self.T_last)
 
 	def get(self,T):
 		if hasattr(self,'T_last') and T == self.T_last:
 			return self.get_last()
 		else:
-			return read_data(filepath=self.filepath,label=T)
+			return self.storage.read_data(label=T)
 		#return read_data_conn(cursor=self.cursor,label=T)
 
 	def get_last(self):
 		if self.pop is None:
-			self.pop = read_data(filepath=self.filepath)
+			self.pop = self.storage.read_data()
 			#self.pop = read_data_conn(cursor=self.cursor)
 		return self.pop
 
@@ -95,7 +102,7 @@ class Poplist(object):
 
 class Experiment(object):
 
-	def __init__(self, pop_cfg={}, step=1, no_storage=False, no_compressed_file=False):
+	def __init__(self, pop_cfg={}, step=1, no_storage=False, no_compressed_file=False, db_type='sqlite',conn_info=None):
 		self._time_step = step
 		self.define_stepfun()
 		self._T = []
@@ -103,7 +110,7 @@ class Experiment(object):
 		self.uuid = str(uuid.uuid1())
 		self._pop_cfg = copy.deepcopy(pop_cfg)
 		#self._pop_cfg['xp_uuid'] = self.uuid
-		self._poplist = Poplist('data/' + self.uuid + '.db',no_compressed_file=no_compressed_file)
+		self._poplist = Poplist('data/' + self.uuid + '.db',no_compressed_file=no_compressed_file,db_type=db_type,conn_info=conn_info)
 		#self.add_pop(Population(**pop_cfg),0)
 		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())

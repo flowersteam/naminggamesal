@@ -514,13 +514,13 @@ class NamingGamesDB(object):
 
 class Experiment(ngsimu.Experiment):
 
-	def __init__(self,pop_cfg={},step=1,database=None,compute=True,no_storage=False,no_compressed_file=False):
+	def __init__(self,pop_cfg={},step=1,database=None,compute=True,no_storage=False,no_compressed_file=False, db_type='sqlite'):
 		if not database:
 			self.db = NamingGamesDB()
 		else:
 			self.db = database
 		self.compute = compute
-		super(Experiment,self).__init__(pop_cfg,step,no_storage=no_storage,no_compressed_file=no_compressed_file)
+		super(Experiment,self).__init__(pop_cfg,step,no_storage=no_storage,no_compressed_file=no_compressed_file,db_type=db_type,conn_info=self.db.conn_info)
 		self.commit_to_db(rm=True)
 
 	def commit_to_db(self,rm=False):
