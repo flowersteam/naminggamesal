@@ -121,6 +121,13 @@ class CustomGraph(object):
 			plt.savefig(out_path+self.filename+"."+extension,format=extension,bbox_inches='tight')
 		plt.switch_backend(backend)
 
+	def savefig(self,*args,**kwargs):
+		backend = plt.get_backend()
+		plt.switch_backend('Agg')
+		self.draw()
+		plt.savefig(*args,**kwargs)
+		plt.switch_backend(backend)
+
 	def draw(self):
 
 		#colormap=['blue','black','green','red','yellow','cyan','magenta']
@@ -167,10 +174,17 @@ class CustomGraph(object):
 					elif self.std_mode == 'minmax':
 						Ytempmax[j] = maxtemp[j]
 						Ytempmin[j] = mintemp[j]
-				if 'color' in list(self.Yoptions[i].keys()):
-					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha,**self.Yoptions[i])
+				if 'alpha' in list(self.Yoptions[i]):
+					alpha = self.alpha*self.Yoptions[i]['alpha']
+					Yopt = copy.deepcopy(self.Yoptions[i])
+					del Yopt['alpha']
 				else:
-					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=self.alpha, facecolor=base_line.get_color(), **self.Yoptions[i])
+					alpha = self.alpha
+					Yopt = self.Yoptions[i]
+				if 'color' in list(self.Yoptions[i].keys()):
+					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=alpha,**Yopt)
+				else:
+					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=alpha, facecolor=base_line.get_color(), **Yopt)
 
 		plt.xlabel(self.xlabel)
 		if self.ylabel is not None and (len(self.ylabel)<4 or (self.ylabel[:2]=='$\\' and self.ylabel[-1] == '$')):

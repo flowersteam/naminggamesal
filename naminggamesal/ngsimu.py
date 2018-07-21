@@ -31,7 +31,7 @@ import numpy as np
 import subprocess
 
 class Poplist(object):
-	def __init__(self,path):
+	def __init__(self,path,no_compressed_file=False):
 		self.filepath = path
 		#if os.path.isfile(self.filepath+'.xz') and os.path.isfile(self.filepath): # Old Policy: if both compressed and uncompressed versions present, erase uncompressed
 			#os.remove(self.filepath)
@@ -40,6 +40,7 @@ class Poplist(object):
 		self.init_done = False
 		#self.conn = sqlite3.connect(self.filepath)
 		#self.cursor = self.conn.cursor()
+		self.no_compressed_file = no_compressed_file
 
 	def init_db(self):
 		init_db(filepath=self.filepath)
@@ -74,7 +75,7 @@ class Poplist(object):
 
 	def compress(self,rm=True):
 		#self.conn.commit()
-		if os.path.exists(self.filepath):
+		if os.path.exists(self.filepath) and not self.no_compressed_file:
 			xz_compress(self.filepath,rm=rm)
 
 	def __getstate__(self):
@@ -94,7 +95,7 @@ class Poplist(object):
 
 class Experiment(object):
 
-	def __init__(self, pop_cfg={}, step=1, no_storage=False):
+	def __init__(self, pop_cfg={}, step=1, no_storage=False, no_compressed_file=False):
 		self._time_step = step
 		self.define_stepfun()
 		self._T = []
@@ -102,7 +103,7 @@ class Experiment(object):
 		self.uuid = str(uuid.uuid1())
 		self._pop_cfg = copy.deepcopy(pop_cfg)
 		#self._pop_cfg['xp_uuid'] = self.uuid
-		self._poplist = Poplist('data/' + self.uuid + '.db')
+		self._poplist = Poplist('data/' + self.uuid + '.db',no_compressed_file=no_compressed_file)
 		#self.add_pop(Population(**pop_cfg),0)
 		self.init_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())

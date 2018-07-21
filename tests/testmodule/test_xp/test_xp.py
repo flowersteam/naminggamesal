@@ -192,6 +192,11 @@ def test_struct(xp_cfg_struct):
 def test_xp(xp_cfg):
 	xp_loop(xp_cfg)
 
+def test_nocompress():
+	cfg = copy.deepcopy(simple_cfg)
+	cfg['no_compressed_file'] = True
+	xp_loop(cfg)
+
 def test_xp_allowidk(xp_cfg2):
 	xp_loop(xp_cfg2)
 
