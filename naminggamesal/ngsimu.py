@@ -68,6 +68,8 @@ class Poplist(object):
 	def store_last(self):
 		if hasattr(self,'init_done') and not self.init_done:
 			self.init_db()
+		if self.pop is None:
+			self.pop = self.storage.read_data()
 		self.storage.add_data(data=self.pop,label=self.T_last)
 
 	def get(self,T):
