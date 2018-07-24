@@ -81,6 +81,7 @@ class Poplist(object):
 		if self.pop is None:
 			self.pop = self.storage.read_data()
 			#self.pop = read_data_conn(cursor=self.cursor)
+		assert self.pop is not None
 		return self.pop
 
 	def compress(self,rm=True):
@@ -244,6 +245,7 @@ class Experiment(object):
 	def init_poplist(self):
 		if not self._T:
 			self.add_pop(Population(xp_uuid=self.uuid,**self._pop_cfg),0,force_storage=True)
+
 
 	#def __str__(self):
 	#	return "T: "+str(self._T[-1])+"\n"+str(self._poplist.get_last())

@@ -37,6 +37,7 @@ class SQLiteStorage(object):
 		self.filepath = filepath
 
 	def add_data(self,data,label):
+		assert data is not None
 		if not os.path.isfile(self.filepath):
 			if not os.path.isfile(self.filepath+'.xz'):
 				raise IOError('No file for poplist: '+self.filepath+' . You should call init_db before adding elements')
