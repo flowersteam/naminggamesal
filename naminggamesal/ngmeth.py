@@ -2014,7 +2014,7 @@ def srtheo_end_smooth(exp,X=0,**kwargs):
 	if len(sr_gr._Y[0]) < 5:
 		return [np.mean(sr_gr._Y[0])]
 	else:
-		return [np.mean(sr_gr._Y[-5:])]
+		return [np.mean(sr_gr._Y[0][-5:])]
 
 def srtheo_end_smooth_min(exp):
 	return 0
@@ -2034,7 +2034,7 @@ def decay_end_smooth(exp,X=0,**kwargs):
 	if len(sr_gr._Y[0]) < 5:
 		return [np.mean(sr_gr._Y[0])]
 	else:
-		return [np.mean(sr_gr._Y[-5:])]
+		return [np.mean(sr_gr._Y[0][-5:])]
 
 def decay_end_smooth_min(exp):
 	return 0

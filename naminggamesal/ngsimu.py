@@ -271,6 +271,7 @@ class Experiment(object):
 			temptmax += self.stepfun(temptmax)
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 			start_mon = time.clock()
+			print('temptmax',temptmax)
 			if monitoring_func is not None:
 				monitoring_func(self)
 			start_time += time.clock() - start_mon
@@ -356,7 +357,6 @@ class Experiment(object):
 			tempout=[]
 			for j in range(indmin,len(self._T)+1+indmax):
 				if hasattr(self,'no_storage') and self.no_storage:
-					print(self._poplist.T_last,tmin)
 					assert self._poplist.T_last == self._T[j] , str(self._poplist.T_last)+','+str( self._T[j])
 					tempout.append(copy.deepcopy(tempfun.apply(self._poplist.get_last())))
 				else:
