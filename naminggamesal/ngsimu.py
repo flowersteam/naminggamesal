@@ -272,6 +272,7 @@ class Experiment(object):
 			self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 			start_mon = time.clock()
 			print('temptmax',temptmax)
+			print('stepfuntemptmax',temptmax+self.stepfun(temptmax))
 			if monitoring_func is not None:
 				monitoring_func(self)
 			start_time += time.clock() - start_mon
@@ -293,6 +294,7 @@ class Experiment(object):
 			#self._poplist.T_last = T
 		self._T.append(T)
 		print('poplistaddpop',T)
+		print('self._T',self._T)
 		self._exec_time.append(exec_time)
 
 	def store_lastpop(self):
