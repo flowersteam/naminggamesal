@@ -292,6 +292,7 @@ class Experiment(object):
 			self._poplist.append(pop,T,no_storage=True)
 			#self._poplist.T_last = T
 		self._T.append(T)
+		print('poplistaddpop',T)
 		self._exec_time.append(exec_time)
 
 	def store_lastpop(self):
