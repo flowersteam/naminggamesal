@@ -23,6 +23,7 @@ strat_class={
 	'success_threshold_epirob':'success_threshold.StratSuccessThresholdEpirob',
 	'success_threshold_corrected':'success_threshold.StratSuccessThresholdCorrected',
 	'success_threshold_wise':'success_threshold.StratSuccessThresholdWise',
+	'success_threshold_wise_partially_naive':'success_threshold.StratSuccessThresholdWisePartiallyNaive',
 	'success_threshold_wise_max':'success_threshold.StratSuccessThresholdWiseMax',
 	'success_threshold_scores':'success_threshold.StratSuccessThresholdScores',
 

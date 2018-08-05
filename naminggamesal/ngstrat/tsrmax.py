@@ -80,7 +80,7 @@ class StratTSRMax(StratNaive):
 			#m_explo = None
 			#if len(voc.get_unknown_meanings())>0:
 			#	m_explo = voc.get_new_unknown_m()
-			#	w_explo = voc.get_new_unknown_w() 
+			#	w_explo = voc.get_new_unknown_w()
 			#	mm_list = voc.get_known_meanings() + [m_explo]
 			#else:
 			#	mm_list = voc.get_known_meanings()
@@ -227,13 +227,16 @@ class StratTSRMaxHMAB(StratTSRMax):
 class LAPSMaxMAB(StratNaive):
 
 
-	def __init__(self, vu_cfg, global_opt=False, mem_type='interaction_counts_sliding_window_local',time_scale=2,gamma=0.01,bandit_type='bandit_laps',**strat_cfg2):
+	def __init__(self, vu_cfg, global_opt=False, mem_type='interaction_counts_sliding_window_local',time_scale=2,time_scale_bandit=None,gamma=0.01,bandit_type='bandit_laps',**strat_cfg2):
 		StratNaive.__init__(self,vu_cfg=vu_cfg, **copy.deepcopy(strat_cfg2))
 		mp = {'mem_type':mem_type,'time_scale':time_scale}
 		self.mem_type = mem_type
 		if 'interaction_count' not in [ mmpp['mem_type'][:17] for mmpp in self.memory_policies]:
 			self.memory_policies.append(mp)
-		mp2 = {'mem_type':bandit_type,'gamma':gamma,'time_scale':time_scale,'global_opt':global_opt}
+		if time_scale_bandit is None:
+			mp2 = {'mem_type':bandit_type,'gamma':gamma,'time_scale':time_scale,'global_opt':global_opt}
+		else:
+			mp2 = {'mem_type':bandit_type,'gamma':gamma,'time_scale':time_scale_bandit,'global_opt':global_opt}
 		self.bandit_type = bandit_type
 		self.gamma = gamma
 		self.time_scale = time_scale

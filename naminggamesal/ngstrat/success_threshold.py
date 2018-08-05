@@ -6,7 +6,7 @@ import numpy as np
 
 
 
-##################################### STRATEGIE SUCCESS THRESHOLD########################################
+##################################### STRATEGY SUCCESS THRESHOLD########################################
 class StratSuccessThreshold(StratNaive):
 
 	def __init__(self, vu_cfg, threshold_explo=0.9, **strat_cfg2):
@@ -66,7 +66,7 @@ class StratSuccessThreshold(StratNaive):
 		else:
 			return succ_sum/float(fail_sum+succ_sum)
 
-##################################### STRATEGIE SUCCESS THRESHOLD CORRECTED########################################
+##################################### STRATEGY SUCCESS THRESHOLD CORRECTED########################################
 class StratSuccessThresholdCorrected(StratSuccessThreshold):
 
 	def get_success_rate_over_known_meanings(self,voc,mem):
@@ -89,7 +89,7 @@ class StratSuccessThresholdCorrected(StratSuccessThreshold):
 		else:
 			return 1
 
-##################################### STRATEGIE SUCCESS THRESHOLD WISE########################################
+##################################### STRATEGY SUCCESS THRESHOLD WISE########################################
 class StratSuccessThresholdWise(StratSuccessThreshold):
 
 	def get_success_rates(self, voc, mem):
@@ -126,8 +126,21 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 			return voc.get_random_m(m_list=meaning_list)
 		except IndexError:
 			return voc.get_random_known_m()
+##################################### STRATEGY SUCCESS THRESHOLD WISE PARTIALLY NAIVE########################################
+class StratSuccessThresholdWisePartiallyNaive(StratSuccessThresholdWise):
 
-##################################### STRATEGIE SUCCESS THRESHOLD WISE MAX########################################
+	def __init__(self,proba_naive,*args,**kwargs):
+		self.proba_naive = proba_naive
+		StratSuccessThresholdWise.__init__(self,*args,**kwargs)
+
+	def pick_m(self, voc, mem, context):
+		if np.random.random() <= self.proba_naive:
+			return StratNaive.pick_m(self, voc=voc, mem=mem, context=context)
+		else:
+			return StratSuccessThresholdWise.pick_m(self, voc=voc, mem=mem, context=context)
+
+
+##################################### STRATEGY SUCCESS THRESHOLD WISE MAX########################################
 class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 
 	def pick_m(self, voc, mem, context):
@@ -153,7 +166,7 @@ class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 		except IndexError:
 			return voc.get_random_known_m()
 
-##################################### STRATEGIE SUCCESS THRESHOLD WISE########################################
+##################################### STRATEGY SUCCESS THRESHOLD WISE########################################
 class StratSuccessThresholdScores(StratSuccessThresholdWise):
 
 	def __init__(self, vu_cfg, **strat_cfg2):
@@ -187,7 +200,7 @@ class StratSuccessThresholdScores(StratSuccessThresholdWise):
 		ratelist = [rates[m]/len(voc.get_known_words(m)) for m in voc.get_known_meanings()]
 		return ratelist
 
-##################################### STRATEGIE SUCCESS THRESHOLD EPIROB########################################
+##################################### STRATEGY SUCCESS THRESHOLD EPIROB########################################
 class StratSuccessThresholdEpirob(StratNaive):
 
 	def __init__(self, vu_cfg, threshold_explo=0.9, proba_new_m=0.001,proba_2=0.1,**strat_cfg2):
