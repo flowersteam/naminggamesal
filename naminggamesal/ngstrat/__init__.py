@@ -62,6 +62,8 @@ strat_class={
 
 	'user':'user.StratUser',
 	'user_noninteractive':'user.StratUserNonInteractive',
+
+	'coherence':'coherence_counts.StratCoherence',
 }
 
 def get_strategy(strat_type='naive', vu_cfg={}, success_cfg={}, **strat_cfg2):
