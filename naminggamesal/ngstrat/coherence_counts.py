@@ -9,7 +9,7 @@ import numpy as np
 class StratCoherence(StratNaive):
 
 	def __init__(self, vu_cfg, time_scale=5 , threshold=1.-10**(-5),**strat_cfg2):
-		StratNaive.__init__(vu_cfg=vu_cfg, **strat_cfg2)
+		StratNaive.__init__(self,vu_cfg=vu_cfg, **strat_cfg2)
 		self.time_scale = time_scale
 		self.threshold = threshold
 		mp = {'mem_type':'past_interactions_sliding_window_local'}
