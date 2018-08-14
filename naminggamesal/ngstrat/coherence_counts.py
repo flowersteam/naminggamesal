@@ -12,9 +12,9 @@ class StratCoherence(StratNaive):
 		StratNaive.__init__(self,vu_cfg=vu_cfg, **strat_cfg2)
 		self.time_scale = time_scale
 		self.threshold = threshold
-		mp = {'mem_type':'past_interactions_sliding_window_local'}
-		if mp not in self.memory_policies:
-			self.memory_policies.append(mp)
+		#mp = {'mem_type':'past_interactions_sliding_window_local'}
+		#if mp not in self.memory_policies:
+		#	self.memory_policies.append(mp)
 
 
 	def hearer_pick_m(self,voc,mem, context):
