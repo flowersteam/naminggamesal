@@ -29,7 +29,7 @@ class StratCoherence(StratNaive):
 
 	def pick_m(self, voc, mem, context):
 		counts = self.get_counts(voc, mem)
-		if min(list(counts.values()))>=self.threshold*self.time_scale:
+		if not counts or min(list(counts.values()))>=self.threshold*self.time_scale:
 			return voc.get_new_unknown_m()
 		KM = voc.get_known_meanings()
 		val = max([v for v in list(counts.values()) if v < self.threshold])
