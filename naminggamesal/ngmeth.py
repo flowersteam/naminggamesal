@@ -1813,9 +1813,9 @@ custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],
 #########line_border##########
 
 def line_border(pop,**kwargs):
-	m = pop._agentlist[0].get_accessible_meanings()
-	w1_l = pop._agentlist[0].get_known_words(m=m)
-	w2_l = pop._agentlist[-1].get_known_words(m=m)
+	m = pop._agentlist[0]._vocabulary.get_accessible_meanings()
+	w1_l = pop._agentlist[0]._vocabulary.get_known_words(m=m)
+	w2_l = pop._agentlist[-1]._vocabulary.get_known_words(m=m)
 	if len(w1_l) == 1 and len(w2_l) == 1 and w1_l[0] == w2_l[0]:
 		return np.nan
 	else:
@@ -1823,12 +1823,12 @@ def line_border(pop,**kwargs):
 			x1 = 0.
 		else:
 			w1 = w1_l[0]
-			l = max([i for i in range(len(pop._agentlist)) if pop._agentlist[i].get_known_words(m=m) == w1_l])
+			l = max([i for i in range(len(pop._agentlist)) if pop._agentlist[i]._vocabulary.get_known_words(m=m) == w1_l])
 		if len(w2_l) >= 2:
 			x2 = pop._size
 		else:
 			w2 = w2_l[0]
-			l = min([i for i in range(len(pop._agentlist)) if pop._agentlist[i].get_known_words(m=m) == w2_l])
+			l = min([i for i in range(len(pop._agentlist)) if pop._agentlist[i]._vocabulary.get_known_words(m=m) == w2_l])
 		return (x2-x1)/2. - pop.size/2.
 
 def line_border_max(pop):
