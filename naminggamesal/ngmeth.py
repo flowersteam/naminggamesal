@@ -1822,12 +1822,21 @@ def line_border(pop,**kwargs):
 		if len(w1_l) != 1:
 			x1 = 0.
 		else:
-			x1 = max([i for i in range(len(pop._agentlist)) if pop._agentlist[i]._vocabulary.get_known_words(m=m) == w1_l])
+			for i1 in range(len(pop._agentlist)):
+				if pop._agentlist[i1]._vocabulary.get_known_words(m=m) == w1_l:
+					x1 = i1
+				elif w1_l[0] not in pop._agentlist[i1]._vocabulary.get_known_words(m=m):
+					break
 		if len(w2_l) != 1:
 			x2 = pop._size
 		else:
-			x2 = min([i for i in range(len(pop._agentlist)) if pop._agentlist[i]._vocabulary.get_known_words(m=m) == w2_l])
-		return (x2-x1)*0.5
+			for i2 in range(len(pop._agentlist)):
+				if pop._agentlist[-1-i2]._vocabulary.get_known_words(m=m) == w2_l:
+					x2 = pop._size - i2
+				elif w2_l[0] not in pop._agentlist[-1-i2]._vocabulary.get_known_words(m=m):
+					break
+			x1 = j1
+		return (x2+x1 - pop._size)*0.5
 
 def line_border_max(pop):
 	return pop._size/2.
@@ -1838,6 +1847,44 @@ def line_border_min(pop):
 FUNC=line_border
 graphconfig={"ymin":line_border_min,"ymax":line_border_max}
 custom_line_border=custom_func.CustomFunc(FUNC,"population",tags=["halfline"],**graphconfig)
+
+#########line_border_width##########
+
+def line_border_width(pop,**kwargs):
+	m = pop._agentlist[0]._vocabulary.get_accessible_meanings()[0]
+	w1_l = pop._agentlist[0]._vocabulary.get_known_words(m=m)
+	w2_l = pop._agentlist[-1]._vocabulary.get_known_words(m=m)
+	if len(w1_l) == 1 and len(w2_l) == 1 and w1_l[0] == w2_l[0]:
+		return np.nan
+	else:
+		if len(w1_l) != 1:
+			x1 = 0.
+		else:
+			for i1 in range(len(pop._agentlist)):
+				if pop._agentlist[i1]._vocabulary.get_known_words(m=m) == w1_l:
+					x1 = i1
+				elif w1_l[0] not in pop._agentlist[i1]._vocabulary.get_known_words(m=m):
+					break
+		if len(w2_l) != 1:
+			x2 = pop._size
+		else:
+			for i2 in range(len(pop._agentlist)):
+				if pop._agentlist[-1-i2]._vocabulary.get_known_words(m=m) == w2_l:
+					x2 = pop._size - i2
+				elif w2_l[0] not in pop._agentlist[-1-i2]._vocabulary.get_known_words(m=m):
+					break
+			x1 = j1
+		return (x2-x1)
+
+def line_border_width_max(pop):
+	return pop._size/2.
+
+def line_border_width_min(pop):
+	return -pop._size/2.
+
+FUNC=line_border_width
+graphconfig={"ymin":line_border_width_min,"ymax":line_border_width_max}
+custom_line_border_width=custom_func.CustomFunc(FUNC,"population",tags=["halfline"],**graphconfig)
 
 #########overlap##########CAT
 
