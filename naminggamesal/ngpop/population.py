@@ -23,7 +23,16 @@ import networkx as nx
 
 class Population(object):
 
-	def __init__(self, voc_cfg={'voc_type':'matrix_new'}, strat_cfg={'strattype':'naive'}, interact_cfg={'interact_type':'speakerschoice'}, nbagent=10, agent_init_cfg={'agent_init_type':'agent_init'}, evolution_cfg={'evolution_type':'idle'}, agentpick_cfg={'agentpick_type':'random_pick'}, sensor_cfg=None, env_cfg={'env_type':'simple','M':10,'W':10},topology_cfg={'topology_type':'full_graph'},xp_uuid=None):
+	def __init__(self, voc_cfg={'voc_type':'matrix_new'},
+					 strat_cfg={'strattype':'naive'},
+					 interact_cfg={'interact_type':'speakerschoice'},
+					 nbagent=10, agent_init_cfg={'agent_init_type':'agent_init'},
+					 evolution_cfg={'evolution_type':'idle'},
+					 agentpick_cfg={'agentpick_type':'random_pick'},
+					 sensor_cfg=None, env_cfg={'env_type':'simple','M':10,'W':10},
+					 topology_cfg={'topology_type':'full_graph'},
+					 xp_uuid=None):
+		self.nbagent_init = nbagent
 		self._size = 0
 		self._strat_cfg = copy.deepcopy(strat_cfg)
 		self._agent_init_cfg = copy.deepcopy(agent_init_cfg)

@@ -8,6 +8,7 @@ agent_init_class={
 	'agent_init':'agent_init.AgentInit',
 	'own_words':'own_conventions.OwnWordsInit',
 	'converged':'converged.Converged',
+	'converged_halfline':'converged.ConvergedHalfLine',
 	'oneuser':'oneuser.OneUser',
 	'onedifferent':'oneuser.OneDifferent',
 	'oneuser_noninteractive':'oneuser.OneUserNonInteractive',

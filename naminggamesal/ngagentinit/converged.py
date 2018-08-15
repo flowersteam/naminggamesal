@@ -10,3 +10,16 @@ class Converged(AgentInit):
 			self.converged_voc = copy.deepcopy(agent._vocabulary)
 		elif pop_init:
 			agent._vocabulary = copy.deepcopy(self.converged_voc)
+
+class ConvergedHalfLine(Converged):
+
+	def modify_agent(self,agent, pop, pop_init=False):
+		Converged.modify_agent(self,agent=agent,pop=pop,pop_init=pop_init)
+		N = pop.nbagent_init/2.
+		if len(pop._agentlist) <= N:
+			m = agent._vocabulary.get_known_meanings()[0]
+			w = agent._vocabulary.get_known_words(m=m)[0]
+			w2 = agent._vocabulary.get_new_unknown_w()
+			agent._vocabulary.rm(m=m,w=w)
+			agent._vocabulary.add(m=m,w=w2)
+
