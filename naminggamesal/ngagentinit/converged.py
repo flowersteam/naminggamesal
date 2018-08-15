@@ -19,7 +19,8 @@ class ConvergedHalfLine(Converged):
 		if len(pop._agentlist) <= N:
 			m = agent._vocabulary.get_known_meanings()[0]
 			w = agent._vocabulary.get_known_words(m=m)[0]
-			w2 = agent._vocabulary.get_new_unknown_w()
+			if not hasattr(self,'w'):
+				self.w = agent._vocabulary.get_new_unknown_w()
 			agent._vocabulary.rm(m=m,w=w)
-			agent._vocabulary.add(m=m,w=w2)
+			agent._vocabulary.add(m=m,w=self.w)
 
