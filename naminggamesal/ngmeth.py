@@ -1835,7 +1835,6 @@ def line_border(pop,**kwargs):
 					x2 = pop._size - i2
 				elif w2_l[0] not in pop._agentlist[-1-i2]._vocabulary.get_known_words(m=m):
 					break
-			x1 = j1
 		return (x2+x1 - pop._size)*0.5
 
 def line_border_max(pop):
@@ -1873,7 +1872,6 @@ def line_border_width(pop,**kwargs):
 					x2 = pop._size - i2
 				elif w2_l[0] not in pop._agentlist[-1-i2]._vocabulary.get_known_words(m=m):
 					break
-			x1 = j1
 		return (x2-x1)
 
 def line_border_width_max(pop):
