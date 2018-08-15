@@ -338,6 +338,11 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 		InteractionCounts.init_memory(self,mem,voc,cfg=cfg)
 		assert not 'past_interactions_sliding_window_local' in list(mem.keys())
 		mem['past_interactions_sliding_window_local'] = {'m':{},'w':{}}
+		for m in voc.get_known_meanings():
+			if len(voc.get_known_words(m=m)) == 1:
+				w = voc.get_known_words(m=m)[0]
+				mem['past_interactions_sliding_window_local']['m'][m] = [(w,1.) for _ in range(self.time_scale)]
+
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if self.time_scale > 0:
