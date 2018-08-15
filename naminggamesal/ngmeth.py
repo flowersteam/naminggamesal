@@ -1878,7 +1878,7 @@ def line_border_width_max(pop):
 	return pop._size/2.
 
 def line_border_width_min(pop):
-	return -pop._size/2.
+	return 0
 
 FUNC=line_border_width
 graphconfig={"ymin":line_border_width_min,"ymax":line_border_width_max}
