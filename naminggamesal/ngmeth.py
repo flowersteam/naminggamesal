@@ -1810,6 +1810,37 @@ FUNC=entropydistrib
 graphconfig={"ymin":entropydistrib_min,"ymax":entropydistrib_max}
 custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],**graphconfig)
 
+#########line_border##########
+
+def line_border(pop,**kwargs):
+	m = pop._agentlist[0].get_accessible_meanings()
+	w1_l = pop._agentlist[0].get_known_words(m=m)
+	w2_l = pop._agentlist[-1].get_known_words(m=m)
+	if len(w1_l) == 1 and len(w2_l) == 1 and w1_l[0] == w2_l[0]:
+		return np.nan
+	else:
+		if len(w1_l) >= 2:
+			x1 = 0.
+		else:
+			w1 = w1_l[0]
+			l = max([i for i in range(len(pop._agentlist)) if pop._agentlist[i].get_known_words(m=m) == w1_l])
+		if len(w2_l) >= 2:
+			x2 = pop._size
+		else:
+			w2 = w2_l[0]
+			l = min([i for i in range(len(pop._agentlist)) if pop._agentlist[i].get_known_words(m=m) == w2_l])
+		return (x2-x1)/2. - pop.size/2.
+
+def line_border_max(pop):
+	return -pop._size/2.
+
+def line_border_min(pop):
+	return -pop._size/2.
+
+FUNC=line_border
+graphconfig={"ymin":line_border_min,"ymax":line_border_max}
+custom_line_border=custom_func.CustomFunc(FUNC,"population",tags=["halfline"],**graphconfig)
+
 #########overlap##########CAT
 
 def overlap(pop,**kwargs):
