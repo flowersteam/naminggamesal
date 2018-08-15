@@ -1819,16 +1819,14 @@ def line_border(pop,**kwargs):
 	if len(w1_l) == 1 and len(w2_l) == 1 and w1_l[0] == w2_l[0]:
 		return np.nan
 	else:
-		if len(w1_l) >= 2:
+		if len(w1_l) != 1:
 			x1 = 0.
 		else:
-			w1 = w1_l[0]
-			l = max([i for i in range(len(pop._agentlist)) if pop._agentlist[i]._vocabulary.get_known_words(m=m) == w1_l])
-		if len(w2_l) >= 2:
+			x1 = max([i for i in range(len(pop._agentlist)) if pop._agentlist[i]._vocabulary.get_known_words(m=m) == w1_l])
+		if len(w2_l) != 1:
 			x2 = pop._size
 		else:
-			w2 = w2_l[0]
-			l = min([i for i in range(len(pop._agentlist)) if pop._agentlist[i]._vocabulary.get_known_words(m=m) == w2_l])
+			x2 = min([i for i in range(len(pop._agentlist)) if pop._agentlist[i]._vocabulary.get_known_words(m=m) == w2_l])
 		return (x2-x1)/2. - pop.size/2.
 
 def line_border_max(pop):
