@@ -1884,6 +1884,21 @@ FUNC=line_border_width
 graphconfig={"ymin":line_border_width_min,"ymax":line_border_width_max}
 custom_line_border_width=custom_func.CustomFunc(FUNC,"population",tags=["halfline"],**graphconfig)
 
+#########line_border_abs##########
+
+def line_border_abs(pop,**kwargs):
+	return np.abs(line_border(pop,**kwargs))
+
+def line_border_abs_max(pop):
+	return pop._size/2.
+
+def line_border_abs_min(pop):
+	return 0
+
+FUNC=line_border_abs
+graphconfig={"ymin":line_border_abs_min}#,"ymax":line_border_abs_max}
+custom_line_border_abs=custom_func.CustomFunc(FUNC,"population",tags=["halfline"],**graphconfig)
+
 #########overlap##########CAT
 
 def overlap(pop,**kwargs):
