@@ -1830,7 +1830,7 @@ def line_border(pop,**kwargs):
 		return (x2-x1)/2. - pop._size/2.
 
 def line_border_max(pop):
-	return -pop._size/2.
+	return pop._size/2.
 
 def line_border_min(pop):
 	return -pop._size/2.
