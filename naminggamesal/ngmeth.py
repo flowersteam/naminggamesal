@@ -1813,7 +1813,7 @@ custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],
 #########line_border##########
 
 def line_border(pop,**kwargs):
-	m = pop._agentlist[0]._vocabulary.get_accessible_meanings()
+	m = pop._agentlist[0]._vocabulary.get_accessible_meanings()[0]
 	w1_l = pop._agentlist[0]._vocabulary.get_known_words(m=m)
 	w2_l = pop._agentlist[-1]._vocabulary.get_known_words(m=m)
 	if len(w1_l) == 1 and len(w2_l) == 1 and w1_l[0] == w2_l[0]:
