@@ -1827,7 +1827,7 @@ def line_border(pop,**kwargs):
 			x2 = pop._size
 		else:
 			x2 = min([i for i in range(len(pop._agentlist)) if pop._agentlist[i]._vocabulary.get_known_words(m=m) == w2_l])
-		return (x2-x1)/2. - pop.size/2.
+		return (x2-x1)/2. - pop._size/2.
 
 def line_border_max(pop):
 	return -pop._size/2.
