@@ -18,9 +18,9 @@ class FullGraph(Topology):
 				agent2 = pop._agentlist[j]
 				self.graph.add_edge(agent1._id,agent2._id)
 
-	def get_neighbor(self,speaker,pop):
+	def get_random_neighbor(self,speaker,pop):
 		speaker_id = speaker.get_id()
-		hearer_id = random.choice(self.graph.neighbors(speaker_id))
+		hearer_id = random.choice(list(self.graph.neighbors(speaker_id)))
 		return pop._agentlist[pop.get_index_from_id(hearer_id)]
 
 	def add_agent(self, agent, pop):

@@ -37,7 +37,7 @@ class Topology(object):
 	def get_topologytype(self):
 		return self._topologytype
 
-	def get_neighbor(self, speaker, pop):
+	def get_random_neighbor(self, speaker, pop):
 		pass
 
 	def add_agent(self, agent, pop):

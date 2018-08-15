@@ -9,6 +9,6 @@ import networkx as nx
 
 class NeighborPick(RandomPick):
 	def pick_hearer(self, speaker, pop):
-		hearer = pop._topology.get_neighbor(speaker,pop=pop)
+		hearer = pop._topology.get_random_neighbor(speaker,pop=pop)
 		#hearer.warn(role='hearer')
 		return hearer
