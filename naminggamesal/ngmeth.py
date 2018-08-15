@@ -1975,8 +1975,8 @@ custom_interactions_per_agent =custom_func.CustomFunc(FUNC,"time",**graphconfig)
 
 def product_maxmem_convtime(exp,X=0,**kwargs):
 
-	max_mem_val = exp.graph('max_mem_conv')._Y[0][0]
-	conv_time_val = exp.graph('conv_time')._Y[0][0]
+	max_mem_val = exp.graph('max_mem_conv',autocommit=False)._Y[0][0]
+	conv_time_val = exp.graph('conv_time',autocommit=False)._Y[0][0]
 	return [max_mem_val*conv_time_val]
 
 def product_maxmem_convtime_min(exp):
@@ -1992,7 +1992,7 @@ custom_product_maxmem_convtime =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def srtheo_end(exp,X=0,**kwargs):
 
-	sr_gr = exp.graph('srtheo')
+	sr_gr = exp.graph('srtheo',autocommit=False)
 	return [sr_gr._Y[0][-1]]
 
 def srtheo_end_min(exp):
@@ -2010,7 +2010,7 @@ custom_srtheo_end =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def srtheo_end_smooth(exp,X=0,**kwargs):
 
-	sr_gr = exp.graph('srtheo')
+	sr_gr = exp.graph('srtheo',autocommit=False)
 	if len(sr_gr._Y[0]) < 5:
 		return [np.mean(sr_gr._Y[0])]
 	else:
@@ -2030,7 +2030,7 @@ custom_srtheo_end_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def decay_end_smooth(exp,X=0,**kwargs):
 
-	sr_gr = exp.graph('decay_coherence')
+	sr_gr = exp.graph('decay_coherence',autocommit=False)
 	if len(sr_gr._Y[0]) < 5:
 		return [np.mean(sr_gr._Y[0])]
 	else:
@@ -2051,7 +2051,7 @@ custom_decay_end_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def max_mem(exp,X=0,**kwargs):
 
-	mem = exp.graph('Nlink')
+	mem = exp.graph('Nlink',autocommit=False)
 	return [max(mem._Y[0])]
 
 def max_mem_min(exp):
@@ -2065,7 +2065,7 @@ custom_max_mem =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_mem_conv##########
 
 def max_mem_conv(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.graph('srtheo')
+	sr_gr = exp.graph('srtheo',autocommit=False)
 	sr = sr_gr._Y[0][-1]
 	if sr >= thresh:
 		return max_mem(exp,X=X,**kwargs)
@@ -2084,7 +2084,7 @@ custom_max_mem_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def max_N_d(exp,X=0,**kwargs):
 
-	mem = exp.graph('N_d')
+	mem = exp.graph('N_d',autocommit=False)
 	return [max(mem._Y[0])]
 
 def max_N_d_min(exp):
@@ -2098,7 +2098,7 @@ custom_max_N_d =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_N_d_conv##########
 
 def max_N_d_conv(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.graph('srtheo')
+	sr_gr = exp.graph('srtheo',autocommit=False)
 	sr = sr_gr._Y[0][-1]
 	if sr >= thresh:
 		return max_N_d(exp,X=X,**kwargs)
@@ -2114,7 +2114,7 @@ custom_max_N_d_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time##########
 
 def conv_time(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.graph('srtheo')
+	sr_gr = exp.graph('srtheo',autocommit=False)
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
 		if sr[i] >= thresh:
@@ -2136,11 +2136,11 @@ custom_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time2##########
 
 def conv_time2(exp,X=0,thresh=1.,**kwargs):
-	Nd_gr = exp.graph('N_d')
+	Nd_gr = exp.graph('N_d',autocommit=False)
 	Nd = Nd_gr._Y[0]
-	Nm_gr = exp.graph('N_meanings')
+	Nm_gr = exp.graph('N_meanings',autocommit=False)
 	Nm = Nm_gr._Y[0]
-	Nw_gr = exp.graph('N_words')
+	Nw_gr = exp.graph('N_words',autocommit=False)
 	Nw = Nw_gr._Y[0]
 	M = N_meanings_max(exp._poplist.get_last())
 	for i in range(len(Nd)):
@@ -2161,8 +2161,8 @@ custom_conv_time2 =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########decay_time##########
 
 def decay_time(exp,X=0,**kwargs):
-	vect = exp.graph('decay_coherence')
-	val = exp.graph('decay_coherence')._Y[0][-1]
+	vect = exp.graph('decay_coherence',autocommit=False)
+	val = exp.graph('decay_coherence',autocommit=False)._Y[0][-1]
 	for i in range(len(vect._Y[0])):
 		if vect._Y[0][i] <= val:
 			return [vect._X[0][i]]
@@ -2183,8 +2183,8 @@ custom_decay_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########decay_time_smooth##########
 
 def decay_time_smooth(exp,X=0,**kwargs):
-	val = exp.graph('decay_end_smooth')._Y[0][0]
-	vect = exp.graph('decay_coherence')
+	val = exp.graph('decay_end_smooth',autocommit=False)._Y[0][0]
+	vect = exp.graph('decay_coherence',autocommit=False)
 	for i in range(len(vect._Y[0])):
 		if vect._Y[0][i] <= val:
 			return [vect._X[0][i]]
@@ -2198,9 +2198,9 @@ custom_decay_time_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########block_time##########
 
 def block_time(exp,X=0,**kwargs):
-	Nd_gr = exp.graph('N_d')
+	Nd_gr = exp.graph('N_d',autocommit=False)
 	Nd = Nd_gr._Y[0]
-	Nm_gr = exp.graph('N_meanings')
+	Nm_gr = exp.graph('N_meanings',autocommit=False)
 	Nm = Nm_gr._Y[0]
 	M = N_meanings_max(exp._poplist.get_last())
 	for i in range(len(Nd)):
@@ -2222,11 +2222,11 @@ custom_block_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########homonymy_block##########
 
 def homonymy_block(exp,X=0,**kwargs):
-	Nd_gr = exp.graph('N_d')
+	Nd_gr = exp.graph('N_d',autocommit=False)
 	Nd = Nd_gr._Y[0]
-	Nm_gr = exp.graph('N_meanings')
+	Nm_gr = exp.graph('N_meanings',autocommit=False)
 	Nm = Nm_gr._Y[0]
-	hom_gr = exp.graph('homonymy')
+	hom_gr = exp.graph('homonymy',autocommit=False)
 	hom = hom_gr._Y[0]
 	M = N_meanings_max(exp._poplist.get_last())
 	if Nm[-1] == M and Nd[-1] == M:
@@ -2248,7 +2248,7 @@ custom_homonymy_block =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_N_d_time##########
 
 def max_N_d_time(exp,X=0,thresh=1.,**kwargs):
-	N_d_gr = exp.graph('N_d')
+	N_d_gr = exp.graph('N_d',autocommit=False)
 	N_d_vec = N_d_gr._Y[0]
 	val = max(N_d_vec)
 	for i in range(len(N_d_vec)-1):
@@ -2271,7 +2271,7 @@ custom_max_N_d_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_Nlink_time##########
 
 def max_Nlink_time(exp,X=0,thresh=1.,**kwargs):
-	Nlink_gr = exp.graph('Nlink')
+	Nlink_gr = exp.graph('Nlink',autocommit=False)
 	Nlink_vec = Nlink_gr._Y[0]
 	val = max(Nlink_vec)
 	for i in range(len(Nlink_vec)-1):
@@ -2294,8 +2294,8 @@ custom_max_Nlink_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########tdiff_d##########
 
 def tdiff_d(exp,X=0,thresh=1.,**kwargs):
-	val1 = exp.graph('max_N_d_time')._Y[0][0]
-	val2 = exp.graph('conv_time2')._Y[0][0]
+	val1 = exp.graph('max_N_d_time',autocommit=False)._Y[0][0]
+	val2 = exp.graph('conv_time2',autocommit=False)._Y[0][0]
 	return [val2-val1]
 
 
@@ -2313,8 +2313,8 @@ custom_tdiff_d =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########tdiff_w##########
 
 def tdiff_w(exp,X=0,thresh=1.,**kwargs):
-	val1 = exp.graph('max_Nlink_time')._Y[0][0]
-	val2 = exp.graph('conv_time2')._Y[0][0]
+	val1 = exp.graph('max_Nlink_time',autocommit=False)._Y[0][0]
+	val2 = exp.graph('conv_time2',autocommit=False)._Y[0][0]
 	return [val2-val1]
 
 
@@ -2332,8 +2332,8 @@ custom_tdiff_w =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########tdiff_wd##########
 
 def tdiff_wd(exp,X=0,thresh=1.,**kwargs):
-	val1 = exp.graph('max_N_d_time')._Y[0][0]
-	val2 = exp.graph('max_Nlink_time')._Y[0][0]
+	val1 = exp.graph('max_N_d_time',autocommit=False)._Y[0][0]
+	val2 = exp.graph('max_Nlink_time',autocommit=False)._Y[0][0]
 	return [val2-val1]
 
 
@@ -2351,7 +2351,7 @@ custom_tdiff_wd =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time_plus_srtheo##########
 
 def conv_time_plus_srtheo(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.graph('srtheo')
+	sr_gr = exp.graph('srtheo',autocommit=False)
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
 		if sr[i] >= thresh:
@@ -2367,8 +2367,8 @@ custom_conv_time_plus_srtheo =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def srtheo_and_block_time(exp,X=0,thresh=1.,**kwargs):
 	sr_val = -1
-	sr_gr = exp.graph('srtheo')
-	bt_gr = exp.graph('block_time')
+	sr_gr = exp.graph('srtheo',autocommit=False)
+	bt_gr = exp.graph('block_time',autocommit=False)
 	bt_val = bt_gr._Y[0][0]
 	for i in range(len(sr_gr._X[0])):
 		if sr_gr._X[0][i] == bt_val:
@@ -2387,9 +2387,9 @@ custom_srtheo_and_block_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 def conv_time2_Nm_srtheo(exp,X=0,thresh=1.,**kwargs):
 	sr_val = -1
-	sr_gr = exp.graph('srtheo')
-	ct2_gr = exp.graph('conv_time2')
-	Nm_gr = exp.graph('N_meanings')
+	sr_gr = exp.graph('srtheo',autocommit=False)
+	ct2_gr = exp.graph('conv_time2',autocommit=False)
+	Nm_gr = exp.graph('N_meanings',autocommit=False)
 	ct_val = ct2_gr._Y[0][-1]
 	for i in range(len(sr_gr._X[0])):
 		if sr_gr._X[0][i] == ct_val:
@@ -2410,7 +2410,7 @@ custom_conv_time2_Nm_srtheo =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########partial_conv_time##########
 
 def partial_conv_time(exp,X=0,thresh=1.,**kwargs):
-	sr_gr = exp.graph('srtheo')
+	sr_gr = exp.graph('srtheo',autocommit=False)
 	sr = sr_gr._Y[0]
 	for i in range(len(sr)):
 		if sr[i] >= 0.9*thresh:
@@ -2426,7 +2426,7 @@ custom_partial_conv_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########max_mem_conv_threshold##########
 
 def max_mem_conv_threshold(exp,X=0,**kwargs):
-	sr_gr = exp.graph('srtheo')
+	sr_gr = exp.graph('srtheo',autocommit=False)
 	thresh = sr_gr._Y[0][-1]
 	return max_mem(exp,X=X,thresh=thresh,**kwargs)
 
@@ -2439,7 +2439,7 @@ custom_max_mem_conv_threshold = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time_threshold##########
 
 def conv_time_threshold(exp,X=0,**kwargs):
-	thresh = exp.graph('srtheo_end')._Y[0][0]
+	thresh = exp.graph('srtheo_end',autocommit=False)._Y[0][0]
 	return conv_time(exp,X=X,thresh=thresh,**kwargs)
 
 FUNC = conv_time_threshold
@@ -2450,7 +2450,7 @@ custom_conv_time_threshold =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########conv_time_end_value##########
 
 def conv_time_threshold_smooth(exp,X=0,**kwargs):
-	thresh = exp.graph('srtheo_end_smooth')._Y[0][0]
+	thresh = exp.graph('srtheo_end_smooth',autocommit=False)._Y[0][0]
 	return conv_time(exp,X=X,thresh=thresh,**kwargs)
 
 FUNC = conv_time_threshold_smooth
@@ -2461,7 +2461,7 @@ custom_conv_time_threshold_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconf
 #########partial_conv_time_threshold##########
 
 def partial_conv_time_threshold(exp,X=0,**kwargs):
-	sr_gr = exp.graph('srtheo')
+	sr_gr = exp.graph('srtheo',autocommit=False)
 	thresh = sr_gr._Y[0][-1]
 	return partial_conv_time(exp,X=X,thresh=thresh,**kwargs)
 

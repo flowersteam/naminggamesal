@@ -168,6 +168,8 @@ class Experiment(object):
 	def __getstate__(self):
 		out_dict = self.__dict__.copy()
 		out_dict['stepfun'] = None
+		if 'tempgraph' in list(out_dict.keys()):
+			del(out_dict['tempgraph'])
 		return out_dict
 
 

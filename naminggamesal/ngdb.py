@@ -471,7 +471,7 @@ class NamingGamesDB(object):
 				method, \
 				graph._X[0][-1], \
 				binary,))
-		elif tempmodiftup[0]!=graph.modif_time and graph._X[0][-1]>tempmodiftup2[0]:
+		elif graph._X[0][-1]>tempmodiftup2[0]:#tempmodiftup[0]!=graph.modif_time and
 			binary=self.sql.Binary(lzo.compress(pickle.dumps(graph,pickle.HIGHEST_PROTOCOL)))
 			self.cursor.execute("UPDATE computed_data_table SET "\
 				+"Modif_Time=\'"+str(graph.modif_time)+"\', "\
@@ -552,6 +552,8 @@ class Experiment(ngsimu.Experiment):
 		self.continue_exp_until(self._T[-1]+dT, autocommit=autocommit,monitoring_func=monitoring_func)
 
 	def graph(self,method="srtheo", X=None, tmin=0, tmax=None, autocommit=True, tempgraph=None):
+		if tempgraph is None and hasattr(self,'tempgraph') and method in list(self.tempgraph.keys()):
+			return self.graph(method=method,X=X,tmin=tmin,tmax=tmax,autocommit=autocommit,tempgraph=self.tempgraph[method])
 		do_not_commit = False
 		if not tmax:
 			if not self._T:
@@ -565,6 +567,7 @@ class Experiment(ngsimu.Experiment):
 			return self.graph(method=method, X=X, tmin=tmin, tmax=tmax, autocommit=autocommit, tempgraph=tempgraph)
 		while self._T[ind]>tmax:
 			ind -= 1
+
 		if tempgraph is not None or self.db.data_exists(xp_uuid=self.uuid, method=method):
 			if tempgraph is None:
 				tempgraph = self.db.get_graph(self.uuid, method=method)
