@@ -5,7 +5,7 @@ import numpy as np
 
 
 
-##################################### STRATEGIE SUCCESS THRESHOLD########################################
+##################################### COHERENCE STRATEGY ########################################
 class StratCoherence(StratNaive):
 
 	def __init__(self, vu_cfg, time_scale=5 , threshold=1.-10**(-5),**strat_cfg2):
@@ -37,3 +37,14 @@ class StratCoherence(StratNaive):
 			val = max([v for v in list(counts.values()) if v < self.threshold*self.time_scale])
 			tempm = [m for m in KM if counts[m] == val]
 			return random.choice(tempm)
+
+
+class StratCoherenceLast(StratCoherence):
+
+	def get_counts(self, voc, mem):
+		countlist = {}
+		for m in voc.get_known_meanings():
+			if m in list(mem['past_interactions_sliding_window_local'].keys()):
+				w_l = mem['past_interactions_sliding_window_local']['m'][m]
+				countlist[m] = len([w1 for w1 in w_l if w1==w_l[-1]])
+		return countlist

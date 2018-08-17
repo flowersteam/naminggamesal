@@ -8,6 +8,7 @@ import copy
 
 from .success import get_success
 from .voc_update import get_voc_update
+from .word_choice import get_wordchoice
 
 sns.set(rc={'image.cmap': 'Purples_r'})
 
@@ -64,9 +65,10 @@ strat_class={
 	'user_noninteractive':'user.StratUserNonInteractive',
 
 	'coherence':'coherence_counts.StratCoherence',
+	'coherence_last':'coherence_counts.StratCoherenceLast',
 }
 
-def get_strategy(strat_type='naive', vu_cfg={}, success_cfg={}, **strat_cfg2):
+def get_strategy(strat_type='naive', vu_cfg={}, success_cfg={}, wordchoice_cfg={}, **strat_cfg2):
 	tempstr = strat_type
 	if tempstr == 'mixed':
 		tot = sum(strat_cfg2['proba'])
@@ -83,23 +85,28 @@ def get_strategy(strat_type='naive', vu_cfg={}, success_cfg={}, **strat_cfg2):
 	temppath = '.'.join(templist[:-1])
 	tempclass = templist[-1]
 	_tempmod = import_module('.'+temppath,package=__name__)
-	strat = getattr(_tempmod,tempclass)(vu_cfg=vu_cfg, success_cfg=success_cfg, **strat_cfg2)
+	strat = getattr(_tempmod,tempclass)(vu_cfg=vu_cfg, success_cfg=success_cfg, wordchoice_cfg=wordchoice_cfg, **strat_cfg2)
 	strat.strat_type = strat_type
 	return strat
 
 
 class BaseStrategy(object):
 
-	def __init__(self, vu_cfg={}, success_cfg={}, allow_idk=False, memory_policies=[], **strat_cfg2):
+	def __init__(self, vu_cfg={}, success_cfg={}, wordchoice_cfg={}, allow_idk=False, memory_policies=[], **strat_cfg2):
 		#for key, value in strat_cfg2.iteritems():
 		#	setattr(self, key, value)
 		self.allow_idk = allow_idk
 		self.voc_update = get_voc_update(**vu_cfg)
 		self.memory_policies = copy.deepcopy(memory_policies)
+		self.wordchoice = get_wordchoice(**wordchoice_cfg)
 		if 'successcount' not in [mp['mem_type'] for mp in self.memory_policies]:
 			self.memory_policies.append({'mem_type':'successcount'})
 		if hasattr(self.voc_update,'memory_policies'):
 			for mp in self.voc_update.memory_policies:
+				if sum([ (mp['mem_type'] not in mmpp['mem_type']) for mmpp in self.memory_policies]):
+					self.memory_policies.append(copy.deepcopy(mp))
+		if hasattr(self.wordchoice,'memory_policies'):
+			for mp in self.wordchoice.memory_policies:
 				if sum([ (mp['mem_type'] not in mmpp['mem_type']) for mmpp in self.memory_policies]):
 					self.memory_policies.append(copy.deepcopy(mp))
 		self.success = get_success(**success_cfg)
@@ -193,7 +200,7 @@ class BaseStrategy(object):
 		pass
 
 	def pick_w(self,m,voc,mem,context=[]):
-		pass
+		return self.wordchoice.pick_w(m=m,voc=voc,mem=mem,context=context)
 
 	def guess_m(self,voc,mem,context=[]):
 		pass

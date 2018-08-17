@@ -290,8 +290,39 @@ def test_wordpreference(wordpreferencetype):
         'voc_cfg':{'voc_type':'matrix_new'},
         'strat_cfg':{'strat_type':'naive',
                     'vu_cfg':{'vu_type':'minimal'},
+                    'wordchoice_cfg':{'wordchoice_type':'word_preference'},
                     'success_cfg':{'success_type':'global_norandom'},
                     'memory_policies':[{'mem_type':wordpreferencetype}]},
+        'interact_cfg':{'interact_type':'speakerschoice'},
+        'env_cfg':{'env_type':'simple','M':M,'W':W},
+        'nbagent':N
+    },
+    'step':'log_improved'
+    }
+	xp_loop(base_xp_cfg)
+
+
+######### WORD CHOICE ###############
+wordchoice_list = [
+	'random',
+	'membased',
+	'play_smart',
+	'play_last',
+	'play_first',
+	]
+@pytest.fixture(params=wordchoice_list)
+def wordchoicetype(request):
+	return request.param
+
+def test_wordchoice(wordchoicetype):
+	base_xp_cfg = {
+    'pop_cfg':{
+        'voc_cfg':{'voc_type':'matrix_new'},
+        'strat_cfg':{'strat_type':'naive',
+                    'vu_cfg':{'vu_type':'minimal'},
+                    'success_cfg':{'success_type':'global_norandom'},
+                    'wordchoice_cfg':{'wordchoice_type':wordchoicetype},
+                    },
         'interact_cfg':{'interact_type':'speakerschoice'},
         'env_cfg':{'env_type':'simple','M':M,'W':W},
         'nbagent':N

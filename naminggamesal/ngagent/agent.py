@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-#import random
-#from ngvoc import *
 import os
 from copy import deepcopy
 import pickle
@@ -9,8 +7,8 @@ import random
 import matplotlib.pyplot as plt
 import uuid
 
-from .. import ngvoc
 from .. import ngstrat
+from .. import ngvoc
 from . import ngsensor
 from . import ngmem
 

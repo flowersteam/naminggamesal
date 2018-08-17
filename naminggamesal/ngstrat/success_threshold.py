@@ -112,7 +112,7 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 	def pick_m(self, voc, mem, context):
 		ratelist = self.get_success_rates(voc, mem)
 		KM = voc.get_known_meanings()
-		if (np.mean(ratelist)>self.threshold_explo and len(KM)<voc.get_M()) or len(KM) == 0 :
+		if len(KM) == 0 or (np.mean(ratelist)>self.threshold_explo and len(KM)<voc.get_M()) :
 			return voc.get_new_unknown_m()
 		tempmin = 1
 		for m in range(0,len(KM)):

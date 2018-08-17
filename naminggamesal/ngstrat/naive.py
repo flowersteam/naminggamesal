@@ -23,17 +23,17 @@ class StratNaive(BaseStrategy):
 				m = voc.get_random_known_m(option='min')
 		return m
 
-	def pick_w(self,m,voc,mem,context=[]):
-		if m in voc.get_known_meanings():
-			if "prefered words" in list(mem.keys()) and m in list(mem['prefered words'].keys()):
-				w = mem['prefered words'][m]
-			else:
-				w = voc.get_random_known_w(m=m)
-		elif voc.get_unknown_words():
-			w = voc.get_new_unknown_w()
-		else:
-			w = voc.get_random_known_w(option='min')
-		return w
+	# def pick_w(self,m,voc,mem,context=[]):
+	# 	if m in voc.get_known_meanings():
+	# 		if "prefered words" in list(mem.keys()) and m in list(mem['prefered words'].keys()):
+	# 			w = mem['prefered words'][m]
+	# 		else:
+	# 			w = voc.get_random_known_w(m=m)
+	# 	elif voc.get_unknown_words():
+	# 		w = voc.get_new_unknown_w()
+	# 	else:
+	# 		w = voc.get_random_known_w(option='min')
+	# 	return w
 
 	def pick_m(self,voc,mem,context=[]):
 		m = voc.get_random_m()# randint(0,voc.get_M()-1)
