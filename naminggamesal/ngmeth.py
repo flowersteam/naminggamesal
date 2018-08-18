@@ -66,6 +66,26 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":Nlink_min}#,"ymax":Nlink_max}
 custom_Nlink =custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
+#########nb_inventions##########
+
+def nb_inventions(agent,**kwargs):
+	if 'inventions' in list(agent._memory.keys()):
+		return agent._memory['inventions']['nb_inventions']
+	else:
+		return 0
+
+def nb_inventions_max(pop):
+	return pop.get_M()
+
+def nb_inventions_min(pop):
+	return 0
+
+
+FUNC=nb_inventions
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":nb_inventions_min}#,"ymax":nb_inventions_max}
+custom_nb_inventions =custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
 
 #########success_rate##########
 

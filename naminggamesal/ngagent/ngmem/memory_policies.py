@@ -4,6 +4,20 @@ import copy
 from ...ngmeth_utils.srtheo_utils import srtheo_voc
 from ...ngstrat import get_strategy
 
+class Inventions(MemoryPolicy):
+
+	def init_memory(self,mem,voc,cfg=None):
+		assert not 'inventions' in list(mem.keys())
+		mem['inventions'] = {'known_meanings':{},'nb_interactions':0,'nb_inventions':0}
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
+		time_stamp = mem['inventions']['nb_interactions'] + 1
+		mem['inventions']['nb_interactions'] = time_stamp
+		if role == 'speaker' and ms not in list(mem['inventions']['known_meanings'].keys()):
+			mem['inventions']['nb_inventions'] += 1
+			mem['inventions']['known_meanings'][ms] = (time_stamp,w)
+
+
 class SuccessMatrixMP(MemoryPolicy):
 
 	def init_memory(self,mem,voc,cfg=None):
@@ -581,16 +595,3 @@ class WordPreferenceSmart(WordPreferenceLast):
 		if bool_succ and ms not in mem['word_preference_success']:
 			mem['word_preference_success'].append(ms)
 
-
-class TimeSinceExplo(MemoryPolicy):
-	def init_memory(self,mem,voc,cfg=None):
-		assert not 'time_since_explo' in list(mem.keys())
-		mem['time_since_explo'] = 0
-
-
-	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
-		if role == 'speaker':
-			if ms not in voc.get_known_meanings():
-				mem['time_since_explo'] += 1
-			else:
-				mem['time_since_explo'] = 0
