@@ -8,13 +8,15 @@ class Inventions(MemoryPolicy):
 
 	def init_memory(self,mem,voc,cfg=None):
 		assert not 'inventions' in list(mem.keys())
-		mem['inventions'] = {'known_meanings':{},'nb_interactions':0,'nb_inventions':0}
+		mem['inventions'] = {'known_meanings':{},'nb_interactions':0,'nb_inventions':0,'invented_meanings':{}}
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
 		time_stamp = mem['inventions']['nb_interactions'] + 1
 		mem['inventions']['nb_interactions'] = time_stamp
-		if role == 'speaker' and ms not in list(mem['inventions']['known_meanings'].keys()):
-			mem['inventions']['nb_inventions'] += 1
+		if ms not in list(mem['inventions']['known_meanings'].keys()):
+			if role == 'speaker':
+				mem['inventions']['nb_inventions'] += 1
+				mem['inventions']['invented_meanings'][ms] = (time_stamp,w)
 			mem['inventions']['known_meanings'][ms] = (time_stamp,w)
 
 
