@@ -412,7 +412,7 @@ class CustomGraph(object):
 #			self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
 #		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
-	def merge(self,keep_all_data=False):
+	def merge(self,keep_all_data=True):
 		#Yarray=np.array(self._Y)
 		#stdarray=np.array(self.stdvec)
 		Xcopy = copy.deepcopy(self._X)

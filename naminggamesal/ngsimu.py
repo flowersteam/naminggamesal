@@ -344,6 +344,7 @@ class Experiment(object):
 				tempoutstd.append(tempout[1])
 				tempoutmin.append(tempout[2])
 				tempoutmax.append(tempout[3])
+				tempoutalldata.append(tempout[4])
 			configgraph=tempfun.get_graph_config()
 			configgraph["xlabel"]="T"
 			tempY=tempoutmean
@@ -351,9 +352,10 @@ class Experiment(object):
 			stdvec=tempoutstd
 			minvec=tempoutmin
 			maxvec=tempoutmax
+			all_datavec=tempoutalldata
 			#configgraph["xmin"]=min(tempX)
 			#configgraph["xmax"]=max(tempX)
-			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=1,sort=0,minvec=minvec,maxvec=maxvec,stdvec=stdvec,filename="graph_"+tempfun.func.__name__,**configgraph)
+			tempgraph=custom_graph.CustomGraph(X=tempX,Y=tempY,std=1,sort=0,all_data=all_datavec,minvec=minvec,maxvec=maxvec,stdvec=stdvec,filename="graph_"+tempfun.func.__name__,**configgraph)
 		elif tempfun.level=="population":
 			tempout=[]
 			for j in range(indmin,len(self._T)+1+indmax):
