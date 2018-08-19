@@ -31,6 +31,20 @@ def pop_ize(func):
 	out_func.__name__=func.__name__+"_mean"
 	return out_func
 
+def meaning_pop_ize(func):
+	def out_func(pop,**kwargs):
+		tempNlist=[]
+		mlist = pop._agentlist[0].get_accessible_meanings()# get from pop.env?
+		for m in mlist:
+			tempNlist.append(func(m=m,pop=pop))
+			mean=np.mean(tempNlist)
+			std=np.std(tempNlist)
+			_min=np.min(tempNlist)
+			_max=np.max(tempNlist)
+		return [mean,std,_min,_max,tempNlist]
+	out_func.__name__=func.__name__+"_mean"
+	return out_func
+
 
 ############################	LEVEL AGENT ############################
 
@@ -996,6 +1010,32 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":optimalvocpolicy_min,"ymax":optimalvocpolicy_max}
 custom_optimalvocpolicy=custom_func.CustomFunc(FUNC_BIS,"agent",tags=["interact_count_voc"],**graphconfig)
 
+############################	LEVEL MEANING ############################
+
+####	INPUT:		meaning, pop , **progress_info
+####	OUTPUT:		[mean,std,(tempNlist)]
+
+#	FUNC_BIS=meaning_pop_ize(FUNC)
+#graphconfig={}
+#	custom_FUNC=custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
+
+#########agent_usage##########
+
+def agent_usage(m,pop,**kwargs):
+	return len([ 0 for ag in pop._agentlist if m in ag._vocabulary.get_known_meanings()])
+
+
+def agent_usage_max(pop):
+	return pop.get_M() * pop.get_W()
+
+def agent_usage_min(pop):
+	return 0
+
+
+FUNC = agent_usage
+FUNC_BIS = meaning_pop_ize(FUNC)
+graphconfig = {"ymin":agent_usage_min}#,"ymax":agent_usage_max}
+custom_agent_usage = custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 ############################	LEVEL POPULATION ############################
 
