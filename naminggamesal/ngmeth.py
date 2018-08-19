@@ -1035,7 +1035,7 @@ def agent_usage_min(pop):
 FUNC = agent_usage
 FUNC_BIS = meaning_pop_ize(FUNC)
 graphconfig = {"ymin":agent_usage_min}#,"ymax":agent_usage_max}
-custom_agent_usage = custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+custom_agent_usage = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
 
 ############################	LEVEL POPULATION ############################
 

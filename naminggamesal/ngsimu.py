@@ -329,11 +329,12 @@ class Experiment(object):
 		while self._T[indmin]<tmin:
 			indmin+=1
 		tempfun=getattr(ngmeth,"custom_"+method)
-		tempoutmean=[]
-		tempoutstd=[]
-		tempoutmin=[]
-		tempoutmax=[]
-		if tempfun.level=="agent":
+		tempoutmean = []
+		tempoutstd = []
+		tempoutmin = []
+		tempoutmax = []
+		tempoutalldata = []
+		if tempfun.level in ["agent","meaning"]:
 			for j in range(indmin,len(self._T)+1+indmax):
 				if hasattr(self,'no_storage') and self.no_storage:
 					assert self._poplist.T_last == self._T[j] , str(self._poplist.T_last)+','+str( self._T[j])+','+str(tmin)
