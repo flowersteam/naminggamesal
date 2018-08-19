@@ -34,7 +34,7 @@ def pop_ize(func):
 def meaning_pop_ize(func):
 	def out_func(pop,**kwargs):
 		tempNlist=[]
-		mlist = pop._agentlist[0].get_accessible_meanings()# get from pop.env?
+		mlist = pop._agentlist[0]._vocabulary.get_accessible_meanings()# get from pop.env?
 		for m in mlist:
 			tempNlist.append(func(m=m,pop=pop))
 			mean=np.mean(tempNlist)
