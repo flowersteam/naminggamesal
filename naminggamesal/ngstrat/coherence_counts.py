@@ -23,9 +23,11 @@ class StratCoherence(StratNaive):
 	def get_counts(self, voc, mem):
 		countlist = {}
 		for m in voc.get_known_meanings():
-			if m in list(mem['past_interactions_sliding_window_local'].keys()):
+			if m in list(mem['past_interactions_sliding_window_local']['m'].keys()):
 				w_l = mem['past_interactions_sliding_window_local']['m'][m]
-				countlist[m] = max([len([w1 for w1 in w_l if w1==w]) for w in w_l])
+				countlist[m] = max([len([w1[0] for w1 in w_l if w1[0]==w[0]]) for w in w_l])
+			else:
+				countlist[m] = 0
 		return countlist
 
 	def pick_m(self, voc, mem, context):
@@ -44,7 +46,9 @@ class StratCoherenceLast(StratCoherence):
 	def get_counts(self, voc, mem):
 		countlist = {}
 		for m in voc.get_known_meanings():
-			if m in list(mem['past_interactions_sliding_window_local'].keys()):
+			if m in list(mem['past_interactions_sliding_window_local']['m'].keys()):
 				w_l = mem['past_interactions_sliding_window_local']['m'][m]
-				countlist[m] = len([w1 for w1 in w_l if w1==w_l[-1]])
+				countlist[m] = len([w1[0] for w1 in w_l if w1[0]==w_l[-1][0]])
+			else:
+				countlist[m] = 0
 		return countlist
