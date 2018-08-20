@@ -23,10 +23,10 @@ def pop_ize(func):
 		agentlist=pop._agentlist
 		for i in range(0,len(agentlist)):
 			tempNlist.append(func(agentlist[i]))
-			mean=np.mean(tempNlist)
-			std=np.std(tempNlist)
-			_min=np.min(tempNlist)
-			_max=np.max(tempNlist)
+		mean=np.mean(tempNlist)
+		std=np.std(tempNlist)
+		_min=np.min(tempNlist)
+		_max=np.max(tempNlist)
 		return [mean,std,_min,_max,tempNlist]
 	out_func.__name__=func.__name__+"_mean"
 	return out_func
@@ -37,10 +37,10 @@ def meaning_pop_ize(func):
 		mlist = pop._agentlist[0]._vocabulary.get_accessible_meanings()# get from pop.env?
 		for m in mlist:
 			tempNlist.append(func(m=m,pop=pop))
-			mean=np.mean(tempNlist)
-			std=np.std(tempNlist)
-			_min=np.min(tempNlist)
-			_max=np.max(tempNlist)
+		mean=np.mean(tempNlist)
+		std=np.std(tempNlist)
+		_min=np.min(tempNlist)
+		_max=np.max(tempNlist)
 		return [mean,std,_min,_max,tempNlist]
 	out_func.__name__=func.__name__+"_mean"
 	return out_func

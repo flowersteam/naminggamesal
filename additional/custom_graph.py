@@ -67,7 +67,7 @@ class CustomGraph(object):
 			self._Y = []
 		else:
 			self._Y = [Y]
-		self.stdvec = [0 for _ in range(len(Y))]
+		self.stdvec = [np.nan for _ in range(len(Y))]
 		self.all_data = [ [] for _ in Y ]
 		self.minvec = [np.nan for _ in Y]
 		self.maxvec = [np.nan for _ in Y]
@@ -412,6 +412,21 @@ class CustomGraph(object):
 #			self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
 #		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
+	def get_alldata_graph(self,lim_m=None):
+		ans = copy.deepcopy(self)
+		ans._Y[0] = [self.all_data[0][i][0] for i in range(len(self.all_data[0]))]
+		ans.stdvec=[[0 for _ in range(len(self._X[0]))]]
+		if lim_m is None:
+			lim_m = len(self.all_data[0][0])
+		else:
+			lim_m = min(len(self.all_data[0][0]),lim_m)
+		for m in range(1,lim_m):
+		    g1 = copy.deepcopy(self)
+		    g1._Y[0] = [self.all_data[0][i][m] for i in range(len(self.all_data[0]))]
+		    g1.stdvec=[[0 for _ in range(len(self._X[0]))]]
+		    ans.add_graph(g1)
+		return ans
+
 	def merge(self,keep_all_data=True):
 		#Yarray=np.array(self._Y)
 		#stdarray=np.array(self.stdvec)
@@ -503,8 +518,40 @@ class CustomGraph(object):
 		self.stdvec=[]
 		self.minvec=[]
 		self.maxvec=[]
+		self.all_data=[]
 		self.modif_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
 
+	def empty_copy(self):
+		ans = copy.deepcopy(self)
+		ans.empty()
+		return ans
+
+	def regularize(self):
+		nb_curves = len(self._Y)
+		for attr in ['_X','Yoptions','minvec','stdvec','maxvec','all_data']:
+			if len(getattr(self,attr)) >= nb_curves:
+				getattr(self,attr) = getattr(self,attr)[:nb_curves]
+			else:
+				for i in list(range(len(getattr(self,attr)),nb_curves)):
+					getattr(self,attr).append([])
+		for i in list(range(nb_curves)):
+			nb2 = len(self._Y[i])
+			for attr in ['_X','Yoptions','minvec','stdvec','maxvec','all_data']:
+				if len(getattr(self,attr)[i]) >= nb2:
+					getattr(self,attr)[i] = getattr(self,attr)[i][:nb2]
+				else:
+					if attr == '_X':
+						if len(self._X[i]):
+							last = self._X[i][-1]
+						else:
+							last = -1
+						self._X[i] += [ 1+last+j for j in list(range(nb2-len(self._X[i])))]
+					elif attr == 'Yoptions':
+						self.Yoptions[i] += [ {} for j in list(range(nb2-len(self.Yoptions[i])))]
+					elif attr == 'all_data':
+						self.all_data[i] += [ [] for j in list(range(nb2-len(self.all_data[i])))]
+					else:
+						gettatr(self,attr)[i] += [ np.nan for j in list(range(nb2-len(getattr(self,attr)[i])))]
 
 	def func_of(self,graph2):
 		newgraph=copy.deepcopy(self)
