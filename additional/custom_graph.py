@@ -530,15 +530,19 @@ class CustomGraph(object):
 		nb_curves = len(self._Y)
 		for attr in ['_X','Yoptions','minvec','stdvec','maxvec','all_data']:
 			if len(getattr(self,attr)) >= nb_curves:
-				getattr(self,attr) = getattr(self,attr)[:nb_curves]
+				setattr(self,attr,getattr(self,attr)[:nb_curves])
 			else:
+				val_attr = getattr(self,attr)
 				for i in list(range(len(getattr(self,attr)),nb_curves)):
-					getattr(self,attr).append([])
+					val_attr.append([])
+				setattr(self,attr,val_attr)
 		for i in list(range(nb_curves)):
 			nb2 = len(self._Y[i])
 			for attr in ['_X','Yoptions','minvec','stdvec','maxvec','all_data']:
 				if len(getattr(self,attr)[i]) >= nb2:
-					getattr(self,attr)[i] = getattr(self,attr)[i][:nb2]
+					attr_val = getattr(self,attr)
+					attr_val[i] = getattr(self,attr)[i][:nb2]
+					setattr(self,attr,attr_val)
 				else:
 					if attr == '_X':
 						if len(self._X[i]):
@@ -551,7 +555,9 @@ class CustomGraph(object):
 					elif attr == 'all_data':
 						self.all_data[i] += [ [] for j in list(range(nb2-len(self.all_data[i])))]
 					else:
-						gettatr(self,attr)[i] += [ np.nan for j in list(range(nb2-len(getattr(self,attr)[i])))]
+						val_attr = getattr(self,attr)
+						val_attr[i] += [ np.nan for j in list(range(nb2-len(getattr(self,attr)[i])))]
+						setattr(self,attr,val_attr)
 
 	def func_of(self,graph2):
 		newgraph=copy.deepcopy(self)
