@@ -2131,7 +2131,11 @@ custom_nb_inventions =custom_func.CustomFunc(FUNC,"population",**graphconfig)
 
 def nb_inventions_per_known_m(pop,**kwargs):
 	val = nb_inventions(pop)
-	return val*1./N_meanings_pop(pop)
+	nm = N_meanings_pop(pop)
+	if nm == 0:
+		return 0
+	else:
+		return val*1./N_meanings_pop(pop)
 
 def nb_inventions_per_known_m_max(pop):
 	return pop.get_M()
