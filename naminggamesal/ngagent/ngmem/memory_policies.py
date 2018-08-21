@@ -8,16 +8,25 @@ class Inventions(MemoryPolicy):
 
 	def init_memory(self,mem,voc,cfg=None):
 		assert not 'inventions' in list(mem.keys())
-		mem['inventions'] = {'known_meanings':{},'nb_interactions':0,'nb_inventions':0,'invented_meanings':{}}
+		mem['inventions'] = {'known_meanings':{},'last_known_meanings':[],'counts':{},'nb_interactions':0,'nb_inventions':0,'invented_meanings':{}}
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
 		time_stamp = mem['inventions']['nb_interactions'] + 1
 		mem['inventions']['nb_interactions'] = time_stamp
-		if ms not in list(mem['inventions']['known_meanings'].keys()):
+		if ms not in mem['inventions']['last_known_meanings']:
 			if role == 'speaker':
 				mem['inventions']['nb_inventions'] += 1
-				mem['inventions']['invented_meanings'][ms] = (time_stamp,w)
+				if ms not in list(mem['inventions']['invented_meanings'].keys()):
+					mem['inventions']['invented_meanings'][ms] = [(time_stamp,w)]
+				else:
+					mem['inventions']['invented_meanings'][ms].append((time_stamp,w))
+		if ms not in list(mem['inventions']['known_meanings'].keys()):
 			mem['inventions']['known_meanings'][ms] = (time_stamp,w)
+		mem['inventions']['last_known_meanings'] = copy.deepcopy(voc.get_known_meanings())
+		if ms not in list(mem['inventions']['counts'].keys()):
+			mem['inventions']['counts'][ms] = 1
+		else:
+			mem['inventions']['counts'][ms] += 1
 
 
 class SuccessMatrixMP(MemoryPolicy):

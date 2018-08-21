@@ -445,8 +445,8 @@ class CustomGraph(object):
 		self.std=1
 		Ydict = {}
 		for j in range(len(self._Y)):
-			if self._Y[j][0] is not None:
-				for i in range(len(self._Y[j])):
+			for i in range(len(self._Y[j])):
+				if self._Y[j][i] is not None:
 					if Xcopy[j][i] in list(Ydict.keys()):
 						Ydict[Xcopy[j][i]].append(Ycopy[j][i])
 					else:

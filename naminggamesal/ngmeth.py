@@ -1015,7 +1015,7 @@ custom_optimalvocpolicy=custom_func.CustomFunc(FUNC_BIS,"agent",tags=["interact_
 def nb_inventions_per_known_m_per_agent(agent,**kwargs):
 	KM = len(agent._vocabulary.get_known_meanings())
 	if KM:
-		return len(agent._memory['inventions']['invented_meanings'].keys())*1./KM
+		return agent._memory['inventions']['nb_inventions']*1./KM
 	else:
 		return 0
 
@@ -1060,7 +1060,7 @@ custom_agent_usage = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
 #########nb_inventions_per_m##########
 
 def nb_inventions_per_m(m,pop,**kwargs):
-	return len([ 0 for ag in pop._agentlist if m in list(ag._memory['inventions']['invented_meanings'].keys())])
+	return sum([ len(ag._memory['inventions']['invented_meanings'][m]) for ag in pop._agentlist if m in list(ag._memory['inventions']['invented_meanings'].keys())])
 
 def nb_inventions_per_m_max(pop):
 	return pop.get_M() * pop.get_W()
@@ -1073,6 +1073,23 @@ FUNC = nb_inventions_per_m
 FUNC_BIS = meaning_pop_ize(FUNC)
 graphconfig = {"ymin":nb_inventions_per_m_min}#,"ymax":nb_inventions_per_m_max}
 custom_nb_inventions_per_m = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
+
+#########nb_interactions_per_m##########
+
+def nb_interactions_per_m(m,pop,**kwargs):
+	return sum([ag._memory['inventions']['counts'][m]  for ag in pop._agentlist if m in list(ag._memory['inventions']['counts'].keys())])
+
+def nb_interactions_per_m_max(pop):
+	return pop.get_M() * pop.get_W()
+
+def nb_interactions_per_m_min(pop):
+	return 0
+
+
+FUNC = nb_interactions_per_m
+FUNC_BIS = meaning_pop_ize(FUNC)
+graphconfig = {"ymin":nb_interactions_per_m_min}#,"ymax":nb_interactions_per_m_max}
+custom_nb_interactions_per_m = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
 
 ############################	LEVEL POPULATION ############################
 
