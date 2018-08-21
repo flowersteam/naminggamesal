@@ -15,7 +15,7 @@ import additional.custom_func as custom_func
 import additional.custom_graph as custom_graph
 from .ngpop import Population
 
-from .ngmeth_utils import zipf_utils,decvec_utils,nx_utils,srtheo_utils
+from .ngmeth_utils import zipf_utils,decvec_utils,nx_utils,srtheo_utils,conv_utils
 
 def pop_ize(func):
 	def out_func(pop,**kwargs):
@@ -36,12 +36,17 @@ def meaning_pop_ize(func):
 		tempNlist=[]
 		mlist = pop._agentlist[0]._vocabulary.get_accessible_meanings()# get from pop.env?
 		for m in mlist:
-			tempNlist.append(func(m=m,pop=pop))
-		mean=np.mean(tempNlist)
-		std=np.std(tempNlist)
-		_min=np.min(tempNlist)
-		_max=np.max(tempNlist)
-		return [mean,std,_min,_max,tempNlist]
+			val = func(m=m,pop=pop)
+			if val is not None:
+				tempNlist.append(val)
+		if tempNlist:
+			mean = np.mean(tempNlist)
+			std = np.std(tempNlist)
+			_min = np.min(tempNlist)
+			_max = np.max(tempNlist)
+			return [mean,std,_min,_max,tempNlist]
+		else:
+			return [np.nan,np.nan,np.nan,np.nan,[np.nan]]
 	out_func.__name__=func.__name__+"_mean"
 	return out_func
 
@@ -1090,6 +1095,85 @@ FUNC = nb_interactions_per_m
 FUNC_BIS = meaning_pop_ize(FUNC)
 graphconfig = {"ymin":nb_interactions_per_m_min}#,"ymax":nb_interactions_per_m_max}
 custom_nb_interactions_per_m = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
+
+#########nb_interactions_per_m_inv##########
+
+def nb_interactions_per_m_inv(m,pop,**kwargs):
+	if nb_inventions_per_m(m,pop=pop):
+		return sum([ag._memory['inventions']['counts'][m]  for ag in pop._agentlist if m in list(ag._memory['inventions']['counts'].keys())])
+	else:
+		return None
+
+def nb_interactions_per_m_inv_max(pop):
+	return pop.get_M() * pop.get_W()
+
+def nb_interactions_per_m_inv_min(pop):
+	return 0
+
+
+FUNC = nb_interactions_per_m_inv
+FUNC_BIS = meaning_pop_ize(FUNC)
+graphconfig = {"ymin":nb_interactions_per_m_inv_min}#,"ymax":nb_interactions_per_m_inv_max}
+custom_nb_interactions_per_m_inv = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
+#########nb_interactions_per_m_1inv##########
+
+def nb_interactions_per_m_1inv(m,pop,**kwargs):
+	if nb_inventions_per_m(m,pop=pop) == 1:
+		return sum([ag._memory['inventions']['counts'][m]  for ag in pop._agentlist if m in list(ag._memory['inventions']['counts'].keys())])
+	else:
+		return None
+
+def nb_interactions_per_m_1inv_max(pop):
+	return pop.get_M() * pop.get_W()
+
+def nb_interactions_per_m_1inv_min(pop):
+	return 0
+
+
+FUNC = nb_interactions_per_m_1inv
+FUNC_BIS = meaning_pop_ize(FUNC)
+graphconfig = {"ymin":nb_interactions_per_m_1inv_min}#,"ymax":nb_interactions_per_m_1inv_max}
+custom_nb_interactions_per_m_1inv = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
+
+#########nb_interactions_per_m_2inv##########
+
+def nb_interactions_per_m_2inv(m,pop,**kwargs):
+	if nb_inventions_per_m(m,pop=pop) == 2:
+		return sum([ag._memory['inventions']['counts'][m]  for ag in pop._agentlist if m in list(ag._memory['inventions']['counts'].keys())])
+	else:
+		return None
+
+def nb_interactions_per_m_2inv_max(pop):
+	return pop.get_M() * pop.get_W()
+
+def nb_interactions_per_m_2inv_min(pop):
+	return 0
+
+
+FUNC = nb_interactions_per_m_2inv
+FUNC_BIS = meaning_pop_ize(FUNC)
+graphconfig = {"ymin":nb_interactions_per_m_2inv_min}#,"ymax":nb_interactions_per_m_2inv_max}
+custom_nb_interactions_per_m_2inv = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
+
+#########nb_interactions_per_m_3ormoreinv##########
+
+def nb_interactions_per_m_3ormoreinv(m,pop,**kwargs):
+	if nb_inventions_per_m(m,pop=pop) > 2:
+		return sum([ag._memory['inventions']['counts'][m]  for ag in pop._agentlist if m in list(ag._memory['inventions']['counts'].keys())])
+	else:
+		return None
+
+def nb_interactions_per_m_3ormoreinv_max(pop):
+	return pop.get_M() * pop.get_W()
+
+def nb_interactions_per_m_3ormoreinv_min(pop):
+	return 0
+
+
+FUNC = nb_interactions_per_m_3ormoreinv
+FUNC_BIS = meaning_pop_ize(FUNC)
+graphconfig = {"ymin":nb_interactions_per_m_3ormoreinv_min}#,"ymax":nb_interactions_per_m_3ormoreinv_max}
+custom_nb_interactions_per_m_3ormoreinv = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
 
 ############################	LEVEL POPULATION ############################
 
@@ -2323,7 +2407,7 @@ custom_interactions_per_agent =custom_func.CustomFunc(FUNC,"time",**graphconfig)
 ############################	LEVEL EXP ############################
 
 #### 	INPUT:		expe, **progress_info
-####	OUTPUT:		value
+####	OUTPUT:		[value]
 
 #graphconfig={}
 #	custom_FUNC=custom_func.CustomFunc(FUNC,"exp",**graphconfig)
@@ -2838,13 +2922,88 @@ def exec_time_total(exp,X=0,**kwargs):
 	return [exp._exec_time[-1]]
 
 
-FUNC = exec_time_total
-
 def exec_time_total_min(exp):
 	return 0
 
+FUNC = exec_time_total
+
 graphconfig = {"ymin":exec_time_total_min}
 custom_exec_time_total = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+################################################################
+
+#########perf_conv##########
+
+def perf_conv(exp,X=0,**kwargs):
+	N = exp._poplist.get_last()._size
+	M = exp._poplist.get_last().env.get_M()
+	denom = conv_utils.t_1inv(N) * M + conv_utils.t_2inv(N) * conv_utils.extra_inv(M=M,N=N)
+	numer = exp.graph('conv_time',autocommit=False)._Y[0][0]
+	if denom :
+		return [numer*1./denom]
+	else:
+		return [np.nan]
+
+
+def perf_conv_min(exp):
+	return 0
+
+def perf_conv_max(exp):
+	return 1.
+
+FUNC = perf_conv
+
+graphconfig = {"ymin":perf_conv_min}#,"ymax":perf_conv_max}
+custom_perf_conv = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########perf_explo##########
+
+def perf_explo(exp,X=0,**kwargs):
+	N = exp._poplist.get_last()._size
+	M = exp._poplist.get_last().env.get_M()
+	denom = conv_utils.minexplo_per_ag(M=M,N=N)
+	numer = nb_inventions(exp._poplist.get_last())
+	if denom :
+		return [numer*1./denom]
+	else:
+		return [np.nan]
+
+
+def perf_explo_min(exp):
+	return 0
+
+def perf_explo_max(exp):
+	return 1.
+
+FUNC = perf_explo
+
+graphconfig = {"ymin":perf_explo_min}#,"ymax":perf_eplo_max}
+custom_perf_explo = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+################################################################
+#########perf_spread##########
+
+def perf_spread(exp,X=0,**kwargs):
+	N = exp._poplist.get_last()._size
+	M = exp._poplist.get_last().env.get_M()
+	denom = (conv_utils.t_1inv(N) - conv_utils.t_2inv(N))* M + conv_utils.t_2inv(N) * nb_inventions(exp._poplist.get_last())
+	numer = exp.graph('conv_time',autocommit=False)._Y[0][0]
+	if denom :
+		return [numer*1./denom]
+	else:
+		return [np.nan]
+
+
+def perf_spread_min(exp):
+	return 0
+
+def perf_spread_max(exp):
+	return 1.
+
+FUNC = perf_spread
+
+graphconfig = {"ymin":perf_spread_min}#,"ymax":perf_eplo_max}
+custom_perf_spread = custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 ################################################################
 
