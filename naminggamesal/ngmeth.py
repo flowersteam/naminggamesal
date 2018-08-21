@@ -80,25 +80,25 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":Nlink_min}#,"ymax":Nlink_max}
 custom_Nlink =custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
-#########nb_inventions##########
+#########nb_inventions_per_agent##########
 
-def nb_inventions(agent,**kwargs):
+def nb_inventions_per_agent(agent,**kwargs):
 	if 'inventions' in list(agent._memory.keys()):
 		return agent._memory['inventions']['nb_inventions']
 	else:
 		return 0
 
-def nb_inventions_max(pop):
+def nb_inventions_per_agent_max(pop):
 	return pop.get_M()
 
-def nb_inventions_min(pop):
+def nb_inventions_per_agent_min(pop):
 	return 0
 
 
-FUNC=nb_inventions
+FUNC=nb_inventions_per_agent
 FUNC_BIS=pop_ize(FUNC)
-graphconfig={"ymin":nb_inventions_min}#,"ymax":nb_inventions_max}
-custom_nb_inventions =custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+graphconfig={"ymin":nb_inventions_per_agent_min}#,"ymax":nb_inventions_per_agent_max}
+custom_nb_inventions_per_agent =custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 
 #########success_rate##########
@@ -1010,6 +1010,26 @@ FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":optimalvocpolicy_min,"ymax":optimalvocpolicy_max}
 custom_optimalvocpolicy=custom_func.CustomFunc(FUNC_BIS,"agent",tags=["interact_count_voc"],**graphconfig)
 
+#########nb_inventions_per_known_m_per_agent##########
+
+def nb_inventions_per_known_m_per_agent(agent,**kwargs):
+	KM = len(agent._vocabulary.get_known_meanings())
+	if KM:
+		return len(agent._memory['inventions']['invented_meanings'].keys())*1./KM
+	else:
+		return 0
+
+def nb_inventions_per_known_m_per_agent_max(pop):
+	return 1.
+
+def nb_inventions_per_known_m_per_agent_min(pop):
+	return 0
+
+FUNC=nb_inventions_per_known_m_per_agent
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":nb_inventions_per_known_m_per_agent_min}#,"ymax":nb_inventions_per_known_m_per_agent_max}
+custom_nb_inventions_per_known_m_per_agent=custom_func.CustomFunc(FUNC_BIS,"agent",tags=["interact_count_voc"],**graphconfig)
+
 ############################	LEVEL MEANING ############################
 
 ####	INPUT:		meaning, pop , **progress_info
@@ -1036,6 +1056,23 @@ FUNC = agent_usage
 FUNC_BIS = meaning_pop_ize(FUNC)
 graphconfig = {"ymin":agent_usage_min}#,"ymax":agent_usage_max}
 custom_agent_usage = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
+
+#########nb_inventions_per_m##########
+
+def nb_inventions_per_m(m,pop,**kwargs):
+	return len([ 0 for ag in pop._agentlist if m in list(ag._memory['inventions']['invented_meanings'].keys())])
+
+def nb_inventions_per_m_max(pop):
+	return pop.get_M() * pop.get_W()
+
+def nb_inventions_per_m_min(pop):
+	return 0
+
+
+FUNC = nb_inventions_per_m
+FUNC_BIS = meaning_pop_ize(FUNC)
+graphconfig = {"ymin":nb_inventions_per_m_min}#,"ymax":nb_inventions_per_m_max}
+custom_nb_inventions_per_m = custom_func.CustomFunc(FUNC_BIS,"meaning",**graphconfig)
 
 ############################	LEVEL POPULATION ############################
 
@@ -2074,6 +2111,143 @@ FUNC=overlap_semantic
 graphconfig={"ymin":overlap_semantic_min,"ymax":overlap_semantic_max}
 custom_overlap_semantic=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
+#########nb_inventions##########
+
+def nb_inventions(pop,**kwargs):
+	return sum([agent._memory['inventions']['nb_inventions'] for agent in pop._agentlist if 'inventions' in list(agent._memory.keys())])
+
+def nb_inventions_max(pop):
+	return pop.get_M()
+
+def nb_inventions_min(pop):
+	return 0
+
+
+FUNC=nb_inventions
+graphconfig={"ymin":nb_inventions_min}#,"ymax":nb_inventions_max}
+custom_nb_inventions =custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########nb_inventions_per_known_m##########
+
+def nb_inventions_per_known_m(pop,**kwargs):
+	val = nb_inventions(pop)
+	return val*1./N_meanings_pop(pop)
+
+def nb_inventions_per_known_m_max(pop):
+	return pop.get_M()
+
+def nb_inventions_per_known_m_min(pop):
+	return 0
+
+
+FUNC=nb_inventions_per_known_m
+graphconfig={"ymin":nb_inventions_per_known_m_min}#,"ymax":nb_inventions_per_known_m_max}
+custom_nb_inventions_per_known_m =custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########N_meanings_pop##########
+
+def N_meanings_pop(pop,**kwargs):
+	ans = 0
+	for m in pop.env.m_list:
+		for ag in pop._agentlist:
+			if m in ag._vocabulary.get_known_meanings():
+				ans += 1
+				break
+	return ans
+
+def N_meanings_pop_max(pop):
+	return pop.get_M()
+
+def N_meanings_pop_min(pop):
+	return 0
+
+
+FUNC=N_meanings_pop
+graphconfig={"ymin":N_meanings_pop_min,"ymax":N_meanings_pop_max}
+custom_N_meanings_pop =custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########N_meanings_pop_0inv##########
+
+def N_meanings_pop_0inv(pop,**kwargs):
+	return pop.get_M()-N_meanings_pop(pop)
+
+def N_meanings_pop_0inv_max(pop):
+	return pop.get_M()
+
+def N_meanings_pop_0inv_min(pop):
+	return 0
+
+
+FUNC=N_meanings_pop_0inv
+graphconfig={"ymin":N_meanings_pop_0inv_min,"ymax":N_meanings_pop_0inv_max}
+custom_N_meanings_pop_0inv =custom_func.CustomFunc(FUNC,"population",**graphconfig)
+
+#########N_meanings_pop_1inv##########
+
+def N_meanings_pop_1inv(pop,**kwargs):
+	return len([True for m in pop.env.m_list if nb_inventions_per_m(m,pop=pop) == 1])
+
+def N_meanings_pop_1inv_max(pop):
+	return pop.get_M()
+
+def N_meanings_pop_1inv_min(pop):
+	return 0
+
+
+FUNC=N_meanings_pop_1inv
+graphconfig={"ymin":N_meanings_pop_1inv_min,"ymax":N_meanings_pop_1inv_max}
+custom_N_meanings_pop_1inv =custom_func.CustomFunc(FUNC,"population",**graphconfig)
+#########N_meanings_pop_2inv##########
+
+def N_meanings_pop_2inv(pop,**kwargs):
+	return len([True for m in pop.env.m_list if nb_inventions_per_m(m,pop=pop) == 2])
+
+def N_meanings_pop_2inv_max(pop):
+	return pop.get_M()
+
+def N_meanings_pop_2inv_min(pop):
+	return 0
+
+
+FUNC=N_meanings_pop_2inv
+graphconfig={"ymin":N_meanings_pop_2inv_min,"ymax":N_meanings_pop_2inv_max}
+custom_N_meanings_pop_2inv =custom_func.CustomFunc(FUNC,"population",**graphconfig)
+#########N_meanings_pop_3ormoreinv##########
+
+def N_meanings_pop_3ormoreinv(pop,**kwargs):
+	return len([True for m in pop.env.m_list if nb_inventions_per_m(m,pop=pop) >= 3])
+
+def N_meanings_pop_3ormoreinv_max(pop):
+	return pop.get_M()
+
+def N_meanings_pop_3ormoreinv_min(pop):
+	return 0
+
+
+FUNC=N_meanings_pop_3ormoreinv
+graphconfig={"ymin":N_meanings_pop_3ormoreinv_min,"ymax":N_meanings_pop_3ormoreinv_max}
+custom_N_meanings_pop_3ormoreinv =custom_func.CustomFunc(FUNC,"population",**graphconfig)
+#########N_words_pop##########
+
+def N_words_pop(pop,**kwargs):
+	ans = 0
+	for w in pop.env.w_list:
+		for ag in pop._agentlist:
+			if w in ag._vocabulary.get_known_words():
+				ans += 1
+				break
+	return ans
+
+def N_words_pop_max(pop):
+	return pop.get_W()
+
+def N_words_pop_min(pop):
+	return 0
+
+
+FUNC=N_words_pop
+graphconfig={"ymin":N_words_pop_min,"ymax":N_words_pop_max}
+custom_N_words_pop =custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########weight_over_degree##########
 
 # def weight_over_degree(pop,**kwargs):

@@ -445,11 +445,12 @@ class CustomGraph(object):
 		self.std=1
 		Ydict = {}
 		for j in range(len(self._Y)):
-			for i in range(len(self._Y[j])):
-				if Xcopy[j][i] in list(Ydict.keys()):
-					Ydict[Xcopy[j][i]].append(Ycopy[j][i])
-				else:
-					Ydict[Xcopy[j][i]] = [Ycopy[j][i]]
+			if self._Y[j][0] is not None:
+				for i in range(len(self._Y[j])):
+					if Xcopy[j][i] in list(Ydict.keys()):
+						Ydict[Xcopy[j][i]].append(Ycopy[j][i])
+					else:
+						Ydict[Xcopy[j][i]] = [Ycopy[j][i]]
 		Xlist = list(Ydict.keys())
 		Xlist.sort()
 		for x in Xlist:
@@ -470,15 +471,15 @@ class CustomGraph(object):
 		#	#stdtemp.append(np.std(list(Yarray[:,i])))
 		if keep_all_data:
 			self.all_data = [alldatatemp]
-		else:
-			self.all_data = [[[] for _ in X] for X in self._X]
+		#else:
+		#	self.all_data = [[[] for _ in X] for X in self._X]
 		self._Y = [Ytemp]
 		self.stdvec = [stdtemp]
 		self.minvec = [mintemp]
 		self.maxvec = [maxtemp]
 		self._X = [Xlist]
 		self.modif_time = time.strftime("%Y%m%d%H%M%S", time.localtime())
-
+		self.regularize()
 
 
 	def wise_merge(self):
@@ -551,7 +552,7 @@ class CustomGraph(object):
 							last = -1
 						self._X[i] += [ 1+last+j for j in list(range(nb2-len(self._X[i])))]
 					elif attr == 'Yoptions':
-						self.Yoptions[i] += [ {} for j in list(range(nb2-len(self.Yoptions[i])))]
+						self.Yoptions[i] =  {}
 					elif attr == 'all_data':
 						self.all_data[i] += [ [] for j in list(range(nb2-len(self.all_data[i])))]
 					else:
