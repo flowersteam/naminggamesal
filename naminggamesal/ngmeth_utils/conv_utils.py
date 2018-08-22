@@ -1,5 +1,9 @@
 
 import numpy as np
+import sys
+
+if sys.version_info.major == '3':
+	xrange = range
 
 def t_1inv(N):
 	return 2+(np.log(N-2)/(np.log(N)-np.log(N-1)))
@@ -21,7 +25,7 @@ def inv2_c(N):
 	if N < 19:
 		return 1 #Computation issue for N <19
 	else:
-		for i in range(10**10):
+		for i in xrange(10**10):
 			c = iter_c(c)
 			if c <= 1.:
 				if c == 1.:
@@ -37,7 +41,7 @@ def minexplo_per_ag(M,N):
 	def iter_M(x):
 		return x * ((x-1.)/x)**(N/2.)
 	m = M
-	for i in range(10**10):
+	for i in xrange(10**10):
 		m = iter_M(m)
 		if m <= 1.:
 			if m == 1.:
