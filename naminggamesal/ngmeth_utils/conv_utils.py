@@ -2,7 +2,7 @@
 import numpy as np
 import sys
 
-if sys.version_info.major == '3':
+if sys.version_info.major == 3:
 	xrange = range
 
 def t_1inv(N):

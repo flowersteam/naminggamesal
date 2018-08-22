@@ -303,7 +303,7 @@ class NamingGamesDB(object):
 			if self.id_in_db(xp_uuid):
 				self.cursor.execute("SELECT Experiment_object FROM main_table WHERE Id=\'"+str(xp_uuid)+"\'")
 				tempblob = self.cursor.fetchone()
-				if sys.version_info.major == '2':
+				if sys.version_info.major == 2:
 					try:
 						tempexp = pickle.loads(lzo.decompress(str(tempblob[0])))
 					except TypeError:
@@ -346,7 +346,7 @@ class NamingGamesDB(object):
 	def get_graph(self,xp_uuid=None,xp_cfg=None,method="srtheo",tmin=0,tmax=None):
 		self.cursor.execute("SELECT Custom_Graph FROM computed_data_table WHERE Id=\'"+str(xp_uuid)+"\' AND Function=\'"+method+"\'")
 		tempblob = self.cursor.fetchone()
-		if sys.version_info.major == '2':
+		if sys.version_info.major == 2:
 			ans = pickle.loads(lzo.decompress(str(tempblob[0])))
 		else:
 			ans = pickle.loads(lzo.decompress(tempblob[0]))
