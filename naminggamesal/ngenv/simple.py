@@ -9,14 +9,14 @@ CONSONANTS = "".join(set(string.ascii_lowercase) - set(VOWELS))
 
 class SimpleEnv(Environment):
 
-	def __init__(self,M, W=None, weights_cfg={'weights_type_m':'uniform','weights_type_w':'uniform'}, *args,**kwargs):
+	def __init__(self,M=None, W=None,m_list=None, w_list=None, weights_cfg={'weights_type_m':'uniform','weights_type_w':'uniform'}, *args,**kwargs):
 		Environment.__init__(self,*args,**kwargs)
 		if W is None:
 			W = M
 		self.M = M
 		self.W = W
-		self.set_mlist()
-		self.set_wlist()
+		self.set_mlist(m_list=m_list)
+		self.set_wlist(w_list=w_list)
 		self.weights_cfg = weights_cfg
 
 		self.set_M_weights()
@@ -95,12 +95,14 @@ class SimpleEnv(Environment):
 			self.m_list = [i for i in range(self.M)]
 		else:
 			self.m_list = m_list
+			self.M = len(self.m_list)
 
 	def set_wlist(self,w_list=None):
 		if w_list is None:
 			self.w_list = [i for i in range(self.W)]
 		else:
 			self.w_list = w_list
+			self.W = len(self.w_list)
 
 class SimpleEnvRealWords(SimpleEnv):
 

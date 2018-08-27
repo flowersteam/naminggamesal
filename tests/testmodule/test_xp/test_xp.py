@@ -331,3 +331,20 @@ def test_wordchoice(wordchoicetype):
     }
 	xp_loop(base_xp_cfg)
 
+
+def test_randommeaningenv():
+	base_xp_cfg = {
+    'pop_cfg':{
+        'voc_cfg':{'voc_type':'matrix_new'},
+        'strat_cfg':{'strat_type':'naive',
+                    'vu_cfg':{'vu_type':'minimal'},
+                    'success_cfg':{'success_type':'global_norandom'},
+                    },
+        'interact_cfg':{'interact_type':'speakerschoice'},
+        'env_cfg':{'env_type':'simple','M':M,'W':W,'m_list':[178,45,8,'iop',-4.5]},
+        'nbagent':N
+    },
+    'step':'log_improved'
+    }
+	xp_loop(base_xp_cfg)
+
