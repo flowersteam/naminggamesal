@@ -38,9 +38,9 @@ class SQLiteStorage(object):
 
 	def clean_all(self):
 		if os.path.isfile(self.filepath):
-			os.remove(os.path.isfile(self.filepath))
+			os.remove(self.filepath)
 		if os.path.isfile(self.filepath+'.xz'):
-			os.remove(os.path.isfile(self.filepath+'.xz'))
+			os.remove(self.filepath+'.xz')
 
 	def add_data(self,data,label):
 		assert data is not None
