@@ -184,6 +184,7 @@ def xp_loop(cfg):
 	for global_m in global_m_list:
 		p = xp.graph(global_m)
 		assert len(p._X) == 1 and len(p._X[0]) == 1
+	return xp
 
 def test_struct(xp_cfg_struct):
 	xp_loop(xp_cfg_struct)
@@ -348,3 +349,7 @@ def test_randommeaningenv():
     }
 	xp_loop(base_xp_cfg)
 
+
+def test_delete():
+	xp = xp_loop(simple_cfg)
+	xp.clean_all()

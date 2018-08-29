@@ -52,7 +52,7 @@ class OneDifferent(OneUser):
 		AgentInit.modify_cfg(self,pop_init=pop_init, **ag_cfg)
 		out_cfg = copy.deepcopy(ag_cfg)
 		if not self.done:
-			update_nested_dict(out_cfg,self.new_cfg)
+			update_nested_dict(out_cfg,self.first_ag_cfg)
 			self.done = True
 		return out_cfg
 

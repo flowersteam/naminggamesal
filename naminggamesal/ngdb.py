@@ -523,6 +523,13 @@ class Experiment(ngsimu.Experiment):
 		super(Experiment,self).__init__(pop_cfg,step,no_storage=no_storage,no_compressed_file=no_compressed_file,db_type=db_type,conn_info=conn_info)
 		self.commit_to_db(rm=True)
 
+	def clean_all(self):
+		currentinfo_f = self._poplist.get_last().get_current_info_filename()
+		if os.path.exists(currentinfo_f):
+			os.remove(currentinfo_f)
+		self._poplist.clean_all()
+		self.db.delete(id_list=[self.uuid])
+
 	def commit_to_db(self,rm=False):
 		self.db.commit(self)
 		filepath = self._poplist.filepath

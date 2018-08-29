@@ -36,6 +36,12 @@ class SQLiteStorage(object):
 	def __init__(self,filepath,db_id=None):
 		self.filepath = filepath
 
+	def clean_all(self):
+		if os.path.isfile(self.filepath):
+			os.remove(os.path.isfile(self.filepath))
+		if os.path.isfile(self.filepath+'.xz'):
+			os.remove(os.path.isfile(self.filepath+'.xz'))
+
 	def add_data(self,data,label):
 		assert data is not None
 		if not os.path.isfile(self.filepath):
@@ -114,6 +120,11 @@ class PostgresStorage(SQLiteStorage):
 					+"T BIGINT, "\
 					+"Population_object BYTEA)")
 
+	def clean_all(self):
+		conn = psycopg2.connect(self.conn_info)
+		with conn:
+			cursor = conn.cursor()
+			cursor.execute("DROP TABLE IF EXISTS "+self.db_id)
 
 
 	def add_data(self,data,label):

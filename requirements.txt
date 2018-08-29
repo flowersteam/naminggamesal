@@ -10,6 +10,6 @@ sqlitebck
 networkx
 lxml
 pygexf
-psycopg2-binary
+psycopg2
 cython
 future

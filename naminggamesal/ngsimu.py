@@ -52,6 +52,9 @@ class Poplist(object):
 		else:
 			raise ValueError('db_type '+str(db_type)+' not recognized.')
 
+	def clean_all(self):
+		self.storage.clean_all()
+
 	def init_db(self):
 		self.storage.init_db()
 		self.init_done = True
