@@ -107,7 +107,10 @@ class SimpleEnv(Environment):
 class SimpleEnvRealWords(SimpleEnv):
 
 	def set_wlist(self,w_list=None):
-		SimpleEnv.set_wlist(self,w_list=[self.word_generator() for i in range(self.W)])
+		if w_list is None:
+			SimpleEnv.set_wlist(self,w_list=[self.word_generator() for i in range(self.W)])
+		else:
+			SimpleEnv.set_wlist(self,w_list=w_list)
 
 	def word_generator(self):
 		w = ''
