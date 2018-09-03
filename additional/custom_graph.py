@@ -221,7 +221,7 @@ class CustomGraph(object):
 			if 'labels' in list(self.legendoptions.keys()):
 				del legend_opt['labels']
 			plt.legend(handles=handles2, labels=labels2, **legend_opt)
-		else:
+		elif self.legendoptions != {}:
 			plt.legend(**self.legendoptions)
 
 		#plt.legend(bbox_to_anchor=(0,0,0.55,0.8))
