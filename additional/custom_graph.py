@@ -110,23 +110,26 @@ class CustomGraph(object):
 	def write_files(self,*path):
 		backend = plt.get_backend()
 		plt.switch_backend('Agg')
-		if len(path)!=0:
-			out_path=path[0]
-		else:
-			out_path=""
-
-		self.save(out_path)
-		self.draw()
-		for extension in self.extensions:
-			plt.savefig(out_path+self.filename+"."+extension,format=extension,bbox_inches='tight')
-		plt.switch_backend(backend)
+		try:
+			if len(path)!=0:
+				out_path=path[0]
+			else:
+				out_path=""
+			self.save(out_path)
+			self.draw()
+			for extension in self.extensions:
+				plt.savefig(out_path+self.filename+"."+extension,format=extension,bbox_inches='tight')
+		finally:
+			plt.switch_backend(backend)
 
 	def savefig(self,*args,**kwargs):
 		backend = plt.get_backend()
 		plt.switch_backend('Agg')
-		self.draw()
-		plt.savefig(*args,**kwargs)
-		plt.switch_backend(backend)
+		try:
+			self.draw()
+			plt.savefig(*args,**kwargs)
+		finally:
+			plt.switch_backend(backend)
 
 	def draw(self):
 

@@ -1750,10 +1750,10 @@ custom_cat_agreement=custom_func.CustomFunc(FUNC,"population",tags='category',**
 
 #########srtheo##########
 
-def srtheo(pop, m=None, **kwargs):
+def srtheo(pop, m=None, n_iter=100, **kwargs):
 	fail=0
 	succ=0
-	for i in range(100):
+	for i in range(n_iter):
 		agent1_id = pop.pick_speaker()
 		agent2_id = pop.pick_hearer(agent1_id)
 		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
