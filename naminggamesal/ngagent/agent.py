@@ -2,7 +2,10 @@
 
 import os
 from copy import deepcopy
-import pickle
+try:
+	import cPickle as pickle
+except ImportError:
+	import pickle
 import random
 import matplotlib.pyplot as plt
 import uuid
@@ -13,7 +16,7 @@ from . import ngsensor
 from . import ngmem
 
 class Agent(object):
-	def __init__(self, voc_cfg, strat_cfg, sensor_cfg=None, memory_policies=[], agent_id=None, env=None):
+	def __init__(self, voc_cfg, strat_cfg, sensor_cfg=None, independent_pickle=True, memory_policies=[], agent_id=None, env=None):
 		self.cfg = {'voc_cfg':deepcopy(voc_cfg),'strat_cfg':deepcopy(strat_cfg),'sensor_cfg':deepcopy(sensor_cfg)}
 		if agent_id is None:
 			self._id = str(uuid.uuid1())
@@ -35,6 +38,20 @@ class Agent(object):
 		self.init_memory()
 		self.fail = 0
 		self.success = 0
+		self.independent_pickle = independent_pickle
+
+	def __setstate__(self,in_dict):
+		if 'pickled_agent' in list(in_dict.keys()):
+			#self = pickle.loads(in_dict['pickled_agent'])
+			self.__dict__ = pickle.loads(in_dict['pickled_agent']).__dict__
+		else:
+			self.__dict__ = in_dict
+
+	def __getstate__(self):
+		if self.independent_pickle:
+			return {'pickled_agent':pickle.dumps(self, pickle.HIGHEST_PROTOCOL)}
+		else:
+			return self.__dict__
 
 	def init_memory(self):
 		self._memory = ngmem.get_memory(memory_policies=self.memory_policies,voc=self._vocabulary,cfg=deepcopy(self.cfg))#self._strategy.init_memory(self._vocabulary)
