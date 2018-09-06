@@ -43,13 +43,13 @@ class Agent(object):
 	def __setstate__(self,in_dict):
 		if 'pickled_agent' in list(in_dict.keys()):
 			#self = pickle.loads(in_dict['pickled_agent'])
-			self.__dict__ = pickle.loads(in_dict['pickled_agent']).__dict__
+			self.__dict__ = pickle.loads(in_dict['pickled_agent_dict'])
 		else:
 			self.__dict__ = in_dict
 
 	def __getstate__(self):
 		if self.independent_pickle:
-			return {'pickled_agent':pickle.dumps(self, pickle.HIGHEST_PROTOCOL)}
+			return {'pickled_agent':pickle.dumps(self.__dict__, pickle.HIGHEST_PROTOCOL)}
 		else:
 			return self.__dict__
 
