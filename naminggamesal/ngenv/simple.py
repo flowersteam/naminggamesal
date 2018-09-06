@@ -75,6 +75,24 @@ class SimpleEnv(Environment):
 		else:
 			return 1.
 
+	def get_weight_mlist(self,mlist):
+		if hasattr(self,'M_weights'):
+			try:
+				return [self.M_weights[m] for m in mlist]
+			except KeyError:
+				return [1. for _ in mlist]
+		else:
+			return [1. for _ in mlist]
+
+	def get_weight_wlist(self,wlist):
+		if hasattr(self,'W_weights'):
+			try:
+				return [self.W_weights[w] for w in wlist]
+			except KeyError:
+				return [1. for _ in wlist]
+		else:
+			return [1. for _ in wlist]
+
 	def get_M(self):
 		return self.M
 
@@ -82,13 +100,13 @@ class SimpleEnv(Environment):
 		return self.W
 
 	def init_agent(self,agent):
-		agent._vocabulary.discover_meanings(m_list=list(self.m_list),weights=[self.get_weight(m=m) for m in self.m_list])
-		agent._vocabulary.discover_words(w_list=list(self.w_list),weights=[self.get_weight(w=w) for w in self.w_list])
+		agent._vocabulary.discover_meanings(m_list=list(self.m_list),weights=self.get_weight_mlist(mlist=self.m_list))
+		agent._vocabulary.discover_words(w_list=list(self.w_list),weights=self.get_weight_wlist(wlist=self.w_list))
 		for mem_key in list(agent._memory.keys()):
 			if hasattr(agent._memory[mem_key],'discover_meanings'):
-				agent._memory[mem_key].discover_meanings(m_list=list(self.m_list),weights=[self.get_weight(m=m) for m in self.m_list])
+				agent._memory[mem_key].discover_meanings(m_list=list(self.m_list),weights=self.get_weight_mlist(mlist=self.m_list))
 			if hasattr(agent._memory[mem_key],'discover_words'):
-				agent._memory[mem_key].discover_words(w_list=list(self.w_list),weights=[self.get_weight(w=w) for w in self.w_list])
+				agent._memory[mem_key].discover_words(w_list=list(self.w_list),weights=self.get_weight_wlist(wlist=self.w_list))
 
 	def set_mlist(self,m_list=None):
 		if m_list is None:

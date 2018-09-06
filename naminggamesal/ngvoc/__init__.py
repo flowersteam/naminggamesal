@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from importlib import import_module
 import copy
+from collections import OrderedDict
 
 sns.set(rc={'image.cmap': 'Purples_r'})
 
@@ -353,12 +354,13 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	@del_cache
 	def discover_meanings(self,m_list,weights=None):
-		#m_list = list(set(list(m_list)))
-		m_list = [ii for n,ii in enumerate(m_list) if ii not in m_list[:n]]
-		m_list_bis = [m for m in m_list if m not in self.accessible_meanings]#known_meanings()+self.unknown_meanings]
 		if weights is not None:
-			weights_bis = [weights[i] for i in range(len(m_list)) if m_list[i] in m_list_bis]#known_meanings()+self.unknown_meanings]
-		#if hasattr(self,'meaning_choice') and self.meaning_choice is not None:
+			m_odict = OrderedDict(zip(m_list,weights))
+			m_list_bis = [m for m in list(m_odict) if m not in self.accessible_meanings]#known_words()+self.unknown_words]
+			weights_bis = [m_odict[m] for m in m_list_bis]
+		else:
+			m_list = list(OrderedDict.fromkeys(m_list))
+			m_list_bis = [m for m in m_list if m not in self.accessible_meanings]#known_words()+self.unknown_words]		#if hasattr(self,'meaning_choice') and self.meaning_choice is not None:
 		#	j = len(self.accessible_meanings)
 		#	for m in m_list_bis:
 		#		j += 1
@@ -375,10 +377,14 @@ class BaseVocabularyElaborated(BaseVocabulary):
 	@del_cache
 	def discover_words(self,w_list,weights=None):
 		#w_list = list(set(list(w_list)))
-		w_list = [ii for n,ii in enumerate(w_list) if ii not in w_list[:n]]
-		w_list_bis = [w for w in w_list if w not in self.accessible_words]#known_words()+self.unknown_words]
+		#w_list = [ii for n,ii in enumerate(w_list) if ii not in w_list[:n]]
 		if weights is not None:
-			weights_bis = [weights[i] for i in range(len(w_list)) if w_list[i] in w_list_bis]
+			w_odict = OrderedDict(zip(w_list,weights))
+			w_list_bis = [w for w in list(w_odict) if w not in self.accessible_words]#known_words()+self.unknown_words]
+			weights_bis = [w_odict[w] for w in w_list_bis]
+		else:
+			w_list = list(OrderedDict.fromkeys(w_list))
+			w_list_bis = [w for w in w_list if w not in self.accessible_words]#known_words()+self.unknown_words]
 		self.unknown_words += w_list_bis
 		self.accessible_words += w_list_bis
 		if weights is not None and [i for i in weights if i!=1]:
