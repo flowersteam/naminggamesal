@@ -24,22 +24,24 @@ class SimpleEnv(Environment):
 
 
 	def set_M_weights(self):
-		self.M_weights = {}
 		if self.weights_cfg['weights_type_m'] == 'uniform':
-			for m in self.m_list:
-				self.M_weights[m] = 1
+			# for m in self.m_list:
+			# 	self.M_weights[m] = 1
+			pass
 		elif self.weights_cfg['weights_type_m'] == 'zipf':
+			self.M_weights = {}
 			for i in range(len(self.m_list)):
 				self.M_weights[self.m_list[i]] = 1./(i+1)
 		else:
 			raise NotImplementedError('weight type for meanings not implemented: '+str(self.weights_cfg['weights_type_m']))
 
 	def set_W_weights(self):
-		self.W_weights = {}
 		if self.weights_cfg['weights_type_w'] == 'uniform':
-			for w in self.w_list:
-				self.W_weights[w] = 1
+			# for w in self.w_list:
+			# 	self.W_weights[w] = 1
+			pass
 		elif self.weights_cfg['weights_type_w'] == 'zipf':
+			self.W_weights = {}
 			if 'zipf_exponent' in list(self.weight_cfg.keys()):
 				zipfexp = self.weight_cfg['zipf_exponent']
 			else:
@@ -80,18 +82,18 @@ class SimpleEnv(Environment):
 			try:
 				return [self.M_weights[m] for m in mlist]
 			except KeyError:
-				return [1. for _ in mlist]
+				return None #[1. for _ in mlist]
 		else:
-			return [1. for _ in mlist]
+			return None # [1. for _ in mlist]
 
 	def get_weight_wlist(self,wlist):
 		if hasattr(self,'W_weights'):
 			try:
 				return [self.W_weights[w] for w in wlist]
 			except KeyError:
-				return [1. for _ in wlist]
+				return None #[1. for _ in wlist]
 		else:
-			return [1. for _ in wlist]
+			return None #[1. for _ in wlist]
 
 	def get_M(self):
 		return self.M

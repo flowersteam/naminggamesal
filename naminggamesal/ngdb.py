@@ -75,6 +75,11 @@ class NamingGamesDB(object):
 			else:
 				self.uuid = new_uuid
 
+	def integrity_check(self):
+		self.cursor.execute('PRAGMA integrity_check;')
+		ans = self.cursor.fetchone()
+		return ans == ('ok',)
+
 	def __init__(self, conn_info=None, db_type = 'sqlite3', inst_uuid=None, name=None, do_not_close=False):
 		if not hasattr(self,'uuid') or (hasattr(self,'initialized') and not self.initialized):
 			self.db_type = db_type
@@ -383,7 +388,7 @@ class NamingGamesDB(object):
 
 
 
-	def get_id_list(self, all_id=False, pattern=None, tmax=0, **xp_cfg):
+	def get_id_list(self, all_id=False, pattern=None, tmax=None, **xp_cfg):
 		if (not all_id) and (xp_cfg or pattern):
 			if xp_cfg:
 				self.cursor.execute("SELECT Id FROM main_table WHERE Config=\'{}\' ORDER BY Tmax DESC".format(json.dumps(xp_cfg, sort_keys=True)))
@@ -394,7 +399,14 @@ class NamingGamesDB(object):
 		templist=list(self.cursor)
 		for i in range(0,len(templist)):
 			templist[i]=templist[i][0]
-		return templist
+		if tmax is not None:
+			ans = []
+			for id_elt in templist:
+				if self.get_param(xp_uuid=id_elt,param='Tmax')>=tmax:
+					ans.append(id_elt)
+			return ans
+		else:
+			return templist
 		#TODO: implement generator instead of list??
 
 	def get_param(self, xp_uuid, param, method=None):
