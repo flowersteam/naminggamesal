@@ -183,8 +183,8 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	@del_cache
 	def empty(self):
-		m_list = self.accessible_meanings
-		w_list = self.accessible_words
+		m_list = self.get_accessible_meanings()
+		w_list = self.get_accessible_words()
 		self._content_m = self.init_empty_content(option='m')
 		self._content_w = self.init_empty_content(option='w')
 		self.unknown_meanings = m_list
@@ -289,7 +289,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	#@voc_cache
 	def get_accessible_meanings(self):
-		l = copy.deepcopy(self.accessible_meanings)#list(self.get_known_meanings())+list(self.unknown_meanings)
+		l = copy.copy(self.accessible_meanings)#list(self.get_known_meanings())+list(self.unknown_meanings)
 		try:
 			return sorted(l)
 		except:
@@ -297,7 +297,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	#@voc_cache
 	def get_accessible_words(self):
-		l = copy.deepcopy(self.accessible_words)#list(self.get_known_words())+list(self.unknown_words)
+		l = copy.copy(self.accessible_words)#list(self.get_known_words())+list(self.unknown_words)
 		try:
 			return sorted(l)
 		except:

@@ -14,15 +14,15 @@ from . import voc_cache, del_cache
 class VocMatrixNew(BaseVocabularyElaborated):
 
 	def init_empty_content(self,option='m'):
-		return np.zeros((len(self.get_accessible_meanings()),len(self.get_accessible_words())))
+		return np.zeros((len(self.accessible_meanings),len(self.accessible_words)))
 
 	def get_KM(self):
 		#return len(self._content_m)
-		return len(self.get_accessible_meanings())-len(self.unknown_meanings)
+		return len(self.accessible_meanings)-len(self.unknown_meanings)
 
 	def get_KW(self):
 		#return len(self._content_w)
-		return len(self.get_accessible_words())-len(self.unknown_words)
+		return len(self.accessible_words)-len(self.unknown_words)
 
 	def get_alterable_shallow_copy(self):
 		return copy.deepcopy(self)
@@ -35,7 +35,7 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		if m is not None:
 			m_idx = self.meaning_indexes[m]
 		if m is None:
-			return list(set(self.get_accessible_words())-set(self.unknown_words))
+			return list(set(self.accessible_words)-set(self.unknown_words))
 		elif option is None:
 			selection = self._content_m[m_idx,:]
 			ans = self.get_coords(option=option,mat=selection,m_idx=m_idx)
@@ -60,7 +60,7 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		if w is not None:
 			w_idx = self.word_indexes[w]
 		if w is None:
-			return list(set(self.get_accessible_meanings())-set(self.unknown_meanings))
+			return list(set(self.accessible_meanings)-set(self.unknown_meanings))
 		elif option is None:
 			selection = self._content_w[:,w_idx]
 			ans = self.get_coords(option=option,mat=selection,w_idx=w_idx)
@@ -116,8 +116,8 @@ class VocMatrixNew(BaseVocabularyElaborated):
 
 	@del_cache
 	def add(self,m,w,val=1,context=[],content_type='both'):
-		assert m in self.get_accessible_meanings()
-		assert w in self.get_accessible_words()
+		assert m in self.accessible_meanings
+		assert w in self.accessible_words
 		#if hasattr(self,'valmax') and val > self.valmax:
 		#	val = self.valmax
 		if val <= 0:
@@ -147,8 +147,8 @@ class VocMatrixNew(BaseVocabularyElaborated):
 
 	@del_cache
 	def rm(self,m,w,content_type='both'):
-		assert m in self.get_accessible_meanings()
-		assert w in self.get_accessible_words()
+		assert m in self.accessible_meanings
+		assert w in self.accessible_words
 		if content_type == 'm':
 			m_idx = self.meaning_indexes[m]
 			w_idx = self.word_indexes[w]
@@ -217,8 +217,8 @@ class VocMatrixNew(BaseVocabularyElaborated):
 		return w_list_bis
 
 	def update_vocshape(self):
-		M = len(self.get_accessible_meanings())
-		W = len(self.get_accessible_words())
+		M = len(self.accessible_meanings)
+		W = len(self.accessible_words)
 		new_w = self.init_empty_content()
 		new_m = self.init_empty_content()
 		M1,W1 = self._content_w.shape
@@ -390,10 +390,10 @@ class VocMatrixNew(BaseVocabularyElaborated):
 
 	def __add__(self,other):
 		ans = copy.deepcopy(self)
-		for m in other.get_accessible_meanings():
-			assert m in ans.get_accessible_meanings()
-		for w in other.get_accessible_words():
-			assert w in ans.get_accessible_words()
+		for m in other.accessible_meanings:
+			assert m in ans.accessible_meanings
+		for w in other.accessible_words:
+			assert w in ans.accessible_words
 		for m in other.get_known_meanings():
 			if m in ans.unknown_meanings:
 				ans.unknown_meanings.remove(m)
@@ -409,10 +409,10 @@ class VocMatrixNew(BaseVocabularyElaborated):
 
 	def __sub__(self,other):
 		ans = copy.deepcopy(self)
-		for m in other.get_accessible_meanings():
-			assert m in ans.get_accessible_meanings()
-		for w in other.get_accessible_words():
-			assert w in ans.get_accessible_words()
+		for m in other.accessible_meanings:
+			assert m in ans.accessible_meanings
+		for w in other.accessible_words:
+			assert w in ans.accessible_words
 		for m in other.get_known_meanings():
 			if m in ans.unknown_meanings:
 				ans.unknown_meanings.remove(m)
@@ -452,9 +452,9 @@ class VocSparseNew(VocMatrixNew):
 
 	def init_empty_content(self,option='m'):
 		if option == 'm':
-			return sparse.csr_matrix((len(self.get_accessible_meanings()),len(self.get_accessible_words())))
+			return sparse.csr_matrix((len(self.accessible_meanings),len(self.accessible_words)))
 		elif option == 'w':
-			return sparse.csc_matrix((len(self.get_accessible_meanings()),len(self.get_accessible_words())))
+			return sparse.csc_matrix((len(self.accessible_meanings),len(self.accessible_words)))
 		else:
 			raise ValueError('no such option: '+str(option))
 
