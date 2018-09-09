@@ -127,10 +127,10 @@ class BaseVocabulary(object):
 			return self.freq_weights_w[w]
 
 	def get_row(self,m):
-		return [self.get_value(m=m,w=w) for w in self.get_accessible_words()]
+		return [self.get_value(m=m,w=w) for w in self.accessible_words]
 
 	def get_column(self,w):
-		return [self.get_value(m=m,w=w) for m in self.get_accessible_meanings()]
+		return [self.get_value(m=m,w=w) for m in self.accessible_meanings]
 
 
 class BaseVocabularyElaborated(BaseVocabulary):
@@ -161,8 +161,8 @@ class BaseVocabularyElaborated(BaseVocabulary):
 			self.complete_empty()
 
 	def fill(self):
-		for m in self.get_accessible_meanings():
-			for w in self.get_accessible_words():
+		for m in self.accessible_meanings:
+			for w in self.accessible_words:
 				self.add(m,w)
 
 	def init_empty_content(self,option='m'):
@@ -183,8 +183,8 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	@del_cache
 	def empty(self):
-		m_list = self.get_accessible_meanings()
-		w_list = self.get_accessible_words()
+		m_list = self.accessible_meanings
+		w_list = self.accessible_words
 		self._content_m = self.init_empty_content(option='m')
 		self._content_w = self.init_empty_content(option='w')
 		self.unknown_meanings = m_list
@@ -203,10 +203,10 @@ class BaseVocabularyElaborated(BaseVocabulary):
 			return 0
 
 	def get_row(self,m,content_type='m'):
-		return [self.get_value(m=m,w=w,content_type=content_type) for w in self.get_accessible_words()]
+		return [self.get_value(m=m,w=w,content_type=content_type) for w in self.accessible_words]
 
 	def get_column(self,w,content_type='w'):
-		return [self.get_value(m=m,w=w,content_type=content_type) for m in self.get_accessible_meanings()]
+		return [self.get_value(m=m,w=w,content_type=content_type) for m in self.accessible_meanings]
 
 
 
@@ -305,7 +305,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	def get_random_m(self,m_list=None):
 		if m_list is None:
-			m_list = self.get_accessible_meanings()
+			m_list = self.accessible_meanings
 		if not hasattr(self,'freq_weights_m'):
 			return random.choice(m_list)
 		else:
@@ -315,7 +315,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	def get_random_w(self,w_list=None):
 		if w_list is None:
-			w_list = self.get_accessible_words()
+			w_list = self.accessible_words
 		if not hasattr(self,'freq_weights_w'):
 			return random.choice(w_list) #random from known+explored+adjacent_possible
 		else:
