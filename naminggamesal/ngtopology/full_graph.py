@@ -32,3 +32,12 @@ class FullGraph(Topology):
 
 	def rm_agent(self, agent, pop):
 		self.graph.remove_node(agent._id)
+
+class NoGraph(Topology):
+
+	def get_random_neighbor(self,speaker,pop):
+		n_ag = random.choice(range(len(pop._agentlist)-1))
+		ag = pop._agentlist[n_ag]
+		if ag.get_id() == speaker_id:
+			ag = pop._agentlist[-1]
+		return ag

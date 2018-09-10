@@ -10,12 +10,13 @@ sns.set(rc={'image.cmap': 'Purples_r'})
 #####Classe de base
 topology_class={
 	'full_graph':'full_graph.FullGraph',
+	'no_graph':'full_graph.NoGraph',
 	'line':'line.Line',
 	'circle':'line.Circle',
 	'random_graph':'random_graph.RandomGraph',
 }
 
-def get_topology(topology_type='full_graph', **topology_cfg2):
+def get_topology(topology_type='no_graph', **topology_cfg2):
 	temptp = topology_type
 	if temptp in list(topology_class.keys()):
 		temptp = topology_class[temptp]

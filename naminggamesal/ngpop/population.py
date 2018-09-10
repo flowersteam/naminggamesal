@@ -30,7 +30,7 @@ class Population(object):
 					 evolution_cfg={'evolution_type':'idle'},
 					 agentpick_cfg={'agentpick_type':'random_pick'},
 					 sensor_cfg=None, env_cfg={'env_type':'simple','M':10,'W':10},
-					 topology_cfg={'topology_type':'full_graph'},
+					 topology_cfg={'topology_type':'no_graph'},
 					 xp_uuid=None):
 		self.nbagent_init = nbagent
 		self._size = 0
