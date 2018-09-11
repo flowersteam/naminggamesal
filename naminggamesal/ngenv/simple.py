@@ -104,13 +104,15 @@ class SimpleEnv(Environment):
 		return self.W
 
 	def init_agent(self,agent):
-		agent._vocabulary.discover_meanings(m_list=self.m_list,weights=self.get_weight_mlist(mlist=self.m_list))
-		agent._vocabulary.discover_words(w_list=self.w_list,weights=self.get_weight_wlist(wlist=self.w_list))
+		m_list = copy.deepcopy(self.m_list)
+		w_list = copy.deepcopy(self.w_list)
+		agent._vocabulary.discover_meanings(m_list=m_list,weights=self.get_weight_mlist(mlist=self.m_list))
+		agent._vocabulary.discover_words(w_list=w_list,weights=self.get_weight_wlist(wlist=self.w_list))
 		for mem_key in list(agent._memory.keys()):
 			if hasattr(agent._memory[mem_key],'discover_meanings'):
-				agent._memory[mem_key].discover_meanings(m_list=self.m_list,weights=self.get_weight_mlist(mlist=self.m_list))
+				agent._memory[mem_key].discover_meanings(m_list=m_list,weights=self.get_weight_mlist(mlist=self.m_list))
 			if hasattr(agent._memory[mem_key],'discover_words'):
-				agent._memory[mem_key].discover_words(w_list=self.w_list,weights=self.get_weight_wlist(wlist=self.w_list))
+				agent._memory[mem_key].discover_words(w_list=w_list,weights=self.get_weight_wlist(wlist=self.w_list))
 
 	def set_mlist(self,m_list=None):
 		if m_list is None:
