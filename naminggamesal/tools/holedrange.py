@@ -10,7 +10,7 @@ class HoledRange(object):
 		return len(self.range_obj)
 
 	def __contains__(self,elt):
-		if elt in range(self.range_max):
+		if elt in self.range_obj:
 			if elt in self.discard:
 				return False
 			else:
@@ -28,7 +28,7 @@ class HoledRange(object):
 			ans = self.range_obj.__next__()
 		except StopIteration:
 			raise
-		except:
+		except AttributeError:
 			ans = self.range_obj.next()
 		if ans in self.discard:
 			return self.replace(ans)
