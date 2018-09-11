@@ -1769,10 +1769,10 @@ def srtheo(pop, m=None, n_iter=100, **kwargs):
 	fail=0
 	succ=0
 	for i in range(n_iter):
-		agent1_id = pop.pick_speaker()
-		agent2_id = pop.pick_hearer(agent1_id)
-		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
-		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
+		agent1 = pop.pick_speaker()
+		agent2 = pop.pick_hearer(agent1)
+		# agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		# agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 		if m is None:
 			ms = agent1._vocabulary.get_random_m()
 		else:

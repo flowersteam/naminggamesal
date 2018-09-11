@@ -143,11 +143,11 @@ class Population(object):
 		self._topology.rm_agent(ag,pop=self)
 
 	def pick_speaker(self):
- 		return self.agent_pick.pick_speaker(self).get_id()
+ 		return self.agent_pick.pick_speaker(self)#.get_id()
 
-	def pick_hearer(self, speaker_id):
-		speaker = self._agentlist[self.get_index_from_id(speaker_id)]
-		return self.agent_pick.pick_hearer(speaker,self).get_id()
+	def pick_hearer(self, speaker):
+		# speaker = self._agentlist[self.get_index_from_id(speaker_id)]
+		return self.agent_pick.pick_hearer(speaker,self)
 
 	def play_game(self, steps, **kwargs):
 		#if not hasattr(self,'current_game_info'):
