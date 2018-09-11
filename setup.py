@@ -29,7 +29,7 @@ extensions = [Extension(name='naminggamesal.ngmeth_utils.csrtheo_utils',sources=
 def do_setup():
     setup(name='naminggamesal',
       version=version(),
-      packages=find_packages(),
+      packages=['naminggamesal'],#find_packages(),
       install_requires=[requirements()],
       setup_requires=['setuptools>=18.0','Cython'],
       author='William Schueller',

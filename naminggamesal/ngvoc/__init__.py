@@ -7,6 +7,7 @@ import seaborn as sns
 from importlib import import_module
 import copy
 from collections import OrderedDict
+from builtins import range
 
 sns.set(rc={'image.cmap': 'Purples_r'})
 
@@ -171,9 +172,9 @@ class BaseVocabularyElaborated(BaseVocabulary):
 	@del_cache
 	def complete_empty(self):
 		self.empty()
-		m_l = copy.deepcopy(self.unknown_meanings)
+		m_l = copy.copy(self.unknown_meanings)
 		random.shuffle(m_l)
-		w_l = copy.deepcopy(self.unknown_words)
+		w_l = copy.copy(self.unknown_words)
 		random.shuffle(w_l)
 		while len(w_l) < len(m_l):
 			assert len(w_l)>0
@@ -183,8 +184,8 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	@del_cache
 	def empty(self):
-		m_list = self.get_accessible_meanings()
-		w_list = self.get_accessible_words()
+		m_list = self.accessible_meanings
+		w_list = self.accessible_words
 		self._content_m = self.init_empty_content(option='m')
 		self._content_w = self.init_empty_content(option='w')
 		self.unknown_meanings = m_list
@@ -291,7 +292,10 @@ class BaseVocabularyElaborated(BaseVocabulary):
 	def get_accessible_meanings(self):
 		l = copy.copy(self.accessible_meanings)#list(self.get_known_meanings())+list(self.unknown_meanings)
 		try:
-			return sorted(l)
+			if isinstance(l,range):
+				return l
+			else:
+				return sorted(l)
 		except:
 			return l
 
@@ -299,7 +303,10 @@ class BaseVocabularyElaborated(BaseVocabulary):
 	def get_accessible_words(self):
 		l = copy.copy(self.accessible_words)#list(self.get_known_words())+list(self.unknown_words)
 		try:
-			return sorted(l)
+			if isinstance(l,range):
+				return l
+			else:
+				return sorted(l)
 		except:
 			return l
 
@@ -359,14 +366,23 @@ class BaseVocabularyElaborated(BaseVocabulary):
 			m_list_bis = [m for m in list(m_odict) if m not in self.accessible_meanings]#known_words()+self.unknown_words]
 			weights_bis = [m_odict[m] for m in m_list_bis]
 		else:
-			m_list = list(OrderedDict.fromkeys(m_list))
-			m_list_bis = [m for m in m_list if m not in self.accessible_meanings]#known_words()+self.unknown_words]		#if hasattr(self,'meaning_choice') and self.meaning_choice is not None:
+			if len(self.accessible_meanings) == 0:
+				m_list_bis = m_list
+			else:
+				m_list = list(OrderedDict.fromkeys(m_list))
+				m_list_bis = [m for m in m_list if m not in self.accessible_meanings]#known_words()+self.unknown_words]		#if hasattr(self,'meaning_choice') and self.meaning_choice is not None:
 		#	j = len(self.accessible_meanings)
 		#	for m in m_list_bis:
 		#		j += 1
-		#		self.freq_weights[m] = 1./j
-		self.unknown_meanings += m_list_bis
-		self.accessible_meanings += m_list_bis
+		#		self.freq_weights[m] = 1./j	
+		if len(self.unknown_meanings) == 0:
+			self.unknown_meanings = m_list_bis
+		else:
+			self.unknown_meanings += m_list_bis
+		if len(self.accessible_meanings) == 0:
+			self.accessible_meanings = m_list_bis
+		else:
+			self.accessible_meanings += m_list_bis
 		if weights is not None and [i for i in weights if i!=1]:
 			if not hasattr(self,'freq_weights_m'):
 				self.freq_weights_m = {}
@@ -383,10 +399,19 @@ class BaseVocabularyElaborated(BaseVocabulary):
 			w_list_bis = [w for w in list(w_odict) if w not in self.accessible_words]#known_words()+self.unknown_words]
 			weights_bis = [w_odict[w] for w in w_list_bis]
 		else:
-			w_list = list(OrderedDict.fromkeys(w_list))
-			w_list_bis = [w for w in w_list if w not in self.accessible_words]#known_words()+self.unknown_words]
-		self.unknown_words += w_list_bis
-		self.accessible_words += w_list_bis
+			if len(self.accessible_words) == 0:
+				w_list_bis = w_list
+			else:
+				w_list = list(OrderedDict.fromkeys(w_list))
+				w_list_bis = [w for w in w_list if w not in self.accessible_words]#known_words()+self.unknown_words]
+		if len(self.unknown_words) == 0:
+			self.unknown_words = w_list_bis
+		else:
+			self.unknown_words += w_list_bis
+		if len(self.accessible_words) == 0:
+			self.accessible_words = w_list_bis
+		else:
+			self.accessible_words += w_list_bis
 		if weights is not None and [i for i in weights if i!=1]:
 			if not hasattr(self,'freq_weights_w'):
 				self.freq_weights_w = {}

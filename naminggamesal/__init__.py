@@ -4,7 +4,7 @@ from . import ngdb
 from . import ngsimu
 from . import ngmeth
 
-import additional.custom_func as custom_func
+from .tools import custom_func
 
 def get_allfunc(tags=[],level=None):
 	def test(f):

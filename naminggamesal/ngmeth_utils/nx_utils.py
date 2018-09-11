@@ -3,8 +3,8 @@ import numpy as np
 
 #from ..ngmeth import tempentropy
 
-import additional.custom_func as custom_func
-import additional.custom_graph as custom_graph
+from .tools import custom_func
+from .tools import custom_graph
 ############################################################################
 #NETWORKX TOOLS
 

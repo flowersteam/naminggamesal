@@ -11,8 +11,8 @@ from scipy.special import zetac
 
 #from numpy.linalg import norm
 
-import additional.custom_func as custom_func
-import additional.custom_graph as custom_graph
+from .tools import custom_func
+from .tools import custom_graph
 from .ngpop import Population
 
 from .ngmeth_utils import zipf_utils,decvec_utils,nx_utils,srtheo_utils,conv_utils

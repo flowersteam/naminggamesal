@@ -19,9 +19,9 @@ except ImportError:
 
 from .ngpop import Population
 from . import ngmeth
-import additional.custom_func as custom_func
-import additional.custom_graph as custom_graph
-from additional.sqlite_storage import SQLiteStorage,PostgresStorage,xz_compress,xz_decompress
+from .tools import custom_func
+from .tools import custom_graph
+from .tools.sqlite_storage import SQLiteStorage,PostgresStorage,xz_compress,xz_decompress
 
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt

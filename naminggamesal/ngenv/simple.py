@@ -1,7 +1,7 @@
 from . import Environment
 import random
 import string
-
+from builtins import range
 
 VOWELS = "aeiou"
 CONSONANTS = "".join(set(string.ascii_lowercase) - set(VOWELS))
