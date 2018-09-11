@@ -1323,20 +1323,20 @@ def Nlinksurs_couples(pop,**kwargs):
 	tempvalues = []
 	if hasattr(pop._agentlist[0]._vocabulary,'_content'):
 		for j in range(100):
-			agent1_id=pop.pick_speaker()
-			agent2_id=pop.pick_hearer(agent1_id)
-			agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
-			agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
+			agent1 = pop.pick_speaker()
+			agent2 = pop.pick_hearer(agent1)
+			# ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+			# ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 			tempm = np.linalg.matrix_rank(np.multiply(agent1.get_vocabulary_content(),agent2.get_vocabulary_content()))
 			tempvalues.append(tempm)
 		return np.mean(tempvalues)
 	else:
 		for j in range(100):
 			d_set = []
-			agent1_id=pop.pick_speaker()
-			agent2_id=pop.pick_hearer(agent1_id)
-			agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
-			agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
+			agent1 = pop.pick_speaker()
+			agent2 = pop.pick_hearer(agent1)
+			# ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+			# ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 			for m in agent1._vocabulary.get_known_meanings():
 				for w in agent1._vocabulary.get_known_words(m=m):
 					if (m,w) not in d_set:
@@ -1421,10 +1421,10 @@ def entropycouples_old(pop,**kwargs):
 		raise ValueError('this measure is not implemented for this type of vocabulary')
 	tempvalues=[]
 	for j in range(100):
-		agent1_id=pop.pick_speaker()
-		agent2_id=pop.pick_hearer(agent1_id)
-		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
-		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
+		agent1 = pop.pick_speaker()
+		agent2 = pop.pick_hearer(agent1)
+		# ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		# ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 		if pop._strat_cfg["strat_type"][-5:]=="_real":
 			voc1=agent1._vocabulary.get_content()
 			voc2=agent2._vocabulary.get_content()
@@ -1658,10 +1658,10 @@ def entropycouples(pop,**kwargs):
 		raise ValueError('this measure is not implemented for this type of vocabulary')
 	tempvalues=[]
 	for j in range(100):
-		agent1_id=pop.pick_speaker()
-		agent2_id=pop.pick_hearer(agent1_id)
-		agent1=pop._agentlist[pop.get_index_from_id(agent1_id)]
-		agent2=pop._agentlist[pop.get_index_from_id(agent2_id)]
+		agent1 = pop.pick_speaker()
+		agent2 = pop.pick_hearer(agent1)
+		# ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		# ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 		tempm = np.linalg.matrix_rank(np.multiply(agent1.get_vocabulary_content(),agent2.get_vocabulary_content()))
 		tempvalues.append(tempentropy(pop.get_M()-tempm,pop.get_W()-tempm))
 	return np.mean(tempvalues)
@@ -1713,10 +1713,10 @@ custom_exec_time=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 def cat_agreement(pop,**kwargs):
 	agr = 0
 	for i in range(100):
-		agent1_id = pop.pick_speaker()
-		agent2_id = pop.pick_hearer(agent1_id)
-		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
-		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
+		agent1 = pop.pick_speaker()
+		agent2 = pop.pick_hearer(agent1)
+		# ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		# ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 		#ivt1 = copy.deepcopy(agent1._vocabulary._content_decoding)
 		#ivt2 = copy.deepcopy(agent2._vocabulary._content_decoding)
 
@@ -1824,10 +1824,10 @@ def srtheo_cat(pop,**kwargs):
 	fail = 0
 	succ = 0
 	for i in range(100):
-		agent1_id = pop.pick_speaker()
-		agent2_id = pop.pick_hearer(agent1_id)
-		agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
-		agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
+		agent1 = pop.pick_speaker()
+		agent2 = pop.pick_hearer(agent1)
+		#agent1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		#agent2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 		v1 = agent1._vocabulary
 		v2 = agent2._vocabulary
 		ct = next(agent1._sensoryapparatus.context_gen(env=pop.env, diff=True, size=2))
@@ -2133,10 +2133,10 @@ def overlap(pop,**kwargs):
 	n_r = min((pop._size**2),100)
 	overlap_val = 0
 	for i in range(n_r):
-		agent1_id = pop.pick_speaker()
-		agent2_id = pop.pick_hearer(agent1_id)
-		ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
-		ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
+		ag1 = pop.pick_speaker()
+		ag2 = pop.pick_hearer(ag1)
+		# ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		# ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 
 
 		ivt1 = []
@@ -2185,10 +2185,10 @@ def overlap_semantic(pop,**kwargs):
 	n_r = min((pop._size**2)/2,100)
 	overlap_val = 0
 	for i in range(n_r):
-		agent1_id = pop.pick_speaker()
-		agent2_id = pop.pick_hearer(agent1_id)
-		ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
-		ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
+		ag1 = pop.pick_speaker()
+		ag2 = pop.pick_hearer(ag1)
+		# ag1 = pop._agentlist[pop.get_index_from_id(agent1_id)]
+		# ag2 = pop._agentlist[pop.get_index_from_id(agent2_id)]
 		ivt1 = []
 		data = None
 		for iv in sorted(ag1._vocabulary._content_coding):
