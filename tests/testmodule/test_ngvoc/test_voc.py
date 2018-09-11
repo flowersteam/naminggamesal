@@ -569,7 +569,7 @@ def test_multsum(tempvoc2):
 def test_srtheovoc_m(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=0,content_type='m')
 	v.add(m='a',w=1,content_type='m')
 	v.add(m='a',w=2,content_type='m')
@@ -580,7 +580,7 @@ def test_srtheovoc_m(tempvoc):
 def test_srtheovoc_m2(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=0,content_type='m')
 	v.add(m='a',w=1,content_type='m')
 	v.add(m='a',w=2,content_type='m')
@@ -591,7 +591,7 @@ def test_srtheovoc_m2(tempvoc):
 def test_srtheovoc_m3(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=0,content_type='m')
 	v.add(m='a',w=1,content_type='m')
 	v.add(m='a',w=2,content_type='m')
@@ -603,7 +603,7 @@ def test_srtheovoc_m3(tempvoc):
 def test_srtheovoc_m4(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=0,content_type='w')
 	v.add(m='a',w=1,content_type='w')
 	v.add(m='a',w=2,content_type='w')
