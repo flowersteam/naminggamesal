@@ -31,7 +31,7 @@ class HoledRange(object):
 				self.counter = 0
 			else:
 				raise StopIteration
-		elif self.counter = len(self.range_obj)-1:
+		elif self.counter == len(self.range_obj)-1:
 			self.counter = None
 			raise StopIteration
 		else:
