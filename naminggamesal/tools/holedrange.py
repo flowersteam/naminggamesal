@@ -5,6 +5,7 @@ class HoledRange(object):
 		self.range_obj = range(range_max)
 		self.consider = []
 		self.discard = []
+		self.counter = None
 
 	def __len__(self):
 		return len(self.range_obj)
@@ -21,19 +22,24 @@ class HoledRange(object):
 			return False
 
 	def __iter__(self):
+		self.counter = None
 		return self
 
 	def __next__(self):
-		try:
-			ans = self.range_obj.__next__()
-		except StopIteration:
-			raise
-		except AttributeError:
-			ans = self.range_obj.next()
-		if ans in self.discard:
-			return self.replace(ans)
+		if self.counter is None:
+			if len(self.range_obj) > 0:
+				self.counter = 0
+			else:
+				raise StopIteration
+		elif self.counter = len(self.range_obj)-1:
+			self.counter = None
+			raise StopIteration
 		else:
-			return ans
+			self.counter += 1
+		if self.counter in self.discard:
+			return self.replace(self.counter)
+		else:
+			return self.counter
 
 	next = __next__  # python2.x compatibility.
 
