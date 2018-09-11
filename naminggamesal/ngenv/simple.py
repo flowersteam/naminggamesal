@@ -120,14 +120,14 @@ class SimpleEnv(Environment):
 		if m_list is None:
 			self.m_list = holedrange.HoledRange(self.M)
 		else:
-			self.m_list = m_list
+			self.m_list = list(m_list)
 			self.M = len(self.m_list)
 
 	def set_wlist(self,w_list=None):
 		if w_list is None:
 			self.w_list = holedrange.HoledRange(self.W)
 		else:
-			self.w_list = w_list
+			self.w_list = list(w_list)
 			self.W = len(self.w_list)
 
 class SimpleEnvRealWords(SimpleEnv):

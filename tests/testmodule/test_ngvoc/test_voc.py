@@ -350,28 +350,28 @@ epsilon = 10**-10
 def test_srtheovoc_basic(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=1,content_type='m')
 	assert srtheo_voc(v,v) == 0
 
 def test_srtheovoc_basic2(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=1,content_type='w')
 	assert srtheo_voc(v,v) == 0
 
 def test_srtheovoc_basic3(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=1,content_type='both')
 	assert srtheo_voc(v,v) == 1/3.
 
 def test_srtheovoc_basic4(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=0,content_type='m')
 	v.add(m='a',w=1,content_type='m')
 	v.add(m='a',w=2,content_type='m')
@@ -382,7 +382,7 @@ def test_srtheovoc_basic4(tempvoc):
 def test_srtheovoc_basic4_2(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=0,content_type='m')
 	v.add(m='a',w=1,content_type='m')
 	v.add(m='a',w=1,content_type='w')
@@ -391,7 +391,7 @@ def test_srtheovoc_basic4_2(tempvoc):
 def test_srtheovoc_basic5(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=0,content_type='w')
 	v.add(m='a',w=1,content_type='w')
 	v.add(m='a',w=2,content_type='w')
@@ -402,7 +402,7 @@ def test_srtheovoc_basic5(tempvoc):
 def test_srtheovoc_basic5_2(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=0,content_type='w')
 	v.add(m='a',w=1,content_type='w')
 	v.add(m='a',w=1,content_type='m')
@@ -411,7 +411,7 @@ def test_srtheovoc_basic5_2(tempvoc):
 def test_srtheovoc_basic6(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=0,content_type='w')
 	v.add(m='a',w=1,content_type='w')
 	v.add(m='b',w=0,content_type='w')
@@ -423,7 +423,7 @@ def test_srtheovoc_basic6(tempvoc):
 def test_srtheovoc_basic6_2(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v.add(m='a',w=0,content_type='w')
 	v.add(m='a',w=1,content_type='w')
 	v.add(m='b',w=0,content_type='w')
@@ -434,7 +434,7 @@ def test_srtheovoc_basic6_2(tempvoc):
 def test_srtheovoc_basic6_3(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v2 = copy.deepcopy(v)
 	v.add(m='a',w=0,content_type='both')
 	v.add(m='a',w=1,content_type='both')
@@ -448,7 +448,7 @@ def test_srtheovoc_basic6_3(tempvoc):
 def test_srtheovoc_basic6_3bis(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	v2 = copy.deepcopy(v)
 	v.add(m='a',w=0,content_type='both')
 	v.add(m='a',w=1,content_type='both')
@@ -462,7 +462,7 @@ def test_srtheovoc_basic6_3bis(tempvoc):
 def test_srtheovoc_basic7(tempvoc):
 	v = tempvoc
 	v.discover_meanings(['a','b','c'])
-	v.discover_words(range(4))
+	v.discover_words(list(range(4)))
 	for m in ['a','b','c']:
 		for w in range(4):
 			v.add(m=m,w=w,content_type='both')

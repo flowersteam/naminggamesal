@@ -7,6 +7,12 @@ class HoledRange(object):
 		self.discard = []
 		self.counter = None
 
+	@classmethod
+	def from_range(cls,range_obj):
+		assert range_obj.start == 0
+		assert range_obj.step == 1
+		return cls(range_max=len(range_obj))
+
 	def __len__(self):
 		return len(self.range_obj)
 
