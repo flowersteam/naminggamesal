@@ -8,6 +8,7 @@ from intervaltree import IntervalTree,Interval
 import scipy
 from scipy.optimize import curve_fit
 from scipy.special import zetac
+import random
 
 #from numpy.linalg import norm
 
@@ -17,16 +18,23 @@ from .ngpop import Population
 
 from .ngmeth_utils import zipf_utils,decvec_utils,nx_utils,srtheo_utils,conv_utils
 
+Nmax = 500
+
 def pop_ize(func):
 	def out_func(pop,**kwargs):
-		tempNlist=[]
-		agentlist=pop._agentlist
-		for i in range(0,len(agentlist)):
-			tempNlist.append(func(agentlist[i]))
-		mean=np.mean(tempNlist)
-		std=np.std(tempNlist)
-		_min=np.min(tempNlist)
-		_max=np.max(tempNlist)
+		tempNlist = []
+		agentlist = pop._agentlist
+		if len(agentlist) <= Nmax:
+			for ag in agentlist:
+				tempNlist.append(func(ag))
+		else:
+			for i in range(Nmax):
+				ag = random.choice(agentlist)
+				tempNlist.append(func(ag))
+		mean = np.mean(tempNlist)
+		std = np.std(tempNlist)
+		_min = np.min(tempNlist)
+		_max = np.max(tempNlist)
 		return [mean,std,_min,_max,tempNlist]
 	out_func.__name__=func.__name__+"_mean"
 	return out_func
@@ -34,11 +42,18 @@ def pop_ize(func):
 def meaning_pop_ize(func):
 	def out_func(pop,**kwargs):
 		tempNlist=[]
-		mlist = pop._agentlist[0]._vocabulary.get_accessible_meanings()# get from pop.env?
-		for m in mlist:
-			val = func(m=m,pop=pop)
-			if val is not None:
-				tempNlist.append(val)
+		mlist = pop._agentlist[0]._vocabulary.accessible_meanings# get from pop.env?
+		if len(mlist) <= Nmax:
+			for m in mlist:
+				val = func(m=m,pop=pop)
+				if val is not None:
+					tempNlist.append(val)
+		else:
+			for i in range(Nmax):
+				m = random.choice(mlist)
+				val = func(m=m,pop=pop)
+				if val is not None:
+					tempNlist.append(val)
 		if tempNlist:
 			mean = np.mean(tempNlist)
 			std = np.std(tempNlist)
