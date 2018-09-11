@@ -172,9 +172,9 @@ class BaseVocabularyElaborated(BaseVocabulary):
 	@del_cache
 	def complete_empty(self):
 		self.empty()
-		m_l = copy.copy(self.unknown_meanings)
+		m_l = copy.deepcopy(self.unknown_meanings)
 		random.shuffle(m_l)
-		w_l = copy.copy(self.unknown_words)
+		w_l = copy.deepcopy(self.unknown_words)
 		random.shuffle(w_l)
 		while len(w_l) < len(m_l):
 			assert len(w_l)>0
@@ -188,8 +188,8 @@ class BaseVocabularyElaborated(BaseVocabulary):
 		w_list = self.accessible_words
 		self._content_m = self.init_empty_content(option='m')
 		self._content_w = self.init_empty_content(option='w')
-		self.unknown_meanings = copy.copy(m_list)
-		self.unknown_words = copy.copy(w_list)
+		self.unknown_meanings = copy.deepcopy(m_list)
+		self.unknown_words = copy.deepcopy(w_list)
 
 	def empty_copy(self):
 		ans = copy.deepcopy(self)
@@ -290,7 +290,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	#@voc_cache
 	def get_accessible_meanings(self):
-		l = copy.copy(self.accessible_meanings)#list(self.get_known_meanings())+list(self.unknown_meanings)
+		l = copy.deepcopy(self.accessible_meanings)#list(self.get_known_meanings())+list(self.unknown_meanings)
 		try:
 			if isinstance(l,range):
 				return l
@@ -301,7 +301,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 
 	#@voc_cache
 	def get_accessible_words(self):
-		l = copy.copy(self.accessible_words)#list(self.get_known_words())+list(self.unknown_words)
+		l = copy.deepcopy(self.accessible_words)#list(self.get_known_words())+list(self.unknown_words)
 		try:
 			if isinstance(l,range):
 				return l
@@ -380,9 +380,9 @@ class BaseVocabularyElaborated(BaseVocabulary):
 		else:
 			self.unknown_meanings += m_list_bis
 		if len(self.accessible_meanings) == 0:
-			self.accessible_meanings = copy.copy(m_list_bis)
+			self.accessible_meanings = copy.deepcopy(m_list_bis)
 		else:
-			self.accessible_meanings += copy.copy(m_list_bis)
+			self.accessible_meanings += copy.deepcopy(m_list_bis)
 		if weights is not None and [i for i in weights if i!=1]:
 			if not hasattr(self,'freq_weights_m'):
 				self.freq_weights_m = {}
@@ -409,9 +409,9 @@ class BaseVocabularyElaborated(BaseVocabulary):
 		else:
 			self.unknown_words += w_list_bis
 		if len(self.accessible_words) == 0:
-			self.accessible_words = copy.copy(w_list_bis)
+			self.accessible_words = copy.deepcopy(w_list_bis)
 		else:
-			self.accessible_words += copy.copy(w_list_bis)
+			self.accessible_words += copy.deepcopy(w_list_bis)
 		if weights is not None and [i for i in weights if i!=1]:
 			if not hasattr(self,'freq_weights_w'):
 				self.freq_weights_w = {}
