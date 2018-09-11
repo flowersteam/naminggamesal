@@ -21,3 +21,4 @@ def get_allfunc(tags=[],level=None):
 		return ans
 	return [ truncate(f) for f in dir(ngmeth) if test(f)]
 
+DEBUG_MODE = False

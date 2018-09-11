@@ -291,24 +291,26 @@ class BaseVocabularyElaborated(BaseVocabulary):
 	#@voc_cache
 	def get_accessible_meanings(self):
 		l = copy.deepcopy(self.accessible_meanings)#list(self.get_known_meanings())+list(self.unknown_meanings)
-		try:
-			if isinstance(l,range):
-				return l
-			else:
-				return sorted(l)
-		except:
-			return l
+		return l
+		# try:
+		# 	if isinstance(l,range):
+		# 		return l
+		# 	else:
+		# 		return sorted(l)
+		# except:
+		# 	return l
 
 	#@voc_cache
 	def get_accessible_words(self):
 		l = copy.deepcopy(self.accessible_words)#list(self.get_known_words())+list(self.unknown_words)
-		try:
-			if isinstance(l,range):
-				return l
-			else:
-				return sorted(l)
-		except:
-			return l
+		return l
+		# try:
+		# 	if isinstance(l,range):
+		# 		return l
+		# 	else:
+		# 		return sorted(l)
+		# except:
+		# 	return l
 
 	def get_random_m(self,m_list=None):
 		if m_list is None:
