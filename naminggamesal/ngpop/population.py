@@ -64,6 +64,7 @@ class Population(object):
 		self._lastgameinfo = []
 		self._past = []
 		self._agentlist = []
+		self.agent_id_list = []
 		for i in range(nbagent):
 			self.add_new_agent(agent_id=None, strat_cfg=strat_cfg, voc_cfg=voc_cfg, sensor_cfg=sensor_cfg, pop_init=True)
 		self._topology = get_topology(pop=self,**topology_cfg)
@@ -88,15 +89,17 @@ class Population(object):
 	#	return [self._M,self._W]
 
 	def check_id(self,agent_id):
-		for i in range(0,len(self._agentlist)):
-			if self._agentlist[i].get_id() == agent_id:
-				return 1
-		return 0
+		return agent_id not in self.agent_id_list
+	# 	for i in range(0,len(self._agentlist)):
+	# 		if self._agentlist[i].get_id() == agent_id:
+	# 			return False
+	# 	return True
 
 	def add_agent(self, agent):
-		if self.check_id(agent.get_id()) == 1:
-			print("WARNING: 2 agents with same identity")
+		if not self.check_id(agent.get_id()):
+			raise ValueError("WARNING: 2 agents with same identity")
 		self._agentlist.append(agent)
+		self.agent_id_list.append(agent.get_id())
 		self._size+=1
 		if hasattr(self,'_topology'):
 			self._topology.add_agent(agent,pop=self)
@@ -135,6 +138,7 @@ class Population(object):
 		else:
 			ag = self._agentlist[self.get_index_from_id(agent_id)]
 		self._agentlist.remove(ag)
+		self.agent_id_list.remove(ag.get_id())
 		self._size -= 1
 		self._topology.rm_agent(ag,pop=self)
 

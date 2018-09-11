@@ -12,10 +12,8 @@ class RandomPick(AgentPick):
 		return speaker
 
 	def pick_hearer(self, speaker, pop):
-		speaker_id = speaker.get_id()
-		j = random.randint(0,len(pop._agentlist)-2)
-		if pop.get_index_from_id(speaker_id) <= j:
-			j += 1
-		hearer = pop._agentlist[j]
-		#hearer.warn(role='hearer')
+		ind = random.choice(range(len(pop._agentlist)-1))
+		hearer = pop._agentlist[ind]
+		if hearer == speaker:
+			hearer = pop._agentlist[-1]
 		return hearer
