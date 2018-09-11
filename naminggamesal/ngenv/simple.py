@@ -1,7 +1,9 @@
 from . import Environment
 import random
 import string
+import copy
 from builtins import range
+
 
 from ..tools import holedrange
 
