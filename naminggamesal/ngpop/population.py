@@ -95,8 +95,8 @@ class Population(object):
 	# 			return False
 	# 	return True
 
-	def add_agent(self, agent):
-		if not self.check_id(agent.get_id()):
+	def add_agent(self, agent, check=True):
+		if check and not self.check_id(agent.get_id()):
 			raise ValueError("WARNING: 2 agents with same identity")
 		self._agentlist.append(agent)
 		self.agent_id_list.append(agent.get_id())
@@ -120,7 +120,7 @@ class Population(object):
 		new_cfg = self.agent_init.modify_cfg(voc_cfg=voc_cfg, strat_cfg=strat_cfg, sensor_cfg=sensor_cfg, agent_id=agent_id, env=self.env,pop_init=pop_init)
 		agent = get_agent(**new_cfg)
 		self.agent_init.modify_agent(agent,pop=self,pop_init=pop_init)
-		self.add_agent(agent)
+		self.add_agent(agent,check=False)
 
 	def get_index_from_id(self, agent_id):
 		for i in range (0,len(self._agentlist)):
