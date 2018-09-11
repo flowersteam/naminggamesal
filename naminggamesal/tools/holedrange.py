@@ -166,6 +166,6 @@ class HoledRangeOld(object):
 				self.replace[elt] = len(self.range_obj)-1
 			self.range_obj = range(len(self.range_obj)-1)
 		else:
-			raise ValueError(str(elt)' not in holed range.')
+			raise ValueError(str(elt)+' not in holed range.')
 
 
