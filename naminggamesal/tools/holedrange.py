@@ -70,7 +70,7 @@ class HoledRange(object):
 			if new_limit in self:
 				self.consider.remove(new_limit)
 			else:
-				self.discard.add(new_limit)
+				self.discard.append(new_limit)
 		self.range_obj = range(len(self.range_obj)+1)
 
 	def remove(self,elt):
