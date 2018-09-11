@@ -34,7 +34,7 @@ def tempvoc2(request):
 	param = request.param
 	v = ngvoc.get_vocabulary(voc_type=param)
 	meanings = ['a','b','c','d','e','f']
-	words = range(-4,10)
+	words = list(range(-4,10))
 	v.discover_meanings(meanings)
 	v.discover_words(words)
 	assoc_list = [
@@ -55,7 +55,7 @@ def tempvoc2_bis(request):
 	param = request.param
 	v = ngvoc.get_vocabulary(voc_type=param)
 	meanings = ['a','b','c','d','e','f']
-	words = range(-4,10)
+	words = list(range(-4,10))
 	v.discover_meanings(meanings)
 	v.discover_words(words)
 	assoc_list = [
@@ -78,7 +78,7 @@ def tempvoc3(request):
 	param = request.param
 	v = ngvoc.get_vocabulary(voc_type=param)
 	meanings = ['a','b','c','d','e','f']
-	words = range(-4,10)
+	words = list(range(-4,10))
 	v.discover_meanings(meanings)
 	v.discover_words(words)
 	assoc_list = [ (random.choice(meanings),random.choice(words)) for i in range(25)]
@@ -92,7 +92,7 @@ def tempvoc4(request):
 	param = request.param
 	v = ngvoc.get_vocabulary(voc_type=param)
 	meanings = ['a','b','c','d','e','f']
-	words = range(-4,10)
+	words = list(range(-4,10))
 	v.discover_meanings(meanings)
 	v.discover_words(words)
 	assoc_list = [ (random.choice(meanings),random.choice(words)) for i in range(25)]
@@ -106,7 +106,7 @@ def tempvoc5(request):
 	param = request.param
 	v = ngvoc.get_vocabulary(voc_type=param)
 	meanings = ['a','b','c','d','e','f']
-	words = range(-4,10)
+	words = list(range(-4,10))
 	v.discover_meanings(meanings)
 	v.discover_words(words)
 	assoc_list = [ (random.choice(meanings),random.choice(words)) for i in range(25)]
@@ -121,7 +121,7 @@ def tempvoc6(request):
 	param = request.param
 	v = ngvoc.get_vocabulary(voc_type=param)
 	meanings = ['a','b','c','d','e','f']
-	words = range(-4,10)
+	words = list(range(-4,10))
 	v.discover_meanings(meanings)
 	v.discover_words(words)
 	assoc_list = [ (random.choice(meanings),random.choice(words)) for i in range(25)]
@@ -135,7 +135,7 @@ def tempvoc7(request):
 	param = request.param
 	v = ngvoc.get_vocabulary(voc_type=param)
 	meanings = ['a','b','c','d','e','f']
-	words = range(-4,10)
+	words = list(range(-4,10))
 	v.discover_meanings(meanings)
 	v.discover_words(words)
 	assoc_list = [ (random.choice(meanings),random.choice(words)) for i in range(25)]
