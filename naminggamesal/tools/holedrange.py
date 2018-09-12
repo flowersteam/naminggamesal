@@ -1,4 +1,5 @@
 from builtins import range
+import copy
 
 class HoledRange(object):
 	def __init__(self,range_max):
@@ -103,6 +104,21 @@ class HoledRange(object):
 			if self.discard[i] == elt:
 				return self.consider[i]
 
+	def __str__(self):
+		return str(self.range_obj)+' , discard: '+str(self.discard)+' , consider: '+str(self.consider)
+
+	def __repr__(self):
+		return str(self)
+
+	def extend(self,other):
+		for elt in other:
+			if elt not in self:
+				self.append(elt)
+
+	def __add__(self,other):
+		ans = copy.deepcopy(self)
+		ans.extend(other)
+		return ans
 
 class HoledRangeOld(object):
 	def __init__(self,range_max):

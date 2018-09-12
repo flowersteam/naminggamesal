@@ -78,7 +78,7 @@ class StratNaiveMemBased(StratNaive):
 				#		m = voc.get_new_unknown_m()
 				#	else:
 				#		m = voc.get_random_known_m(option='min')
-		elif voc.get_unknown_meanings():
+		elif voc.unknown_meanings:
 			if hasattr(self,'allow_idk') and self.allow_idk:
 				m = None
 			else:

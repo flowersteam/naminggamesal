@@ -47,7 +47,8 @@ def voc_cache(tempfun):
 def del_cache(tempfun):
 	def mod_fun_del(obj_self, *args, **kwargs):
 		ans = tempfun(obj_self, *args, **kwargs)
-		obj_self._cache = {}
+		if obj_self._cache:
+			obj_self._cache = {}
 		return ans
 	return mod_fun_del
 
@@ -348,6 +349,12 @@ class BaseVocabularyElaborated(BaseVocabulary):
 				w = self.next_word.pop()
 				if len(self.next_word) == 0:
 					delattr(self,'next_word')
+			elif isinstance(self.next_word,range):
+				w = self.next_word.stop - 1
+				if len(self.next_word) == 1:
+					delattr(self,'next_word')
+				else:
+					self.next_word = range(self.next_word.start,self.next_word.stop-1)
 			else:
 				w = self.next_word
 				delattr(self,'next_word')

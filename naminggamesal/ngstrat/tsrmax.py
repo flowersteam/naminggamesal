@@ -56,8 +56,8 @@ class StratTSRMax(StratNaive):
 		m_list = []
 		m_explo = None
 		test1 = (hasattr(self,'explo_th') and self.explo_th)
-		test2 = srtheo_voc(voc,voc2=mem['interact_count_voc']) >= (1.-10**(-5))*float(len(voc.get_known_meanings()))/len(voc.get_accessible_meanings())
-		test3 = len(voc.get_unknown_meanings())>0
+		test2 = srtheo_voc(voc,voc2=mem['interact_count_voc']) >= (1.-10**(-5))*float(len(voc.get_known_meanings()))/len(voc.accessible_meanings)
+		test3 = len(voc.unknown_meanings)>0
 		if test1:
 			if test2:
 				explo = True
@@ -159,7 +159,7 @@ class StratTSRMax(StratNaive):
 					if len(voc.unknown_words):
 						factor = 1./len(voc.unknown_words)
 					else:
-						factor = 1./len(voc.get_accessible_words())
+						factor = 1./len(voc.accessible_words)
 					m_list.append((m_explo,val*factor))
 				else:
 					m_list.append((m1,val/len(voc.get_known_words(m=m1))))
@@ -184,7 +184,7 @@ class StratTSRMaxMAB(StratTSRMax):
 
 	def get_mval_list(self,voc,mem,context):
 		m_list = []
-		if len(voc.get_unknown_meanings())>0:
+		if len(voc.unknown_meanings)>0:
 			m_explo = voc.get_new_unknown_m()
 			val_explo = np.random.beta(mem['bandit']['arms']['arm_explo'][0],mem['bandit']['arms']['arm_explo'][1])
 			m_list.append((m_explo,val_explo))
@@ -207,7 +207,7 @@ class StratTSRMaxHMAB(StratTSRMax):
 	def get_mval_list(self,voc,mem,context):
 		m_list = []
 		explore = False
-		if len(voc.get_unknown_meanings())>0:
+		if len(voc.unknown_meanings)>0:
 			explore = True
 			m_explo = voc.get_new_unknown_m()
 			val_explore = np.random.beta(mem['bandit']['arms']['arm_explo'][0],mem['bandit']['arms']['arm_explo'][1])
@@ -255,7 +255,7 @@ class LAPSMaxMAB(StratNaive):
 		return self.pick_m(voc, mem,context)
 
 	def explore_condition(self,voc,mem,context):
-		return mem['bandit']['laps_val'] >= (len(voc.get_known_meanings())-1)/len(voc.get_accessible_meanings())
+		return mem['bandit']['laps_val'] >= (len(voc.get_known_meanings())-1)/len(voc.accessible_meanings)
 
 
 class LAPSMaxMABExploThreshold(LAPSMaxMAB):
@@ -266,5 +266,5 @@ class LAPSMaxMABExploThreshold(LAPSMaxMAB):
 		self.epsilon_power = epsilon_power
 
 	def explore_condition(self,voc,mem,context):
-		return mem['bandit']['laps_val'] >= self.threshold*(1.-10**(-self.epsilon_power))*(len(voc.get_known_meanings()))/len(voc.get_accessible_meanings())
+		return mem['bandit']['laps_val'] >= self.threshold*(1.-10**(-self.epsilon_power))*(len(voc.get_known_meanings()))/len(voc.accessible_meanings)
 

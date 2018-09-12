@@ -5,6 +5,7 @@ import numpy as np
 
 from naminggamesal import ngvoc,ngmeth
 from naminggamesal.ngmeth_utils.srtheo_utils import srtheo_voc
+from naminggamesal.tools import holedrange
 
 #voctype_list = list(ngvoc.voc_class.keys())
 voctype_list = [
@@ -34,6 +35,7 @@ def tempvoc2(request):
 	param = request.param
 	v = ngvoc.get_vocabulary(voc_type=param)
 	meanings = ['a','b','c','d','e','f']
+	# words = holedrange.HoledRange(14)
 	words = list(range(-4,10))
 	v.discover_meanings(meanings)
 	v.discover_words(words)
@@ -55,6 +57,7 @@ def tempvoc2_bis(request):
 	param = request.param
 	v = ngvoc.get_vocabulary(voc_type=param)
 	meanings = ['a','b','c','d','e','f']
+	# words = holedrange.HoledRange(14)
 	words = list(range(-4,10))
 	v.discover_meanings(meanings)
 	v.discover_words(words)

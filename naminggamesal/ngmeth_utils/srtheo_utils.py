@@ -141,7 +141,7 @@ def srtheo_voc(voc1,voc2=None,m=None,w=None,role='both',force_ngmeth=False):
 								prefactor *= 1./sum(voc2.get_known_meanings_weights_values(w=w1))
 							if not hasattr(voc1,'is_normalized') or not voc1.is_normalized:
 								prefactor *= 1./sum(voc1.get_known_words_weights_values(m=m1))
-							ans += prefactor * voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/len(voc1.get_accessible_meanings())#float(voc1.get_M())
+							ans += prefactor * voc1.get_value(m1,w1,content_type='m') * voc2.get_value(m1,w1,content_type='w')/len(voc1.accessible_meanings)#float(voc1.get_M())
 						except ZeroDivisionError :
 							pass
 		return ans

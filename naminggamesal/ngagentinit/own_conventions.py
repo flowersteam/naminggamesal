@@ -1,3 +1,5 @@
+from builtins import range
+
 from .agent_init import AgentInit
 
 class OwnWordsInit(AgentInit):
