@@ -108,8 +108,8 @@ class Population(object):
 		self._agentlist.append(agent)
 		self.agent_id_list.append(agent.get_id())
 		self._size += 1
-		#if hasattr(self,'_topology'):
-		self._topology.add_agent(agent,pop=self)
+		if hasattr(self,'_topology'):
+			self._topology.add_agent(agent,pop=self)
 
 	def idmax(self): #Suppose ID=nombre
 		tempid=0
