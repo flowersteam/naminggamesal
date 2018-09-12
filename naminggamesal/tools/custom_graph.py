@@ -147,11 +147,11 @@ class CustomGraph(object):
 		current_palette = sns.color_palette()
 		for i in range(0,len(self._Y)):
 
-			Xtemp = copy.deepcopy(self._X[i])
-			Ytemp = copy.deepcopy(self._Y[i])
-			stdtemp = copy.deepcopy(self.stdvec[i])
-			mintemp = copy.deepcopy(self.minvec[i])
-			maxtemp = copy.deepcopy(self.maxvec[i])
+			Xtemp = copy.copy(self._X[i])
+			Ytemp = copy.copy(self._Y[i])
+			stdtemp = copy.copy(self.stdvec[i])
+			mintemp = copy.copy(self.minvec[i])
+			maxtemp = copy.copy(self.maxvec[i])
 			if self.sort: # WARNING!!!!! No X value should appear 2 times -> bug to solve
 				tempdic = {}
 				for j in range(0,len(Xtemp)):
@@ -279,13 +279,13 @@ class CustomGraph(object):
 		self.__dict__.update(in_dict)
 
 	def add_graph(self,other_graph):
-		self._X = self._X + copy.deepcopy(other_graph._X)
-		self._Y = self._Y + copy.deepcopy(other_graph._Y)
+		self._X = self._X + copy.copy(other_graph._X)
+		self._Y = self._Y + copy.copy(other_graph._Y)
 		self.Yoptions = self.Yoptions + copy.deepcopy(other_graph.Yoptions)
-		self.stdvec = self.stdvec + copy.deepcopy(other_graph.stdvec)
+		self.stdvec = self.stdvec + copy.copy(other_graph.stdvec)
 		self.all_data = self.all_data + copy.deepcopy(other_graph.all_data)
-		self.minvec = self.minvec + copy.deepcopy(other_graph.minvec)
-		self.maxvec = self.maxvec + copy.deepcopy(other_graph.maxvec)
+		self.minvec = self.minvec + copy.copy(other_graph.minvec)
+		self.maxvec = self.maxvec + copy.copy(other_graph.maxvec)
 
 		label_in_1 = 'labels' in self.legendoptions
 		label_in_2 = 'labels' in other_graph.legendoptions
@@ -322,12 +322,12 @@ class CustomGraph(object):
 		other_graph = copy.deepcopy(other_graph)
 		for i in range(0,len(self._X)):
 			if mix and not self._X[-1]<other_graph._X[0]:
-				X = copy.deepcopy(self._X[i])
-				Y = copy.deepcopy(self._Y[i])
-				stdvec = copy.deepcopy(self.stdvec[i])
+				X = copy.copy(self._X[i])
+				Y = copy.copy(self._Y[i])
+				stdvec = copy.copy(self.stdvec[i])
 				all_data = copy.deepcopy(self.all_data[i])
-				minvec = copy.deepcopy(self.minvec[i])
-				maxvec = copy.deepcopy(self.maxvec[i])
+				minvec = copy.copy(self.minvec[i])
+				maxvec = copy.copy(self.maxvec[i])
 				Xind = 0
 				oXind = 0
 				self._X[i] = []
@@ -363,19 +363,19 @@ class CustomGraph(object):
 						Xind += 1
 						oXind += 1
 			else:
-				self._X[i]=list(copy.deepcopy(self._X[i]))+list(copy.deepcopy(other_graph._X[i]))
-				self._Y[i]=list(copy.deepcopy(self._Y[i]))+list(copy.deepcopy(other_graph._Y[i]))
-				self.stdvec[i]=list(copy.deepcopy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
+				self._X[i]=list(copy.copy(self._X[i]))+list(copy.copy(other_graph._X[i]))
+				self._Y[i]=list(copy.copy(self._Y[i]))+list(copy.copy(other_graph._Y[i]))
+				self.stdvec[i]=list(copy.copy(self.stdvec[i]))+list(copy.deepcopy(other_graph.stdvec[i]))
 				self.all_data[i]=list(copy.deepcopy(self.all_data[i]))+list(copy.deepcopy(other_graph.all_data[i]))
-				self.minvec[i]=list(copy.deepcopy(self.minvec[i]))+list(copy.deepcopy(other_graph.minvec[i]))
-				self.maxvec[i]=list(copy.deepcopy(self.maxvec[i]))+list(copy.deepcopy(other_graph.maxvec[i]))
+				self.minvec[i]=list(copy.copy(self.minvec[i]))+list(copy.copy(other_graph.minvec[i]))
+				self.maxvec[i]=list(copy.copy(self.maxvec[i]))+list(copy.copy(other_graph.maxvec[i]))
 			if remove_duplicates:
-				X = copy.deepcopy(self._X[i])
-				Y = copy.deepcopy(self._Y[i])
-				stdvec = copy.deepcopy(self.stdvec[i])
+				X = copy.copy(self._X[i])
+				Y = copy.copy(self._Y[i])
+				stdvec = copy.copy(self.stdvec[i])
 				all_data = copy.deepcopy(self.all_data[i])
-				minvec = copy.deepcopy(self.minvec[i])
-				maxvec = copy.deepcopy(self.maxvec[i])
+				minvec = copy.copy(self.minvec[i])
+				maxvec = copy.copy(self.maxvec[i])
 				self._X[i] = []
 				self._Y[i] = []
 				self.stdvec[i] = []
