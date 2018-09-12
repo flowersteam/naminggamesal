@@ -171,17 +171,23 @@ def global_m(request):
 	return request.param
 
 
-def xp_loop(cfg):
+def xp_loop(cfg,less_measures=False):
+	if less_measures:
+		ll = ['srtheo','Nlink']
+		gl = ['conv_time','max_mem']
+	else:
+		ll = local_m_list
+		gl = global_m_list
 	xp = db.get_experiment(**cfg)
 	xp.continue_exp_until(20)
-	for local_m in local_m_list:
+	for local_m in ll:
 		xp.graph(local_m)
-	for global_m in global_m_list:
+	for global_m in gl:
 		xp.graph(global_m)
 	xp.continue_exp_until(40)
-	for local_m in local_m_list:
+	for local_m in ll:
 		xp.graph(local_m)
-	for global_m in global_m_list:
+	for global_m in gl:
 		p = xp.graph(global_m)
 		assert len(p._X) == 1 and len(p._X[0]) == 1
 	return xp
@@ -255,6 +261,22 @@ def test_agentinit(agentinittype,evoltype):
     }
 	xp_loop(base_xp_cfg)
 
+
+def test_optimize():
+	base_xp_cfg = {
+    'pop_cfg':{
+        'voc_cfg':{'voc_type':'2dictdict'},
+        'strat_cfg':{'strat_type':'naive',
+                    'vu_cfg':{'vu_type':'minimal'},
+                    'success_cfg':{'success_type':'global_norandom'}},
+        'interact_cfg':{'interact_type':'speakerschoice'},
+        'env_cfg':{'env_type':'simple','M':M,'W':W},
+        'nbagent':N,
+        'optimized_run':True
+    },
+    'step':'log_improved'
+    }
+	xp_loop(base_xp_cfg)
 
 
 ######### BROADCASTING ###############
