@@ -45,6 +45,8 @@ class SpeakersChoice(Interaction):
 			ms = speaker.pick_m()
 			w = speaker.pick_w(ms)
 			mh = hearer.guess_m(w)
+			bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh)
+			bool_newconv = (ms not in speaker._vocabulary.get_known_meanings())
 	
 		if not simulated:
 			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh,bool_succ=bool_succ)
