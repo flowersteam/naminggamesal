@@ -29,13 +29,13 @@ class SpeakersChoice(Interaction):
 				current_game_info['mh'] = mh
 			else:
 				mh = current_game_info['mh']
-	
+
 			if 'bool_succ' not in list(current_game_info.keys()):
 				bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh)
 				current_game_info['bool_succ'] = bool_succ
 			else:
 				bool_succ = current_game_info['bool_succ']
-	
+
 			if 'bool_newconv' not in list(current_game_info.keys()):
 				bool_newconv = (ms not in speaker._vocabulary.get_known_meanings())
 				current_game_info['bool_newconv'] = bool_newconv
@@ -47,7 +47,7 @@ class SpeakersChoice(Interaction):
 			mh = hearer.guess_m(w)
 			bool_succ = hearer.eval_success(ms=ms, w=w, mh=mh)
 			bool_newconv = (ms not in speaker._vocabulary.get_known_meanings())
-	
+
 		if not simulated:
 			pop.env.update_agent(speaker,ms=ms,w=w,mh=mh,bool_succ=bool_succ)
 			pop.env.update_agent(hearer,ms=ms,w=w,mh=mh,bool_succ=bool_succ)

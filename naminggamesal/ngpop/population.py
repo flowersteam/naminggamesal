@@ -201,7 +201,7 @@ class Population(object):
 				self._evolution.step(pop=self)
 				speaker = self.agent_pick.pick_speaker(pop=self)
 				hearer = self.agent_pick.pick_hearer(speaker,pop=self)
-				self._interaction.interact(speaker=speaker, hearer=hearer, pop=self, current_game_info=None, optimized=self.optimized_run)
+				self._interaction.interact(speaker=speaker, hearer=hearer, pop=self, current_game_info={}, optimized=True)
 
 	def get_current_info_filename(self):
 		if hasattr(self,'xp_uuid') and self.xp_uuid is not None:
