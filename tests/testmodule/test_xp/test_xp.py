@@ -178,6 +178,9 @@ def xp_loop(cfg,less_measures=False):
 	else:
 		ll = local_m_list
 		gl = global_m_list
+		if 'memory_policies' not in cfg['pop_cfg']['strat_cfg'].keys():
+			cfg['pop_cfg']['strat_cfg']['memory_policies'] = []
+		cfg['pop_cfg']['strat_cfg']['memory_policies'].append({'mem_type':'inventions'})
 	xp = db.get_experiment(**cfg)
 	xp.continue_exp_until(20)
 	for local_m in ll:
