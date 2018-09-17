@@ -49,7 +49,7 @@ class StratNaiveExploBiased(StratNaive):
 		m_list = voc.get_known_meanings()
 		m_explo = voc.get_new_unknown_m()
 		if m_explo not in m_list:
-			m_list.append(m_explo)
+			m_list = m_list + [m_explo]
 		return random.choice(m_list)
 
 class StratNaiveMemBased(StratNaive):
@@ -204,3 +204,17 @@ class StratNaiveCategoryPlosOne(StratNaiveCategory):
 #			w2 = cat.data.pop()
 #			cat.data.append(w1)
 #			cat.data.append(w2)
+
+
+class StratOnlyExplore(StratNaive):
+	def pick_m(self,voc,mem,context=[]):
+		return voc.get_new_unknown_m()
+
+class StratOnlyExploit(StratNaive):
+	def pick_m(self,voc,mem,context=[]):
+		if voc.get_known_meanings():
+			m = voc.get_random_known_m()
+		else:
+			m = voc.get_new_unknown_m()
+		return m
+

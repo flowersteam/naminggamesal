@@ -589,9 +589,21 @@ class WordPreferenceLast(MemoryPolicy):
 
 class WordPreferenceFirst(WordPreferenceLast):
 
+	def init_memory(self,mem,voc,cfg=None):
+		WordPreferenceLast.init_memory(self,mem,voc,cfg)
+		mem['word_preference_buffer'] = {}
+
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context):
-		if ms not in list(mem['prefered words'].keys()):
-			mem['prefered words'][ms] = w
+		if ms not in mem['word_preference_buffer'].keys():
+			mem['word_preference_buffer'][ms] = []
+		bf = copy.copy(mem['word_preference_buffer'][ms])
+		KW = voc.get_known_words(m=ms)
+		for ww in bf:
+			if ww not in KW:
+				mem['word_preference_buffer'][ms].remove(ww)
+		if w not in mem['word_preference_buffer'][ms]:
+			mem['word_preference_buffer'][ms].append(w)
+		mem['prefered words'][ms] = mem['word_preference_buffer'][ms][0]
 
 
 class WordPreferenceSmart(WordPreferenceLast):

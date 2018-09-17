@@ -6,6 +6,8 @@ class WordPreference(BaseWordChoice):
 		if m in voc.get_known_meanings():
 			if m in list(mem['prefered words'].keys()):
 				w = mem['prefered words'][m]
+				if w not in voc.get_known_words(m=m):
+					w = voc.get_random_known_w(m=m)
 			else:
 				w = voc.get_random_known_w(m=m)
 		elif voc.get_unknown_words():

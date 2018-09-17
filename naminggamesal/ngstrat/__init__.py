@@ -20,6 +20,9 @@ strat_class={
 	'naive_category':'naive.StratNaiveCategory',
 	'naive_category_pone':'naive.StratNaiveCategoryPlosOne',
 
+	'only_explore':'naive.StratOnlyExplore',
+	'only_exploit':'naive.StratOnlyExploit',
+
 	'success_threshold':'success_threshold.StratSuccessThreshold',
 	'success_threshold_epirob':'success_threshold.StratSuccessThresholdEpirob',
 	'success_threshold_corrected':'success_threshold.StratSuccessThresholdCorrected',

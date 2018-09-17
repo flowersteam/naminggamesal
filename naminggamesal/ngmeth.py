@@ -19,6 +19,7 @@ from .ngpop import Population
 from .ngmeth_utils import zipf_utils,decvec_utils,nx_utils,srtheo_utils,conv_utils
 
 Nmax = 500
+all_data_max = 10
 
 def pop_ize(func):
 	def out_func(pop,**kwargs):
@@ -35,7 +36,7 @@ def pop_ize(func):
 		std = np.std(tempNlist)
 		_min = np.min(tempNlist)
 		_max = np.max(tempNlist)
-		return [mean,std,_min,_max,tempNlist]
+		return [mean,std,_min,_max,tempNlist[:all_data_max]]
 	out_func.__name__=func.__name__+"_mean"
 	return out_func
 
@@ -59,7 +60,7 @@ def meaning_pop_ize(func):
 			std = np.std(tempNlist)
 			_min = np.min(tempNlist)
 			_max = np.max(tempNlist)
-			return [mean,std,_min,_max,tempNlist]
+			return [mean,std,_min,_max,tempNlist[:all_data_max]]
 		else:
 			return [np.nan,np.nan,np.nan,np.nan,[np.nan]]
 	out_func.__name__=func.__name__+"_mean"
@@ -1208,12 +1209,11 @@ def N_d(pop,**kwargs):
 		tempmat[tempmat>0] = 1
 		return np.sum(tempmat)
 	else:
-		d_set = []
+		d_set = set()
 		for ag in pop._agentlist:
 			for m in ag._vocabulary.get_known_meanings():
 				for w in ag._vocabulary.get_known_words(m=m):
-					if (m,w) not in d_set:
-						d_set.append((m,w))
+					d_set.add((m,w))
 		return len(d_set)
 
 def N_d_max(pop):

@@ -15,6 +15,8 @@ class MemBasedWordChoice(BaseWordChoice):
 					w = voc.get_random_w(w_list)
 				else:
 					w = np.random.choice(w_list,p=p)
+				if w not in voc.get_known_words(m=m):
+					w = voc.get_random_known_w(m=m)
 			else:
 				w = voc.get_random_w(w_list)
 		elif voc.get_unknown_words():
