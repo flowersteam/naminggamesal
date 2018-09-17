@@ -32,8 +32,10 @@ class Population(object):
 					 sensor_cfg=None, env_cfg={'env_type':'simple','M':10,'W':10},
 					 topology_cfg={'topology_type':'no_graph'},
 					 xp_uuid=None,
-					 optimized_run=False):
+					 optimized_run=False,
+					 stoppable_run=False):
 		self.optimized_run = optimized_run
+		self.stoppable_run = stoppable_run
 		self.nbagent_init = nbagent
 		self._size = 0
 		self._strat_cfg = copy.deepcopy(strat_cfg)
@@ -158,7 +160,7 @@ class Population(object):
 
 	def play_game(self, steps, **kwargs):
 		#if not hasattr(self,'current_game_info'):
-		if not self.optimized_run:
+		if self.stoppable_run:
 			filename = self.get_current_info_filename()
 			if os.path.isfile(filename):
 				with open(filename,'r') as f:
