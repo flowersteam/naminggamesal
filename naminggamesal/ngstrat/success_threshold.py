@@ -106,7 +106,7 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 		try:
 			ratelist = [self.div(mem["success_m"][m],mem["fail_m"][m]) for m in KM]
 		except KeyError:
-			ratelist = []
+			ratelist = np.zeros((1,len(KM)))
 		return ratelist
 
 	def pick_m(self, voc, mem, context):
