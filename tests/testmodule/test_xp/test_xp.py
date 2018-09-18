@@ -221,6 +221,10 @@ def test_xp_allowidk(xp_cfg2):
 	xp_loop(xp_cfg2)
 
 def test_localm(local_m):
+	cfg = copy.deepcopy(simple_cfg)
+	if 'memory_policies' not in cfg['pop_cfg']['strat_cfg'].keys():
+		cfg['pop_cfg']['strat_cfg']['memory_policies'] = []
+	cfg['pop_cfg']['strat_cfg']['memory_policies'].append({'mem_type':'inventions'})
 	xp = db.get_experiment(**simple_cfg)
 	xp.continue_exp_until(40)
 	xp.graph(local_m)
