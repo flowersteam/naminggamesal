@@ -1,9 +1,9 @@
 #!/usr/bin/python
+from __future__ import division
 
 from .naive import StratNaive
 import random
 import numpy as np
-from __future__ import division
 
 
 ##################################### STRATEGY SUCCESS THRESHOLD########################################
