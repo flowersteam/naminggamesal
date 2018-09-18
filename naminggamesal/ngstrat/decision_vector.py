@@ -6,24 +6,23 @@ import numpy as np
 from ..ngmeth_utils import decvec_utils
 
 
-################################### STRATEGIE DECISION VECTOR #########################################""
+################################### DECISION VECTOR #########################################""
 
-#Ne pas oublier STRATTYPE, NAME et l'initialisation dans la classe strategy
+
 
 class StratDecisionVector(StratNaive):
 
-	def pick_m(self,voc,mem):
+	def pick_m(self,voc,mem,context=[]):
 		if not hasattr(self,'decision_vector'):
 			self.init_vector(voc=voc)
-		Mtemp=len(voc.get_known_meanings())
-		tirage=random.random()
-		if tirage<self.decision_vector[Mtemp]:
-			m=voc.get_new_unknown_m()
+		Mtemp = len(voc.get_known_meanings())
+		tirage = random.random()
+		if tirage < self.decision_vector[Mtemp]:
+			return voc.get_new_unknown_m()
 		else:
-			m=voc.get_random_known_m()
-		return m
+			return voc.get_random_known_m()
 
-################################### STRATEGIE DECISION VECTOR GAIN MAXIMIZATION #########################################""
+################################### DECISION VECTOR GAIN MAXIMIZATION #########################################""
 
 
 class StratDecisionVectorGainmax(StratDecisionVector):
