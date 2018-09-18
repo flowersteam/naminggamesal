@@ -3,7 +3,7 @@
 from .naive import StratNaive
 import random
 import numpy as np
-
+from __future__ import division
 
 
 ##################################### STRATEGY SUCCESS THRESHOLD########################################
@@ -92,21 +92,21 @@ class StratSuccessThresholdCorrected(StratSuccessThreshold):
 ##################################### STRATEGY SUCCESS THRESHOLD WISE########################################
 class StratSuccessThresholdWise(StratSuccessThreshold):
 
+	def div(self,a,b):
+		try:
+			return a/b
+		except:
+			return 0.
+
 	def get_success_rates(self, voc, mem):
 		succ_sum = 0
 		fail_sum = 0
 		ratelist = []
-		for m in voc.get_known_meanings():
-			try:
-				succ_sum = mem["success_m"][m]
-				fail_sum = mem["fail_m"][m]
-			except KeyError:
-				succ_sum = 0
-				fail_sum = 0
-			if succ_sum!=0:
-				ratelist.append(succ_sum/float(fail_sum+succ_sum))
-			else:
-				ratelist.append(0)
+		KM = voc.get_known_meanings()
+		try:
+			ratelist = [self.div(mem["success_m"][m],mem["fail_m"][m]) for m in KM]
+		except KeyError:
+			ratelist = []
 		return ratelist
 
 	def pick_m(self, voc, mem, context):
