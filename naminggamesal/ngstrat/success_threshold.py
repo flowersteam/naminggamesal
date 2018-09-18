@@ -142,10 +142,10 @@ class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 		if len(KM) == 0:
 			return voc.get_new_unknown_m()
 		tempmin = np.min(ratelist)
-		if (tempmin>self.threshold_explo):
+		if (tempmin>=self.threshold_explo):
 			tempmax = tempmin
 		else:
-			tempmax = max([r for r in ratelist if r < threshold])
+			tempmax = max([r for r in ratelist if r < self.threshold_explo])
 		try:
 			meaning_list = [m for m,r in zip(KM,ratelist) if r == tempmax ]
 			return voc.get_random_m(m_list=meaning_list)
