@@ -60,12 +60,8 @@ class StratMinCounts(StratNaive):
 			return voc.get_new_unknown_m()
 		KM = voc.get_known_meanings()
 		tempmin = min(counts)
-		tempm = []
-		for m in range(0,len(KM)):
-			if counts[m] == tempmin:
-				tempm.append(m)
-		j = random.randint(0, len(tempm)-1)
-		return KM[tempm[j]]
+		m_list = [m for m,c in zip(KM,counts) if c == tempmin]
+		return random.choice(m_list)
 
 ##################################### STRATEGIE SUCCESS THRESHOLD WISE MAX########################################
 class StratMinCountsWiseMax(StratMinCounts):

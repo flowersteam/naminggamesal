@@ -49,9 +49,9 @@ class StratSuccessThreshold(StratNaive):
 #			mem["fail_m"].append(0)
 #		return mem
 
-	def div(self,a,b):
+	def div(self,mem,m):
 		try:
-			return a/b
+			return mem["success_m"][m]/(mem["success_m"][m]+mem["fail_m"][m])
 		except:
 			return 0.
 
@@ -61,7 +61,7 @@ class StratSuccessThreshold(StratNaive):
 		ratelist = []
 		KM = voc.get_known_meanings()
 		try:
-			ratelist = [self.div(mem["success_m"][m],mem["fail_m"][m]) for m in KM]
+			ratelist = [self.div(mem,m) for m in KM]
 		except KeyError:
 			ratelist = np.zeros((len(KM),))
 		if KM:
@@ -96,7 +96,7 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 		ratelist = []
 		KM = voc.get_known_meanings()
 		try:
-			ratelist = [self.div(mem["success_m"][m],mem["fail_m"][m]) for m in KM]
+			ratelist = [self.div(mem,m) for m in KM]
 		except KeyError:
 			ratelist = np.zeros((len(KM),))
 		return ratelist
