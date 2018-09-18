@@ -225,7 +225,7 @@ def test_localm(local_m):
 	if 'memory_policies' not in cfg['pop_cfg']['strat_cfg'].keys():
 		cfg['pop_cfg']['strat_cfg']['memory_policies'] = []
 	cfg['pop_cfg']['strat_cfg']['memory_policies'].append({'mem_type':'inventions'})
-	xp = db.get_experiment(**simple_cfg)
+	xp = db.get_experiment(**cfg)
 	xp.continue_exp_until(40)
 	xp.graph(local_m)
 
