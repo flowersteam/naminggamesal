@@ -49,54 +49,46 @@ class StratSuccessThreshold(StratNaive):
 #			mem["fail_m"].append(0)
 #		return mem
 
-	def get_success_rate_over_known_meanings(self,voc,mem):
-		succ_sum=0
-		fail_sum=0
-		for m in voc.get_known_meanings():
-			try:
-				succ_sum+=mem["success_m"][m]
-			except KeyError:
-				pass
-			try:
-				fail_sum+=mem["fail_m"][m]
-			except KeyError:
-				pass
-		if succ_sum==0:
-			return 0
-		else:
-			return succ_sum/float(fail_sum+succ_sum)
-
-##################################### STRATEGY SUCCESS THRESHOLD CORRECTED########################################
-class StratSuccessThresholdCorrected(StratSuccessThreshold):
-
-	def get_success_rate_over_known_meanings(self,voc,mem):
-		succ_sum=0
-		fail_sum=0
-		temprate=0
-		for m in voc.get_known_meanings():
-			try:
-				succ_sum=mem["success_m"][m]
-			except KeyError:
-				succ_sum = 0
-			try:
-				fail_sum=mem["fail_m"][m]
-			except KeyError:
-				fail_sum = 0
-			if succ_sum!=0:
-				temprate+=succ_sum/float(fail_sum+succ_sum)
-		if voc.get_known_meanings():
-			return temprate/len(voc.get_known_meanings())
-		else:
-			return 1
-
-##################################### STRATEGY SUCCESS THRESHOLD WISE########################################
-class StratSuccessThresholdWise(StratSuccessThreshold):
-
 	def div(self,a,b):
 		try:
 			return a/b
 		except:
 			return 0.
+
+	def get_success_rate_over_known_meanings(self,voc,mem):
+		succ_sum = 0
+		fail_sum = 0
+		ratelist = []
+		KM = voc.get_known_meanings()
+		try:
+			ratelist = [self.div(mem["success_m"][m],mem["fail_m"][m]) for m in KM]
+		except KeyError:
+			ratelist = np.zeros((len(KM),))
+		if KM:
+			return np.mean(ratelist)
+		else:
+			return 1.
+		# succ_sum=0
+		# fail_sum=0
+		# temprate=0
+		# for m in voc.get_known_meanings():
+		# 	try:
+		# 		succ_sum=mem["success_m"][m]
+		# 	except KeyError:
+		# 		succ_sum = 0
+		# 	try:
+		# 		fail_sum=mem["fail_m"][m]
+		# 	except KeyError:
+		# 		fail_sum = 0
+		# 	if succ_sum!=0:
+		# 		temprate+=succ_sum/float(fail_sum+succ_sum)
+		# if voc.get_known_meanings():
+		# 	return temprate/len(voc.get_known_meanings())
+		# else:
+		# 	return 1
+
+##################################### STRATEGY SUCCESS THRESHOLD WISE########################################
+class StratSuccessThresholdWise(StratSuccessThreshold):
 
 	def get_success_rates(self, voc, mem):
 		succ_sum = 0
@@ -106,7 +98,7 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 		try:
 			ratelist = [self.div(mem["success_m"][m],mem["fail_m"][m]) for m in KM]
 		except KeyError:
-			ratelist = np.zeros((1,len(KM)))
+			ratelist = np.zeros((len(KM),))
 		return ratelist
 
 	def pick_m(self, voc, mem, context):
@@ -114,15 +106,15 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 		KM = voc.get_known_meanings()
 		if len(KM) == 0 or (np.mean(ratelist)>self.threshold_explo and len(KM)<voc.get_M()) :
 			return voc.get_new_unknown_m()
-		tempmin = 1
-		for m in range(0,len(KM)):
-			tempmin = min(tempmin, ratelist[m])
-		tempm = []
-		for m in range(0,len(KM)):
-			if ratelist[m] == tempmin:
-				tempm.append(m)
+		tempmin = min(ratelist)
+		# tempm = []
+		# for m in range(0,len(KM)):
+		# 	if ratelist[m] == tempmin:
+		# 		tempm.append(m)
+		# try:
+		# 	meaning_list = [KM[m] for m in tempm]
 		try:
-			meaning_list = [KM[m] for m in tempm]
+			meaning_list = [m for m,r in zip(KM,ratelist) if r == tempmin]
 			return voc.get_random_m(m_list=meaning_list)
 		except IndexError:
 			return voc.get_random_known_m()
@@ -147,21 +139,13 @@ class StratSuccessThresholdWiseMax(StratSuccessThresholdWise):
 		ratelist = self.get_success_rates(voc, mem)
 		threshold = self.threshold_explo
 		KM = voc.get_known_meanings()
-		if (np.mean(ratelist)>self.threshold_explo) or len(KM) == 0 :
-			if len(KM) == voc.get_M():
-				threshold = 1
-			else:
-				return voc.get_new_unknown_m()
-		tempmax = 0
-		for m in range(0,len(KM)):
-			if ratelist[m] < threshold:
-				tempmax = max(tempmax, ratelist[m])
-		tempm = []
-		for m in range(0,len(KM)):
-			if ratelist[m] == tempmax:
-				tempm.append(m)
+		if (np.min(ratelist)>self.threshold_explo):
+			return voc.get_random_known_m()
+		if len(KM) == 0:
+			return voc.get_new_unknown_m()
+		tempmax = max([r for r in ratelist if r < threshold])
 		try:
-			meaning_list = [KM[m] for m in tempm]
+			meaning_list = [m for m,r in zip(KM,ratelist) if r == tempmax ]
 			return voc.get_random_m(m_list=meaning_list)
 		except IndexError:
 			return voc.get_random_known_m()
