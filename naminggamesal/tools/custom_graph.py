@@ -80,6 +80,8 @@ class CustomGraph(object):
 
 		self.extensions=["eps","png","pdf"]
 
+		self.symlog = True
+
 		for key,value in kwargs.items():
 			setattr(self,key,value)
 
@@ -144,6 +146,7 @@ class CustomGraph(object):
 		plt.ion()
 		plt.cla()
 		plt.clf()
+		handles = []
 		current_palette = sns.color_palette()
 		for i in range(0,len(self._Y)):
 
@@ -161,12 +164,20 @@ class CustomGraph(object):
 					Xtemp[j]=temptup[j][0]
 					Ytemp[j]=temptup[j][1][0]
 					stdtemp[j]=temptup[j][1][1]
-			base_line = plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
+			if hasattr(self,'plot_style') and self.plot_style == 'scatter':
+				base_line = plt.scatter(Xtemp,Ytemp,**self.Yoptions[i])
+			else:
+				base_line = plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
+			handles.append(base_line)
+			if not hasattr(self,'symlog') or self.symlog:
+				log_str = 'symlog'
+			else:
+				log_str = 'log'
 			if self.loglog:
-				plt.xscale('symlog',basex=self.loglog_basex)
-				plt.yscale('symlog',basex=self.loglog_basey)
+				plt.xscale(log_str,basex=self.loglog_basex)
+				plt.yscale(log_str,basex=self.loglog_basey)
 			elif self.semilog:
-				plt.xscale('symlog',basex=self.loglog_basex)
+				plt.xscale(log_str,basex=self.loglog_basex)
 			if self.std:
 				Ytempmin = [0 for _ in Ytemp]
 				Ytempmax = [0 for _ in Ytemp]
@@ -183,11 +194,17 @@ class CustomGraph(object):
 					del Yopt['alpha']
 				else:
 					alpha = self.alpha
-					Yopt = self.Yoptions[i]
-				if 'color' in list(self.Yoptions[i].keys()):
-					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=alpha,**Yopt)
-				else:
-					plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=alpha, facecolor=base_line.get_color(), **Yopt)
+					Yopt = copy.deepcopy(self.Yoptions[i])
+				for opt in ['marker','linestyle']:
+					if opt in Yopt:
+						del Yopt[opt]
+				try:
+					if 'color' in list(self.Yoptions[i].keys()):
+						plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=alpha,**Yopt)
+					else:
+						plt.fill_between(Xtemp,Ytempmin,Ytempmax, alpha=alpha, facecolor=base_line.get_color(), **Yopt)
+				except:
+					pass
 
 		plt.xlabel(self.xlabel)
 		if self.ylabel is not None and (len(self.ylabel)<4 or (self.ylabel[:2]=='$\\' and self.ylabel[-1] == '$')):
@@ -207,7 +224,7 @@ class CustomGraph(object):
 
 
 		if self.legend_permut != []:
-			handles, labels = plt.gca().get_legend_handles_labels()
+			labels = self.legendoptions['labels']
 			handles2, labels2 = [], []
 			for tr in range(len(self.legend_permut)):
 				handles2.append(handles[self.legend_permut[tr]])
@@ -220,9 +237,21 @@ class CustomGraph(object):
 			legend_opt = copy.deepcopy(self.legendoptions)
 			if 'labels' in list(self.legendoptions.keys()):
 				del legend_opt['labels']
-			plt.legend(handles=handles2, labels=labels2, **legend_opt)
+			labels3 = [l for l in labels2 if l != '_nolegend_' ]
+			handles3 = [h for h,l in zip(handles2,labels2) if l != '_nolegend_' ]
+			plt.legend(handles=handles3, labels=labels3, **legend_opt)
 		elif self.legendoptions != {}:
-			plt.legend(**self.legendoptions)
+			if 'labels' in self.legendoptions.keys():
+				#handles, labels = plt.gca().get_legend_handles_labels()
+				legend_opt = copy.deepcopy(self.legendoptions)
+				labels = self.legendoptions['labels']
+				handles2 = [h for h,l,lo in zip(handles,labels,self.legendoptions['labels']) if lo != '_nolegend_' ]
+				labels2 = [lo for h,l,lo in zip(handles,labels,self.legendoptions['labels']) if lo != '_nolegend_' ]
+				if 'labels' in list(self.legendoptions.keys()):
+					del legend_opt['labels']
+				plt.legend(handles=handles2, labels=labels2, **legend_opt)
+			else:
+				plt.legend(**self.legendoptions)
 
 		#plt.legend(bbox_to_anchor=(0,0,0.55,0.8))
 		#plt.legend(bbox_to_anchor=(0,0,0.5,1))
@@ -240,17 +269,46 @@ class CustomGraph(object):
 			for key,value in self.rcparams:
 				matplotlib.rcParams[key] = value
 
+
 		if hasattr(self,'xticker') and self.xticker:
 			ax = matplotlib.pyplot.gca()
-			if ax.get_xlim()[1]-ax.get_xlim()[0] > 1000:
-				mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fK' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
+			if self.loglog:
+				xticks = [ax.get_xlim()[0]]
+				base = self.loglog_basex
+				exponent = int(np.log(xticks[0])/np.log(base))
+				step = int(xticks[0]/(base**exponent))
+				if step*(base**exponent) == xticks[0]:
+					step += 1
+				while xticks[-1] < ax.get_xlim()[1]:
+					if step >= base:
+						step = 1
+						exponent += 1
+					xticks.append(step*base**exponent)
+					step += 1
+				plt.xticks(xticks)
+			elif ax.get_xlim()[1]-ax.get_xlim()[0] > 1000:
+				mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fk' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
 				mkformatter = matplotlib.ticker.FuncFormatter(mkfunc)
 				ax.xaxis.set_major_formatter(mkformatter)
 
 		if hasattr(self,'yticker') and self.yticker:
 			ax = matplotlib.pyplot.gca()
-			if ax.get_ylim()[1]-ax.get_ylim()[0] > 1000:
-				mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fK' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
+			if self.loglog:
+				yticks = [ax.get_ylim()[0]]
+				base = self.loglog_basey
+				exponent = int(np.log(yticks[0])/np.log(base))
+				step = int(yticks[0]/(base**exponent))
+				if step*(base**exponent) == yticks[0]:
+					step += 1
+				while yticks[-1] < ax.get_ylim()[1]:
+					if step >= base:
+						step = 1
+						exponent += 1
+					yticks.append(step*base**exponent)
+					step += 1
+				plt.yticks(yticks)
+			elif ax.get_ylim()[1]-ax.get_ylim()[0] > 1000:
+				mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fk' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
 				mkformatter = matplotlib.ticker.FuncFormatter(mkfunc)
 				ax.yaxis.set_major_formatter(mkformatter)
 
@@ -317,6 +375,14 @@ class CustomGraph(object):
 			self.ymax = None
 		else:
 			self.ymax = max(self.ymax,other_graph.ymax)
+
+	def remove_graph(self,ind=-1):
+		for v_a in ['_X','_Y','Yoptions','stdvec','all_data','minvec','maxvec']:
+			v = getattr(self,v_a)
+			v2 = v[:ind]
+			if ind not in [-1,len(v)]:
+				v2 += v[ind+1:]
+			setattr(self,v_a,v2)
 
 	def complete_with(self,other_graph, mix=True, remove_duplicates=False):
 		other_graph = copy.deepcopy(other_graph)
