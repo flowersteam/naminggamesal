@@ -35,7 +35,7 @@ def voc_cache(tempfun):
 	def mod_fun(obj_self, *args, **kwargs):
 		#ans = tempfun(obj_self, *args, **kwargs)
 		#return ans
-		args_list = sorted([str(val) for val in list(args) + list(kwargs.values())])
+		args_list = [str(val) for val in list(args) + list(kwargs.items())]
 		args_str = ''.join(args_list)
 		try:
 			return obj_self._cache[tempfun.__name__+args_str]

@@ -31,7 +31,7 @@ class Voc2DictDict(BaseVocabularyElaborated):
 		except KeyError:
 			return 0
 
-	@del_cache
+	#@del_cache
 	def add(self,m,w,val=1,context=[],content_type='both'):
 		assert m in self.accessible_meanings
 		assert w in self.accessible_words
@@ -62,7 +62,7 @@ class Voc2DictDict(BaseVocabularyElaborated):
 			else:
 				raise ValueError('unknown content type:'+str(content_type))
 
-	@del_cache
+	#@del_cache
 	def rm(self,m,w,content_type='both'):
 		assert m in self.accessible_meanings
 		assert w in self.accessible_words
@@ -84,7 +84,7 @@ class Voc2DictDict(BaseVocabularyElaborated):
 		else:
 			raise ValueError('unknown content type:'+str(content_type))
 
-	@voc_cache
+	#@voc_cache
 	def get_known_words(self,m=None,option=None):
 		if m is None:
 			return list(self._content_w.keys())
@@ -107,7 +107,7 @@ class Voc2DictDict(BaseVocabularyElaborated):
 			#elif option == 'minofmaxw':
 			#elif option == 'minofmaxm':
 
-	@voc_cache
+	#@voc_cache
 	def get_known_meanings(self,w=None,option=None):
 		if w is None:
 			return list(self._content_m.keys())
@@ -280,7 +280,7 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 	def get_KW(self):
 		return len(self.get_known_words())#could do better by storing explicitly which values are in both self._content_x and self.original_voc._content_x
 
-	@voc_cache
+	#@voc_cache
 	def get_known_words(self,m=None,option=None):
 		local = Voc2DictDict.get_known_words(self,m=m,option=option)
 		orig = self.original_voc.get_known_words(m=m,option=option)
@@ -288,7 +288,7 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 		return list(set(local + orig))
 
 
-	@voc_cache
+	#@voc_cache
 	def get_known_meanings(self,w=None,option=None):
 		local = Voc2DictDict.get_known_meanings(self,w=w,option=option)
 		orig = self.original_voc.get_known_meanings(w=w,option=option)
