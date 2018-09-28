@@ -1,6 +1,7 @@
 from . import MemoryPolicy
 import numpy as np
 import copy
+from collections import deque
 from ...ngmeth_utils.srtheo_utils import srtheo_voc
 from ...ngstrat import get_strategy
 
@@ -372,9 +373,9 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		if self.time_scale > 0:
 			if not ms in list(mem['past_interactions_sliding_window_local']['m'].keys()):
-				mem['past_interactions_sliding_window_local']['m'][ms] = []
+				mem['past_interactions_sliding_window_local']['m'][ms] = deque()
 			if not w in list(mem['past_interactions_sliding_window_local']['w'].keys()):
-				mem['past_interactions_sliding_window_local']['w'][w] = []
+				mem['past_interactions_sliding_window_local']['w'][w] = deque()
 			mem['past_interactions_sliding_window_local']['m'][ms].append((w,1./self.time_scale))
 			mem['past_interactions_sliding_window_local']['w'][w].append((ms,1./self.time_scale))
 			if hasattr(voc,'_content'):
@@ -383,24 +384,24 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 			else:
 				mem['interact_count_voc'].add_value(ms,w,1./self.time_scale,content_type='both')
 
-		while ms in list(mem['past_interactions_sliding_window_local']['m'].keys()) and len(mem['past_interactions_sliding_window_local']['m'][ms])>self.time_scale:
-			w0,valm = mem['past_interactions_sliding_window_local']['m'][ms].pop(0)
+		while ms in mem['past_interactions_sliding_window_local']['m'].keys() and len(mem['past_interactions_sliding_window_local']['m'][ms])>self.time_scale:
+			w0,valm = mem['past_interactions_sliding_window_local']['m'][ms].popleft()
 			if hasattr(voc,'_content'):
 				mem['interact_count_m'][ms,w0] = max(mem['interact_count_m'][ms,w0] - valm , 0)
 			else:
 				mem['interact_count_voc'].add_value(ms,w0,-valm,content_type='m')
 
-		while w in list(mem['past_interactions_sliding_window_local']['w'].keys()) and len(mem['past_interactions_sliding_window_local']['w'][w])>self.time_scale:
-			m0,valw = mem['past_interactions_sliding_window_local']['w'][w].pop(0)
+		while w in mem['past_interactions_sliding_window_local']['w'].keys() and len(mem['past_interactions_sliding_window_local']['w'][w])>self.time_scale:
+			m0,valw = mem['past_interactions_sliding_window_local']['w'][w].popleft()
 			if hasattr(voc,'_content'):
 				mem['interact_count_w'][m0,w] = max(mem['interact_count_w'][m0,w] - valw , 0)
 			else:
 				mem['interact_count_voc'].add_value(m0,w,-valw,content_type='w')
 
 		if self.time_scale == 0:
-			if ms in list(mem['past_interactions_sliding_window_local']['m'].keys()):
+			if ms in mem['past_interactions_sliding_window_local']['m'].keys():
 				del mem['past_interactions_sliding_window_local']['m'][ms]
-			if w in list(mem['past_interactions_sliding_window_local']['w'].keys()):
+			if w in mem['past_interactions_sliding_window_local']['w'].keys():
 				del mem['past_interactions_sliding_window_local']['w'][w]
 
 

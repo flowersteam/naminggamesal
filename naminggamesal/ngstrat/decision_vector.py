@@ -11,6 +11,10 @@ from ..ngmeth_utils import decvec_utils
 
 
 class StratDecisionVector(StratNaive):
+	def __init__(self, vu_cfg, **strat_cfg2):
+		super(StratDecisionVector, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
+		if 'decision_vector' in strat_cfg2.keys():
+			self.decision_vector = strat_cfg2['decision_vector']
 
 	def pick_m(self,voc,mem,context=[]):
 		if not hasattr(self,'decision_vector'):

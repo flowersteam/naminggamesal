@@ -2,7 +2,7 @@
 from .naive import StratNaive
 import random
 import numpy as np
-
+from collections import defaultdict
 
 
 ##################################### COHERENCE STRATEGY ########################################
@@ -25,7 +25,10 @@ class StratCoherence(StratNaive):
 		for m in voc.get_known_meanings():
 			if m in list(mem['past_interactions_sliding_window_local']['m'].keys()):
 				w_l = mem['past_interactions_sliding_window_local']['m'][m]
-				countlist[m] = max([len([w1[0] for w1 in w_l if w1[0]==w[0]]) for w in w_l])
+				w_d = defaultdict(int)
+				for w in w_l:
+					w_d[w] += 1
+				countlist[m] = max(w_d.values())
 			else:
 				countlist[m] = 0
 		return countlist
@@ -48,7 +51,8 @@ class StratCoherenceLast(StratCoherence):
 		for m in voc.get_known_meanings():
 			if m in list(mem['past_interactions_sliding_window_local']['m'].keys()):
 				w_l = mem['past_interactions_sliding_window_local']['m'][m]
-				countlist[m] = len([w1[0] for w1 in w_l if w1[0]==w_l[-1][0]])
+				w0 = w_l[-1][0]
+				countlist[m] = len([True for w1 in w_l if w1[0]==w0])
 			else:
 				countlist[m] = 0
 		return countlist

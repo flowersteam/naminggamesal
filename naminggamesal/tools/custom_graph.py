@@ -30,6 +30,22 @@ def load_graph(filename):
 		tempgr=mon_depickler.load()
 	return tempgr
 
+def ticker_mkfunc(x,pos):
+	if x < 1000:
+		return '%1.f' % x
+	elif x >= 1e9:
+		suffix = 'G'
+		expo = 9
+	elif x >= 1e6:
+		suffix = 'M'
+		expo = 6
+	elif x >= 1e3:
+		suffix = 'k'
+		expo = 3
+	if int(x/10**expo) == x/10**expo:
+		return str(int(x/10**expo))+suffix
+	else:
+		return str(0.1*int(x/10**(expo+1)))+suffix
 
 class CustomGraph(object):
 	def __init__(self,Y=None,X=None,**kwargs):
@@ -287,7 +303,7 @@ class CustomGraph(object):
 					step += 1
 				plt.xticks(xticks)
 			elif ax.get_xlim()[1]-ax.get_xlim()[0] > 1000:
-				mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fk' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
+				mkfunc = ticker_mkfunc
 				mkformatter = matplotlib.ticker.FuncFormatter(mkfunc)
 				ax.xaxis.set_major_formatter(mkformatter)
 
@@ -308,7 +324,7 @@ class CustomGraph(object):
 					step += 1
 				plt.yticks(yticks)
 			elif ax.get_ylim()[1]-ax.get_ylim()[0] > 1000:
-				mkfunc = lambda x, pos: '%1.fM' % (x * 1e-6) if x >= 1e6 else '%1.fk' % (x * 1e-3) if x >= 1e3 else '%1.f' % x
+				mkfunc = ticker_mkfunc
 				mkformatter = matplotlib.ticker.FuncFormatter(mkfunc)
 				ax.yaxis.set_major_formatter(mkformatter)
 
