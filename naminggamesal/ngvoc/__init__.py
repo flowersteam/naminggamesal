@@ -47,8 +47,7 @@ def voc_cache(tempfun):
 def del_cache(tempfun):
 	def mod_fun_del(obj_self, *args, **kwargs):
 		ans = tempfun(obj_self, *args, **kwargs)
-		if obj_self._cache:
-			obj_self._cache = {}
+		obj_self._cache.clear()
 		return ans
 	return mod_fun_del
 
