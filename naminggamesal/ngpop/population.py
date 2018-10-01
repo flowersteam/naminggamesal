@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import uuid
 import copy
 import json
+from collections import deque
 
 from ..ngagent import get_agent
 from ..nginter import get_interaction
@@ -66,7 +67,7 @@ class Population(object):
 			self._M = voc_cfg['subvoc_cfg']['M']
 			self._W = voc_cfg['subvoc_cfg']['W']
 		self._lastgameinfo = []
-		self._past = []
+		self._past = deque(maxlen=100)
 		self._agentlist = []
 		self.agent_id_list = []
 		for i in range(nbagent):
@@ -187,7 +188,9 @@ class Population(object):
 						hearer = self._agentlist[self.get_index_from_id(hearer_id)]
 					self._interaction.interact(speaker=speaker, hearer=hearer, pop=self, current_game_info=self.current_game_info)
 					self._lastgameinfo = self._interaction._last_info
-					self._past = self._past[-99:]+[copy.deepcopy(self._lastgameinfo)]
+					#self._past = self._past[-99:]+[copy.deepcopy(self._lastgameinfo)]
+					self._past.append(self._lastgameinfo)
+					self._past.popleft()
 					self.current_game_info = {}
 			except IOError as e:
 				if str(e) == 'User intervention needed':

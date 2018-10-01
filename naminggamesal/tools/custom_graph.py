@@ -182,6 +182,8 @@ class CustomGraph(object):
 					stdtemp[j]=temptup[j][1][1]
 			if hasattr(self,'plot_style') and self.plot_style == 'scatter':
 				base_line = plt.scatter(Xtemp,Ytemp,**self.Yoptions[i])
+			elif self.loglog:
+				base_line = plt.loglog(Xtemp,Ytemp,**self.Yoptions[i])[0]
 			else:
 				base_line = plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
 			handles.append(base_line)
@@ -190,8 +192,10 @@ class CustomGraph(object):
 			else:
 				log_str = 'log'
 			if self.loglog:
-				plt.xscale(log_str,basex=self.loglog_basex)
-				plt.yscale(log_str,basex=self.loglog_basey)
+				if self.loglog_basex != 10:
+					plt.xscale(log_str,basex=self.loglog_basex)
+				if self.loglog_basey != 10:
+					plt.yscale(log_str,basex=self.loglog_basey)
 			elif self.semilog:
 				plt.xscale(log_str,basex=self.loglog_basex)
 			if self.std:
@@ -227,7 +231,8 @@ class CustomGraph(object):
 			plt.ylabel(self.ylabel,rotation=0)
 		else:
 			plt.ylabel(self.ylabel)
-		plt.title(self.title)
+		if self.title is not None:
+			plt.title(self.title)
 
 		if self.xmin is not None:
 			plt.xlim(xmin=self.xmin)
