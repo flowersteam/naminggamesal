@@ -45,7 +45,7 @@ def ticker_mkfunc(x,pos):
 	if int(x/10**expo) == x/10**expo:
 		return str(int(x/10**expo))+suffix
 	else:
-		return str(0.1*int(x/10**(expo+1)))+suffix
+		return str(0.1*int(10*x/10**(expo)))[:3]+suffix
 
 class CustomGraph(object):
 	def __init__(self,Y=None,X=None,**kwargs):

@@ -1,4 +1,6 @@
 import numpy as np
+import math
+from .conv_utils import iter_M
 
 def m_limit_theorique(M,W):
 	return (-((M+W-1.)/2.)+math.sqrt((M+W-1.)**2/4.+2.*M*W))/2.
@@ -148,3 +150,13 @@ def decvec_full_teach(M,W):
 		decvec.append(0.)
 	decvec.append(0.)
 
+
+def decvec_chunks_from_MW(M,W,N,Temp=0.01):
+	decvec=np.ones((M+1))*Temp
+	decvec[0] = 1.
+	decvec[-1] = 0.
+	MM = M
+	while MM > 1:
+		decvec[M-MM] = 1.
+		MM = int(iter_M(x=MM,N=N))
+	return decvec

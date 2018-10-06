@@ -16,7 +16,7 @@ from .tools import custom_func
 from .tools import custom_graph
 from .ngpop import Population
 
-from .ngmeth_utils import zipf_utils,decvec_utils,nx_utils,srtheo_utils,conv_utils
+from .ngmeth_utils import zipf_utils,decvec_utils,nx_utils,srtheo_utils,conv_utils,entropy_utils
 
 Nmax = 500
 all_data_max = 10
@@ -100,6 +100,53 @@ FUNC=Nlink
 FUNC_BIS=pop_ize(FUNC)
 graphconfig={"ymin":Nlink_min}#,"ymax":Nlink_max}
 custom_Nlink =custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+#########entropy_final##########
+
+def entropy_final(agent=None,voc=None,**kwargs):
+	if agent is not None:
+		voc = agent._vocabulary
+	ans = 0
+	for m in voc.get_known_meanings():
+		ans += np.log2(len(voc.get_known_words(m=m)))
+	for w in voc.get_known_words():
+		ans += np.log2(len(voc.get_known_meanings(w=w)))
+	ans = ans/2.
+	return ans + entropy_utils.missinginfo(M=len(voc.unknown_meanings),W=len(voc.unknown_words))
+
+def entropy_final_max(pop):
+	return entropy_utils.missinginfo(M=pop.get_M(),W=pop.get_W())
+	# return pop.get_M()*np.log2(pop.get_W())
+
+def entropy_final_min(pop):
+	return 0
+
+FUNC=entropy_final
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":entropy_final_min}#,"ymax":entropy_final_max}
+custom_entropy_final=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
+
+#########negentropy_final##########
+
+def negentropy_final(agent=None,voc=None,**kwargs):
+	if agent is not None:
+		voc = agent._vocabulary
+	M = voc.get_M()
+	W = voc.get_W()
+	val_max = entropy_utils.missinginfo(M=M,W=W)
+	return val_max - entropy_final(agent=agent,voc=voc,**kwargs)
+
+
+def negentropy_final_max(pop):
+	#return pop.get_M()*np.log2(pop.get_W())
+	return entropy_utils.missinginfo(M=pop.get_M(),W=pop.get_W())
+
+def negentropy_final_min(pop):
+	return 0
+
+FUNC=negentropy_final
+FUNC_BIS=pop_ize(FUNC)
+graphconfig={"ymin":negentropy_final_min}#,"ymax":negentropy_final_max}
+custom_negentropy_final=custom_func.CustomFunc(FUNC_BIS,"agent",**graphconfig)
 
 #########nb_inventions_per_agent##########
 
@@ -2022,6 +2069,8 @@ def entropydistrib_min(pop):
 FUNC=entropydistrib
 graphconfig={"ymin":entropydistrib_min,"ymax":entropydistrib_max}
 custom_entropydistrib=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],**graphconfig)
+
+
 
 #########line_border##########
 

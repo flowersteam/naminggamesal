@@ -22,6 +22,7 @@ mempolicy_class={
 'bandit_bis':'memory_policies.BetaMABBis',
 'bandit_ter':'memory_policies.BetaMABTer',
 'bandit_laps':'memory_policies.LAPSMAB',
+'bandit_negentropy':'memory_policies.NegentropyMAB',
 'old_voc':'memory_policies.OldVoc',
 'other_voc':'memory_policies.OtherVoc',
 'strat':'memory_policies.StratMP',

@@ -6,6 +6,7 @@ import numpy as np
 import copy
 
 from ..ngmeth_utils.srtheo_utils import srtheo_voc
+from ..ngmeth_utils.entropy_utils import missinginfo
 import copy
 
 class StratTSRMax(StratNaive):
@@ -247,7 +248,7 @@ class LAPSMaxMAB(StratNaive):
 		if len(voc.get_known_meanings()) == 0 or self.explore_condition(voc=voc,mem=mem,context=context):
 			return voc.get_new_unknown_m()
 		else:
-			laps_val = mem['bandit']['laps_val']
+			# laps_val = mem['bandit']['laps_val']
 			mp = mem.get_mp(self.bandit_type)
 			return mp.pick_arm(mem=mem)
 
@@ -267,4 +268,16 @@ class LAPSMaxMABExploThreshold(LAPSMaxMAB):
 
 	def explore_condition(self,voc,mem,context):
 		return mem['bandit']['laps_val'] >= self.threshold*(1.-10**(-self.epsilon_power))*(len(voc.get_known_meanings()))/len(voc.accessible_meanings)
+
+
+class NegentropyMaxMABExploThreshold(LAPSMaxMAB):
+
+	def __init__(self,vu_cfg,threshold = 1.,epsilon_power=4,*args,**kwargs):
+		LAPSMaxMAB.__init__(self,vu_cfg=vu_cfg,bandit_type='bandit_negentropy',*args,**kwargs)
+		self.threshold = threshold
+		self.epsilon_power = epsilon_power
+
+	def explore_condition(self,voc,mem,context):
+		val_max = missinginfo(M=voc.get_M(),W=voc.get_W())
+		return mem['bandit']['negentropy_val'] >= self.threshold*(1.-10**(-self.epsilon_power))*(val_max-missinginfo(M=len(voc.unknown_meanings),W=len(voc.unknown_words)))
 

@@ -36,11 +36,15 @@ class StratDecisionVectorGainmax(StratDecisionVector):
 		self.decision_vector = decvec_utils.decvec3_from_MW(M, W)
 ##############################
 
-
-class StratDecisionVectorGainSoftmax(StratDecisionVector):
+class StratDecisionVectorSoftmax(StratDecisionVector):
 	def __init__(self, vu_cfg, **strat_cfg2):
-		super(StratDecisionVectorGainSoftmax, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
 		self.Temp = strat_cfg2['Temp']
+		if 'N' in strat_cfg2.keys():
+			self.N = strat_cfg2['N']
+		StratDecisionVector.__init__(self,vu_cfg=vu_cfg, **strat_cfg2)
+
+
+class StratDecisionVectorGainSoftmax(StratDecisionVectorSoftmax):
 
 	def init_vector(self, voc):
 		M = voc.get_M()
@@ -48,10 +52,7 @@ class StratDecisionVectorGainSoftmax(StratDecisionVector):
 		self.decision_vector = decvec_utils.decvec4_softmax_from_MW(M, W, self.Temp)
 ##############################
 
-class StratDecisionVectorGainSoftmaxHearer(StratDecisionVector):
-	def __init__(self, vu_cfg, **strat_cfg2):
-		super(StratDecisionVectorGainSoftmax, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
-		self.Temp = strat_cfg2['Temp']
+class StratDecisionVectorGainSoftmaxHearer(StratDecisionVectorSoftmax):
 
 	def init_vector(self, voc):
 		M = voc.get_M()
@@ -59,13 +60,16 @@ class StratDecisionVectorGainSoftmaxHearer(StratDecisionVector):
 		self.decision_vector = decvec_utils.decvec5_softmax_from_MW(M, W, self.Temp)
 ##############################
 
-class StratDecisionVectorGainSoftmaxHearerTest(StratDecisionVector):
-	def __init__(self, vu_cfg, **strat_cfg2):
-		super(StratDecisionVectorGainSoftmax, self).__init__(vu_cfg=vu_cfg, **strat_cfg2)
-		self.Temp = strat_cfg2['Temp']
-
+class StratDecisionVectorGainSoftmaxHearerTest(StratDecisionVectorSoftmax):
 	def init_vector(self, voc):
 		M = voc.get_M()
 		W = voc.get_W()
 		self.decision_vector = decvec_utils.decvectest_softmax_from_MW(M, W, self.Temp)
+##############################
+
+class StratDecisionVectorChunks(StratDecisionVectorSoftmax):
+	def init_vector(self, voc):
+		M = voc.get_M()
+		W = voc.get_W()
+		self.decision_vector = decvec_utils.decvec_chunks_from_MW(M=M, W=W, Temp=self.Temp, N=self.N)
 ##############################

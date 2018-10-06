@@ -4,6 +4,7 @@ import copy
 from collections import deque
 from ...ngmeth_utils.srtheo_utils import srtheo_voc
 from ...ngstrat import get_strategy
+from ...ngmeth import negentropy_final
 
 class Inventions(MemoryPolicy):
 
@@ -550,6 +551,50 @@ class LAPSMAB(MemoryPolicy):
 		reward = max(new_val - mem['bandit']['laps_val'],0)
 		mem['bandit']['reward'] = reward
 		mem['bandit']['laps_val'] = new_val
+
+	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		self.val_update(ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ,context=context)
+		for m in voc.get_unknown_meanings():
+			if m in list(mem['bandit']['arms'].keys()):
+				del mem['bandit']['arms'][m]
+		if ms not in list(mem['bandit']['arms'].keys()):
+			mem['bandit']['arms'][ms] = mem['bandit']['reward']
+		else:
+			mem['bandit']['arms'][ms] = (self.time_scale * mem['bandit']['arms'][ms] + mem['bandit']['reward'])/(self.time_scale + 1.)
+
+	def pick_arm(self,mem):
+		arms = mem['bandit']['arms']
+		if len(arms) == 0:
+			raise ValueError('Empty bandit, no arms to pull!')
+		else:
+			sum_weights = sum(list(arms.values()))
+			m_list = list(arms.keys())
+			if sum_weights > 0:
+				p = []
+				for i in range(len(m_list)):
+					p.append((1-self.gamma)*arms[m_list[i]]/sum_weights + self.gamma *1./len(m_list))
+			else:
+				p = None
+			return np.random.choice(m_list,p=p)
+
+class NegentropyMAB(LAPSMAB):
+
+
+	def init_memory(self,mem,voc,cfg=None):
+		MemoryPolicy.init_memory(self,mem,voc,cfg=cfg)
+		assert not 'bandit' in list(mem.keys())
+		mem['bandit'] = {'arms':{},'negentropy_val':0.,'reward':0.}
+
+
+
+	def val_update(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
+		#if hasattr(voc,'_content'):
+		#	new_val = srtheo_voc(voc,voc2_m=mem['interact_count_m'],voc2_w=mem['interact_count_w'])
+		#else:
+		new_val = negentropy_final(agent=None,voc=voc)
+		reward = max(new_val - mem['bandit']['negentropy_val'],0)
+		mem['bandit']['reward'] = reward
+		mem['bandit']['negentropy_val'] = new_val
 
 	def update_memory(self,ms,w,mh,voc,mem,role,bool_succ,context=[]):
 		self.val_update(ms=ms,w=w,mh=mh,voc=voc,mem=mem,role=role,bool_succ=bool_succ,context=context)

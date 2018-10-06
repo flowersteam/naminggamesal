@@ -44,12 +44,15 @@ strat_class={
 
 
 	'mincounts':'mincounts.StratMinCounts',
+	'mincounts_mean':'mincounts.StratMinCountsMean',
 	'mincounts_basic':'mincounts.StratMinCountsBasic',
 	'mincounts_wise_max':'mincounts.StratMinCountsWiseMax',
 
 	'decision_vector':'decision_vector.StratDecisionVector',
 	'decision_vector_gainmax':'decision_vector.StratDecisionVectorGainmax',
 	'decision_vector_gainsoftmax':'decision_vector.StratDecisionVectorGainSoftmax',
+	'decision_vector_chunks':'decision_vector.StratDecisionVectorChunks',
+
 	'decision_vector_gainsoftmax_hearer':'decision_vector.StratDecisionVectorGainSoftmaxHearer',
 
 	'decision_vector_gainsoftmax_hearer_test':'decision_vector.StratDecisionVectorGainSoftmaxHearerTest',
@@ -63,12 +66,14 @@ strat_class={
 
 	'lapsmax_mab':'tsrmax.LAPSMaxMAB',
 	'lapsmax_mab_explothreshold':'tsrmax.LAPSMaxMABExploThreshold',
+	'negentropymax_mab_explothreshold':'tsrmax.NegentropyMaxMABExploThreshold',
 
 	'user':'user.StratUser',
 	'user_noninteractive':'user.StratUserNonInteractive',
 
 	'coherence':'coherence_counts.StratCoherence',
 	'coherence_last':'coherence_counts.StratCoherenceLast',
+	'coherence_new':'coherence_counts.StratCoherenceNew',
 }
 
 def get_strategy(strat_type='naive', vu_cfg={}, success_cfg={}, wordchoice_cfg={}, **strat_cfg2):

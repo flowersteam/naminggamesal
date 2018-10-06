@@ -58,6 +58,21 @@ class StratMinCounts(StratNaive):
 		counts = self.get_success_counts(voc, mem)
 		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc.get_M() and min(counts)>self.mincounts):
 			return voc.get_new_unknown_m()
+		elif min(counts)>self.mincounts: #if voc complete
+			return voc.get_random_known_m()
+		KM = voc.get_known_meanings()
+		tempmin = min(counts)
+		m_list = [m for m,c in zip(KM,counts) if c == tempmin]
+		return random.choice(m_list)
+
+class StratMinCountsMean(StratMinCounts):
+
+	def pick_m(self, voc, mem, context):
+		counts = self.get_success_counts(voc, mem)
+		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc.get_M() and np.mean(counts)>self.mincounts):
+			return voc.get_new_unknown_m()
+		elif np.mean(counts)>self.mincounts: #if voc complete
+			return voc.get_random_known_m()
 		KM = voc.get_known_meanings()
 		tempmin = min(counts)
 		m_list = [m for m,c in zip(KM,counts) if c == tempmin]
@@ -95,6 +110,5 @@ class StratMinCountsBasic(StratMinCounts):
 		mincounts = self.mincounts
 		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc.get_M() and min(counts)>self.mincounts):
 			return voc.get_new_unknown_m()
-		KM = voc.get_known_meanings()
-		return voc.get_random_m(KM)
+		return voc.get_random_known_m()
 

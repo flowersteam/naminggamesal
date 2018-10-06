@@ -27,7 +27,7 @@ class StratCoherence(StratNaive):
 				w_l = mem['past_interactions_sliding_window_local']['m'][m]
 				w_d = defaultdict(int)
 				for w in w_l:
-					w_d[w] += 1
+					w_d[w[0]] += w[1]
 				countlist[m] = max(w_d.values())
 			else:
 				countlist[m] = 0
@@ -53,6 +53,22 @@ class StratCoherenceLast(StratCoherence):
 				w_l = mem['past_interactions_sliding_window_local']['m'][m]
 				w0 = w_l[-1][0]
 				countlist[m] = len([True for w1 in w_l if w1[0]==w0])
+			else:
+				countlist[m] = 0
+		return countlist
+
+
+class StratCoherenceNew(StratCoherence):
+
+	def get_counts(self, voc, mem):
+		countlist = {}
+		for m in voc.get_known_meanings():
+			if m in list(mem['past_interactions_sliding_window_local']['m'].keys()):
+				w_l = mem['past_interactions_sliding_window_local']['m'][m]
+				w_d = defaultdict(int)
+				for w in w_l:
+					w_d[w[0]] += w[1]
+				countlist[m] = np.max([w_d[w] for w in voc.get_known_words(m=m)])
 			else:
 				countlist[m] = 0
 		return countlist

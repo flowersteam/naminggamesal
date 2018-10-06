@@ -190,7 +190,7 @@ class Population(object):
 					self._lastgameinfo = self._interaction._last_info
 					#self._past = self._past[-99:]+[copy.deepcopy(self._lastgameinfo)]
 					self._past.append(self._lastgameinfo)
-					self._past.popleft()
+
 					self.current_game_info = {}
 			except IOError as e:
 				if str(e) == 'User intervention needed':
@@ -205,6 +205,9 @@ class Population(object):
 				speaker = self.agent_pick.pick_speaker(pop=self)
 				hearer = self.agent_pick.pick_hearer(speaker,pop=self)
 				self._interaction.interact(speaker=speaker, hearer=hearer, pop=self, current_game_info={}, optimized=True)
+				self._lastgameinfo = self._interaction._last_info
+				#self._past = self._past[-99:]+[copy.deepcopy(self._lastgameinfo)]
+				self._past.append(self._lastgameinfo)
 
 	def get_current_info_filename(self):
 		if hasattr(self,'xp_uuid') and self.xp_uuid is not None:

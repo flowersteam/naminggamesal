@@ -37,20 +37,50 @@ def inv2_c(N):
 def t_2inv(N):
 	return inv2_eps(N) + inv2_c(N)
 
+def iter_M(x,N):
+	return x * ((x-1.)/x)**(N/2.)
+
 def minexplo_per_ag(M,N):
-	def iter_M(x):
-		return x * ((x-1.)/x)**(N/2.)
 	m = M
 	for i in xrange(10**10):
-		m = iter_M(m)
+		m = iter_M(m,N)
 		if m <= 1.:
 			if m == 1.:
-				return i + 1
+				return (i + 1)/2.
 			else:
-				return i
+				return i/2.
 	raise ValueError('Computation too long, cannot get convergence time')
 
 def extra_inv(M,N):
 	return N*minexplo_per_ag(M=M,N=N) - M
 
+
+
+if __name__ == '__main__':
+	scale_vec = [10,20,50,100,500,1000,2000,5000,10000,20000,50000,100000]
+	import matplotlib.pyplot as plt
+	for N in [10,100,1000,10000,100000]:
+		Y = [minexplo_per_ag(M,N)/M for M in scale_vec]
+		plt.plot(scale_vec,Y,label='N='+str(N))
+	plt.legend()
+	plt.xlabel('M')
+	plt.show()
+	for M in [10,100,1000,10000,100000]:
+		Y = [minexplo_per_ag(M,N) for N in scale_vec]
+		plt.plot(scale_vec,Y,label='M='+str(M))
+	plt.xlabel('N')
+	plt.legend()
+	plt.show()
+	for coeff in [0.1,0.5,1.,2.,10.]:
+		Y = [minexplo_per_ag(coeff*N,N) for N in scale_vec]
+		plt.plot(scale_vec,Y,label='M='+str(coeff)+'*N')
+	plt.xlabel('N')
+	plt.legend()
+	plt.show()
+	for coeff in [0.1,0.5,1.,2.,10.]:
+		Y = [(minexplo_per_ag(coeff*N,N)*N)-N*coeff for N in scale_vec]
+		plt.plot(scale_vec,Y,label='M='+str(coeff)+'*N')
+	plt.xlabel('N')
+	plt.legend()
+	plt.show()
 
