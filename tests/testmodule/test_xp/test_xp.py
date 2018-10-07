@@ -58,7 +58,7 @@ strat_list = [
 	'naive',
 	'success_threshold',
 	'success_threshold_wise',
-	'success_threshold_only2ndlevel',
+	'success_threshold_wise_only2ndlevel',
 	'lapsmax_mab_explothreshold',
 	]
 @pytest.fixture(params=strat_list)
