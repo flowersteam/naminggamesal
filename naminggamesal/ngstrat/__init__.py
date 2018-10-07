@@ -27,6 +27,7 @@ strat_class={
 	'success_threshold_epirob':'success_threshold.StratSuccessThresholdEpirob',
 	# 'success_threshold_corrected':'success_threshold.StratSuccessThresholdCorrected',
 	'success_threshold_wise':'success_threshold.StratSuccessThresholdWise',
+	'success_threshold_wise_only2ndlevel':'success_threshold.StratSuccessThresholdWiseOnly2ndLevel',
 	'success_threshold_wise_partially_naive':'success_threshold.StratSuccessThresholdWisePartiallyNaive',
 	'success_threshold_wise_max':'success_threshold.StratSuccessThresholdWiseMax',
 	'success_threshold_scores':'success_threshold.StratSuccessThresholdScores',
@@ -47,6 +48,7 @@ strat_class={
 	'mincounts_mean':'mincounts.StratMinCountsMean',
 	'mincounts_basic':'mincounts.StratMinCountsBasic',
 	'mincounts_wise_max':'mincounts.StratMinCountsWiseMax',
+	'mincounts_only2ndlevel':'mincounts.StratMinCountsOnly2ndLevel',
 
 	'decision_vector':'decision_vector.StratDecisionVector',
 	'decision_vector_gainmax':'decision_vector.StratDecisionVectorGainmax',

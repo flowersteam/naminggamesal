@@ -118,6 +118,27 @@ class StratSuccessThresholdWise(StratSuccessThreshold):
 			return voc.get_random_m(m_list=meaning_list)
 		except IndexError:
 			return voc.get_random_known_m()
+
+
+class StratSuccessThresholdWiseOnly2ndLevel(StratSuccessThresholdWise):
+
+	def pick_m(self, voc, mem, context):
+		ratelist = self.get_success_rates(voc, mem)
+		KM = voc.get_known_meanings()
+		if len(KM) == 0 or (random.random()>len(KM)*1./voc.get_M() and len(KM)<voc.get_M()) :
+			return voc.get_new_unknown_m()
+		tempmin = min(ratelist)
+		# tempm = []
+		# for m in range(0,len(KM)):
+		# 	if ratelist[m] == tempmin:
+		# 		tempm.append(m)
+		# try:
+		# 	meaning_list = [KM[m] for m in tempm]
+		try:
+			meaning_list = [m for m,r in zip(KM,ratelist) if r == tempmin]
+			return voc.get_random_m(m_list=meaning_list)
+		except IndexError:
+			return voc.get_random_known_m()
 ##################################### STRATEGY SUCCESS THRESHOLD WISE PARTIALLY NAIVE########################################
 class StratSuccessThresholdWisePartiallyNaive(StratSuccessThresholdWise):
 

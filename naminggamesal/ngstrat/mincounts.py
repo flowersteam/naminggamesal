@@ -112,3 +112,16 @@ class StratMinCountsBasic(StratMinCounts):
 			return voc.get_new_unknown_m()
 		return voc.get_random_known_m()
 
+
+class StratMinCountsOnly2ndLevel(StratMinCounts):
+
+	def pick_m(self, voc, mem, context):
+		counts = self.get_success_counts(voc, mem)
+		if (len(voc.get_known_meanings())==0) or (len(voc.get_known_meanings())<voc.get_M() and random.random()>(len(voc.get_known_meanings()))*1./voc.get_M()):
+			return voc.get_new_unknown_m()
+		elif min(counts)>self.mincounts: #if voc complete
+			return voc.get_random_known_m()
+		KM = voc.get_known_meanings()
+		tempmin = min(counts)
+		m_list = [m for m,c in zip(KM,counts) if c == tempmin]
+		return random.choice(m_list)
