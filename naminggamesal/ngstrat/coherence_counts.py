@@ -72,3 +72,16 @@ class StratCoherenceNew(StratCoherence):
 			else:
 				countlist[m] = 0
 		return countlist
+
+
+class StratCoherenceLastOnly2ndLevel(StratCoherenceLast):
+
+	def pick_m(self, voc, mem, context):
+		counts = self.get_counts(voc, mem)
+		if random.random() < (len(voc.unknown_meanings)*1./len(voc.accessible_meanings)):
+			return voc.get_new_unknown_m()
+		else:
+			KM = voc.get_known_meanings()
+			val = max([v for v in list(counts.values()) if v < self.threshold*self.time_scale])
+			tempm = [m for m in KM if counts[m] == val]
+			return random.choice(tempm)

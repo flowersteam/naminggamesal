@@ -10,3 +10,6 @@ def export_agent_past(xp,agent_number=0,file=None):
         os.makedirs('json_data')
     with open('json_data/'+filename,'w') as f:
         f.write(json.dumps(xp._poplist.get_last()._agentlist[agent_number]._memory['past_interactions_all']))
+
+def get_agent_past(xp,agent_number=0):
+	return xp._poplist.get_last()._agentlist[agent_number]._memory['past_interactions_all']

@@ -269,6 +269,11 @@ class LAPSMaxMABExploThreshold(LAPSMaxMAB):
 	def explore_condition(self,voc,mem,context):
 		return mem['bandit']['laps_val'] >= self.threshold*(1.-10**(-self.epsilon_power))*(len(voc.get_known_meanings()))/len(voc.accessible_meanings)
 
+class LAPSMaxMABExploThresholdOnly2ndLevel(LAPSMaxMABExploThreshold):
+
+	def explore_condition(self,voc,mem,context):
+		return (random.random()<(len(voc.unknown_meanings)*1./len(voc.accessible_meanings)))
+
 
 class NegentropyMaxMABExploThreshold(LAPSMaxMAB):
 
@@ -281,3 +286,7 @@ class NegentropyMaxMABExploThreshold(LAPSMaxMAB):
 		val_max = missinginfo(M=voc.get_M(),W=voc.get_W())
 		return mem['bandit']['negentropy_val'] >= self.threshold*(1.-10**(-self.epsilon_power))*(val_max-missinginfo(M=len(voc.unknown_meanings),W=len(voc.unknown_words)))
 
+class NegentropyMaxMABExploThresholdOnly2ndLevel(NegentropyMaxMABExploThreshold):
+
+	def explore_condition(self,voc,mem,context):
+		return (random.random()<(len(voc.unknown_meanings)*1./len(voc.accessible_meanings)))
