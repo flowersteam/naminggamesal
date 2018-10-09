@@ -111,6 +111,13 @@ class Agent(object):
 		else:
 			self.fail += 1
 
+	def update_agent(self,role,*args,**kwargs):
+		if role == 'speaker':
+			return self.update_speaker(*args,**kwargs)
+		elif role == 'hearer':
+			return self.update_hearer(*args,**kwargs)
+		else:
+			raise ValueError('Unknown role: ',role)
 
 	def visual(self,vtype=None,iterr=100,mlist="all",wlist="all"):
 		self._strategy.visual(self._vocabulary,mem=self._memory,vtype=vtype,iterr=iterr,mlist=mlist,wlist=wlist)

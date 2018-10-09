@@ -71,19 +71,19 @@ class BaseVocabulary(object):
 	def __init__(self,**voc_cfg2):
 		self._cache = {}
 
-	def __str__(self):
-		str1 = 'Words\n'
-		str2 = 'Meanings'
-		content = str(self.get_content()).split('\n')
-		x = len(content[0])
-		y = len(content)
-		str1 = (len(str2)+max(0,(x-len(str1))/2))*" "+str1
-		indice = y/2
-		str2_list = [" "*len(str2)]*indice+[str2]+[" "*len(str2)]*(y-indice-1)
-		for i in range(y):
-			str1 += str2_list[i]
-			str1 += content[i]+"\n"
-		return str1
+	# def __str__(self):
+	# 	str1 = 'Words\n'
+	# 	str2 = 'Meanings'
+	# 	content = str(self.get_content()).split('\n')
+	# 	x = len(content[0])
+	# 	y = len(content)
+	# 	str1 = (len(str2)+max(0,(x-len(str1))/2))*" "+str1
+	# 	indice = y/2
+	# 	str2_list = [" "*len(str2)]*indice+[str2]+[" "*len(str2)]*(y-indice-1)
+	# 	for i in range(y):
+	# 		str1 += str2_list[i]
+	# 		str1 += content[i]+"\n"
+	# 	return str1
 
 	def get_voctype(self):
 		return _voctype

@@ -69,8 +69,8 @@ strat_class={
 	'lapsmax_mab':'tsrmax.LAPSMaxMAB',
 	'lapsmax_mab_explothreshold':'tsrmax.LAPSMaxMABExploThreshold',
 	'negentropymax_mab_explothreshold':'tsrmax.NegentropyMaxMABExploThreshold',
-	'lapsmax_mab_explothreshold_only2ndlevel':'tsrmax.LAPSMaxMABExploThresholdOnly2nLevel',
-	'negentropymax_mab_explothreshold_only2ndlevel':'tsrmax.NegentropyMaxMABExploThresholdOnly2nLevel',
+	'lapsmax_mab_explothreshold_only2ndlevel':'tsrmax.LAPSMaxMABExploThresholdOnly2ndLevel',
+	'negentropymax_mab_explothreshold_only2ndlevel':'tsrmax.NegentropyMaxMABExploThresholdOnly2ndLevel',
 
 	'user':'user.StratUser',
 	'user_noninteractive':'user.StratUserNonInteractive',

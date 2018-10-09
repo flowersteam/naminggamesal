@@ -12,6 +12,9 @@ class StratCoherence(StratNaive):
 		StratNaive.__init__(self,vu_cfg=vu_cfg, **strat_cfg2)
 		self.time_scale = time_scale
 		self.threshold = threshold
+		mp = {'mem_type':'interaction_counts_sliding_window_local','time_scale':time_scale}
+		if 'interaction_count' not in [ mmpp['mem_type'][:17] for mmpp in self.memory_policies]:
+			self.memory_policies.append(mp)
 		#mp = {'mem_type':'past_interactions_sliding_window_local'}
 		#if mp not in self.memory_policies:
 		#	self.memory_policies.append(mp)
@@ -82,6 +85,10 @@ class StratCoherenceLastOnly2ndLevel(StratCoherenceLast):
 			return voc.get_new_unknown_m()
 		else:
 			KM = voc.get_known_meanings()
-			val = max([v for v in list(counts.values()) if v < self.threshold*self.time_scale])
-			tempm = [m for m in KM if counts[m] == val]
-			return random.choice(tempm)
+			val_vec = [v for v in list(counts.values()) if v < self.threshold*self.time_scale]
+			if not val_vec:
+				return random.choice(KM)
+			else:
+				val = max(val_vec)
+				tempm = [m for m in KM if counts[m] == val]
+				return random.choice(tempm)
