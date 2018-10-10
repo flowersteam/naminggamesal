@@ -567,15 +567,25 @@ class LAPSMAB(MemoryPolicy):
 		if len(arms) == 0:
 			raise ValueError('Empty bandit, no arms to pull!')
 		else:
-			sum_weights = sum(list(arms.values()))
-			m_list = list(arms.keys())
+			vals = np.asarray(list(arms.values()))
+			sum_weights = np.sum(vals)
+			m_list = np.asarray(list(arms.keys()))
 			if sum_weights > 0:
-				p = []
-				for i in range(len(m_list)):
-					p.append((1-self.gamma)*arms[m_list[i]]/sum_weights + self.gamma *1./len(m_list))
+				# p = []
+				# for i in range(len(m_list)):
+				# 	p.append((1-self.gamma)*arms[m_list[i]]/sum_weights + self.gamma *1./len(m_list))
+				p = (1.-self.gamma)*vals/sum_weights + self.gamma*1./len(m_list)
 			else:
 				p = None
-			return np.random.choice(m_list,p=p)
+			try:
+				return np.random.choice(m_list,p=p)
+			except ValueError:
+				p /= p.sum()
+				try:
+					return np.random.choice(m_list,p=p)
+				except ValueError:
+					print(p,p.sum())
+					raise
 
 class NegentropyMAB(LAPSMAB):
 
