@@ -3,6 +3,10 @@ import copy
 
 class Converged(AgentInit):
 
+	def __init__(self,fill_past_inter_mem=True,*args,**kwargs):
+		AgentInit.__init__(self,*args,**kwargs)
+		self.fill_past_inter_mem = fill_past_inter_mem
+
 	def modify_agent(self,agent, pop, pop_init=False):
 		AgentInit.modify_agent(self,agent=agent,pop=pop,pop_init=pop_init)
 		if not hasattr(self,'converged_voc'):
@@ -10,6 +14,16 @@ class Converged(AgentInit):
 			self.converged_voc = copy.deepcopy(agent._vocabulary)
 		elif pop_init:
 			agent._vocabulary = copy.deepcopy(self.converged_voc)
+			if self.fill_past_inter_mem:
+				if 'past_interactions_sliding_window_local' in agent._memory.keys():
+					mp = agent._memory.get_mp('interaction_counts_sliding_window_local')
+					mp.fill(voc=self.converged_voc,mem=agent._memory)
+				if 'bandit' in agent._memory.keys():
+					try:
+						mp = agent._memory.get_mp('bandit_laps')
+					except:
+						mp = agent._memory.get_mp('bandit_negentropy')
+					mp.fill(voc=self.converged_voc,mem=agent._memory)
 
 class ConvergedHalfLine(Converged):
 

@@ -329,7 +329,7 @@ class InteractionCounts(MemoryPolicy):
 
 class InteractionCountsSlidingWindow(InteractionCounts):
 
-	def __init__(self,mem_type,time_scale=100):
+	def __init__(self,mem_type,time_scale=2):
 		MemoryPolicy.__init__(self,mem_type=mem_type)
 		self.time_scale = time_scale
 
@@ -409,6 +409,11 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 	def change_time_scale(self,new_time_scale):
 		self.time_scale = new_time_scale
 
+	def fill(self,voc,mem):
+		for m in voc.get_known_meanings():
+			w = voc.get_known_words(m=m)[0]
+			mem['past_interactions_sliding_window_local']['m'][m] = [(w,1./self.time_scale) for _ in range(self.time_scale)]
+			mem['past_interactions_sliding_window_local']['w'][w] = [(m,1./self.time_scale) for _ in range(self.time_scale)]
 
 class InteractionCountsOmniscient(InteractionCounts):
 
@@ -537,6 +542,12 @@ class LAPSMAB(MemoryPolicy):
 		assert not 'bandit' in list(mem.keys())
 		mem['bandit'] = {'arms':{},'laps_val':0.,'reward':0.}
 
+
+	def fill(self,voc,mem):
+		mem['bandit'] = {'arms':{},'laps_val':0.,'reward':0.}
+		for m in voc.get_known_meanings():
+			mem['bandit']['arms'][m] = 1./(self.time_scale*len(voc.accessible_meanings))
+			mem['bandit']['arms']['laps_val'] = len(voc.get_known_meanings())/len(voc.accessible_meanings)
 
 
 

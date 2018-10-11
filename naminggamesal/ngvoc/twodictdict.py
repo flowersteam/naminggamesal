@@ -33,8 +33,8 @@ class Voc2DictDict(BaseVocabularyElaborated):
 
 	#@del_cache
 	def add(self,m,w,val=1,context=[],content_type='both'):
-		assert m in self.accessible_meanings
-		assert w in self.accessible_words
+		assert m in self.accessible_meanings, m
+		assert w in self.accessible_words, w
 		#if hasattr(self,'valmax') and val > self.valmax:
 		#	val = self.valmax
 		if val <= 0:
@@ -64,8 +64,8 @@ class Voc2DictDict(BaseVocabularyElaborated):
 
 	#@del_cache
 	def rm(self,m,w,content_type='both'):
-		assert m in self.accessible_meanings
-		assert w in self.accessible_words
+		assert m in self.accessible_meanings, m
+		assert w in self.accessible_words, w
 		if content_type == 'm':
 			if m in list(self._content_m.keys()) and w in list(self._content_m[m].keys()):
 				del self._content_m[m][w]

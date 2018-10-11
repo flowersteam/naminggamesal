@@ -125,10 +125,11 @@ class AcceptanceTSMax(AcceptancePolicy):
 
 class AcceptanceTSMaxNew(AcceptancePolicy):
 
-	def __init__(self,mem_policy={'mem_type':'interaction_counts'},role='both', beta=None, use_new_mem=True,strict=False,**cfg2):
+	def __init__(self,mem_policy={'mem_type':'interaction_counts_sliding_window_local'},no_mp=False,role='both', beta=None, use_new_mem=True,strict=False,**cfg2):
 		AcceptancePolicy.__init__(self,**cfg2)
 		self.use_new_mem = use_new_mem
-		self.memory_policies.append(copy.deepcopy(mem_policy))
+		if not no_mp:
+			self.memory_policies.append(copy.deepcopy(mem_policy))
 		self.role = role
 		self.beta = beta
 		self.strict = strict

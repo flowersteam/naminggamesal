@@ -18,7 +18,7 @@ def export_agent_past(xp,agent_number=0,file=None):
 def get_agent_past(xp,agent_number=0):
     return xp._poplist.get_last()._agentlist[agent_number]._memory['past_interactions_all']
 
-def reconstruct_ag(past_interactions,pop_cfg,replace_words=True):
+def reconstruct_ag(past_interactions,pop_cfg,replace_words=False):
     cfg = copy.deepcopy(pop_cfg)
     cfg['nbagent'] = 1
     pop = Population(**cfg)

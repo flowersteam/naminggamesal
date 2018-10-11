@@ -2665,15 +2665,18 @@ FUNC = conv_time2
 
 graphconfig = {"ymin":conv_time2_min,"ymax":conv_time2_max}
 custom_conv_time2 =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
-#########decay_time##########
+#########decay_time#########
 
 def decay_time(exp,X=0,**kwargs):
 	vect = exp.graph('decay_coherence',autocommit=False)
-	val = exp.graph('decay_coherence',autocommit=False)._Y[0][-1]
+	val = np.exp(-1.)
 	for i in range(len(vect._Y[0])):
 		if vect._Y[0][i] <= val:
 			return [vect._X[0][i]]
-	return [np.nan]
+	if vect._X[0][-1] == 1:
+		return [np.nan]
+	else:
+		return [exp._T[-1]/np.log(1./vect._X[0][-1])]
 
 
 def decay_time_max(exp):
@@ -2687,9 +2690,52 @@ FUNC = decay_time
 graphconfig = {"ymin":decay_time_min,"ymax":decay_time_max}
 custom_decay_time =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
-#########decay_time_smooth##########
+#########decay_time_total##########
 
-def decay_time_smooth(exp,X=0,**kwargs):
+def decay_time_total(exp,X=0,**kwargs):
+	vect = exp.graph('decay_coherence',autocommit=False)
+	for i in range(len(vect._Y[0])):
+		if vect._Y[0][i] == 0:
+			return [vect._X[0][i]]
+	return [np.nan]
+
+
+def decay_time_total_max(exp):
+	return exp._T[-1]
+
+def decay_time_total_min(exp):
+	return 0
+
+FUNC = decay_time_total
+
+graphconfig = {"ymin":decay_time_total_min,"ymax":decay_time_total_max}
+custom_decay_time_total =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########decay_time_old##########
+
+def decay_time_old(exp,X=0,**kwargs):
+	vect = exp.graph('decay_coherence',autocommit=False)
+	val = exp.graph('decay_coherence',autocommit=False)._Y[0][-1]
+	for i in range(len(vect._Y[0])):
+		if vect._Y[0][i] <= val:
+			return [vect._X[0][i]]
+	return [np.nan]
+
+
+def decay_time_old_max(exp):
+	return exp._T[-1]
+
+def decay_time_old_min(exp):
+	return 0
+
+FUNC = decay_time_old
+
+graphconfig = {"ymin":decay_time_old_min,"ymax":decay_time_old_max}
+custom_decay_time_old =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+
+#########decay_time_old_smooth##########
+
+def decay_time_old_smooth(exp,X=0,**kwargs):
 	val = exp.graph('decay_end_smooth',autocommit=False)._Y[0][0]
 	vect = exp.graph('decay_coherence',autocommit=False)
 	for i in range(len(vect._Y[0])):
@@ -2697,10 +2743,10 @@ def decay_time_smooth(exp,X=0,**kwargs):
 			return [vect._X[0][i]]
 	return [np.nan]
 
-FUNC = decay_time_smooth
+FUNC = decay_time_old_smooth
 
-graphconfig = {"ymin":decay_time_min,"ymax":decay_time_max}
-custom_decay_time_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+graphconfig = {"ymin":decay_time_old_min,"ymax":decay_time_old_max}
+custom_decay_time_old_smooth =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 
 #########block_time##########
 

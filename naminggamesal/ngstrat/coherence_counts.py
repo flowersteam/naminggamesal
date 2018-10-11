@@ -92,3 +92,13 @@ class StratCoherenceLastOnly2ndLevel(StratCoherenceLast):
 				val = max(val_vec)
 				tempm = [m for m in KM if counts[m] == val]
 				return random.choice(tempm)
+
+
+class StratCoherenceLastOnly1stLevel(StratCoherenceLast):
+
+	def pick_m(self, voc, mem, context):
+		counts = self.get_counts(voc, mem)
+		if not len(counts.values()) or min(list(counts.values()))>=self.threshold*self.time_scale:
+			return voc.get_new_unknown_m()
+		else:
+			return voc.get_random_known_m()
