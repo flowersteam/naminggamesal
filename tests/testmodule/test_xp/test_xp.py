@@ -159,7 +159,6 @@ global_m_list = ['conv_time',
 				'tdiff_w',
 				'tdiff_wd',
 				'decay_time',
-				'decay_time_smooth',
 				]
 
 # extended_global_m_list = ['conv_time',
