@@ -8,7 +8,7 @@ class AgentInit(object):
 			self.sub_agent_init = get_agent_init(**sub_agent_init_cfg)
 
 	def modify_cfg(self, pop_init=False, **ag_cfg):
-		ag_cfg = self.modified_cfg(ag_cfg)
+		ag_cfg = self.modified_cfg(pop_init=pop_init,**ag_cfg)
 		if hasattr(self,'sub_agent_init'):
 			ag_cfg = self.sub_agent_init.modified_cfg(pop_init=pop_init,**ag_cfg)
 		return ag_cfg
@@ -16,7 +16,7 @@ class AgentInit(object):
 	def modify_agent(self,agent, pop, pop_init=False):
 		self.modified_agent(pop_init=pop_init,agent=agent)
 		if hasattr(self,'sub_agent_init'):
-			ag_cfg = self.sub_agent_init.modified_agent(pop_init=pop_init,**ag_cfg)
+			self.sub_agent_init.modified_agent(pop_init=pop_init,agent=agent)
 		if hasattr(pop.env,'init_agent'):
 			pop.env.init_agent(agent)
 
