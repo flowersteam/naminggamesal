@@ -54,7 +54,44 @@ def minexplo_per_ag(M,N):
 def extra_inv(M,N):
 	return N*minexplo_per_ag(M=M,N=N) - M
 
+tc_dict = {
+	0: 0.,
+	1: 0.,
+	2: 0.,
+	3: 4.6500000000000004,
+ 4: 13.1,
+ 5: 21.25,
+ 6: 31.399999999999999,
+ 7: 42.399999999999999,
+ 8: 59.850000000000001,
+ 9: 62.299999999999997,
+ 10: 75.950000000000003
+}
 
+def tconv_naive(N):
+	if N>10**6:
+		raise ValueError('Convergence time for population size of more than a million is not known exactly.')
+	elif N>100:
+		return (2.3+np.sin(1.+0.4*np.log(N)))*N**1.5
+	else:
+		return tc_dict[N]
+
+def tconv_optimal(M,N):
+	return M*(tconv_naive(N=int(N/M)) + N*np.log(N))
+
+
+def perf1(tc,M,N):
+	return (M*tconv_optimal(N=N,M=M))*1./tc
+
+def perf2(srtheo_vec,t_vec,M,N):
+	t_n = tconv_optimal(M=M,N=N)
+	srtheo_vec = list(srtheo_vec)
+	srtheo_vec.reverse()
+	t_vec = list(t_vec)
+	t_vec.reverse()
+	for sr,t in zip(srtheo_vec,t_vec):
+		if t_vec <= t_n:
+			return sr
 
 if __name__ == '__main__':
 	scale_vec = [10,20,50,100,500,1000,2000,5000,10000,20000,50000,100000]

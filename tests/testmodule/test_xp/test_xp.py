@@ -254,7 +254,7 @@ def evoltype(request):
 def test_agentinit(agentinittype,evoltype):
 	base_xp_cfg = {
     'pop_cfg':{
-        'voc_cfg':{'voc_type':'matrix_new'},
+        'voc_cfg':{'voc_type':'2dictdict'},
         'agent_init_cfg':agentinittype,
         'evolution_cfg':evoltype,
         'strat_cfg':{'strat_type':'naive',
@@ -288,7 +288,7 @@ def test_optimize():
 
 ######### BROADCASTING ###############
 
-def test_braodcasting():
+def test_broadcasting():
 	base_xp_cfg = {
     'pop_cfg':{
         'voc_cfg':{'voc_type':'matrix_new'},

@@ -31,6 +31,9 @@ class Voc2DictDict(BaseVocabularyElaborated):
 		except KeyError:
 			return 0
 
+	def __eq__(self,other):
+		return self._content_m == other._content_m and self._content_w == other._content_w
+
 	#@del_cache
 	def add(self,m,w,val=1,context=[],content_type='both'):
 		assert m in self.accessible_meanings, m
@@ -161,8 +164,8 @@ class Voc2DictDict(BaseVocabularyElaborated):
 			return []
 
 	def get_alterable_shallow_copy(self):
-		return copy.deepcopy(self)
-		#return AlterableShallowCopyVoc2DictDict(voc=self)
+		#return copy.deepcopy(self)
+		return AlterableShallowCopyVoc2DictDict(voc=self)
 
 	#def inherit_from: to split a meaning or a word
 

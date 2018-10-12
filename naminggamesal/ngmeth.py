@@ -1810,6 +1810,30 @@ FUNC=cat_agreement
 graphconfig={"ymin":cat_agreement_min,"ymax":cat_agreement_max}
 custom_cat_agreement=custom_func.CustomFunc(FUNC,"population",tags='category',**graphconfig)
 
+#########converged##########
+
+def converged(pop, m=None, n_iter=100, **kwargs):
+	ag_l = pop._agentlist
+	if hasattr(pop,'converged') and pop.converged:
+		return 1.
+	elif ag_l[0]._vocabulary.unknown_meanings:
+		return 0.
+	for ag in ag_l[1:]:
+		if ag._vocabulary != ag_l[0]._vocabulary:
+			return 0.
+	pop.converged = True
+	return 1.
+
+
+def converged_max(pop):
+	return 1
+
+def converged_min(pop):
+	return 0
+
+FUNC=converged
+graphconfig={"ymin":converged_min,"ymax":converged_max}
+custom_converged=custom_func.CustomFunc(FUNC,"population",**graphconfig)
 #########srtheo##########
 
 def srtheo(pop, m=None, n_iter=100, **kwargs):
@@ -2665,6 +2689,26 @@ FUNC = conv_time2
 
 graphconfig = {"ymin":conv_time2_min,"ymax":conv_time2_max}
 custom_conv_time2 =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
+#########conv_time3##########
+
+def conv_time3(exp,X=0,thresh=1.,**kwargs):
+	Nd_gr = exp.graph('converged',autocommit=False)
+	Nd = Nd_gr._Y[0]
+	for i in range(len(Nd)):
+		if Nd[i]:
+			return [Nd_gr._X[0][i]]
+	return [np.nan]
+
+def conv_time3_max(exp):
+	return exp._T[-1]
+
+def conv_time3_min(exp):
+	return 0
+
+FUNC = conv_time3
+
+graphconfig = {"ymin":conv_time3_min,"ymax":conv_time3_max}
+custom_conv_time3 =custom_func.CustomFunc(FUNC,"exp",**graphconfig)
 #########decay_time#########
 
 def decay_time(exp,X=0,**kwargs):
