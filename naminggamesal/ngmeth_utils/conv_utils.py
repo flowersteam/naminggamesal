@@ -81,7 +81,7 @@ def tconv_optimal(M,N):
 
 
 def perf1(tc,M,N):
-	return (M*tconv_optimal(N=N,M=M))*1./tc
+	return tconv_optimal(N=N,M=M)*1./tc
 
 def perf2(srtheo_vec,t_vec,M,N):
 	t_n = tconv_optimal(M=M,N=N)
@@ -90,7 +90,7 @@ def perf2(srtheo_vec,t_vec,M,N):
 	t_vec = list(t_vec)
 	t_vec.reverse()
 	for sr,t in zip(srtheo_vec,t_vec):
-		if t_vec <= t_n:
+		if t <= t_n:
 			return sr
 
 if __name__ == '__main__':

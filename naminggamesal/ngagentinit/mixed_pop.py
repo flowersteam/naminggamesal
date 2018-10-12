@@ -21,8 +21,8 @@ class MixedPop(AgentInit):
 		self.new_cfg = copy.deepcopy(new_cfg)
 		self.quantity = quantity
 
-	def modify_cfg(self, pop_init=False, **ag_cfg):
-		AgentInit.modify_cfg(self,pop_init=pop_init, **ag_cfg)
+	def modified_cfg(self, pop_init=False, **ag_cfg):
+		AgentInit.modified_cfg(self,pop_init=pop_init, **ag_cfg)
 		out_cfg = copy.deepcopy(ag_cfg)
 		if self.condition():
 			out_cfg = copy.deepcopy(ag_cfg)

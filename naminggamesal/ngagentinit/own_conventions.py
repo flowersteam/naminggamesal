@@ -13,8 +13,8 @@ class OwnWordsInit(AgentInit):
 			self.range_mode = False
 		self.M = M
 
-	def modify_agent(self,agent,pop,pop_init=False):
-		AgentInit.modify_agent(self,agent=agent,pop=pop,pop_init=pop_init)
+	def modified_agent(self,agent,pop,pop_init=False):
+		AgentInit.modified_agent(self,agent=agent,pop=pop,pop_init=pop_init)
 		if self.W_l:
 			if not hasattr(self,'M') or self.M == 1:
 				if self.range_mode:

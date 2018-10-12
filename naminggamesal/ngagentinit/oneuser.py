@@ -19,8 +19,8 @@ class OneUser(AgentInit):
 		AgentInit.__init__(self)
 		self.done = False
 
-	def modify_cfg(self, pop_init=False, **ag_cfg):
-		AgentInit.modify_cfg(self,pop_init=pop_init, **ag_cfg)
+	def modified_cfg(self, pop_init=False, **ag_cfg):
+		AgentInit.modified_cfg(self,pop_init=pop_init, **ag_cfg)
 		out_cfg = copy.deepcopy(ag_cfg)
 		if not self.done:
 			out_cfg['strat_cfg']['strat_type'] = 'user'
@@ -31,8 +31,8 @@ class OneUser(AgentInit):
 
 class OneUserNonInteractive(OneUser):
 
-	def modify_cfg(self, pop_init=False, **ag_cfg):
-		AgentInit.modify_cfg(self,pop_init=pop_init, **ag_cfg)
+	def modified_cfg(self, pop_init=False, **ag_cfg):
+		AgentInit.modified_cfg(self,pop_init=pop_init, **ag_cfg)
 		out_cfg = copy.deepcopy(ag_cfg)
 		if not self.done:
 			out_cfg['strat_cfg']['strat_type'] = 'user_noninteractive'
@@ -48,8 +48,8 @@ class OneDifferent(OneUser):
 		self.first_ag_cfg = first_ag_cfg
 
 
-	def modify_cfg(self, pop_init=False, **ag_cfg):
-		AgentInit.modify_cfg(self,pop_init=pop_init, **ag_cfg)
+	def modified_cfg(self, pop_init=False, **ag_cfg):
+		AgentInit.modified_cfg(self,pop_init=pop_init, **ag_cfg)
 		out_cfg = copy.deepcopy(ag_cfg)
 		if not self.done:
 			update_nested_dict(out_cfg,self.first_ag_cfg)
