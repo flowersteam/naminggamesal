@@ -14,14 +14,14 @@ class AgentInit(object):
 		return ag_cfg
 
 	def modify_agent(self,agent, pop, pop_init=False):
-		self.modified_agent(pop_init=pop_init,agent=agent)
+		self.modified_agent(pop_init=pop_init,agent=agent,pop=pop)
 		if hasattr(self,'sub_agent_init'):
-			self.sub_agent_init.modified_agent(pop_init=pop_init,agent=agent)
+			self.sub_agent_init.modified_agent(pop_init=pop_init,agent=agent,pop=pop)
 		if hasattr(pop.env,'init_agent'):
 			pop.env.init_agent(agent)
 
 	def modified_cfg(self, pop_init=False, **ag_cfg):
 		return copy.deepcopy(ag_cfg)
 
-	def modified_agent(self,agent, pop_init=False):
+	def modified_agent(self,agent,pop, pop_init=False):
 		pass
