@@ -78,6 +78,7 @@ strat_class={
 	'coherence':'coherence_counts.StratCoherence',
 	'coherence_last':'coherence_counts.StratCoherenceLast',
 	'coherence_last_only2ndlevel':'coherence_counts.StratCoherenceLastOnly2ndLevel',
+	'coherence_last_only1stlevel':'coherence_counts.StratCoherenceLastOnly1stLevel',
 	'coherence_new':'coherence_counts.StratCoherenceNew',
 }
 
