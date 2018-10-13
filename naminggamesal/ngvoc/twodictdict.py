@@ -229,11 +229,13 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 		self.rm_list = {'m':[],'w':[]}
 		self.unknown_words = copy.copy(self.original_voc.unknown_words) #shallow copies of lists
 		self.unknown_meanings = copy.copy(self.original_voc.unknown_meanings)
+		self.accessible_meanings = copy.copy(self.original_voc.accessible_meanings)
+		self.accessible_words = copy.copy(self.original_voc.accessible_words)
 
 
 	def empty(self):
 		#change original_voc to an empty one, and empty as well features of self?
-		raise Exception('Emptying shallow copy not implemented')
+		raise NotImplementedError('Emptying shallow copy not implemented')
 
 	def rm(self,m,w,content_type='both'):
 		if content_type == 'm':
