@@ -227,10 +227,10 @@ class AlterableShallowCopyVoc2DictDict(Voc2DictDict):
 		self.original_voc = voc
 		Voc2DictDict.__init__(self,start=start,**voc_cfg2)
 		self.rm_list = {'m':[],'w':[]}
-		self.unknown_words = copy.copy(self.original_voc.unknown_words) #shallow copies of lists
-		self.unknown_meanings = copy.copy(self.original_voc.unknown_meanings)
-		self.accessible_meanings = copy.copy(self.original_voc.accessible_meanings)
-		self.accessible_words = copy.copy(self.original_voc.accessible_words)
+		self.unknown_words = copy.deepcopy(self.original_voc.unknown_words) #deep copies of lists
+		self.unknown_meanings = copy.deepcopy(self.original_voc.unknown_meanings)
+		self.accessible_meanings = copy.deepcopy(self.original_voc.accessible_meanings)
+		self.accessible_words = copy.deepcopy(self.original_voc.accessible_words)
 
 
 	def empty(self):

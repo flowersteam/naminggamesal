@@ -98,6 +98,7 @@ class HoledRange(object):
 		self.range_obj = range(len(self.range_obj)-1)
 
 
+
 	def replace(self,elt):
 		assert elt in self.discard
 		for i in range(len(self.discard)):
