@@ -6,9 +6,11 @@ class OwnWordsInit(AgentInit):
 
 	def __init__(self,W_l=None,W_range=None,M=1):
 		if W_l is None:
+			self.W_l_orig = W_range
 			self.W_l = W_range
 			self.range_mode = True
 		else:
+			self.W_l_orig = W_l
 			self.W_l = W_l
 			self.range_mode = False
 		self.M = M
@@ -23,9 +25,9 @@ class OwnWordsInit(AgentInit):
 				else:
 					agent._vocabulary.next_word = self.W_l.pop(0)
 			else:
-				if self.range_mode:
+				if self.range_mode and self.W_l >= self.M:
 					agent._vocabulary.next_word = range(self.W_l-self.M,self.W_l)
 					self.W_l = self.W_l-self.M
-				else:
+				elif len(self.W_l) >= len(self.M):
 					agent._vocabulary.next_word = self.W_l[:self.M]
 					self.W_l = self.W_l[self.M:]
