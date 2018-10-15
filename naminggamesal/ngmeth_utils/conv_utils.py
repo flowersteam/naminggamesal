@@ -2,6 +2,8 @@
 import numpy as np
 import sys
 
+from tconv_values import tc_dict
+
 if sys.version_info.major == 3:
 	xrange = range
 
@@ -65,20 +67,6 @@ def nchunks(M,N):
 
 def extra_inv(M,N):
 	return N*minexplo_per_ag(M=M,N=N) - M
-
-tc_dict = {
-	0: 0.,
-	1: 0.,
-	2: 0.,
-	3: 4.6500000000000004,
- 4: 13.1,
- 5: 21.25,
- 6: 31.399999999999999,
- 7: 42.399999999999999,
- 8: 59.850000000000001,
- 9: 62.299999999999997,
- 10: 75.950000000000003
-}
 
 def tconv_naive(N):
 	if N>10**6:
@@ -161,7 +149,7 @@ if __name__ == '__main__':
 	# plt.legend()
 	# plt.show()
 	N_l = [10,100,1000]
-	Nc_l = [0.2,0.3,0.5,0.7,1.,2.,5,10]
+	Nc_l = [0.2,0.5,0.7,0.8,0.95,1.,2.,5,10]
 	M_l = [100,1000,10000]
 	for M in M_l:
 		for Nc in Nc_l:
@@ -170,10 +158,19 @@ if __name__ == '__main__':
 			print('N',N,'M',M,'2M/N+1',val,'nch',nchunks(M,N))
 			print(val-nchunks(M,N))
 	print('tab')
-	for M in M_l:
-		for Nc in Nc_l:
+	for Nc in Nc_l:
+		for M in M_l:
 			N = int(Nc*M)
 			val = int(2*M/N)+1
 			print(N,'&',M,'&',val,'&',nchunks(M,N), '\\\\')
+			# print(val-nchunks(M,N))
+
+
+	print('tab')
+	for Nc in Nc_l:
+		for M in M_l:
+			N = int(Nc*M)
+			val = int(2*M/N)+1
+			print(M+N/2.,N/2.*nchunks(M,N),N,'&',M,'&',val,'&',nchunks(M,N), '\\\\')
 			# print(val-nchunks(M,N))
 
