@@ -2,7 +2,7 @@
 import numpy as np
 import sys
 
-from tconv_values import tc_dict
+from .tconv_values import tc_dict
 
 if sys.version_info.major == 3:
 	xrange = range
