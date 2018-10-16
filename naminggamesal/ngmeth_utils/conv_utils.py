@@ -82,7 +82,7 @@ def tconv_optimal(M,N,ninv=None):
 	return M*(tconv_naive(N=int(2*ninv/M)) + N*np.log(N))
 
 def ninv_optimal(M,N):
-	return max(M,N/2.)
+	return M+N/2.
 
 def memmax_optimal(M,N):
 	return M
@@ -101,13 +101,13 @@ def perf2(srtheo_vec,t_vec,M,N):
 		if t <= t_n:
 			return sr
 
-def perf1_ninv(ninv,M,N):
+def perf_ex(ninv,M,N):
 	return ninv_optimal(N=N,M=M)*1./ninv
 
-def perf1_tconvninv(ninv,M,N):
-	return tconv_optimal(N=N,M=M,ninv=ninv)*1./ninv
+def perf_st(tc,ninv,M,N):
+	return tconv_optimal(N=N,M=M,ninv=ninv)*1./tc
 
-def perf2_tconvninv(srtheo_vec,t_vec,M,N,ninv):
+def perf_ss(srtheo_vec,t_vec,M,N,ninv):
 	t_n = tconv_optimal(M=M,N=N,ninv=ninv)
 	srtheo_vec = list(srtheo_vec)
 	srtheo_vec.reverse()
@@ -118,8 +118,8 @@ def perf2_tconvninv(srtheo_vec,t_vec,M,N,ninv):
 			return sr
 
 
-def perf1_memmax(memmax,M,N):
-	return memax_optimal(N=N,M=M)*1./memmax
+def perf_ls(memmax,M,N):
+	return memmax_optimal(N=N,M=M)*1./memmax
 
 if __name__ == '__main__':
 	# scale_vec = [10,20,50,100,500,1000,2000,5000,10000,20000,50000,100000]

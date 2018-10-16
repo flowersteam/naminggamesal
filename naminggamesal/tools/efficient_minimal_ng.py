@@ -8,11 +8,13 @@ from memory_profiler import memory_usage
 def stop_condition(T,pop,Tmax,monitor_T):
 	if T == monitor_T:
 		print(memory_usage())
+
 	return (T >= Tmax) or (T>0 and len(pop) == 1)
 
 def new_stop_condition(T,pop,Tmax,monitor_T):
 	if T == monitor_T:
-		print(memory_usage())
+		#print(memory_usage())
+		pass
 	return (T >= Tmax) or (T>0 and len(pop['d1']) == 1)
 
 def pop_add(ag,pop):
@@ -79,6 +81,8 @@ def new_pick_agent(pop):
 	return ag
 
 def new_run(Tmax,N):
+	if N in [0,1,2]:
+		return 0.
 	try:
 		pop = pop_init(N=N)
 		max_word = -1
@@ -98,12 +102,13 @@ def new_run(Tmax,N):
 					sp = (w,)
 					hr = (w,)
 				else:
-					# hr = tuple(sorted((*hr,max_word)))
-					hr = tuple(sorted(hr+(max_word,)))
+					# hr = tuple(sorted((*hr,w)))
+					hr = tuple(sorted(hr+(w,)))
 			pop_add(pop=pop,ag=sp)
 			pop_add(pop=pop,ag=hr)
 			T += 1
-		print('end',memory_usage())
+
+		# print('end',N,memory_usage(),max_word,pop)
 		return T
 	except:
 		print('T',T)
@@ -122,71 +127,85 @@ def new_run(Tmax,N):
 
 
 
-def pick_agent(pop):
-	p = np.asarray(list(pop.values()),dtype=float)
-	if len(p) == 1.:
-		return list(pop.keys())[0]
-	p /= p.sum()
-	try:
-		ans = np.random.choice(list(pop.keys()),p=p)
-	except KeyboardInterrupt:
-		raise
-	except:
-		print(len(pop))
-		print(list(pop.keys()))
-		print(list(pop.values()))
-		return list(pop.keys())[0]
-	pop[ans] -= 1
-	if pop[ans] == 0:
-		del pop[ans]
-	return ans
+# def pick_agent(pop):
+# 	p = np.asarray(list(pop.values()),dtype=float)
+# 	if len(p) == 1.:
+# 		return list(pop.keys())[0]
+# 	p /= p.sum()
+# 	try:
+# 		ans = np.random.choice(list(pop.keys()),p=p)
+# 	except KeyboardInterrupt:
+# 		raise
+# 	except:
+# 		print(len(pop))
+# 		print(list(pop.keys()))
+# 		print(list(pop.values()))
+# 		return list(pop.keys())[0]
+# 	pop[ans] -= 1
+# 	if pop[ans] == 0:
+# 		del pop[ans]
+# 	return ans
 
 
-def run(Tmax,N):
-	try:
-		pop = defaultdict(int)
-		pop[()] = N
-		max_word = -1
-		monitor_T = int(1./np.sqrt(2.)*N**(1.5))
-		T = 0
-		while not stop_condition(T,pop,Tmax,N):
-			sp = pick_agent(pop)
-			hr = pick_agent(pop)
-			if sp == ():
-				max_word += 1
-				sp = (max_word,)
-				# hr = tuple(sorted((*hr,max_word)))
-				hr = tuple(sorted(hr+(max_word,)))
-				if pop[()] == 0:
-					del pop[()]
-				pop[sp] += 1
-				pop[hr] += 1
-			else:
-				w = np.random.choice(sp)
-				if w in hr:
-					pop[(w,)] += 2
-				else:
-					hr = tuple(sorted(hr+(max_word,)))
-					# hr = tuple(sorted((*hr,max_word)))
-					pop[sp] += 1
-					pop[hr] += 1
-			T += 1
-		print('end',memory_usage())
-		return T
-	except:
-		print('T',T)
-		print('mem',memory_usage())
-		print('len',len(pop))
-		raise
+# def run(Tmax,N):
+# 	try:
+# 		pop = defaultdict(int)
+# 		pop[()] = N
+# 		max_word = -1
+# 		monitor_T = int(1./np.sqrt(2.)*N**(1.5))
+# 		T = 0
+# 		while not stop_condition(T,pop,Tmax,N):
+# 			sp = pick_agent(pop)
+# 			hr = pick_agent(pop)
+# 			if sp == ():
+# 				max_word += 1
+# 				sp = (max_word,)
+# 				# hr = tuple(sorted((*hr,max_word)))
+# 				hr = tuple(sorted(hr+(max_word,)))
+# 				if pop[()] == 0:
+# 					del pop[()]
+# 				pop[sp] += 1
+# 				pop[hr] += 1
+# 			else:
+# 				w = np.random.choice(sp)
+# 				if w in hr:
+# 					pop[(w,)] += 2
+# 				else:
+# 					hr = tuple(sorted(hr+(w,)))
+# 					# hr = tuple(sorted((*hr,w)))
+# 					pop[sp] += 1
+# 					pop[hr] += 1
+# 			T += 1
+# 		print('end',N,memory_usage(),max_word)
+
+# 		return T
+# 	except:
+# 		print('T',T)
+# 		print('mem',memory_usage())
+# 		print('len',len(pop))
+# 		raise
 
 
 if __name__ == '__main__':
 	start = time.time()
-	print(memory_usage())
-	N=10000
-	print('N',N)
-	try:
-		t = new_run(Tmax=100000, N=N)
-		print(t)
-	finally:
-		print(time.time()-start,'seconds')
+	# print(memory_usage())
+	# N=10000
+	# print('N',N)
+	# try:
+	# 	t = new_run(Tmax=100000, N=N)
+	# 	print(t)
+	# finally:
+	# 	print(time.time()-start,'seconds')
+	ans = defaultdict(list)
+	for N in range(100,101):
+		print(N)
+		for i in range(1000):
+			print(N,i)
+			t = new_run(Tmax=100000,N=N)
+			ans[N].append(t)
+		ans[N] = np.mean(ans[N])
+	print(ans)
+	print(time.time()-start,'seconds')
+	with open('tconv_dict.txt','w') as f:
+		f.write(str(ans) + str(time.time()-start) + ' seconds')
+
