@@ -172,6 +172,7 @@ class BaseVocabularyElaborated(BaseVocabulary):
 	@del_cache
 	def complete_empty(self):
 		self.empty()
+		print(self.unknown_meanings)
 		m_l = copy.deepcopy(self.unknown_meanings)
 		random.shuffle(list(m_l))
 		w_l = copy.deepcopy(self.unknown_words)

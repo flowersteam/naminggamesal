@@ -38,6 +38,7 @@ vu_class={
 	'acceptance_entropybeta':'acceptance.AcceptanceEntropyBeta',
 	'acceptance_vocrelatedentropy':'acceptance.AcceptanceVocRelatedEntropy',
 	'acceptance_vocrelatedentropybeta':'acceptance.AcceptanceVocRelatedEntropyBeta',
+	'acceptance_coherencemax':'acceptance.AcceptanceCoherenceMax',
 }
 
 def get_voc_update(vu_type='imitation', **vu_cfg2):
