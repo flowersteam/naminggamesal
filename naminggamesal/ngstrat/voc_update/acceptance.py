@@ -187,7 +187,7 @@ class AcceptanceTSMaxNew(AcceptancePolicy):
 class AcceptanceCoherenceMax(AcceptanceTSMaxNew):
 	def test(self,ms,w,mh,voc,mem,bool_succ,role, context=[]):
 		mem_new = mem.simulated_update_memory(ms=ms,w=w,mh=mh,voc=voc,role=role,bool_succ=bool_succ,context=context)
-		return self.get_coherence(voc=voc,mem=mem_new) >= self.get_coherence(voc=voc,mem=mem)  
+		return self.get_coherence(voc=voc,mem=mem_new,m=ms) >= self.get_coherence(voc=voc,mem=mem,m=ms)
 
 	def get_coherence(self, voc, mem, m):
 		if m in list(mem['past_interactions_sliding_window_local']['m'].keys()):

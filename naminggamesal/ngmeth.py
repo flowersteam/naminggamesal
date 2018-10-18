@@ -9,6 +9,7 @@ import scipy
 from scipy.optimize import curve_fit
 from scipy.special import zetac
 import random
+from collections import defaultdict
 
 #from numpy.linalg import norm
 
@@ -1723,11 +1724,49 @@ FUNC=entropycouples
 graphconfig={"ymin":entropycouples_min,"ymax":entropycouples_max}
 custom_entropycouples=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],**graphconfig)
 
+#########entropycouples_new##########
+
+def entropycouples_new(pop,**kwargs):
+	tempvalues=[]
+	for j in range(100):
+		agent1 = pop.pick_speaker()
+		agent2 = pop.pick_hearer(agent1)
+		M = 0
+		W = 0
+		v1 = agent1._vocabulary
+		v2 = agent2._vocabulary
+		for m in v1.get_known_meanings():
+			if m in v2.get_known_meanings():
+				w1 = v1.get_known_words(m=m)
+				w2 = v2.get_known_words(m=m)
+				if [w for w in w1 if w in w2]:
+					M += 1
+		for w in v1.get_known_words():
+			if w in v2.get_known_words():
+				m1 = v1.get_known_meanings(w=w)
+				m2 = v2.get_known_meanings(w=w)
+				if [m for m in m1 if m in m2]:
+					W += 1
+
+
+		tempvalues.append(entropy_utils.missinginfo(pop.get_M()-M,pop.get_W()-W))
+	return np.mean(tempvalues)
+
+def entropycouples_new_max(pop):
+	return entropy_utils.missinginfo(pop.get_M(),pop.get_W())
+
+def entropycouples_new_min(pop):
+	return 0
+
+FUNC=entropycouples_new
+graphconfig={"ymin":entropycouples_new_min,"ymax":entropycouples_new_max}
+custom_entropycouples_new=custom_func.CustomFunc(FUNC,"population",tags=["old_voc"],**graphconfig)
+
 #########entropycouplesnorm##########
 
 
 def entropycouples_norm(pop,**kwargs):
-	return 1-(entropycouples(pop)/entropycouples_max(pop))
+	return 1-(entropycouples_new(pop)/entropycouples_new_max(pop))
 
 def entropycouples_norm_max(pop):
 	return 1

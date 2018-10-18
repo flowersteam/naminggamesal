@@ -96,7 +96,7 @@ class CustomGraph(object):
 
 		self.extensions=["eps","png","pdf"]
 
-		self.symlog = True
+		self.symlog = False
 
 		for key,value in kwargs.items():
 			setattr(self,key,value)
@@ -187,7 +187,7 @@ class CustomGraph(object):
 			else:
 				base_line = plt.plot(Xtemp,Ytemp,**self.Yoptions[i])[0]
 			handles.append(base_line)
-			if not hasattr(self,'symlog') or self.symlog:
+			if hasattr(self,'symlog') and self.symlog:
 				log_str = 'symlog'
 			else:
 				log_str = 'log'
