@@ -412,8 +412,8 @@ class InteractionCountsSlidingWindowLocal(InteractionCountsSlidingWindow):
 	def fill(self,voc,mem):
 		for m in voc.get_known_meanings():
 			w = voc.get_known_words(m=m)[0]
-			mem['past_interactions_sliding_window_local']['m'][m] = [(w,1./self.time_scale) for _ in range(self.time_scale)]
-			mem['past_interactions_sliding_window_local']['w'][w] = [(m,1./self.time_scale) for _ in range(self.time_scale)]
+			mem['past_interactions_sliding_window_local']['m'][m] = deque([(w,1./self.time_scale) for _ in range(self.time_scale)])
+			mem['past_interactions_sliding_window_local']['w'][w] = deque([(m,1./self.time_scale) for _ in range(self.time_scale)])
 
 class InteractionCountsOmniscient(InteractionCounts):
 
