@@ -517,7 +517,7 @@ class CustomGraph(object):
 		    ans.add_graph(g1)
 		return ans
 
-	def merge(self,keep_all_data=True):
+	def merge(self,keep_all_data=True,force_x_collapse=False):
 		#Yarray=np.array(self._Y)
 		#stdarray=np.array(self.stdvec)
 		Xcopy = copy.deepcopy(self._X)
@@ -537,10 +537,18 @@ class CustomGraph(object):
 		for j in range(len(self._Y)):
 			for i in range(len(self._Y[j])):
 				if self._Y[j][i] is not None:
-					if Xcopy[j][i] in list(Ydict.keys()):
-						Ydict[Xcopy[j][i]].append(Ycopy[j][i])
+					if not force_x_collapse:
+						if Xcopy[j][i] in list(Ydict.keys()):
+							Ydict[Xcopy[j][i]].append(Ycopy[j][i])
+						else:
+							Ydict[Xcopy[j][i]] = [Ycopy[j][i]]
 					else:
-						Ydict[Xcopy[j][i]] = [Ycopy[j][i]]
+						if Xcopy[0][0] in list(Ydict.keys()):
+							Ydict[Xcopy[0][0]].append(Ycopy[j][i])
+						else:
+							Ydict[Xcopy[0][0]] = [Ycopy[j][i]]
+		
+
 		Xlist = list(Ydict.keys())
 		Xlist.sort()
 		for x in Xlist:

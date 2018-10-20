@@ -82,7 +82,7 @@ def tconv_optimal(M,N,ninv=None):
 	return M*(tconv_naive(N=int(2*ninv/M)) + N*np.log(N))
 
 def ninv_optimal(M,N):
-	return M+N/2.
+	return max(M,N/2.)
 
 def memmax_optimal(M,N):
 	return M

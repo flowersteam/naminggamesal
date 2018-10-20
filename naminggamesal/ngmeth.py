@@ -2756,10 +2756,10 @@ def decay_time(exp,X=0,**kwargs):
 	for i in range(len(vect._Y[0])):
 		if vect._Y[0][i] <= val:
 			return [vect._X[0][i]]
-	if vect._X[0][-1] == 1:
+	if vect._X[0][-1] <= 1:
 		return [np.nan]
 	else:
-		return [exp._T[-1]/np.log(1./vect._X[0][-1])]
+		return [-vect._X[0][-1]/np.log(vect._Y[0][-1])]
 
 
 def decay_time_max(exp):
