@@ -18,15 +18,7 @@ class HoledRange(object):
 		return len(self.range_obj)
 
 	def __contains__(self,elt):
-		if elt in self.range_obj:
-			if elt in self.discard:
-				return False
-			else:
-				return True
-		elif elt in self.consider:
-			return True
-		else:
-			return False
+		return (elt in self.range_obj and not elt in self.discard) or (elt in self.consider)
 
 	def __iter__(self):
 		self.counter = None
